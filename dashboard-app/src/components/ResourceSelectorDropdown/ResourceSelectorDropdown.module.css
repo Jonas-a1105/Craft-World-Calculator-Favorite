@@ -1,0 +1,165 @@
+.dropdownContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.triggerBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(18, 0, 33, 0.7);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  color: #fff;
+  border-radius: 30px;
+  padding: 6px 16px;
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 0.82rem;
+  outline: none;
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+  box-shadow: 
+    0 2px 10px rgba(0, 0, 0, 0.2),
+    inset 0 0 8px rgba(0, 240, 255, 0.05);
+}
+
+.triggerBtn:hover {
+  border-color: var(--color-pink);
+  background: rgba(250, 64, 96, 0.1);
+  box-shadow: 
+    0 0 12px rgba(250, 64, 96, 0.25),
+    inset 0 0 12px rgba(250, 64, 96, 0.15);
+  transform: translateY(-1px);
+}
+
+.triggerBtn.active {
+  border-color: var(--color-pink);
+  background: rgba(250, 64, 96, 0.15);
+}
+
+.triggerIcon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));
+}
+
+.triggerText {
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+.arrow {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-left: 2px;
+  transition: transform var(--transition-fast) ease;
+}
+
+.arrowUp {
+  transform: rotate(180deg);
+  color: var(--color-pink);
+}
+
+/* Dropdown Menu Container */
+.menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 210px;
+  max-height: 380px;
+  overflow-y: auto;
+  background: rgba(18, 5, 32, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 14px;
+  padding: 8px;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(0, 240, 255, 0.1),
+    inset 0 0 15px rgba(0, 240, 255, 0.05);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  
+  /* Scrollbar custom styles */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 240, 255, 0.2) transparent;
+}
+
+.menu::-webkit-scrollbar {
+  width: 5px;
+}
+
+.menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.menu::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.25);
+  border-radius: 4px;
+}
+
+.menu::-webkit-scrollbar-thumb:hover {
+  background: var(--color-pink);
+}
+
+/* Dropdown Menu Item */
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 0.8rem;
+  transition: all var(--transition-fast) ease;
+}
+
+.menuItem:hover {
+  background: rgba(0, 240, 255, 0.06);
+  border-color: rgba(0, 240, 255, 0.15);
+  color: #fff;
+  padding-left: 16px;
+}
+
+.menuItemActive {
+  background: rgba(57, 255, 20, 0.06) !important;
+  border-color: rgba(57, 255, 20, 0.2) !important;
+  color: var(--color-green) !important;
+}
+
+.menuItemActive .itemText {
+  text-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
+}
+
+.itemIcon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.itemText {
+  transition: color var(--transition-fast) ease;
+}
+
+@media (max-width: 1400px) {
+  .triggerBtn {
+    padding: 6px 12px;
+    font-size: 0.76rem;
+    gap: 6px;
+  }
+  .triggerIcon {
+    width: 16px;
+    height: 16px;
+  }
+}

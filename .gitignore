@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+*.log
+
+# Game data exports / caches
+Game Data - Google Drive_files/
+Game Data - Google Drive.html
+sheet.html
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Zip files
+*.zip

@@ -1,0 +1,421 @@
+This app does not ask the user to paste a CraftWorld JWT manually in the browser. Instead, the browser signs in with a Ronin wallet, the server exchanges that wallet proof for a CraftWorld/Firebase token, and then the browser sends that token back to the app’s API routes as a normal Authorization: Bearer ... token.
+The important backend constants are:
+CW_GRAPHQL_URL = "https://craft-world.gg/graphql"
+CW_APP_VERSION = "1.11.0"
+CW_FIREBASE_API_KEY = "..."
+CW_IDENTITY_SIGNIN_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=..."
+Don’t click any links
+No need
+
+
+Those constants define the CraftWorld GraphQL endpoint, the app-version header CraftWorld expects, and the Firebase Identity Toolkit endpoint used to exchange a CraftWorld custom token for a Firebase idToken.
+High-level flow
+
+Browser connects a Ronin wallet
+
+When the user clicks connect, the frontend normalizes the wallet address, ensures the user is on Ronin, and then asks this app’s backend for a CraftWorld nonce:
+POST /api/cw/get_nonce
+{
+  "walletAddress": "0x..."
+}
+The frontend code does that here.
+The backend endpoint for that route is registered in craftworld_tools/routes/api_cw_auth_legacy.py. The route /api/cw/get_nonce delegates to the legacy implementation in app.py.
+The actual backend handler calls CraftWorld GraphQL with this query:
+query($walletAddress: String!) {
+  getNonce(walletAddress: $walletAddress) { nonce }
+}
+That code is in api_cw_get_nonce. It tries wallet-address candidates, reads data.getNonce.nonce, and returns it to the browser.
+Once the browser receives the nonce, it asks the wallet to sign it using personal_sign:
+const signature = await provider.request({
+  method: 'personal_sign',
+  params: [nonceData.nonce, providerWalletAddress || walletAddress],
+});
+That signature proves the user controls the wallet address.
+After signing the nonce, the browser sends the wallet address and signature to:
+POST /api/cw/login_for_custom_token
+{
+  "walletAddress": "0x...",
+  "signature": "0x..."
+}
+The frontend does that here.
+-
+
+
+The backend route /api/cw/login_for_custom_token is registered in the CraftWorld auth wrapper module and delegates to the legacy app.py handler.
+The backend then calls CraftWorld GraphQL with this mutation:
+mutation LoginForCustomToken($signature: String!, $walletAddress: String!) {
+  loginForCustomToken(signature: $signature, walletAddress: $walletAddress) {
+    customToken
+  }
+}
+If CraftWorld accepts the signature, it returns a customToken. The backend returns that token to the browser.
+-
+
+
+
+The CraftWorld custom token is not the final token used for normal API calls. The browser sends the custom token to this app:
+POST /api/cw/signin_with_custom_token
+{
+  "customToken": "..."
+}
+The frontend does this right after receiving customToken.
+-
+
+The backend posts that custom token to Firebase Identity Toolkit:
+requests.post(
+    CW_IDENTITY_SIGNIN_URL,
+    json={"token": custom_token, "returnSecureToken": True},
+    headers={"Content-Type": "application/json"},
+    timeout=20,
+)
+Firebase returns an idToken, refreshToken, and expiresIn. The backend returns those to the browser.
+After successful Firebase sign-in, the frontend stores the Firebase idToken in local storage under both:
+cw_idToken
+cw_token
+In my app, cw_token is the value that gets sent to backend API routes. The frontend intentionally sets both idToken and token to signinData.idToken.
+Then it stores a wallet-specific session entry containing:
+{
+  token: signinData.idToken,
+  idToken: signinData.idToken,
+  refreshToken: signinData.refreshToken,
+  expiresAt,
+  uid
+}
+That wallet session is written with upsertWalletSession.
+The storage keys are defined near the top of the browser auth script:
+const ID_TOKEN_KEY = 'cw_idToken';
+const CW_TOKEN_KEY = 'cw_token';
+const REFRESH_TOKEN_KEY = 'cw_refreshToken';
+const EXPIRES_AT_KEY = 'cw_expiresAt';
+const WALLET_KEY = 'cw_wallet';
+const CW_UID_KEY = 'cw_uid';
+Matt | ADL | BLOCK #0080 [DYNO],  — 0:24
+
+
+There is more if you would like to keep going
+Things are about to get juicy
+
+
+
+How API calls use the Firebase token
+
+Browser side
+
+Whenever the frontend needs to call an authenticated API route, it reads cw_token from local storage:
+function getCwToken() {
+  const raw = String(localStorage.getItem(CW_TOKEN_KEY) || '').trim();
+  if (!raw) return '';
+  if (raw.toLowerCase().startsWith('bearer ')) {
+    return raw.slice(7).trim();
+  }
+  return raw;
+}
+That means the browser supports either a raw token or a string like Bearer <token>, but it normalizes it before use.
+The generic authenticated fetch helper then attaches the token like this:
+headers.set('Authorization', Bearer ${token});
+the important rule is:
+Authorization: Bearer <firebase idToken>
+-
+
+
+
+⸻
+
+Server side
+
+The backend extracts the token from the Authorization header using:
+extract_bearer_token(request.headers.get("Authorization"))
+That helper only accepts the standard Bearer <token> form.
+Then the backend normalizes the token before sending it to CraftWorld. The normalizer does something important:
+if value.startswith("jwt"):
+    return value
+if value.count(".") >= 2:
+    return f"jwt{value}"
+return value
+So if the browser sends a Firebase JWT like:
+eyJhbGciOi...
+the server converts it to:
+jwt_eyJhbGciOi...
+before calling CraftWorld.
+That is important because CraftWorld appears to expect the Firebase token to be prefixed with jwt_ when used as a CraftWorld bearer token.
+
+⸻
+
+How the server calls CraftWorld GraphQL
+
+All low-level CraftWorld GraphQL calls eventually build headers like this:
+headers = {
+    "Authorization": f"Bearer {normalized_token}",
+    "Content-Type": "application/json",
+    "x-app-version": CW_APP_VERSION,
+}
+Then the server posts JSON to:
+https://craft-world.gg/graphql
+with
+{
+  "query": query,
+  "variables": variables
+}
+That is implemented in call_graphql_with_jwt.
+The higher-level call_graphql helper either uses the per-user bearer token passed by the browser or falls back to the server environment variable CRAFTWORLD_JWT. For browser-authenticated calls, you want the per-user bearer_token path.
+If CraftWorld returns GraphQL errors, the app raises an error instead of silently continuing.
+⸻
+
+How to call account status, mastery, and workshop
+
+The app has several authenticated backend routes that accept the Firebase/CraftWorld token from the browser.
+
+Account status
+
+The account-status route is registered as:
+@app.route("/api/account_status")
+It reads the token from the Authorization header, and if present, calls fetch_account_status_for_token. If no browser token is present, it falls back to the server/env JWT behavior.
+The token-aware account status helper normalizes the token, caches by hashed token for 5 seconds, calls CraftWorld’s account status query, and returns fields like power, msUntilRefill, refillSeconds, refillHMS, and updatedAt.
+
+
+
+The underlying GraphQL query is:
+query AccountStatus {
+  account {
+    power
+    powerMillisecondsUntilRefill
+    powerLastRefill
+    updatedAt
+  }
+}
+Example browser call:
+const token = localStorage.getItem('cw_token');
+
+const res = await fetch('/api/account_status', {
+  headers: {
+    Authorization: Bearer ${token},
+  },
+});
+
+const data = await res.json();
+console.log(data);
+⸻
+
+Mastery/proficiencies
+
+The frontend calls:
+Matt | ADL | BLOCK #0080 [DYNO],  — 0:36
+GET /api/account_proficiencies
+Authorization: Bearer <token>
+That is implemented here.
+The backend route extracts and normalizes the bearer token, calls fetch_proficiencies(bearer_token=jwt_token), and returns a sorted array of symbols with collectedAmount and claimedLevel.
+The GraphQL query for proficiencies is:
+query {
+  account {
+    proficiencies { symbol collectedAmount claimedLevel }
+  }
+}
+Example:
+const token = localStorage.getItem('cw_token');
+
+const res = await fetch('/api/account_proficiencies', {
+  headers: {
+    Authorization: Bearer ${token},
+  },
+});
+
+const data = await res.json();
+console.log(data.proficiencies);
+⸻
+
+Workshop levels
+
+The frontend calls:
+GET /api/account_workshop
+Authorization: Bearer <token>
+That is implemented here.
+The backend route extracts and normalizes the bearer token, calls fetch_workshop_levels(bearer_token=jwt_token), and returns a sorted array of workshop symbols and levels.
+The GraphQL query is:
+query {
+  account {
+    workshop { symbol level }
+  }
+}
+Example:
+const token = localStorage.getItem('cw_token');
+
+const res = await fetch('/api/account_workshop', {
+  headers: {
+    Authorization: Bearer ${token},
+  },
+});
+
+const data = await res.json();
+console.log(data.workshop);
+⸻
+
+How the app gets the CraftWorld UID
+
+To call fetchCraftWorld(uid: ID!), you need a CraftWorld UID.
+
+During Firebase sign-in, after the backend receives the idToken, it tries to resolve the CraftWorld UID by calling CraftWorld account identity data. If that fails, it falls back to decoding the JWT payload.
+The reusable identity service does the same thing:
+    
+Normalize token.
+Call CraftWorld account identity queries.
+Try extracting UID from account.uid, account.id, linked accounts, or trade account.
+Fall back to extracting UID from the JWT payload.
+.
+
+The UID extraction helper can pull the UID from direct fields, linked account details, trade account fields, or JWT payload fields such as uid, user_id, or sub.
+.
+The frontend also has an /api/account_uid call. It uses the generic authFetch, so the token is automatically sent as Authorization: Bearer <token>.
+.
+
+The /api/account_uid route is registered along with /api/account_proficiencies and /api/account_workshop.
+⸻
+
+How to call aggregate CraftWorld config / fetchCraftWorld
+
+The repo’s main “aggregate CraftWorld config” call is the GraphQL fetchCraftWorld(uid: ID!) query.
+
+The helper is:
+THIS IS THE BIG ONE!!!!☝️
+def fetch_craftworld(uid: str) -> Dict[str, Any]:
+    query = """
+    query FetchCraftWorld($uid: ID!) {
+      fetchCraftWorld(uid: $uid) {
+        landPlots {
+          areas {
+            symbol
+            factories {
+              factory {
+                level
+                definition { id }
+              }
+            }
+          }
+        }
+        mines {
+          level
+          definition { id }
+        }
+        dynos {
+          meta { displayName rarity }
+          production { amount symbol }
+        }
+        resources {
+          symbol
+          amount
+        }
+      }
+    }
+    """
+    data = call_graphql(query, {"uid": uid})
+    return data["fetchCraftWorld"]
+Important detail: this helper currently calls call_graphql(query, {"uid": uid}) without passing a per-user bearer token. That means it uses the server fallback CRAFTWORLD_JWT from the environment.
+
+
+
+2 OPTIONS, 
+⸻
+
+Option A: Call through your server using server-side CRAFTWORLD_JWT
+If the server has:
+export CRAFTWORLD_JWT="<valid CraftWorld/Firebase token>"
+then Python can call:
+from craftworld_api import fetch_craftworld
+
+uid = "craftworld-user-id"
+config = fetch_craftworld(uid)
+print(config)
+This works because fetch_craftworld(uid) falls back to get_jwt(), which reads CRAFTWORLD_JWT from the environment.
+
+—-
+
+Option B: Call CraftWorld GraphQL directly with the user’s Firebase token
+
+If your already has the Firebase idToken, you can call CraftWorld directly.
+
+The key rules are:
+    
+Use endpoint:
+ 
+https://craft-world.gg/graphql
+
+
+Add headers:
+Content-Type: application/json
+x-app-version: 1.11.0
+Authorization: Bearer jwt_<firebase idToken>
+If the token already starts with jwt, do not double-prefix it.
+If the token is a normal JWT with two dots, prefix it with jwt
+.
+
+That is exactly what this app’s token normalizer does.
+—-
+
+Example JavaScript: 
+function normalizeCraftWorldToken(token) {
+  const value = String(token  '').trim();
+  if (!value) throw new Error('Missing token');
+
+  if (value.startsWith('jwt_')) return value;
+
+  // Firebase JWTs normally have 3 dot-separated parts.
+  if ((value.match(/./g)  []).length >= 2) {
+    return jwt_${value};
+  }
+
+  return value;
+}
+
+async function fetchCraftWorldConfig({ idToken, uid }) {
+  const token = normalizeCraftWorldToken(idToken);
+
+  const query = 
+    query FetchCraftWorld($uid: ID!) {
+      fetchCraftWorld(uid: $uid) {
+        landPlots {
+          areas {
+            symbol
+            factories {
+              factory {
+                level
+                definition { id }
+              }
+            }
+          }
+        }
+        mines {
+          level
+          definition { id }
+        }
+        dynos {
+          meta { displayName rarity }
+          production { amount symbol }
+        }
+        resources {
+          symbol
+          amount
+        }
+      }
+    }
+  ;
+
+  const res = await fetch('https://craft-world.gg/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-app-version': '1.11.0',
+      Authorization: Bearer ${token},
+    },
+    body: JSON.stringify({
+      query,
+      variables: { uid },
+    }),
+  });
+
+  const body = await res.json();
+
+  if (!res.ok  body.errors) {
+    throw new Error(JSON.stringify(body.errors  body, null, 2));
+  }
+
+  return body.data.fetchCraftWorld;
+}

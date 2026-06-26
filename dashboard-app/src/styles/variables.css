@@ -1,0 +1,28 @@
+:root {
+  --bg-primary: #0a0112; /* Púrpura oscuro oficial del juego */
+  --bg-card: rgba(22, 9, 36, 0.85); /* Tarjetas oscuras translúcidas */
+  --bg-card-hover: rgba(35, 14, 56, 0.95);
+  --border-color: rgba(250, 64, 96, 0.3); /* Borde rosa neón más pronunciado */
+  --border-focus: #FA4060; /* Rosa neón oficial */
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #d8b4fe; /* Púrpura claro */
+  --text-muted: #a78bfa; /* Violeta medio */
+  
+  --color-blue: #00f0ff; /* Cian neón */
+  --color-green: #39ff14; /* Verde neón */
+  --color-purple: #c084fc;
+  --color-orange: #ff9e00; /* Naranja neón */
+  --color-pink: #FA4060; /* Rosa neón */
+  --color-red: #f87171;
+  
+  --shadow-neon: 0 0 15px rgba(250, 64, 96, 0.35);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.8);
+  
+  --font-main: 'Outfit', sans-serif;
+  --font-title: 'TheImpostor', 'Orbitron', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+}
