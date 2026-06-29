@@ -1,13 +1,7 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from '../utils/i18n';
 
 type ResourceAmount = { symbol?: string; amount?: number };
-
-const CATEGORIES = [
-  { key: 'ALL', label: 'Todos' },
-  { key: 'BASIC', label: 'Básicos' },
-  { key: 'PROCESSED', label: 'Procesados' },
-  { key: 'KEYS', label: 'Llaves' },
-] as const;
 
 const CATEGORY_MAP: Record<string, string> = {
   COIN: 'BASIC', EARTH: 'BASIC', WATER: 'BASIC', FIRE: 'BASIC',
@@ -43,8 +37,16 @@ function getResourceImage(symbol?: string) {
 }
 
 export default function OLEDInventoryPanel({ inventory }: { inventory: ResourceAmount[] }) {
+  const { language } = useTranslation();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('ALL');
+
+  const categories = useMemo(() => [
+    { key: 'ALL', label: language === 'es' ? 'Todos' : 'All' },
+    { key: 'BASIC', label: language === 'es' ? 'Básicos' : 'Basic' },
+    { key: 'PROCESSED', label: language === 'es' ? 'Procesados' : 'Processed' },
+    { key: 'KEYS', label: language === 'es' ? 'Llaves' : 'Keys' },
+  ], [language]);
 
   const filtered = useMemo(() => {
     return inventory.filter((item) => {
@@ -78,7 +80,7 @@ export default function OLEDInventoryPanel({ inventory }: { inventory: ResourceA
             style={{ fontFamily: "'Press Start 2P', monospace" }}
             className="text-[12px] sm:text-[14px] md:text-[17px] tracking-wider text-white uppercase leading-none"
           >
-            RESUMEN DE INVENTARIO
+            {language === 'es' ? 'RESUMEN DE INVENTARIO' : 'INVENTORY SUMMARY'}
           </h1>
           <span className="text-[10px] bg-white/10 text-gray-300 font-bold px-3 py-1 rounded-[16px] uppercase tracking-wider">
             OLED FLAT
@@ -91,7 +93,7 @@ export default function OLEDInventoryPanel({ inventory }: { inventory: ResourceA
           <div className="relative w-full md:max-w-xs">
             <input
               type="text"
-              placeholder="Buscar recurso..."
+              placeholder={language === 'es' ? 'Buscar recurso...' : 'Search resource...'}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{
@@ -106,7 +108,7 @@ export default function OLEDInventoryPanel({ inventory }: { inventory: ResourceA
           </div>
           {/* Tabs */}
           <div className="flex gap-1.5 w-full md:w-auto overflow-x-auto">
-            {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <button
                 key={cat.key}
                 onClick={() => setCategory(cat.key)}
@@ -161,7 +163,7 @@ export default function OLEDInventoryPanel({ inventory }: { inventory: ResourceA
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-10 text-center text-gray-500">
-            <p className="text-xs">No se encontraron recursos.</p>
+            <p className="text-xs">{language === 'es' ? 'No se encontraron recursos.' : 'No resources found.'}</p>
           </div>
         )}
       </div>
@@ -170,10 +172,10 @@ export default function OLEDInventoryPanel({ inventory }: { inventory: ResourceA
       <div className="w-full px-6 sm:px-8 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
         <div className="text-left flex flex-col">
           <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold leading-none">
-            Inventario Activo
+            {language === 'es' ? 'Inventario Activo' : 'Active Inventory'}
           </span>
           <div className="text-[12px] text-gray-300 font-medium mt-1">
-            Elementos: <span className="text-white font-extrabold">{activeCount}/{inventory.length}</span>
+            {language === 'es' ? 'Elementos:' : 'Items:'} <span className="text-white font-extrabold">{activeCount}/{inventory.length}</span>
           </div>
         </div>
       </div>
