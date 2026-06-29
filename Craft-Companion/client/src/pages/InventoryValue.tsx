@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Card from '../components/Card';
 import Layout from '../components/Layout';
+import { useTranslation } from '../utils/i18n';
 import { SkeletonSingleColumn } from '../components/Skeleton';
 import { getCraftworldHome, getCraftworldQuote } from '../services/api';
 
@@ -43,6 +44,60 @@ function getResourceImage(symbol?: string) {
   return `/assets/resources/${formattedSymbol}.png`;
 }
 
+function formatFactoryName(symbol: string, lang: string): string {
+  const normalized = String(symbol || '').trim().toUpperCase();
+  if (lang === 'es') {
+    switch (normalized) {
+      case 'STEEL': return 'Acero';
+      case 'WOOD': return 'Madera';
+      case 'WATER': return 'Agua';
+      case 'ALGAE': return 'Alga';
+      case 'BOLTS': return 'Pernos';
+      case 'BONESOUP': return 'Sopa de Huesos';
+      case 'CEMENT': return 'Cemento';
+      case 'CERAMICKEY': return 'Llave Cerámica';
+      case 'CERAMICS': return 'Cerámicas';
+      case 'CLAY': return 'Arcilla';
+      case 'COPPER': return 'Cobre';
+      case 'DYNAMITE': return 'Dinamita';
+      case 'EARTH': return 'Tierra';
+      case 'EXPLOSIVES': return 'Explosivos';
+      case 'FERTILIZER': return 'Fertilizante';
+      case 'FIRE': return 'Fuego';
+      case 'FISH': return 'Pescado';
+      case 'GLASS': return 'Vidrio';
+      case 'GOLD': return 'Oro';
+      case 'GRAIN': return 'Grano';
+      case 'IRON': return 'Hierro';
+      case 'LEATHER': return 'Cuero';
+      case 'LIMESTONE': return 'Caliza';
+      case 'MUD': return 'Lodo';
+      case 'OXYGEN': return 'Oxígeno';
+      case 'PAPER': return 'Papel';
+      case 'PLASTIC': return 'Plástico';
+      case 'SAND': return 'Arena';
+      case 'SCREWS': return 'Tornillos';
+      case 'SILICA': return 'Sílice';
+      case 'STONE': return 'Piedra';
+      case 'SULFUR': return 'Azufre';
+      case 'TEXTILE': return 'Textil';
+      case 'VEGETABLES': return 'Vegetales';
+      case 'GAS': return 'Gas';
+      case 'OIL': return 'Petróleo';
+      case 'HEAT': return 'Calor';
+      case 'ACID': return 'Ácido';
+      case 'SEAWATER': return 'Agua de Mar';
+      case 'FUEL': return 'Combustible';
+      case 'COAL': return 'Carbón';
+      case 'AIR': return 'Aire';
+      default:
+        return symbol.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+    }
+  } else {
+    return symbol.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  }
+}
+
 function normalizeInventory(resources: ResourceAmount[]) {
   const bySymbol = new Map<string, number>();
 
@@ -59,6 +114,7 @@ function normalizeInventory(resources: ResourceAmount[]) {
 }
 
 export default function InventoryValue() {
+  const { language } = useTranslation();
   const [inventory, setInventory] = useState<Array<{ symbol: string; amount: number }>>([]);
   const [quotes, setQuotes] = useState<QuoteMap>({});
   const [loading, setLoading] = useState(true);
@@ -169,63 +225,110 @@ export default function InventoryValue() {
   return (
     <Layout>
       <div className="space-y-4">
-        <Card title="Inventory Value">
-          <div className="space-y-3">
-            <p className="text-sm text-slate-300">
-              This estimates the COIN value of every resource in your inventory using live Craft World quotes.
-            </p>
-            {quoteLoading && (
-              <p className="text-sm text-slate-400">
-                Loading inventory prices in parallel batches... {quotedCount}/{quoteRequests.length} quotes checked.
+        <div className="max-w-[720px] mx-auto w-full">
+          <Card title={language === 'es' ? 'Valor de Inventario' : 'Inventory Value'}>
+            <div className="space-y-3">
+              <p className="text-sm text-slate-300">
+                {language === 'es'
+                  ? 'Esto estima el valor en monedas (COIN) de cada recurso en tu inventario usando cotizaciones en vivo del mercado.'
+                  : 'This estimates the COIN value of every resource in your inventory using live Craft World quotes.'}
               </p>
-            )}
-            {error && <p className="text-sm text-red-300">{error}</p>}
-            {quoteError && <p className="text-sm text-red-300">{quoteError}</p>}
-            {!inventory.length && <p className="text-sm text-slate-400">No inventory resources were found for this account yet.</p>}
-          </div>
-        </Card>
+              {quoteLoading && (
+                <p className="text-sm text-slate-400">
+                  {language === 'es'
+                    ? `Cargando cotizaciones de inventario... ${quotedCount}/${quoteRequests.length} cotizaciones comprobadas.`
+                    : `Loading inventory prices in parallel batches... ${quotedCount}/${quoteRequests.length} quotes checked.`}
+                </p>
+              )}
+              {error && <p className="text-sm text-red-300">{error}</p>}
+              {quoteError && <p className="text-sm text-red-300">{quoteError}</p>}
+              {!inventory.length && (
+                <p className="text-sm text-slate-400">
+                  {language === 'es' ? 'No se encontraron recursos en el inventario para esta cuenta todavía.' : 'No inventory resources were found for this account yet.'}
+                </p>
+              )}
+            </div>
+          </Card>
+        </div>
 
         <div className="grid gap-3 md:grid-cols-3">
-          <Card title="Quoted Inventory Value">{formatNumber(totalValue)} COIN</Card>
-          <Card title="Resources Found">{inventory.length.toLocaleString()}</Card>
-          <Card title="Highest Value Resource">
-            {highestValueRow ? (
-              <div className="flex items-center gap-2">
-                {getResourceImage(highestValueRow.symbol) && <img src={getResourceImage(highestValueRow.symbol)} alt={highestValueRow.symbol} className="h-6 w-6 object-contain" />}
-                <span>{highestValueRow.symbol}: {formatNumber(highestValueRow.value)} COIN</span>
-              </div>
-            ) : 'Waiting for prices'}
+          <Card title={language === 'es' ? 'Valor de Inventario Cotizado' : 'Quoted Inventory Value'}>
+            <div className="text-center font-bold text-lg py-1 text-emerald-300">
+              {formatNumber(totalValue)} COIN
+            </div>
+          </Card>
+
+          <Card title={language === 'es' ? 'Recursos Encontrados' : 'Resources Found'}>
+            <div className="text-center font-bold text-lg py-1">
+              {inventory.length.toLocaleString()}
+            </div>
+          </Card>
+
+          <Card title={language === 'es' ? 'Recurso de Mayor Valor' : 'Highest Value Resource'}>
+            <div className="flex flex-col items-center justify-center py-1">
+              {highestValueRow ? (
+                <div className="flex items-center gap-2 font-semibold">
+                  {getResourceImage(highestValueRow.symbol) && (
+                    <img 
+                      src={getResourceImage(highestValueRow.symbol)} 
+                      alt={highestValueRow.symbol} 
+                      className="h-6 w-6 object-contain" 
+                      style={{ borderRadius: 'var(--radius-resource-item)' }}
+                    />
+                  )}
+                  <span>{formatFactoryName(highestValueRow.symbol, language)}: {formatNumber(highestValueRow.value)} COIN</span>
+                </div>
+              ) : (
+                <span className="text-slate-400 text-sm">{language === 'es' ? 'Esperando precios' : 'Waiting for prices'}</span>
+              )}
+            </div>
           </Card>
         </div>
 
         {valueRows.length > 0 && (
-          <Card title="Resources Ranked by COIN Value">
+          <Card title={language === 'es' ? 'Recursos Clasificados por Valor COIN' : 'Resources Ranked by COIN Value'}>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px] text-left text-sm">
                 <thead className="text-slate-300">
                   <tr>
-                    <th className="p-2">Rank</th>
-                    <th className="p-2">Resource</th>
-                    <th className="p-2">Amount Owned</th>
-                    <th className="p-2">Estimated COIN Value</th>
-                    <th className="p-2">Price Impact</th>
-                    <th className="p-2">Status</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Rango' : 'Rank'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Recurso' : 'Resource'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Cantidad de Propiedad' : 'Amount Owned'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Valor COIN Estimado' : 'Estimated COIN Value'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Impacto de Precio' : 'Price Impact'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Estado' : 'Status'}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {valueRows.map((row, index) => {
                     const img = getResourceImage(row.symbol);
+                    const resourceName = formatFactoryName(row.symbol, language);
                     return (
                       <tr key={row.symbol} className="border-t border-slate-800">
-                        <td className="p-2">{index + 1}</td>
-                        <td className="p-2 font-semibold flex items-center gap-2">
-                          {img && <img src={img} alt={row.symbol} className="h-5 w-5 object-contain" />}
-                          <span>{row.symbol}</span>
+                        <td className="p-2 whitespace-nowrap">{index + 1}</td>
+                        <td className="p-2 font-semibold whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            {img && (
+                              <img 
+                                src={img} 
+                                alt={row.symbol} 
+                                className="h-5 w-5 object-contain" 
+                                style={{ borderRadius: 'var(--radius-resource-item)' }}
+                              />
+                            )}
+                            <span>{resourceName}</span>
+                          </div>
                         </td>
-                        <td className="p-2">{formatNumber(row.amount)}</td>
-                        <td className="p-2 text-emerald-300">{row.quote ? `${formatNumber(row.value)} COIN` : 'Waiting'}</td>
-                        <td className="p-2">{row.quote ? `${formatNumber(row.impact, 2)}%` : 'Waiting'}</td>
-                        <td className="p-2">{row.quote ? 'Ready' : 'Waiting for quote'}</td>
+                        <td className="p-2 whitespace-nowrap">{formatNumber(row.amount)}</td>
+                        <td className="p-2 whitespace-nowrap text-emerald-300">
+                          {row.quote ? `${formatNumber(row.value)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                        </td>
+                        <td className="p-2 whitespace-nowrap">
+                          {row.quote ? `${formatNumber(row.impact, 2)}%` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                        </td>
+                        <td className="p-2 whitespace-nowrap">
+                          {row.quote ? (language === 'es' ? 'Listo' : 'Ready') : (language === 'es' ? 'Buscando cotización' : 'Waiting for quote')}
+                        </td>
                       </tr>
                     );
                   })}

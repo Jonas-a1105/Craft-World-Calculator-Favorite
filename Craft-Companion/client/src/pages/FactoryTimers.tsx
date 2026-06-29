@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Card from '../components/Card';
 import Layout from '../components/Layout';
+import { useTranslation } from '../utils/i18n';
 import { SkeletonTwoCards } from '../components/Skeleton';
 import { getCraftworldHome } from '../services/api';
 import {
@@ -40,6 +41,77 @@ type StoredTimer = {
 
 const STORAGE_KEY = 'craftworld.factoryTimers.v1';
 
+function formatFactoryName(symbol: string, lang: string): string {
+  const normalized = String(symbol || '').trim().toUpperCase();
+  if (lang === 'es') {
+    switch (normalized) {
+      case 'STEEL': return 'Acero';
+      case 'WOOD': return 'Madera';
+      case 'WATER': return 'Agua';
+      case 'ALGAE': return 'Alga';
+      case 'BOLTS': return 'Pernos';
+      case 'BONESOUP': return 'Sopa de Huesos';
+      case 'CEMENT': return 'Cemento';
+      case 'CERAMICKEY': return 'Llave Cerámica';
+      case 'CERAMICS': return 'Cerámicas';
+      case 'CLAY': return 'Arcilla';
+      case 'COPPER': return 'Cobre';
+      case 'DYNAMITE': return 'Dinamita';
+      case 'EARTH': return 'Tierra';
+      case 'EXPLOSIVES': return 'Explosivos';
+      case 'FERTILIZER': return 'Fertilizante';
+      case 'FIRE': return 'Fuego';
+      case 'FISH': return 'Pescado';
+      case 'GLASS': return 'Vidrio';
+      case 'GOLD': return 'Oro';
+      case 'GRAIN': return 'Grano';
+      case 'IRON': return 'Hierro';
+      case 'LEATHER': return 'Cuero';
+      case 'LIMESTONE': return 'Caliza';
+      case 'MUD': return 'Lodo';
+      case 'OXYGEN': return 'Oxígeno';
+      case 'PAPER': return 'Papel';
+      case 'PLASTIC': return 'Plástico';
+      case 'SAND': return 'Arena';
+      case 'SCREWS': return 'Tornillos';
+      case 'SILICA': return 'Sílice';
+      case 'STONE': return 'Piedra';
+      case 'SULFUR': return 'Azufre';
+      case 'TEXTILE': return 'Textil';
+      case 'VEGETABLES': return 'Vegetales';
+      case 'GAS': return 'Gas';
+      case 'OIL': return 'Petróleo';
+      case 'HEAT': return 'Calor';
+      case 'ACID': return 'Ácido';
+      case 'SEAWATER': return 'Agua de Mar';
+      case 'FUEL': return 'Combustible';
+      case 'COAL': return 'Carbón';
+      case 'AIR': return 'Aire';
+      default:
+        return symbol.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+    }
+  } else {
+    return symbol.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  }
+}
+
+function formatPlotName(plotName: string, lang: string): string {
+  const normalized = String(plotName || '').trim().toUpperCase();
+  if (lang === 'es') {
+    if (normalized.includes('EARTH_PLOT')) return 'Fábrica de Tierra';
+    if (normalized.includes('BLUEPRINT_PLOT_A')) return 'Plano A';
+    if (normalized.includes('BLUEPRINT_PLOT_B')) return 'Plano B';
+    if (normalized.includes('BLUEPRINT_PLOT_C')) return 'Plano C';
+    if (normalized.includes('BLUEPRINT_PLOT_D')) return 'Plano D';
+    if (normalized.includes('BLUEPRINT_PLOT_E')) return 'Plano E';
+    if (normalized.includes('BLUEPRINT_PLOT_F')) return 'Plano F';
+    if (normalized.includes('BLUEPRINT_PLOT_G')) return 'Plano G';
+    if (normalized.includes('BLUEPRINT_PLOT_H')) return 'Plano H';
+    return plotName;
+  }
+  return plotName;
+}
+
 function fmt(value: number, digits = 2) {
   return Number.isFinite(value) ? value.toLocaleString(undefined, { maximumFractionDigits: digits }) : '0';
 }
@@ -48,8 +120,8 @@ function formatSeconds(seconds: number) {
   return formatDurationFromMinutes(Math.max(seconds, 0) / 60);
 }
 
-function formatTimeToEnd(seconds: number, ended: boolean) {
-  return ended ? 'Ready' : formatSeconds(seconds);
+function formatTimeToEnd(seconds: number, ended: boolean, lang: string) {
+  return ended ? (lang === 'es' ? 'Listo' : 'Ready') : formatSeconds(seconds);
 }
 
 function getFactoryImage(symbol?: string) {
@@ -68,14 +140,14 @@ function getResourceImage(symbol?: string) {
   return `/assets/resources/${formattedSymbol}.png`;
 }
 
-function formatTimestamp(value?: string) {
-  return value ? new Date(value).toLocaleString() : 'Not available';
+function formatTimestamp(value?: string, lang?: string) {
+  return value ? new Date(value).toLocaleString() : (lang === 'es' ? 'No disponible' : 'Not available');
 }
 
-function timerSource(factory: OwnedFactory, timer?: StoredTimer) {
-  if (timer?.manual && timer.startedAt) return 'Manual override';
+function timerSource(factory: OwnedFactory, timer?: StoredTimer, lang?: string) {
+  if (timer?.manual && timer.startedAt) return lang === 'es' ? 'Manual (Sobrescribir)' : 'Manual override';
   if (factory.startedAt) return 'Craft World API';
-  return 'Missing start time';
+  return lang === 'es' ? 'Falta hora de inicio' : 'Missing start time';
 }
 
 function timerStartedAt(factory: OwnedFactory, timer?: StoredTimer) {
@@ -108,7 +180,145 @@ function saveTimers(timers: Record<string, StoredTimer>) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(timers));
 }
 
+interface CircularProgressProps {
+  progress: number;
+  remainingSeconds: number;
+  ended: boolean;
+  paused: boolean;
+  language: string;
+  uniqueId: string;
+}
+
+function CircularProgress({ progress, remainingSeconds, ended, paused, language, uniqueId }: CircularProgressProps) {
+  const safeId = useMemo(() => `clip-${uniqueId.replace(/[^a-zA-Z0-9]/g, '-')}`, [uniqueId]);
+
+  const wavyPathStatic = useMemo(() => {
+    const cx = 50;
+    const cy = 50;
+    const r = 36;
+    const wavesCount = 12; // Fewer waves to make them smoother and wider
+    const amplitude = 2.0; // Perfect visual amplitude for rounded wave crests
+    const totalSegments = wavesCount * 2;
+    const points = [];
+    
+    const startX = cx + r;
+    const startY = cy;
+    points.push(`M ${startX.toFixed(2)} ${startY.toFixed(2)}`);
+    
+    for (let i = 0; i < totalSegments; i++) {
+      const angle2 = ((i + 1) * 2 * Math.PI) / totalSegments;
+      const angleMid = ((i + 0.5) * 2 * Math.PI) / totalSegments;
+      
+      const isPeak = i % 2 === 0;
+      const controlR = r + (isPeak ? amplitude : -amplitude);
+      
+      const cx_pt = cx + controlR * Math.cos(angleMid);
+      const cy_pt = cy + controlR * Math.sin(angleMid);
+      
+      const x2 = cx + r * Math.cos(angle2);
+      const y2 = cy + r * Math.sin(angle2);
+      
+      points.push(`Q ${cx_pt.toFixed(2)} ${cy_pt.toFixed(2)}, ${x2.toFixed(2)} ${y2.toFixed(2)}`);
+    }
+    
+    return points.join(' ') + ' Z';
+  }, []);
+
+  const formatTimeShort = () => {
+    if (remainingSeconds <= 0) return '0s';
+    const h = Math.floor(remainingSeconds / 3600);
+    const m = Math.floor((remainingSeconds % 3600) / 60);
+    const s = Math.floor(remainingSeconds % 60);
+    if (h > 0) return `${h}h${m}m`;
+    if (m > 0) return `${m}m`;
+    return `${s}s`;
+  };
+
+  const percentage = Math.max(0, Math.min(100, progress));
+
+  return (
+    <div className="relative w-[72px] h-[72px] shrink-0 mx-auto select-none">
+      <style>{`
+        @keyframes slither-${safeId} {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+        .slithering-path-${safeId} {
+          animation: slither-${safeId} 3s linear infinite;
+          transform-origin: center;
+        }
+      `}</style>
+      <svg className="w-full h-full" viewBox="0 0 100 100">
+        <defs>
+          {/* Mask to restrict progress length strictly to the stroke outline */}
+          <mask id={safeId}>
+            <circle
+              cx="50"
+              cy="50"
+              r="36"
+              fill="none"
+              stroke="white"
+              className="-rotate-90 origin-center"
+              strokeWidth="12"
+              pathLength="100"
+              strokeDasharray="100"
+              strokeDashoffset={100 - percentage}
+              strokeLinecap="round"
+              style={{ fill: 'none', stroke: 'white' }}
+            />
+          </mask>
+        </defs>
+        
+        {/* Background track circle */}
+        <circle
+          cx="50"
+          cy="50"
+          r="36"
+          fill="none"
+          className="stroke-white/[0.06] fill-none"
+          strokeWidth="3.5"
+          style={{ fill: 'none' }}
+        />
+        
+        {/* Wavy path, masked and animated */}
+        <path
+          d={wavyPathStatic}
+          fill="none"
+          className={`fill-none stroke-emerald-500 slithering-path-${safeId}`}
+          strokeWidth="4.5"
+          strokeLinecap="round"
+          mask={`url(#${safeId})`}
+          style={{
+            fill: 'none',
+            animationPlayState: paused || ended || percentage <= 0 ? 'paused' : 'running',
+          }}
+        />
+      </svg>
+      {/* Centered details */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+        <span className="text-[12px] font-black text-white leading-none tracking-tight">
+          {fmt(percentage, 0)}%
+        </span>
+        <span className="text-[9px] font-bold text-slate-400 mt-0.5 leading-none">
+          {paused ? (
+            <span className="text-yellow-500/90 font-black">{language === 'es' ? 'Pausa' : 'Pause'}</span>
+          ) : ended ? (
+            <span className="text-emerald-400 font-black">{language === 'es' ? 'Listo' : 'Ready'}</span>
+          ) : (
+            formatTimeShort()
+          )}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function FactoryTimers() {
+  const { language } = useTranslation();
   const [rows, setRows] = useState<FactoryDataRow[]>([]);
   const [home, setHome] = useState<HomeData | null>(null);
   const [timers, setTimers] = useState<Record<string, StoredTimer>>({});
@@ -164,13 +374,13 @@ export default function FactoryTimers() {
           cycle,
           status,
           cycleWindow,
-          source: timerSource(factory, storedTimer),
+          source: timerSource(factory, storedTimer, language),
           startedAt,
           estimatedCompleted: Math.max(0, Number(factory.unclaimedUnitsBeforeCurrentRun || 0)) + status.completedCycles,
         };
       })
       .filter((value): value is NonNullable<typeof value> => Boolean(value));
-  }, [home, now, rows, timers]);
+  }, [home, now, rows, timers, language]);
 
   function updateTimer(key: string, timer: StoredTimer) {
     const next = { ...timers, [key]: timer };
@@ -196,97 +406,139 @@ export default function FactoryTimers() {
   return (
     <Layout>
       <div className="space-y-4">
-        <Card title="Factory Timers">
-          <div className="space-y-2 text-sm text-slate-300">
-            <p>
-              Timers use Craft World API startedAt timestamps when available. Manual starts are still available as a local override.
-            </p>
-            <p className="text-slate-400">Last synced: {home?.lastSyncedAt ? new Date(home.lastSyncedAt).toLocaleString() : 'Not connected'}</p>
-            {error && <p className="text-red-300">{error}</p>}
-          </div>
-        </Card>
-
-        <Card title="Active Factories">
-          {timerRows.length ? (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[1220px] text-left text-sm">
-                <thead className="text-slate-300">
-                  <tr>
-                    <th className="p-2">Factory</th>
-                    <th className="p-2">Runtime</th>
-                    <th className="p-2">Source</th>
-                    <th className="p-2">Started</th>
-                    <th className="p-2">Ends</th>
-                    <th className="p-2">Time to End</th>
-                    <th className="p-2">Cycles / Hr</th>
-                    <th className="p-2">Cycles / Day</th>
-                    <th className="p-2">Remaining</th>
-                    <th className="p-2">Progress</th>
-                    <th className="p-2">Est. Complete</th>
-                    <th className="p-2">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {timerRows.map(({ key, factory, row, cycle, status, cycleWindow, source, startedAt, estimatedCompleted }) => {
-                    const factImg = getFactoryImage(row.token);
-                    return (
-                      <tr key={key} className="border-t border-slate-800">
-                        <td className="p-2 font-semibold">
-                          <div className="flex items-center gap-2">
-                            {factImg && <img src={factImg} alt={row.token} className="h-8 w-8 rounded border border-slate-700 bg-slate-900 object-contain p-0.5" />}
-                            <span>{factory.landPlotName || 'Unknown plot'} • {row.token} Lv {row.level}</span>
-                          </div>
-                        </td>
-                        <td className="p-2">{formatDurationFromMinutes(cycle.runtimeMinutes)}</td>
-                        <td className="p-2">{source}</td>
-                        <td className="p-2">{formatTimestamp(startedAt)}</td>
-                        <td className="p-2">{formatTimestamp(cycleWindow.endsAt)}</td>
-                        <td className="p-2">{cycleWindow.hasWindow ? formatTimeToEnd(cycleWindow.secondsUntilEnd, cycleWindow.ended) : 'Waiting for start time'}</td>
-                        <td className="p-2">{fmt(cycle.runsPerHour, 3)}</td>
-                        <td className="p-2">{fmt(cycle.runsPerDay, 2)}</td>
-                        <td className="p-2">
-                          {status.requiresStartTime ? 'Cycle countdown requires start time sync' : formatSeconds(status.remainingSeconds)}
-                          {status.paused ? ' (paused)' : ''}
-                        </td>
-                        <td className="p-2">
-                          <div className="h-2 w-32 rounded bg-slate-800">
-                            <div className="h-2 rounded bg-emerald-500" style={{ width: `${Math.min(status.progressPercent, 100)}%` }} />
-                          </div>
-                          <span className="text-xs text-slate-400">{fmt(status.progressPercent, 1)}%</span>
-                        </td>
-                        <td className="p-2">
-                          {estimatedCompleted}
-                          {factory.unclaimedUnitsBeforeCurrentRun ? (
-                            <span className="ml-1 text-xs text-slate-400">({factory.unclaimedUnitsBeforeCurrentRun} unclaimed before current)</span>
-                          ) : null}
-                        </td>
-                        <td className="p-2">
-                          <div className="flex flex-wrap gap-2">
-                            <button onClick={() => updateTimer(key, { startedAt: new Date().toISOString(), manual: true })} className="rounded bg-blue-600 px-3 py-1 font-semibold text-xs">Manual start</button>
-                            <button
-                              onClick={() => {
-                                const existing = timers[key];
-                                if (!existing?.manual || !existing.startedAt) return;
-                                updateTimer(key, existing.pausedAt ? { startedAt: existing.startedAt, manual: true } : { ...existing, pausedAt: new Date().toISOString(), manual: true });
-                              }}
-                              className="rounded bg-slate-700 px-3 py-1 font-semibold text-xs"
-                              disabled={!timers[key]?.manual}
-                            >
-                              {timers[key]?.pausedAt ? 'Resume' : 'Pause'}
-                            </button>
-                            <button onClick={() => resetTimer(key)} className="rounded bg-red-700 px-3 py-1 font-semibold text-xs">Use API</button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+        <div className="max-w-[720px] mx-auto w-full">
+          <Card title={language === 'es' ? 'Temporizadores de Fábricas' : 'Factory Timers'}>
+            <div className="space-y-2 text-sm text-slate-300">
+              <p>
+                {language === 'es'
+                  ? 'Los temporizadores usan las marcas de tiempo startedAt de la API de Craft World cuando están disponibles. El inicio manual sigue disponible como una opción local.'
+                  : 'Timers use Craft World API startedAt timestamps when available. Manual starts are still available as a local override.'}
+              </p>
+              <p className="text-slate-400">
+                {language === 'es' ? 'Última sincronización:' : 'Last synced:'}{' '}
+                {home?.lastSyncedAt ? new Date(home.lastSyncedAt).toLocaleString() : (language === 'es' ? 'No conectado' : 'Not connected')}
+              </p>
+              {error && <p className="text-red-300">{error}</p>}
             </div>
-          ) : (
-            <p className="text-sm text-slate-400">No matched live factories were found yet.</p>
-          )}
-        </Card>
+          </Card>
+        </div>
+
+        <div className="w-[95vw] max-w-[1800px] relative left-1/2 -translate-x-1/2">
+          <Card title={language === 'es' ? 'Fábricas Activas' : 'Active Factories'}>
+            {timerRows.length ? (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[1220px] text-left text-sm">
+                  <thead className="text-slate-300">
+                    <tr>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Fábrica' : 'Factory'}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ejecución' : 'Runtime'}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Origen' : 'Source'}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Iniciado' : 'Started'}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Finaliza' : 'Ends'}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Tiempo Restante' : 'Time to End'}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ciclos / Hora' : 'Cycles / Hr'}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ciclos / Día' : 'Cycles / Day'}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Por Finalizar' : 'Remaining'}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Progreso' : 'Progress'}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Estimado Completado' : 'Est. Complete'}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Acciones' : 'Actions'}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {timerRows.map(({ key, factory, row, cycle, status, cycleWindow, source, startedAt, estimatedCompleted }) => {
+                      const factImg = getFactoryImage(row.token);
+                      return (
+                        <tr key={key} className="border-t border-slate-800">
+                          <td className="p-2 font-semibold whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              {factImg && (
+                                <img 
+                                  src={factImg} 
+                                  alt={row.token} 
+                                  className="h-8 w-8 bg-slate-900 object-contain p-0.5" 
+                                  style={{ borderRadius: 'var(--radius-resource-item)' }}
+                                />
+                              )}
+                              <span>
+                                {formatPlotName(factory.landPlotName || '', language)} • {formatFactoryName(row.token, language)} {language === 'es' ? 'Nivel' : 'Lv'} {row.level}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="p-2 whitespace-nowrap">{formatDurationFromMinutes(cycle.runtimeMinutes)}</td>
+                          <td className="p-2 whitespace-nowrap">{source}</td>
+                          <td className="p-2 whitespace-nowrap">{formatTimestamp(startedAt, language)}</td>
+                          <td className="p-2 whitespace-nowrap">{formatTimestamp(cycleWindow.endsAt, language)}</td>
+                          <td className="p-2 whitespace-nowrap">
+                            {cycleWindow.hasWindow 
+                              ? formatTimeToEnd(cycleWindow.secondsUntilEnd, cycleWindow.ended, language) 
+                              : (language === 'es' ? 'Esperando hora de inicio' : 'Waiting for start time')}
+                          </td>
+                          <td className="p-2 whitespace-nowrap">{fmt(cycle.runsPerHour, 3)}</td>
+                          <td className="p-2 whitespace-nowrap">{fmt(cycle.runsPerDay, 2)}</td>
+                          <td className="p-2 whitespace-nowrap">
+                            {status.requiresStartTime 
+                              ? (language === 'es' ? 'La cuenta regresiva requiere sincronización' : 'Cycle countdown requires start time sync') 
+                              : formatSeconds(status.remainingSeconds)}
+                            {status.paused ? (language === 'es' ? ' (pausado)' : ' (paused)') : ''}
+                          </td>
+                          <td className="p-2 text-center">
+                            <CircularProgress 
+                              progress={status.progressPercent}
+                              remainingSeconds={status.remainingSeconds}
+                              ended={cycleWindow.ended}
+                              paused={status.paused}
+                              language={language}
+                              uniqueId={key}
+                            />
+                          </td>
+                          <td className="p-2 whitespace-nowrap">
+                            {estimatedCompleted}
+                            {factory.unclaimedUnitsBeforeCurrentRun ? (
+                              <span className="ml-1 text-xs text-slate-400">
+                                ({factory.unclaimedUnitsBeforeCurrentRun} {language === 'es' ? 'no reclamados antes de la actual' : 'unclaimed before current'})
+                              </span>
+                            ) : null}
+                          </td>
+                          <td className="p-2 whitespace-nowrap">
+                            <div className="flex flex-wrap gap-2">
+                              <button 
+                                onClick={() => updateTimer(key, { startedAt: new Date().toISOString(), manual: true })} 
+                                className="rounded-[8px] bg-blue-600 px-3 py-1.5 font-bold text-xs cursor-pointer hover:bg-blue-500 transition-colors"
+                              >
+                                {language === 'es' ? 'Inicio manual' : 'Manual start'}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  const existing = timers[key];
+                                  if (!existing?.manual || !existing.startedAt) return;
+                                  updateTimer(key, existing.pausedAt ? { startedAt: existing.startedAt, manual: true } : { ...existing, pausedAt: new Date().toISOString(), manual: true });
+                                }}
+                                className="rounded-[8px] bg-slate-700 px-3 py-1.5 font-bold text-xs cursor-pointer hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={!timers[key]?.manual}
+                              >
+                                {timers[key]?.pausedAt ? (language === 'es' ? 'Reanudar' : 'Resume') : (language === 'es' ? 'Pausar' : 'Pause')}
+                              </button>
+                              <button 
+                                onClick={() => resetTimer(key)} 
+                                className="rounded-[8px] bg-red-700 px-3 py-1.5 font-bold text-xs cursor-pointer hover:bg-red-650 transition-colors"
+                              >
+                                {language === 'es' ? 'Usar API' : 'Use API'}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-sm text-slate-400">
+                {language === 'es' ? 'Aún no se encontraron fábricas activas coincidentes.' : 'No matched live factories were found yet.'}
+              </p>
+            )}
+          </Card>
+        </div>
       </div>
     </Layout>
   );

@@ -16,6 +16,40 @@ export type FactoryDataRow = {
   upgrade_amount: number;
 };
 
+export const ACTIVE_RESOURCES = new Set([
+  'MUD',
+  'CLAY',
+  'SAND',
+  'COPPER',
+  'SEAWATER',
+  'HEAT',
+  'ALGAE',
+  'LAVA',
+  'CERAMICS',
+  'STEEL',
+  'OXYGEN',
+  'GLASS',
+  'GAS',
+  'STONE',
+  'STEAM',
+  'SCREWS',
+  'FUEL',
+  'CEMENT',
+  'OIL',
+  'ACID',
+  'SULFUR',
+  'PLASTICS',
+  'FIBERGLASS',
+  'ENERGY',
+  'HYDROGEN',
+  'DYNAMITE',
+  'BOLTS',
+  'KEY',
+  'CERAMICKEY',
+  'GLASSKEY',
+  'DYNOKEY'
+]);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '../../..');
@@ -68,27 +102,32 @@ function parseCsv(csv: string) {
   const [headerLine, ...dataLines] = lines;
   const headers = parseCsvLine(headerLine).map((header) => header.trim());
 
-  return dataLines.map((line) => {
-    const values = parseCsvLine(line);
-    const row = headers.reduce<Record<string, string>>((acc, header, index) => {
-      acc[header] = values[index] || '';
-      return acc;
-    }, {});
+  return dataLines
+    .map((line) => {
+      const values = parseCsvLine(line);
+      const row = headers.reduce<Record<string, string>>((acc, header, index) => {
+        acc[header] = values[index] || '';
+        return acc;
+      }, {});
 
-    return {
-      token: row.token?.trim().toUpperCase() || '',
-      level: parseNumber(row.level),
-      duration_min: parseNumber(row.duration_min),
-      output_token: row.output_token?.trim().toUpperCase() || '',
-      output_amount: parseNumber(row.output_amount),
-      input_token_1: row.input_token_1?.trim().toUpperCase() || '',
-      input_amount_1: parseNumber(row.input_amount_1),
-      input_token_2: row.input_token_2?.trim().toUpperCase() || '',
-      input_amount_2: parseNumber(row.input_amount_2),
-      upgrade_token: row.upgrade_token?.trim().toUpperCase() || '',
-      upgrade_amount: parseNumber(row.upgrade_amount),
-    };
-  });
+      return {
+        token: row.token?.trim().toUpperCase() || '',
+        level: parseNumber(row.level),
+        duration_min: parseNumber(row.duration_min),
+        output_token: row.output_token?.trim().toUpperCase() || '',
+        output_amount: parseNumber(row.output_amount),
+        input_token_1: row.input_token_1?.trim().toUpperCase() || '',
+        input_amount_1: parseNumber(row.input_amount_1),
+        input_token_2: row.input_token_2?.trim().toUpperCase() || '',
+        input_amount_2: parseNumber(row.input_amount_2),
+        upgrade_token: row.upgrade_token?.trim().toUpperCase() || '',
+        upgrade_amount: parseNumber(row.upgrade_amount),
+      };
+    })
+    .filter((row) => {
+      const tokenUpper = String(row.token || row.output_token || '').toUpperCase();
+      return ACTIVE_RESOURCES.has(tokenUpper);
+    });
 }
 
 export async function loadFactoryCsvData() {

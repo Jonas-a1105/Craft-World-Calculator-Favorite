@@ -325,44 +325,44 @@ export default function EmpireDashboard() {
                   
                   <div className="flex flex-wrap gap-2 text-[10.5px]">
                     <span 
-                      className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300"
+                      className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200"
                       style={{ borderRadius: 'var(--radius-resource-item)' }}
                     >
-                      <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Objetivo' : 'Target'}:</span>{' '}
+                      <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Objetivo' : 'Target'}:</span>{' '}
                       <strong className="text-white">{formatPlotName(bestBoostPlacement.plotName, language)} (Lv {bestBoostPlacement.level})</strong>
                     </span>
                     <span 
-                      className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300"
+                      className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200"
                       style={{ borderRadius: 'var(--radius-resource-item)' }}
                     >
-                      <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Produce' : 'Output'}:</span>{' '}
+                      <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Produce' : 'Output'}:</span>{' '}
                       <strong className="text-indigo-300">{formatFactoryName(bestBoostPlacement.outputToken, language)}</strong>
                     </span>
                   </div>
 
                   <div className="flex flex-wrap gap-2 text-[10.5px]">
                     <span 
-                      className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300 flex items-center gap-1"
+                      className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200 flex items-center gap-1"
                       style={{ borderRadius: 'var(--radius-resource-item)' }}
                     >
-                      <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Por Hora' : 'Per Hour'}:</span>
+                      <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Por Hora' : 'Per Hour'}:</span>
                       <strong className="text-emerald-400">{fmt(bestBoostPlacement.outputPerHour)} {formatFactoryName(bestBoostPlacement.outputToken, language)}/hr</strong>
                     </span>
                     <span 
-                      className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300 flex items-center gap-1"
+                      className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200 flex items-center gap-1"
                       style={{ borderRadius: 'var(--radius-resource-item)' }}
                     >
-                      <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Por Día' : 'Per Day'}:</span>
+                      <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Por Día' : 'Per Day'}:</span>
                       <strong className="text-amber-400">{fmt(bestBoostPlacement.outputPerDay)} {formatFactoryName(bestBoostPlacement.outputToken, language)}/day</strong>
                     </span>
                   </div>
 
                   <div className="flex flex-wrap gap-2 text-[10.5px]">
                     <span 
-                      className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300 flex items-center gap-1"
+                      className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200 flex items-center gap-1"
                       style={{ borderRadius: 'var(--radius-resource-item)' }}
                     >
-                      <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Tiempo de Ciclo' : 'Cycle Runtime'}:</span>
+                      <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Tiempo de Ciclo' : 'Cycle Runtime'}:</span>
                       <strong className="text-cyan-400">{formatDurationFromMinutes(bestBoostPlacement.effectiveDurationMinutes)}</strong>
                     </span>
                   </div>
@@ -395,51 +395,51 @@ export default function EmpireDashboard() {
 
                   <div className="flex flex-wrap gap-2 text-[10.5px]">
                     <span 
-                      className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300"
+                      className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200"
                       style={{ borderRadius: 'var(--radius-resource-item)' }}
                     >
-                      <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Nivel' : 'Level'}:</span>{' '}
+                      <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Nivel' : 'Level'}:</span>{' '}
                       <strong className="text-white">Lv {bestFactory.level}</strong>
                     </span>
                     <span 
-                      className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300"
+                      className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200"
                       style={{ borderRadius: 'var(--radius-resource-item)' }}
                     >
-                      <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Producto' : 'Product'}:</span>{' '}
+                      <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Producto' : 'Product'}:</span>{' '}
                       <strong className="text-indigo-300">{formatFactoryName(bestFactory.outputToken, language)}</strong>
                     </span>
                   </div>
 
                   <div className="flex flex-wrap gap-2 text-[10.5px]">
                     <span 
-                      className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300 flex items-center gap-1"
+                      className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200 flex items-center gap-1"
                       style={{ borderRadius: 'var(--radius-resource-item)' }}
                     >
-                      <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Por Hora' : 'Per Hour'}:</span>
+                      <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Por Hora' : 'Per Hour'}:</span>
                       <strong className="text-emerald-400">{fmt(bestFactory.outputPerHour)} / hr</strong>
                     </span>
                     <span 
-                      className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300 flex items-center gap-1"
+                      className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200 flex items-center gap-1"
                       style={{ borderRadius: 'var(--radius-resource-item)' }}
                     >
-                      <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Por Día' : 'Per Day'}:</span>
+                      <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Por Día' : 'Per Day'}:</span>
                       <strong className="text-amber-400">{fmt(bestFactory.outputPerDay)} / day</strong>
                     </span>
                   </div>
 
                   <div className="flex flex-wrap gap-2 text-[10.5px]">
                     <span 
-                      className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300 flex items-center gap-1"
+                      className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200 flex items-center gap-1"
                       style={{ borderRadius: 'var(--radius-resource-item)' }}
                     >
-                      <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Boost Activo' : 'Active Boost'}:</span>
+                      <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Boost Activo' : 'Active Boost'}:</span>
                       <strong className="text-violet-400">{fmt(bestFactory.activeBoostPercent, 2)}%</strong>
                     </span>
                     <span 
-                      className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300 flex items-center gap-1"
+                      className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200 flex items-center gap-1"
                       style={{ borderRadius: 'var(--radius-resource-item)' }}
                     >
-                      <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Boost Taller' : 'Workshop Boost'}:</span>
+                      <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Boost Taller' : 'Workshop Boost'}:</span>
                       <strong className="text-blue-400">{fmt(bestFactory.workshopBoostPercent, 2)}%</strong>
                     </span>
                   </div>
@@ -474,17 +474,17 @@ export default function EmpireDashboard() {
                         
                         <div className="mt-1 flex flex-wrap gap-1.5 text-[10.5px]">
                           <span 
-                            className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300 flex items-center gap-1"
+                            className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200 flex items-center gap-1"
                             style={{ borderRadius: 'var(--radius-resource-item)' }}
                           >
-                            <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Hora' : 'Hr'}:</span>
+                            <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Hora' : 'Hr'}:</span>
                             <strong className="text-emerald-400">{fmt(total.perHour)}</strong>
                           </span>
                           <span 
-                            className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300 flex items-center gap-1"
+                            className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200 flex items-center gap-1"
                             style={{ borderRadius: 'var(--radius-resource-item)' }}
                           >
-                            <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Día' : 'Day'}:</span>
+                            <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Día' : 'Day'}:</span>
                             <strong className="text-amber-400">{fmt(total.perDay)}</strong>
                           </span>
                         </div>

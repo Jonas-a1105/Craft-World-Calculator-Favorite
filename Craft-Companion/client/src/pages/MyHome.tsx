@@ -534,7 +534,7 @@ export default function MyHome() {
                                 <div className="flex items-center justify-between gap-2">
                                   <p className="font-bold text-white text-sm truncate">{formatFactoryName(symbol, language)}</p>
                                   <span 
-                                    className="text-[10px] bg-slate-900/60 px-2 py-0.5 text-slate-300 shrink-0"
+                                    className="text-[10px] bg-white/[0.08] backdrop-blur-md px-2 py-0.5 text-slate-200 shrink-0"
                                     style={{ borderRadius: 'var(--radius-resource-item)' }}
                                   >
                                     Lv {displayLevel}
@@ -548,17 +548,17 @@ export default function MyHome() {
                                 {factoryRow ? (
                                   <div className="mt-1.5 flex flex-wrap gap-1.5 text-[10.5px]">
                                     <span 
-                                      className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300 flex items-center gap-1"
+                                      className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200 flex items-center gap-1"
                                       style={{ borderRadius: 'var(--radius-resource-item)' }}
                                     >
-                                      <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Tiempo' : 'Time'}:</span>
+                                      <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Tiempo' : 'Time'}:</span>
                                       <strong className="text-emerald-400">{formatDurationFromMinutes(calculatedDurationMinutes)}</strong>
                                     </span>
                                     <span 
-                                      className="bg-slate-950/60 px-2.5 py-0.5 text-slate-300 flex items-center gap-1"
+                                      className="bg-white/[0.08] backdrop-blur-md px-2.5 py-0.5 text-slate-200 flex items-center gap-1"
                                       style={{ borderRadius: 'var(--radius-resource-item)' }}
                                     >
-                                      <span className="text-[9px] text-slate-500 uppercase tracking-wider">{language === 'es' ? 'Vel' : 'Speed'}:</span>
+                                      <span className="text-[9px] text-slate-400 uppercase tracking-wider">{language === 'es' ? 'Vel' : 'Speed'}:</span>
                                       <strong className="text-amber-400">{formatSpeed(effectiveSpeedPercent)}</strong>
                                     </span>
                                   </div>

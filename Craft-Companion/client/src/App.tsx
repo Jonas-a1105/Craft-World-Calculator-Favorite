@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { LanguageProvider } from './utils/i18n';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -15,8 +16,20 @@ import ResourcePlanner from './pages/ResourcePlanner';
 import Settings from './pages/Settings';
 import SignIn from './pages/SignIn';
 import UpgradeAdvisor from './pages/UpgradeAdvisor';
+import Prices from './pages/Prices';
 
 export default function App() {
+  useEffect(() => {
+    const isSolid = localStorage.getItem('craftworld.solidBackground') === 'true';
+    const solidColor = localStorage.getItem('craftworld.solidBackgroundColor') || '#000000';
+    if (isSolid) {
+      document.body.classList.add('solid-bg');
+    } else {
+      document.body.classList.remove('solid-bg');
+    }
+    document.documentElement.style.setProperty('--bg-solid-override', solidColor);
+  }, []);
+
   return (
     <LanguageProvider>
       <BrowserRouter>
@@ -109,6 +122,14 @@ export default function App() {
           element={(
             <ProtectedRoute>
               <Settings />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/prices"
+          element={(
+            <ProtectedRoute>
+              <Prices />
             </ProtectedRoute>
           )}
         />

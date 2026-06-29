@@ -22,6 +22,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.timers': 'Timers',
     'nav.matrix': 'Matrix',
     'nav.settings': 'Settings',
+    'nav.prices': 'Prices',
     'nav.signOut': 'Sign Out',
     
     // SignIn
@@ -107,7 +108,23 @@ const translations: Record<Language, Record<string, string>> = {
     'home.effectiveSpeed': 'Effective speed',
     'home.uidSaved': 'Craft World UID saved.',
     'home.uidSaveError': 'Unable to save Craft World UID.',
-    'home.loadError': 'Unable to load dashboard data. Please try again.'
+    'home.loadError': 'Unable to load dashboard data. Please try again.',
+    'prices.title': 'Real-Time Prices',
+    'prices.coinPriceCard': 'COIN Token Price',
+    'prices.calcModalTitle': 'COIN / USD Converter',
+    'prices.updateTimer': 'Price Sync Status',
+    'prices.nextUpdate': 'Next Update in',
+    'prices.syncNow': 'Sync Now',
+    'prices.usdRef': 'USD Value',
+    'prices.coinPrice': 'COIN Price (USD)',
+    'prices.enterCoin': 'Enter COIN Amount',
+    'prices.enterUsd': 'Enter USD Amount',
+    'prices.lastSync': 'Last updated: {time}',
+    'prices.calcDescription': 'Convert amounts or change the base COIN conversion price to dynamically update all USD references across the list.',
+    'prices.resourceName': 'Resource',
+    'prices.priceCoin': 'Price (COIN)',
+    'prices.priceUsd': 'Reference (USD)',
+    'prices.searchPlaceholder': 'Search resource...',
   },
   es: {
     // Navigation / Layout
@@ -122,6 +139,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.timers': 'Temporizadores',
     'nav.matrix': 'Matriz',
     'nav.settings': 'Configuración',
+    'nav.prices': 'Precios',
     'nav.signOut': 'Cerrar Sesión',
     
     // SignIn
@@ -207,7 +225,23 @@ const translations: Record<Language, Record<string, string>> = {
     'home.effectiveSpeed': 'Velocidad efectiva',
     'home.uidSaved': 'UID de Craft World guardado.',
     'home.uidSaveError': 'No se pudo guardar el UID de Craft World.',
-    'home.loadError': 'No se pudieron cargar los datos del panel. Por favor intenta de nuevo.'
+    'home.loadError': 'No se pudieron cargar los datos del panel. Por favor intenta de nuevo.',
+    'prices.title': 'Precios en Tiempo Real',
+    'prices.coinPriceCard': 'Precio del Token COIN',
+    'prices.calcModalTitle': 'Convertidor COIN / USD',
+    'prices.updateTimer': 'Estado de Sincronización',
+    'prices.nextUpdate': 'Siguiente actualización en',
+    'prices.syncNow': 'Sincronizar ahora',
+    'prices.usdRef': 'Valor USD',
+    'prices.coinPrice': 'Precio de COIN (USD)',
+    'prices.enterCoin': 'Ingresar cantidad de COIN',
+    'prices.enterUsd': 'Ingresar cantidad de USD',
+    'prices.lastSync': 'Última actualización: {time}',
+    'prices.calcDescription': 'Convierte cantidades o cambia el precio base de conversión de COIN para actualizar de manera dinámica todos los valores de referencia en USD en la lista.',
+    'prices.resourceName': 'Recurso',
+    'prices.priceCoin': 'Precio (COIN)',
+    'prices.priceUsd': 'Referencia (USD)',
+    'prices.searchPlaceholder': 'Buscar recurso...',
   }
 };
 

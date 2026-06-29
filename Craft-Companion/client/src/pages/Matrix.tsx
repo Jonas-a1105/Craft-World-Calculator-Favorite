@@ -1,8 +1,63 @@
 import { useEffect, useMemo, useState } from 'react';
 import Card from '../components/Card';
 import Layout from '../components/Layout';
+import { useTranslation } from '../utils/i18n';
 import { SkeletonSingleColumn } from '../components/Skeleton';
 import { loadFactoryData, type FactoryDataRow } from '../services/factoryData';
+
+function formatFactoryName(symbol: string, lang: string): string {
+  const normalized = String(symbol || '').trim().toUpperCase();
+  if (lang === 'es') {
+    switch (normalized) {
+      case 'STEEL': return 'Acero';
+      case 'WOOD': return 'Madera';
+      case 'WATER': return 'Agua';
+      case 'ALGAE': return 'Alga';
+      case 'BOLTS': return 'Pernos';
+      case 'BONESOUP': return 'Sopa de Huesos';
+      case 'CEMENT': return 'Cemento';
+      case 'CERAMICKEY': return 'Llave Cerámica';
+      case 'CERAMICS': return 'Cerámicas';
+      case 'CLAY': return 'Arcilla';
+      case 'COPPER': return 'Cobre';
+      case 'DYNAMITE': return 'Dinamita';
+      case 'EARTH': return 'Tierra';
+      case 'EXPLOSIVES': return 'Explosivos';
+      case 'FERTILIZER': return 'Fertilizante';
+      case 'FIRE': return 'Fuego';
+      case 'FISH': return 'Pescado';
+      case 'GLASS': return 'Vidrio';
+      case 'GOLD': return 'Oro';
+      case 'GRAIN': return 'Grano';
+      case 'IRON': return 'Hierro';
+      case 'LEATHER': return 'Cuero';
+      case 'LIMESTONE': return 'Caliza';
+      case 'MUD': return 'Lodo';
+      case 'OXYGEN': return 'Oxígeno';
+      case 'PAPER': return 'Papel';
+      case 'PLASTIC': return 'Plástico';
+      case 'SAND': return 'Arena';
+      case 'SCREWS': return 'Tornillos';
+      case 'SILICA': return 'Sílice';
+      case 'STONE': return 'Piedra';
+      case 'SULFUR': return 'Azufre';
+      case 'TEXTILE': return 'Textil';
+      case 'VEGETABLES': return 'Vegetales';
+      case 'GAS': return 'Gas';
+      case 'OIL': return 'Petróleo';
+      case 'HEAT': return 'Calor';
+      case 'ACID': return 'Ácido';
+      case 'SEAWATER': return 'Agua de Mar';
+      case 'FUEL': return 'Combustible';
+      case 'COAL': return 'Carbón';
+      case 'AIR': return 'Aire';
+      default:
+        return symbol.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+    }
+  } else {
+    return symbol.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  }
+}
 
 function getResourceImage(symbol?: string) {
   if (!symbol) return '';
@@ -82,8 +137,8 @@ function cellKey(token: string, level: number) {
 
 function getCellClass(value: number) {
   if (!Number.isFinite(value)) return 'bg-slate-950 text-slate-500';
-  if (value >= 0) return 'bg-emerald-950/70 text-emerald-300';
-  return 'bg-red-950/70 text-red-300';
+  if (value >= 0) return 'profit-cell';
+  return 'loss-cell';
 }
 
 function secondsUntil(dateString?: string) {
@@ -109,6 +164,7 @@ async function loadMatrixCache(): Promise<MatrixCachePayload> {
 }
 
 export default function Matrix() {
+  const { language } = useTranslation();
   const [rows, setRows] = useState<FactoryDataRow[]>([]);
   const [cache, setCache] = useState<MatrixCachePayload>(EMPTY_MATRIX_CACHE);
   const [selectedGroup, setSelectedGroup] = useState('EARTH');
@@ -125,7 +181,7 @@ export default function Matrix() {
       setLastPolledAt(new Date().toISOString());
       setError('');
     } catch {
-      setError('Unable to load global matrix cache.');
+      setError(language === 'es' ? 'No se pudo cargar el caché global de la matriz.' : 'Unable to load global matrix cache.');
     }
   }
 
@@ -140,14 +196,14 @@ export default function Matrix() {
         setCountdown(secondsUntil(matrixCache.nextScanAt));
         setLastPolledAt(new Date().toISOString());
       } catch {
-        setError('Unable to load matrix data.');
+        setError(language === 'es' ? 'No se pudieron cargar los datos de la matriz.' : 'Unable to load matrix data.');
       } finally {
         setLoading(false);
       }
     };
 
     load();
-  }, []);
+  }, [language]);
 
   useEffect(() => {
     refreshCache();
@@ -201,49 +257,148 @@ export default function Matrix() {
 
   return (
     <Layout>
+      <style>{`
+        .matrix-container {
+          background-color: rgba(10, 10, 10, 0.4) !important;
+          backdrop-filter: blur(16px) !important;
+          -webkit-backdrop-filter: blur(16px) !important;
+          border-radius: 12px;
+        }
+        .matrix-table th {
+          border: none !important;
+          background-color: rgba(22, 22, 22, 0.85) !important;
+          color: #e2e8f0 !important;
+        }
+        .matrix-table td {
+          border: none !important;
+        }
+        .lvl-cell {
+          background-color: rgba(22, 22, 22, 0.75) !important;
+          color: #94a3b8 !important;
+          font-weight: 700;
+        }
+        .empty-cell {
+          background-color: rgba(22, 22, 22, 0.25) !important;
+          color: #475569 !important;
+        }
+        .waiting-cell {
+          background-color: rgba(22, 22, 22, 0.25) !important;
+          color: #64748b !important;
+        }
+        .profit-cell {
+          background-color: rgba(16, 185, 129, 0.08) !important;
+          color: #34d399 !important;
+        }
+        .loss-cell {
+          background-color: rgba(239, 68, 68, 0.08) !important;
+          color: #f87171 !important;
+        }
+        
+        /* Hover states with text popping and glowing */
+        .matrix-table tr:hover td.lvl-cell {
+          background-color: rgba(45, 45, 45, 0.85) !important;
+          color: #f8fafc !important;
+        }
+        .matrix-table tr:hover td.empty-cell {
+          background-color: rgba(45, 45, 45, 0.45) !important;
+        }
+        .matrix-table tr:hover td.waiting-cell {
+          background-color: rgba(45, 45, 45, 0.45) !important;
+        }
+        .matrix-table tr:hover td.profit-cell {
+          background-color: rgba(16, 185, 129, 0.2) !important;
+          color: #a7f3d0 !important;
+          text-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+        }
+        .matrix-table tr:hover td.loss-cell {
+          background-color: rgba(239, 68, 68, 0.2) !important;
+          color: #fca5a5 !important;
+          text-shadow: 0 0 8px rgba(248, 113, 113, 0.5);
+        }
+      `}</style>
       <div className="space-y-4">
-        <Card title="Matrix">
+        <Card title={language === 'es' ? 'Matriz' : 'Matrix'}>
           <div className="space-y-3">
             <p className="text-sm text-slate-300">
-              This page reads from the global server matrix cache and forces a fresh poll every second.
+              {language === 'es'
+                ? 'Esta página lee del caché de matriz global del servidor y fuerza una actualización cada segundo.'
+                : 'This page reads from the global server matrix cache and forces a fresh poll every second.'}
             </p>
             <p className="text-sm text-yellow-200">
-              The browser no longer scans. It only reloads the saved cache as the server writes new matrix cells.
+              {language === 'es'
+                ? 'El navegador ya no realiza el escaneo. Solo recarga el caché guardado a medida que el servidor escribe nuevas celdas.'
+                : 'The browser no longer scans. It only reloads the saved cache as the server writes new matrix cells.'}
             </p>
             {error && <p className="text-sm text-red-300">{error}</p>}
             <div className="flex flex-wrap gap-2">
-              {Object.keys(tokenGroups).map((group) => (
-                <button
-                  key={group}
-                  onClick={() => setSelectedGroup(group)}
-                  className={`rounded border px-3 py-2 text-sm ${selectedGroup === group ? 'border-blue-400 bg-blue-500/20' : 'border-slate-700 bg-slate-950'}`}
-                >
-                  {group}
-                </button>
-              ))}
+              {Object.keys(tokenGroups).map((group) => {
+                const groupLabels: Record<string, string> = {
+                  EARTH: language === 'es' ? 'Tierra' : 'Earth',
+                  WATER: language === 'es' ? 'Agua' : 'Water',
+                  FIRE: language === 'es' ? 'Fuego' : 'Fire',
+                  ADVANCED: language === 'es' ? 'Avanzado' : 'Advanced',
+                  KEYS: language === 'es' ? 'Llaves' : 'Keys',
+                };
+                return (
+                  <button
+                    key={group}
+                    onClick={() => setSelectedGroup(group)}
+                    className={`rounded-[8px] border px-4 py-2 text-sm font-bold transition-all cursor-pointer ${
+                      selectedGroup === group 
+                        ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300' 
+                        : 'border-slate-800 bg-slate-900/50 hover:bg-slate-800 text-slate-400'
+                    }`}
+                  >
+                    {groupLabels[group] || group}
+                  </button>
+                );
+              })}
             </div>
-            <div className="grid gap-2 text-xs text-slate-400 md:grid-cols-5">
-              <p>Next global scan: {countdown}s</p>
-              <p>Status: {cache.scanStatus || 'idle'}</p>
-              <p>Column: {cache.scanColumn || 'None'}</p>
-              <p>Last save: {cache.updatedAt ? new Date(cache.updatedAt).toLocaleString() : 'No save yet'}</p>
-              <p>Last poll: {lastPolledAt ? new Date(lastPolledAt).toLocaleTimeString() : 'Never'}</p>
+            <div className="grid gap-2 text-xs text-slate-400 md:grid-cols-5 border-t border-slate-800/50 pt-3">
+              <p>
+                {language === 'es' ? 'Próximo escaneo:' : 'Next global scan:'}{' '}
+                <span className="font-bold text-white">{countdown}s</span>
+              </p>
+              <p>
+                {language === 'es' ? 'Estado:' : 'Status:'}{' '}
+                <span className="font-bold text-white">
+                  {cache.scanStatus === 'scanning' ? (language === 'es' ? 'escaneando' : 'scanning') : (language === 'es' ? 'inactivo' : 'idle')}
+                </span>
+              </p>
+              <p>
+                {language === 'es' ? 'Columna:' : 'Column:'}{' '}
+                <span className="font-bold text-white">
+                  {cache.scanColumn ? formatFactoryName(cache.scanColumn, language) : (language === 'es' ? 'Ninguna' : 'None')}
+                </span>
+              </p>
+              <p>
+                {language === 'es' ? 'Último guardado:' : 'Last save:'}{' '}
+                <span className="font-bold text-white">
+                  {cache.updatedAt ? new Date(cache.updatedAt).toLocaleString() : (language === 'es' ? 'Sin datos' : 'No save yet')}
+                </span>
+              </p>
+              <p>
+                {language === 'es' ? 'Último sondeo:' : 'Last poll:'}{' '}
+                <span className="font-bold text-white">
+                  {lastPolledAt ? new Date(lastPolledAt).toLocaleTimeString() : (language === 'es' ? 'Nunca' : 'Never')}
+                </span>
+              </p>
             </div>
           </div>
         </Card>
 
-        <div className="overflow-x-auto rounded-xl border border-slate-800">
-          <table className="min-w-full border-collapse text-center text-sm">
+        <div className="overflow-x-auto rounded-xl matrix-container">
+          <table className="min-w-full border-collapse text-center text-sm matrix-table">
             <thead className="sticky top-0 bg-slate-950">
               <tr>
-                <th className="border border-slate-800 px-3 py-2 text-left text-slate-300">Lvl</th>
+                <th className="px-3 py-2 text-left text-slate-300 font-extrabold">{language === 'es' ? 'Nivel' : 'Lvl'}</th>
                 {selectedTokens.map((token) => {
                   const img = getResourceImage(token);
                   return (
-                    <th key={token} className={`border border-slate-800 px-3 py-2 text-slate-300 ${cache.scanColumn === token ? 'bg-blue-500/20' : ''}`}>
+                    <th key={token} className={`px-3 py-2 text-slate-300 ${cache.scanColumn === token ? 'bg-emerald-500/10' : ''}`}>
                       <div className="flex flex-col items-center gap-1">
-                        {img && <img src={img} alt={token} className="h-6 w-6 object-contain" />}
-                        <span>{token}</span>
+                        {img && <img src={img} alt={token} className="h-6 w-6 object-contain" style={{ borderRadius: 'var(--radius-resource-item)' }} />}
+                        <span className="font-bold">{formatFactoryName(token, language)}</span>
                       </div>
                     </th>
                   );
@@ -253,13 +408,13 @@ export default function Matrix() {
             <tbody>
               {Array.from({ length: maxLevel }, (_, index) => index + 1).map((level) => (
                 <tr key={level}>
-                  <td className="border border-slate-800 bg-slate-950 px-3 py-2 text-left text-slate-300">{level}</td>
+                  <td className="lvl-cell px-3 py-2 text-left text-slate-300">{level}</td>
                   {selectedTokens.map((token) => {
                     const cell = cache.cells[cellKey(token, level)];
                     const hasFactoryLevel = Boolean(rows.find((row) => row.token === token && row.level === level));
                     if (!hasFactoryLevel) {
                       return (
-                        <td key={`${token}-${level}`} className="border border-slate-800 bg-slate-950 px-3 py-2 text-slate-700">
+                        <td key={`${token}-${level}`} className="empty-cell px-3 py-2 text-slate-700">
                           ·
                         </td>
                       );
@@ -267,17 +422,21 @@ export default function Matrix() {
 
                     if (!cell?.isComplete) {
                       return (
-                        <td key={`${token}-${level}`} className="border border-slate-800 bg-slate-950 px-3 py-2 text-slate-500" title="Waiting for global cache data">
+                        <td key={`${token}-${level}`} className="waiting-cell px-3 py-2 text-slate-500" title={language === 'es' ? 'Esperando datos de caché global' : 'Waiting for global cache data'}>
                           ...
                         </td>
                       );
                     }
 
+                    const tooltip = language === 'es'
+                      ? `Valor de venta: ${formatNumber(cell.outputSellValue, 6)} COIN • Costo de ingredientes: ${formatNumber(cell.inputBuyCost, 6)} COIN • Impacto: ${formatNumber(cell.priceImpactPercentage, 2)}% • Actualizado: ${new Date(cell.updatedAt).toLocaleString()}`
+                      : `Output sell value ${formatNumber(cell.outputSellValue, 6)} COIN • Input buy cost ${formatNumber(cell.inputBuyCost, 6)} COIN • Impact ${formatNumber(cell.priceImpactPercentage, 2)}% • Updated ${new Date(cell.updatedAt).toLocaleString()}`;
+
                     return (
                       <td
                         key={`${token}-${level}`}
-                        className={`border border-slate-800 px-3 py-2 font-mono ${getCellClass(cell.returnPercent)}`}
-                        title={`Output sell value ${formatNumber(cell.outputSellValue, 6)} COIN • Input buy cost ${formatNumber(cell.inputBuyCost, 6)} COIN • Impact ${formatNumber(cell.priceImpactPercentage, 2)}% • Updated ${new Date(cell.updatedAt).toLocaleString()}`}
+                        className={`px-3 py-2 font-mono ${getCellClass(cell.returnPercent)}`}
+                        title={tooltip}
                       >
                         {cell.returnPercent >= 0 ? '+' : ''}{formatNumber(cell.returnPercent, 2)}%
                       </td>

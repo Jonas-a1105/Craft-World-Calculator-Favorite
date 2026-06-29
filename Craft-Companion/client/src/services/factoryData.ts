@@ -12,6 +12,40 @@ export type FactoryDataRow = {
   upgrade_amount: number;
 };
 
+export const ACTIVE_RESOURCES = new Set([
+  'MUD',
+  'CLAY',
+  'SAND',
+  'COPPER',
+  'SEAWATER',
+  'HEAT',
+  'ALGAE',
+  'LAVA',
+  'CERAMICS',
+  'STEEL',
+  'OXYGEN',
+  'GLASS',
+  'GAS',
+  'STONE',
+  'STEAM',
+  'SCREWS',
+  'FUEL',
+  'CEMENT',
+  'OIL',
+  'ACID',
+  'SULFUR',
+  'PLASTICS',
+  'FIBERGLASS',
+  'ENERGY',
+  'HYDROGEN',
+  'DYNAMITE',
+  'BOLTS',
+  'KEY',
+  'CERAMICKEY',
+  'GLASSKEY',
+  'DYNOKEY'
+]);
+
 const csvPaths = [
   '/data/Game%20Data%20-%20Factories%20-%20rev.%20v_01%20%2Bevents%20(2)%20(1).csv',
   '/data/factories.csv',
@@ -234,6 +268,11 @@ function parseFactoryCsv(csv: string): FactoryDataRow[] {
           });
         }
 
+        return null;
+      }
+
+      const upperToken = String(parsedRow.token || parsedRow.output_token || '').toUpperCase();
+      if (!ACTIVE_RESOURCES.has(upperToken)) {
         return null;
       }
 

@@ -30,6 +30,11 @@ body {
   padding: 0 0 40px;
 }
 
+body.solid-bg {
+  background-image: none !important;
+  background-color: var(--bg-solid-override, #000000) !important;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;

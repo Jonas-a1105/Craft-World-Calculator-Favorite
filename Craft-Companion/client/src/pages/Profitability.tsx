@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import Card from '../components/Card';
 import Layout from '../components/Layout';
+import Dropdown from '../components/Dropdown';
+import { useTranslation } from '../utils/i18n';
 import { SkeletonSingleColumn } from '../components/Skeleton';
 import { getCraftworldBuyQuote, getCraftworldHome, getCraftworldQuote } from '../services/api';
 import { getActiveFactoryBoostPercent, getRunsPerHourWithFactoryBoosts, type FactoryBoost } from '../services/factoryBoostModifiers';
@@ -91,9 +93,96 @@ function formatSpeed(value: number) {
   return `${formatNumber(value, 2)}% / ${formatNumber(value / 100, 2)}x`;
 }
 
-function formatFactoryLabel(option: OwnedFactoryOption) {
+function formatPlotName(plotName: string, lang: string): string {
+  const normalized = String(plotName || '').trim().toUpperCase();
+  if (lang === 'es') {
+    switch (normalized) {
+      case 'EARTH_PLOT': return 'Parcela de Tierra';
+      case 'BLUEPRINT_PLOT':
+      case 'BLUEPRINT_PLOT_A': return 'Parcela de Planos A';
+      case 'BLUEPRINT_PLOT_B': return 'Parcela de Planos B';
+      case 'FLEXIBLE_PLOT': return 'Parcela Flexible';
+      default:
+        return String(plotName || '')
+          .trim()
+          .toLowerCase()
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, c => c.toUpperCase());
+    }
+  } else {
+    switch (normalized) {
+      case 'EARTH_PLOT': return 'Earth Plot';
+      case 'BLUEPRINT_PLOT':
+      case 'BLUEPRINT_PLOT_A': return 'Blueprint Plot A';
+      case 'BLUEPRINT_PLOT_B': return 'Blueprint Plot B';
+      case 'FLEXIBLE_PLOT': return 'Flexible Plot';
+      default:
+        return String(plotName || '')
+          .trim()
+          .toLowerCase()
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, c => c.toUpperCase());
+    }
+  }
+}
+
+function formatFactoryName(symbol: string, lang: string): string {
+  const normalized = String(symbol || '').trim().toUpperCase();
+  if (lang === 'es') {
+    switch (normalized) {
+      case 'STEEL': return 'Acero';
+      case 'WOOD': return 'Madera';
+      case 'WATER': return 'Agua';
+      case 'ALGAE': return 'Alga';
+      case 'BOLTS': return 'Pernos';
+      case 'BONESOUP': return 'Sopa de Huesos';
+      case 'CEMENT': return 'Cemento';
+      case 'CERAMICKEY': return 'Llave Cerámica';
+      case 'CERAMICS': return 'Cerámicas';
+      case 'CLAY': return 'Arcilla';
+      case 'COPPER': return 'Cobre';
+      case 'DYNAMITE': return 'Dinamita';
+      case 'EARTH': return 'Tierra';
+      case 'EXPLOSIVES': return 'Explosivos';
+      case 'FERTILIZER': return 'Fertilizante';
+      case 'FIRE': return 'Fuego';
+      case 'FISH': return 'Pescado';
+      case 'GLASS': return 'Vidrio';
+      case 'GOLD': return 'Oro';
+      case 'GRAIN': return 'Grano';
+      case 'IRON': return 'Hierro';
+      case 'LEATHER': return 'Cuero';
+      case 'LIMESTONE': return 'Caliza';
+      case 'MUD': return 'Lodo';
+      case 'OXYGEN': return 'Oxígeno';
+      case 'PAPER': return 'Papel';
+      case 'PLASTIC': return 'Plástico';
+      case 'SAND': return 'Arena';
+      case 'SCREWS': return 'Tornillos';
+      case 'SILICA': return 'Sílice';
+      case 'STONE': return 'Piedra';
+      case 'SULFUR': return 'Azufre';
+      case 'TEXTILE': return 'Textil';
+      case 'VEGETABLES': return 'Vegetales';
+      case 'GAS': return 'Gas';
+      case 'OIL': return 'Petróleo';
+      case 'HEAT': return 'Calor';
+      case 'ACID': return 'Ácido';
+      case 'SEAWATER': return 'Agua de Mar';
+      case 'FUEL': return 'Combustible';
+      case 'COAL': return 'Carbón';
+      case 'AIR': return 'Aire';
+      default:
+        return symbol.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+    }
+  } else {
+    return symbol.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+  }
+}
+
+function formatFactoryLabel(option: OwnedFactoryOption, lang: string) {
   const craftLevel = option.craftDisplayLevel ? ` • Craft Lv ${option.craftDisplayLevel}` : '';
-  return `${option.plotName} • ${option.symbol} • Lv ${option.displayLevel}${craftLevel}`;
+  return `${formatPlotName(option.plotName, lang)} • ${formatFactoryName(option.symbol, lang)} • Lv ${option.displayLevel}${craftLevel}`;
 }
 
 function normalizeQuoteAmount(amount: number) {
@@ -143,23 +232,28 @@ function getUpgradeBuyQuoteRequest(row: FactoryDataRow | null) {
 }
 
 function QuoteLine({ label, quote }: { label: string; quote: Quote | null | undefined }) {
-  if (!quote) return <p>{label}: Quote unavailable</p>;
+  const { language } = useTranslation();
+  if (!quote) return <p>{label}: {language === 'es' ? 'Cotización no disponible' : 'Quote unavailable'}</p>;
 
   const inputImg = getResourceImage(quote.input.symbol);
   const outputImg = getResourceImage(quote.output.symbol);
+
+  const inputName = quote.input.symbol === 'COIN' ? 'COIN' : formatFactoryName(quote.input.symbol, language);
+  const outputName = quote.output.symbol === 'COIN' ? 'COIN' : formatFactoryName(quote.output.symbol, language);
 
   return (
     <div className="flex items-center gap-1.5 flex-wrap">
       <span>{label}: {formatNumber(quote.input.amount)}</span>
       {inputImg && <img src={inputImg} alt={quote.input.symbol} className="h-4 w-4 object-contain inline" />}
-      <span>{quote.input.symbol} for {formatNumber(quote.output.amount)}</span>
+      <span>{inputName} {language === 'es' ? 'por' : 'for'} {formatNumber(quote.output.amount)}</span>
       {outputImg && <img src={outputImg} alt={quote.output.symbol} className="h-4 w-4 object-contain inline" />}
-      <span>{quote.output.symbol} • Impact {formatNumber(quote.details?.priceImpactPercentage || 0, 2)}%</span>
+      <span>{outputName} • {language === 'es' ? 'Impacto' : 'Impact'} {formatNumber(quote.details?.priceImpactPercentage || 0, 2)}%</span>
     </div>
   );
 }
 
 export default function Profitability() {
+  const { language } = useTranslation();
   const [rows, setRows] = useState<FactoryDataRow[]>([]);
   const [ownedFactories, setOwnedFactories] = useState<OwnedFactory[]>([]);
   const [workshop, setWorkshop] = useState<WorkshopItem[]>([]);
@@ -225,6 +319,14 @@ export default function Profitability() {
         return b.displayLevel - a.displayLevel;
       });
   }, [ownedFactories, rows]);
+
+  const calculatorOptions = useMemo(() => {
+    return ownedFactoryOptions.map((option) => ({
+      value: option.key,
+      label: `${formatFactoryLabel(option, language)}${option.matchingCsvRow ? '' : (language === 'es' ? ' • Sin coincidencia CSV' : ' • No CSV match')}`,
+      image: getFactoryImage(option.symbol) || undefined
+    }));
+  }, [ownedFactoryOptions, language]);
 
   useEffect(() => {
     if (!ownedFactoryOptions.length) {
@@ -367,6 +469,14 @@ export default function Profitability() {
   const missingCsvMatches = ownedFactoryOptions.filter((option) => !option.matchingCsvRow).length;
   const readyAdvisorRows = advisorRows.filter((row) => !row.missingQuote);
 
+  const totalCombinedProfitPerHour = useMemo(() => {
+    return readyAdvisorRows.reduce((sum, row) => sum + (row.profitPerHour || 0), 0);
+  }, [readyAdvisorRows]);
+
+  const totalCombinedProfitPerDay = useMemo(() => {
+    return totalCombinedProfitPerHour * 24;
+  }, [totalCombinedProfitPerHour]);
+
   const selectedInput1AdjustedAmount = selectedRow ? getAdjustedInputAmount(selectedRow.token, selectedRow.input_amount_1, proficiencies) : 0;
   const selectedInput2AdjustedAmount = selectedRow?.input_token_2 ? getAdjustedInputAmount(selectedRow.token, selectedRow.input_amount_2, proficiencies) : 0;
   const outputQuote = selectedRow ? getSellQuote(selectedRow.output_token, selectedRow.output_amount) : null;
@@ -399,69 +509,150 @@ export default function Profitability() {
   return (
     <Layout>
       <div className="space-y-4">
-        <Card title="Profit Advisor">
-          <div className="space-y-3">
-            <p className="text-sm text-slate-300">
-              This ranks every owned factory that matches the CSV by estimated COIN profit per hour using live Craft World sell quotes for outputs, buy quotes for inputs, workshop speed boosts, active boosts, and factory resource mastery input reductions.
-            </p>
-            {quoteLoading && (
-              <p className="text-sm text-slate-400">
-                Loading live quote data in parallel batches... {quotedCount}/{quoteRequests.length} quotes checked.
+        <div className="max-w-[720px] mx-auto w-full">
+          <Card title={language === 'es' ? 'Asesor de Rentabilidad' : 'Profit Advisor'}>
+            <div className="space-y-3">
+              <p className="text-sm text-slate-300">
+                {language === 'es' 
+                  ? 'Clasifica cada fábrica de tu propiedad que coincida con el CSV según la ganancia estimada en monedas (COIN) por hora usando cotizaciones en vivo del mercado para las salidas, cotizaciones de compra para los ingredientes, aumentos de velocidad del taller, boosts activos y reducciones por maestría de recursos.'
+                  : 'This ranks every owned factory that matches the CSV by estimated COIN profit per hour using live Craft World sell quotes for outputs, buy quotes for inputs, workshop speed boosts, active boosts, and factory resource mastery input reductions.'}
               </p>
-            )}
-            {missingCsvMatches > 0 && (
-              <p className="text-sm text-yellow-200">
-                {missingCsvMatches} owned factories do not have a CSV match yet, so they are excluded from the ranking.
-              </p>
-            )}
-            {bestAdvisorRow ? (
-              <div className="flex gap-4 items-start rounded-lg border border-emerald-400/70 bg-emerald-500/10 p-3 text-sm">
-                {getFactoryImage(bestAdvisorRow.option.symbol) && (
-                  <img src={getFactoryImage(bestAdvisorRow.option.symbol)} alt={bestAdvisorRow.option.symbol} className="h-16 w-16 shrink-0 rounded-lg border border-emerald-500/20 bg-emerald-950/60 object-contain p-1" />
-                )}
-                <div className="space-y-1">
-                  <p className="font-semibold text-emerald-200">Best visible craft right now</p>
-                  <p>{formatFactoryLabel(bestAdvisorRow.option)}</p>
-                  <p>Workshop speed boost: {formatNumber(bestAdvisorRow.workshopBoostPercent, 2)}%</p>
-                  <p>Active boost: {formatNumber(bestAdvisorRow.activeBoostPercent, 2)}%</p>
-                  <p>Base Time: {formatDurationFromMinutes(bestAdvisorRow.baseDurationMinutes)}</p>
-                  <p>Output Time: {formatDurationFromMinutes(bestAdvisorRow.calculatedDurationMinutes)}</p>
-                  <p>Effective Speed: {formatSpeed(bestAdvisorRow.effectiveSpeedPercent)}</p>
-                  <p className="flex items-center gap-1.5">
-                    <span>Mastery: Lv {bestAdvisorRow.masteryLevel} / {formatNumber(bestAdvisorRow.masteryReductionPercent, 2)}%</span>
-                    {getResourceImage(bestAdvisorRow.row.token) && <img src={getResourceImage(bestAdvisorRow.row.token)} alt={bestAdvisorRow.row.token} className="h-4 w-4 object-contain" />}
-                    <span>{bestAdvisorRow.row.token}</span>
-                  </p>
-                  <p>Estimated profit per hour: {formatNumber(bestAdvisorRow.profitPerHour)} COIN</p>
-                  <p>Estimated profit per run: {formatNumber(bestAdvisorRow.profitPerRun)} COIN</p>
+              {quoteLoading && (
+                <p className="text-sm text-slate-400">
+                  {language === 'es' 
+                    ? `Cargando cotizaciones del mercado en lotes paralelos... ${quotedCount}/${quoteRequests.length} consultadas.`
+                    : `Loading live quote data in parallel batches... ${quotedCount}/${quoteRequests.length} quotes checked.`}
+                </p>
+              )}
+              {missingCsvMatches > 0 && (
+                <p className="text-sm text-yellow-200">
+                  {language === 'es'
+                    ? `${missingCsvMatches} de tus fábricas no tienen coincidencias con el CSV todavía, por lo que están excluidas de la clasificación.`
+                    : `${missingCsvMatches} owned factories do not have a CSV match yet, so they are excluded from the ranking.`}
+                </p>
+              )}
+              {bestAdvisorRow ? (
+                <div 
+                  className="flex gap-4 items-start bg-emerald-500/[0.08] backdrop-blur-md p-4 text-sm"
+                  style={{ borderRadius: 'var(--radius-resource-item)' }}
+                >
+                  {getFactoryImage(bestAdvisorRow.option.symbol) && (
+                    <img 
+                      src={getFactoryImage(bestAdvisorRow.option.symbol)} 
+                      alt={bestAdvisorRow.option.symbol} 
+                      className="h-16 w-16 shrink-0 bg-slate-900/60 object-contain p-1" 
+                      style={{ borderRadius: 'var(--radius-resource-item)' }}
+                    />
+                  )}
+                  <div className="space-y-1.5 flex-grow">
+                    <p className="font-semibold text-emerald-200">{language === 'es' ? 'Mejor fabricación visible ahora mismo' : 'Best visible craft right now'}</p>
+                    <p className="font-bold text-white text-base">{formatFactoryLabel(bestAdvisorRow.option, language)}</p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">{language === 'es' ? 'Aumento de velocidad del taller' : 'Workshop speed boost'}:</span>{' '}
+                      <strong>{formatNumber(bestAdvisorRow.workshopBoostPercent, 2)}%</strong>
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">{language === 'es' ? 'Boost activo' : 'Active boost'}:</span>{' '}
+                      <strong>{formatNumber(bestAdvisorRow.activeBoostPercent, 2)}%</strong>
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">{language === 'es' ? 'Tiempo base' : 'Base Time'}:</span>{' '}
+                      <strong>{formatDurationFromMinutes(bestAdvisorRow.baseDurationMinutes)}</strong>
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">{language === 'es' ? 'Tiempo final' : 'Output Time'}:</span>{' '}
+                      <strong>{formatDurationFromMinutes(bestAdvisorRow.calculatedDurationMinutes)}</strong>
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">{language === 'es' ? 'Velocidad efectiva' : 'Effective Speed'}:</span>{' '}
+                      <strong>{formatSpeed(bestAdvisorRow.effectiveSpeedPercent)}</strong>
+                    </p>
+                    <p className="flex items-center gap-1.5 text-slate-300">
+                      <span className="text-slate-400">{language === 'es' ? 'Maestría' : 'Mastery'}:</span>{' '}
+                      <span>Lv {bestAdvisorRow.masteryLevel} / {formatNumber(bestAdvisorRow.masteryReductionPercent, 2)}%</span>
+                      {getResourceImage(bestAdvisorRow.row.token) && <img src={getResourceImage(bestAdvisorRow.row.token)} alt={bestAdvisorRow.row.token} className="h-4 w-4 object-contain shrink-0" />}
+                      <strong>{formatFactoryName(bestAdvisorRow.row.token, language)}</strong>
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">{language === 'es' ? 'Ganancia estimada por hora' : 'Estimated profit per hour'}:</span>{' '}
+                      <strong className="text-emerald-400">{formatNumber(bestAdvisorRow.profitPerHour)} COIN</strong>
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">{language === 'es' ? 'Ganancia estimada por día' : 'Estimated profit per day'}:</span>{' '}
+                      <strong className="text-emerald-400">{formatNumber(bestAdvisorRow.profitPerHour * 24)} COIN</strong>
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">{language === 'es' ? 'Ganancia estimada por ejecución' : 'Estimated profit per run'}:</span>{' '}
+                      <strong className="text-emerald-400">{formatNumber(bestAdvisorRow.profitPerRun)} COIN</strong>
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <p className="text-sm text-slate-400">No fully quoted factory recommendation is available yet.</p>
-            )}
-          </div>
-        </Card>
+              ) : (
+                <p className="text-sm text-slate-400">{language === 'es' ? 'Aún no hay recomendaciones de cotización disponibles.' : 'No fully quoted factory recommendation is available yet.'}</p>
+              )}
+
+              {readyAdvisorRows.length > 0 && (
+                <div 
+                  className="flex gap-4 items-start bg-blue-500/[0.08] backdrop-blur-md p-4 text-sm mt-3"
+                  style={{ borderRadius: 'var(--radius-resource-item)' }}
+                >
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-500/10 p-2">
+                    {getResourceImage("COIN") && (
+                      <img 
+                        src={getResourceImage("COIN")} 
+                        alt="COIN" 
+                        className="h-full w-full object-contain" 
+                      />
+                    )}
+                  </div>
+                  <div className="space-y-1.5 flex-grow">
+                    <p className="font-semibold text-blue-200">
+                      {language === 'es' ? 'Ganancia total del imperio (Todas las fábricas)' : 'Total Empire Earnings (All active factories)'}
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">{language === 'es' ? 'Fábricas consultadas' : 'Checked factories'}:</span>{' '}
+                      <strong>{readyAdvisorRows.length}</strong>
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">{language === 'es' ? 'Ganancia total combinada por hora' : 'Total combined profit per hour'}:</span>{' '}
+                      <strong className={totalCombinedProfitPerHour >= 0 ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}>
+                        {formatNumber(totalCombinedProfitPerHour)} COIN
+                      </strong>
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">{language === 'es' ? 'Ganancia total combinada por día' : 'Total combined profit per day'}:</span>{' '}
+                      <strong className={totalCombinedProfitPerDay >= 0 ? 'text-emerald-400 font-extrabold text-base' : 'text-red-400 font-extrabold text-base'}>
+                        {formatNumber(totalCombinedProfitPerDay)} COIN
+                      </strong>
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Card>
+        </div>
 
         {advisorRows.length > 0 && (
-          <Card title="All Matched Factories Ranked">
+          <div className="w-[95vw] max-w-[1800px] relative left-1/2 -translate-x-1/2">
+            <Card title={language === 'es' ? 'Clasificación de Fábricas Coincidentes' : 'All Matched Factories Ranked'}>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[1040px] text-left text-sm">
                 <thead className="text-slate-300">
                   <tr>
-                    <th className="p-2">Rank</th>
-                    <th className="p-2">Factory</th>
-                    <th className="p-2">Workshop</th>
-                    <th className="p-2">Active Boost</th>
-                    <th className="p-2">Mastery</th>
-                    <th className="p-2">Base Time</th>
-                    <th className="p-2">Output Time</th>
-                    <th className="p-2">Effective Speed</th>
-                    <th className="p-2">Profit Per Hour</th>
-                    <th className="p-2">Profit Per Run</th>
-                    <th className="p-2">Input Buy Cost</th>
-                    <th className="p-2">Output Sell Value</th>
-                    <th className="p-2">Impact</th>
-                    <th className="p-2">Status</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Rango' : 'Rank'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Fábrica' : 'Factory'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Taller' : 'Workshop'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Boost Activo' : 'Active Boost'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Maestría' : 'Mastery'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Tiempo Base' : 'Base Time'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Tiempo Final' : 'Output Time'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Velocidad Efectiva' : 'Effective Speed'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ganancia por Hora' : 'Profit Per Hour'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ganancia por Ejecución' : 'Profit Per Run'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Costo Compra' : 'Input Buy Cost'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Valor Venta' : 'Output Sell Value'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Impacto' : 'Impact'}</th>
+                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Estado' : 'Status'}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -470,35 +661,42 @@ export default function Profitability() {
                     const resImg = getResourceImage(advisorRow.row.token);
                     return (
                       <tr key={advisorRow.option.key} className="border-t border-slate-800">
-                        <td className="p-2">{index + 1}</td>
-                        <td className="p-2 font-semibold">
+                        <td className="p-2 whitespace-nowrap">{index + 1}</td>
+                        <td className="p-2 font-semibold whitespace-nowrap">
                           <div className="flex items-center gap-2">
-                            {factImg && <img src={factImg} alt={advisorRow.option.symbol} className="h-8 w-8 rounded border border-slate-700 bg-slate-900 object-contain p-0.5" />}
-                            <span>{formatFactoryLabel(advisorRow.option)}</span>
+                            {factImg && (
+                              <img 
+                                src={factImg} 
+                                alt={advisorRow.option.symbol} 
+                                className="h-8 w-8 shrink-0 bg-slate-900/60 object-contain p-0.5" 
+                                style={{ borderRadius: 'var(--radius-resource-item)' }}
+                              />
+                            )}
+                            <span>{formatFactoryLabel(advisorRow.option, language)}</span>
                           </div>
                         </td>
-                        <td className="p-2">{formatNumber(advisorRow.workshopBoostPercent, 2)}%</td>
-                        <td className="p-2">{formatNumber(advisorRow.activeBoostPercent, 2)}%</td>
-                        <td className="p-2">
-                          <div className="flex items-center gap-1.5">
+                        <td className="p-2 whitespace-nowrap">{formatNumber(advisorRow.workshopBoostPercent, 2)}%</td>
+                        <td className="p-2 whitespace-nowrap">{formatNumber(advisorRow.activeBoostPercent, 2)}%</td>
+                        <td className="p-2 whitespace-nowrap">
+                          <div className="flex items-center gap-1.5 font-semibold">
                             <span>Lv {advisorRow.masteryLevel} / {formatNumber(advisorRow.masteryReductionPercent, 2)}%</span>
                             {resImg && <img src={resImg} alt={advisorRow.row.token} className="h-4 w-4 object-contain" />}
-                            <span>{advisorRow.row.token}</span>
+                            <span>{formatFactoryName(advisorRow.row.token, language)}</span>
                           </div>
                         </td>
-                        <td className="p-2">{formatDurationFromMinutes(advisorRow.baseDurationMinutes)}</td>
-                        <td className="p-2">{formatDurationFromMinutes(advisorRow.calculatedDurationMinutes)}</td>
-                        <td className="p-2">{formatSpeed(advisorRow.effectiveSpeedPercent)}</td>
-                        <td className={advisorRow.profitPerHour >= 0 ? 'p-2 text-emerald-300' : 'p-2 text-red-300'}>
-                          {advisorRow.missingQuote ? 'Waiting' : `${formatNumber(advisorRow.profitPerHour)} COIN`}
+                        <td className="p-2 whitespace-nowrap">{formatDurationFromMinutes(advisorRow.baseDurationMinutes)}</td>
+                        <td className="p-2 whitespace-nowrap">{formatDurationFromMinutes(advisorRow.calculatedDurationMinutes)}</td>
+                        <td className="p-2 whitespace-nowrap">{formatSpeed(advisorRow.effectiveSpeedPercent)}</td>
+                        <td className={`p-2 whitespace-nowrap font-bold ${advisorRow.profitPerHour >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+                          {advisorRow.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${formatNumber(advisorRow.profitPerHour)} COIN`}
                         </td>
-                        <td className={advisorRow.profitPerRun >= 0 ? 'p-2 text-emerald-300' : 'p-2 text-red-300'}>
-                          {advisorRow.missingQuote ? 'Waiting' : `${formatNumber(advisorRow.profitPerRun)} COIN`}
+                        <td className={`p-2 whitespace-nowrap font-bold ${advisorRow.profitPerRun >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+                          {advisorRow.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${formatNumber(advisorRow.profitPerRun)} COIN`}
                         </td>
-                        <td className="p-2">{advisorRow.missingQuote ? 'Waiting' : `${formatNumber(advisorRow.inputCost)} COIN`}</td>
-                        <td className="p-2">{advisorRow.missingQuote ? 'Waiting' : `${formatNumber(advisorRow.outputValue)} COIN`}</td>
-                        <td className="p-2">{advisorRow.missingQuote ? 'Waiting' : `${formatNumber(advisorRow.maxImpact, 2)}%`}</td>
-                        <td className="p-2">{advisorRow.missingQuote ? 'Waiting for quote' : 'Ready'}</td>
+                        <td className="p-2 whitespace-nowrap">{advisorRow.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${formatNumber(advisorRow.inputCost)} COIN`}</td>
+                        <td className="p-2 whitespace-nowrap">{advisorRow.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${formatNumber(advisorRow.outputValue)} COIN`}</td>
+                        <td className="p-2 whitespace-nowrap">{advisorRow.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${formatNumber(advisorRow.maxImpact, 2)}%`}</td>
+                        <td className="p-2 whitespace-nowrap">{advisorRow.missingQuote ? (language === 'es' ? 'Buscando cotización' : 'Waiting for quote') : (language === 'es' ? 'Listo' : 'Ready')}</td>
                       </tr>
                     );
                   })}
@@ -506,43 +704,42 @@ export default function Profitability() {
               </table>
             </div>
           </Card>
+          </div>
         )}
 
-        <Card title="Profitability Calculator">
-          <div className="space-y-3">
-            <p className="text-sm text-slate-300">
-              Select one of your live Craft World factories. The calculator matches your owned factory level to the uploaded factory CSV.
-            </p>
-            <p className="text-sm text-yellow-200">
-              Output value uses the sell quote: output resource to COIN. Input costs use buy quotes: COIN to the selected factory resource inputs after mastery reduction.
-            </p>
-            <p className="text-sm text-yellow-200">
-              Upgrade requirement uses the next CSV level row. Profit per hour includes workshop speed and active factory boosts.
-            </p>
+        <div className="max-w-[720px] mx-auto w-full relative z-20">
+          <Card 
+            title={language === 'es' ? 'Calculadora de Rentabilidad' : 'Profitability Calculator'}
+            style={{ overflow: 'visible' }}
+          >
+            <div className="space-y-3">
+              <p className="text-sm text-slate-300">
+                {language === 'es'
+                  ? 'Selecciona una de tus fábricas activas. La calculadora asocia el nivel de tu fábrica con los datos del archivo CSV cargado.'
+                  : 'Select one of your live Craft World factories. The calculator matches your owned factory level to the uploaded factory CSV.'}
+              </p>
+              <p className="text-xs text-slate-400">
+                {language === 'es'
+                  ? 'El valor de salida utiliza la cotización de venta del recurso final a monedas. Los costos de entrada utilizan cotizaciones de compra de ingredientes, aplicándoles tu reducción por maestría de recursos.'
+                  : 'Output value uses the sell quote: output resource to COIN. Input costs use buy quotes: COIN to the selected factory resource inputs after mastery reduction.'}
+              </p>
 
-            {error && <p className="text-sm text-red-300">{error}</p>}
-            {quoteError && <p className="text-sm text-red-300">{quoteError}</p>}
-
-            {!ownedFactoryOptions.length ? (
-              <p className="text-sm text-slate-400">No live factories were found for this account yet.</p>
-            ) : (
-              <label className="space-y-1 text-sm">
-                <span>Your Factory</span>
-                <select
-                  value={selectedFactoryKey}
-                  onChange={(event) => setSelectedFactoryKey(event.target.value)}
-                  className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2"
-                >
-                  {ownedFactoryOptions.map((option) => (
-                    <option key={option.key} value={option.key}>
-                      {formatFactoryLabel(option)}{option.matchingCsvRow ? '' : ' • No CSV match'}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
-          </div>
-        </Card>
+              {!ownedFactoryOptions.length ? (
+                <p className="text-sm text-slate-400">{language === 'es' ? 'Aún no se encontraron fábricas activas para esta cuenta.' : 'No live factories were found for this account yet.'}</p>
+              ) : (
+                <div className="space-y-1">
+                  <span className="text-sm text-slate-300">{language === 'es' ? 'Tu Fábrica' : 'Your Factory'}</span>
+                  <Dropdown
+                    value={selectedFactoryKey}
+                    onChange={(val) => setSelectedFactoryKey(String(val))}
+                    options={calculatorOptions}
+                    searchable={true}
+                  />
+                </div>
+              )}
+            </div>
+          </Card>
+        </div>
 
         {selectedFactory && !selectedRow && (
           <Card title="CSV Match Missing">
@@ -553,57 +750,65 @@ export default function Profitability() {
         )}
 
         {selectedFactory && selectedRow && (
-          <>
-            <Card title="Selected Owned Factory">
+          <div className="max-w-[720px] mx-auto w-full space-y-4">
+            <Card title={language === 'es' ? 'Fábrica Propia Seleccionada' : 'Selected Owned Factory'}>
               <div className="flex gap-4 items-start text-sm">
                 {getFactoryImage(selectedFactory.symbol) && (
-                  <img src={getFactoryImage(selectedFactory.symbol)} alt={selectedFactory.symbol} className="h-16 w-16 shrink-0 rounded-lg border border-slate-700 bg-slate-900 object-contain p-1" />
+                  <img 
+                    src={getFactoryImage(selectedFactory.symbol)} 
+                    alt={selectedFactory.symbol} 
+                    className="h-16 w-16 shrink-0 bg-slate-900/60 object-contain p-1" 
+                    style={{ borderRadius: 'var(--radius-resource-item)' }} 
+                  />
                 )}
                 <div className="grid gap-2 text-sm md:grid-cols-2 flex-grow">
-                  <p>Plot: {selectedFactory.plotName}</p>
-                  <p>Factory: {selectedFactory.symbol}</p>
-                  <p>Owned Display Level: {selectedFactory.displayLevel}</p>
-                  <p>Next Display Level: {selectedFactory.nextDisplayLevel}</p>
-                  <p>Craft Level: {selectedFactory.craftDisplayLevel || 'N/A'}</p>
-                  <p>CSV Level: {selectedRow.level}</p>
-                  <p>Original Duration: {formatNumber(selectedRow.duration_min, 2)} min</p>
-                  <p>Base Time: {formatDurationFromMinutes(selectedBaseDurationMinutes)}</p>
-                  <p>Output Time: {formatDurationFromMinutes(selectedCalculatedDurationMinutes)}</p>
-                  <p>Effective Speed: {formatSpeed(selectedEffectiveSpeedPercent)}</p>
-                  <p>Workshop Speed Boost: {formatNumber(selectedWorkshopBoostPercent, 2)}%</p>
-                  <p>Active Boost: {formatNumber(selectedActiveBoostPercent, 2)}%</p>
-                  <p className="flex items-center gap-1.5">
-                    <span>Mastery: Lv {selectedMasteryLevel} / {formatNumber(selectedMasteryReductionPercent, 2)}%</span>
-                    {getResourceImage(selectedRow.token) && <img src={getResourceImage(selectedRow.token)} alt={selectedRow.token} className="h-4 w-4 object-contain" />}
-                    <span>{selectedRow.token}</span>
+                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Parcela' : 'Plot'}:</span> <strong>{formatPlotName(selectedFactory.plotName, language)}</strong></p>
+                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Fábrica' : 'Factory'}:</span> <strong>{formatFactoryName(selectedFactory.symbol, language)}</strong></p>
+                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Nivel de propiedad' : 'Owned Display Level'}:</span> <strong>{selectedFactory.displayLevel}</strong></p>
+                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Siguiente nivel' : 'Next Display Level'}:</span> <strong>{selectedFactory.nextDisplayLevel}</strong></p>
+                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Nivel de fabricación' : 'Craft Level'}:</span> <strong>{selectedFactory.craftDisplayLevel || 'N/A'}</strong></p>
+                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Nivel CSV' : 'CSV Level'}:</span> <strong>{selectedRow.level}</strong></p>
+                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Duración original' : 'Original Duration'}:</span> <strong>{formatNumber(selectedRow.duration_min, 2)} min</strong></p>
+                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Tiempo base' : 'Base Time'}:</span> <strong>{formatDurationFromMinutes(selectedBaseDurationMinutes)}</strong></p>
+                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Tiempo final' : 'Output Time'}:</span> <strong>{formatDurationFromMinutes(selectedCalculatedDurationMinutes)}</strong></p>
+                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Velocidad efectiva' : 'Effective Speed'}:</span> <strong>{formatSpeed(selectedEffectiveSpeedPercent)}</strong></p>
+                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Velocidad taller' : 'Workshop Speed Boost'}:</span> <strong>{formatNumber(selectedWorkshopBoostPercent, 2)}%</strong></p>
+                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Boost activo' : 'Active Boost'}:</span> <strong>{formatNumber(selectedActiveBoostPercent, 2)}%</strong></p>
+                  <p className="flex items-center gap-1.5 text-slate-300">
+                    <span className="text-slate-400">{language === 'es' ? 'Maestría' : 'Mastery'}:</span>{' '}
+                    <span>Lv {selectedMasteryLevel} / {formatNumber(selectedMasteryReductionPercent, 2)}%</span>
+                    {getResourceImage(selectedRow.token) && <img src={getResourceImage(selectedRow.token)} alt={selectedRow.token} className="h-4 w-4 object-contain shrink-0" />}
+                    <strong>{formatFactoryName(selectedRow.token, language)}</strong>
                   </p>
-                  <p className="flex items-center gap-1.5">
-                    <span>Output: {formatNumber(selectedRow.output_amount)}</span>
-                    {getResourceImage(selectedRow.output_token) && <img src={getResourceImage(selectedRow.output_token)} alt={selectedRow.output_token} className="h-4 w-4 object-contain" />}
-                    <span>{selectedRow.output_token}</span>
+                  <p className="flex items-center gap-1.5 text-slate-300">
+                    <span className="text-slate-400">{language === 'es' ? 'Salida' : 'Output'}:</span>{' '}
+                    <strong>{formatNumber(selectedRow.output_amount)}</strong>
+                    {getResourceImage(selectedRow.output_token) && <img src={getResourceImage(selectedRow.output_token)} alt={selectedRow.output_token} className="h-4 w-4 object-contain shrink-0" />}
+                    <strong>{formatFactoryName(selectedRow.output_token, language)}</strong>
                   </p>
-                  <p className="flex items-center gap-1.5">
-                    <span>Input 1: {formatNumber(selectedRow.input_amount_1)} → {formatNumber(selectedInput1AdjustedAmount)}</span>
-                    {getResourceImage(selectedRow.input_token_1) && <img src={getResourceImage(selectedRow.input_token_1)} alt={selectedRow.input_token_1} className="h-4 w-4 object-contain" />}
-                    <span>{selectedRow.input_token_1}</span>
+                  <p className="flex items-center gap-1.5 text-slate-300">
+                    <span className="text-slate-400">{language === 'es' ? 'Ingrediente 1' : 'Input 1'}:</span>{' '}
+                    <strong>{formatNumber(selectedRow.input_amount_1)} → {formatNumber(selectedInput1AdjustedAmount)}</strong>
+                    {getResourceImage(selectedRow.input_token_1) && <img src={getResourceImage(selectedRow.input_token_1)} alt={selectedRow.input_token_1} className="h-4 w-4 object-contain shrink-0" />}
+                    <strong>{formatFactoryName(selectedRow.input_token_1, language)}</strong>
                   </p>
-                  <p className="flex items-center gap-1.5">
-                    <span>Input 2: </span>
+                  <p className="flex items-center gap-1.5 text-slate-300">
+                    <span className="text-slate-400">{language === 'es' ? 'Ingrediente 2' : 'Input 2'}:</span>{' '}
                     {selectedRow.input_token_2 ? (
                       <>
-                        <span>{formatNumber(selectedRow.input_amount_2)} → {formatNumber(selectedInput2AdjustedAmount)}</span>
-                        {getResourceImage(selectedRow.input_token_2) && <img src={getResourceImage(selectedRow.input_token_2)} alt={selectedRow.input_token_2} className="h-4 w-4 object-contain" />}
-                        <span>{selectedRow.input_token_2}</span>
+                        <strong>{formatNumber(selectedRow.input_amount_2)} → {formatNumber(selectedInput2AdjustedAmount)}</strong>
+                        {getResourceImage(selectedRow.input_token_2) && <img src={getResourceImage(selectedRow.input_token_2)} alt={selectedRow.input_token_2} className="h-4 w-4 object-contain shrink-0" />}
+                        <strong>{formatFactoryName(selectedRow.input_token_2, language)}</strong>
                       </>
                     ) : 'N/A'}
                   </p>
-                  <p className="flex items-center gap-1.5 md:col-span-2">
-                    <span>Upgrade Requires: </span>
+                  <p className="flex items-center gap-1.5 md:col-span-2 text-slate-300">
+                    <span className="text-slate-400">{language === 'es' ? 'Mejora requiere' : 'Upgrade Requires'}:</span>{' '}
                     {selectedUpgradeRow?.upgrade_token ? (
                       <>
-                        <span>{formatNumber(selectedUpgradeRow.upgrade_amount)}</span>
-                        {getResourceImage(selectedUpgradeRow.upgrade_token) && <img src={getResourceImage(selectedUpgradeRow.upgrade_token)} alt={selectedUpgradeRow.upgrade_token} className="h-4 w-4 object-contain" />}
-                        <span>{selectedUpgradeRow.upgrade_token}</span>
+                        <strong>{formatNumber(selectedUpgradeRow.upgrade_amount)}</strong>
+                        {getResourceImage(selectedUpgradeRow.upgrade_token) && <img src={getResourceImage(selectedUpgradeRow.upgrade_token)} alt={selectedUpgradeRow.upgrade_token} className="h-4 w-4 object-contain shrink-0" />}
+                        <strong>{formatFactoryName(selectedUpgradeRow.upgrade_token, language)}</strong>
                       </>
                     ) : 'No next CSV row'}
                   </p>
@@ -611,30 +816,31 @@ export default function Profitability() {
               </div>
             </Card>
 
-            <Card title="Live COIN Quotes">
+            <Card title={language === 'es' ? 'Cotizaciones de Monedas en Vivo' : 'Live COIN Quotes'}>
               <div className="space-y-2 text-sm">
-                {quoteLoading && <p className="text-slate-400">Loading Craft World quotes...</p>}
-                <QuoteLine label="Output Sell Value" quote={outputQuote} />
-                <QuoteLine label="Input 1 Buy Cost After Mastery" quote={input1Quote} />
-                {selectedRow.input_token_2 && <QuoteLine label="Input 2 Buy Cost After Mastery" quote={input2Quote} />}
-                {selectedUpgradeRow?.upgrade_token && <QuoteLine label="Upgrade Buy Cost" quote={upgradeQuote} />}
+                {quoteLoading && <p className="text-slate-400">{language === 'es' ? 'Cargando cotizaciones del mercado...' : 'Loading Craft World quotes...'}</p>}
+                <QuoteLine label={language === 'es' ? 'Valor de Venta de Salida' : 'Output Sell Value'} quote={outputQuote} />
+                <QuoteLine label={language === 'es' ? 'Costo Compra Ingrediente 1 tras Maestría' : 'Input 1 Buy Cost After Mastery'} quote={input1Quote} />
+                {selectedRow.input_token_2 && <QuoteLine label={language === 'es' ? 'Costo Compra Ingrediente 2 tras Maestría' : 'Input 2 Buy Cost After Mastery'} quote={input2Quote} />}
+                {selectedUpgradeRow?.upgrade_token && <QuoteLine label={language === 'es' ? 'Costo Compra de Mejora' : 'Upgrade Buy Cost'} quote={upgradeQuote} />}
               </div>
             </Card>
 
-            <Card title="Results">
+            <Card title={language === 'es' ? 'Resultados' : 'Results'}>
               <div className="grid gap-2 text-sm md:grid-cols-2">
-                <p>Input Buy Cost After Mastery: {formatNumber(inputCost)} COIN</p>
-                <p>Output Sell Value: {formatNumber(outputValue)} COIN</p>
-                <p>Profit Per Run: {formatNumber(profitPerRun)} COIN</p>
-                <p>Profit Per Hour: {formatNumber(profitPerHour)} COIN</p>
-                <p>Runs Per Hour: {formatNumber(runsPerHour, 4)}</p>
-                <p>Base Time: {formatDurationFromMinutes(selectedBaseDurationMinutes)}</p>
-                <p>Output Time: {formatDurationFromMinutes(selectedCalculatedDurationMinutes)}</p>
-                <p>Effective Speed: {formatSpeed(selectedEffectiveSpeedPercent)}</p>
-                <p>Upgrade Buy Cost: {formatNumber(upgradeCost)} COIN</p>
+                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Costo Compra Ingredientes tras Maestría' : 'Input Buy Cost After Mastery'}:</span> <strong>{formatNumber(inputCost)} COIN</strong></p>
+                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Valor Venta de Salida' : 'Output Sell Value'}:</span> <strong>{formatNumber(outputValue)} COIN</strong></p>
+                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Ganancia por Ejecución' : 'Profit Per Run'}:</span> <strong className={profitPerRun >= 0 ? 'text-emerald-400' : 'text-red-400'}>{formatNumber(profitPerRun)} COIN</strong></p>
+                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Ganancia por Hora' : 'Profit Per Hour'}:</span> <strong className={profitPerHour >= 0 ? 'text-emerald-400 font-bold text-base' : 'text-red-400 font-bold text-base'}>{formatNumber(profitPerHour)} COIN</strong></p>
+                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Ganancia por Día' : 'Profit Per Day'}:</span> <strong className={profitPerHour >= 0 ? 'text-emerald-400 font-extrabold text-base' : 'text-red-400 font-extrabold text-base'}>{formatNumber(profitPerHour * 24)} COIN</strong></p>
+                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Ejecuciones por Hora' : 'Runs Per Hour'}:</span> <strong>{formatNumber(runsPerHour, 4)}</strong></p>
+                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Tiempo base' : 'Base Time'}:</span> <strong>{formatDurationFromMinutes(selectedBaseDurationMinutes)}</strong></p>
+                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Tiempo final' : 'Output Time'}:</span> <strong>{formatDurationFromMinutes(selectedCalculatedDurationMinutes)}</strong></p>
+                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Velocidad efectiva' : 'Effective Speed'}:</span> <strong>{formatSpeed(selectedEffectiveSpeedPercent)}</strong></p>
+                <p className="text-slate-300 md:col-span-2"><span className="text-slate-400">{language === 'es' ? 'Costo Compra de Mejora' : 'Upgrade Buy Cost'}:</span> <strong>{formatNumber(upgradeCost)} COIN</strong></p>
               </div>
             </Card>
-          </>
+          </div>
         )}
       </div>
     </Layout>
