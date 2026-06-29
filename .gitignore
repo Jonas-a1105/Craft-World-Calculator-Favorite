@@ -17,3 +17,8 @@ Thumbs.db
 Craft-Companion/.git_backup
 Creator kit/
 creator_kit/
+
+# Inactive folders, text files and root duplicate background image
+dashboard-app/
+*.txt
+/fondo.jpeg
