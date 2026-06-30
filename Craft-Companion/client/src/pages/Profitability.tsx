@@ -383,32 +383,43 @@ export default function Profitability() {
       try {
         const missingRequests = quoteRequests.filter((request) => quotes[request.key] === undefined);
 
-        for (let index = 0; index < missingRequests.length; index += QUOTE_BATCH_SIZE) {
-          const batch = missingRequests.slice(index, index + QUOTE_BATCH_SIZE);
-          const entries = await Promise.all(
-            batch.map(async (request) => {
-              try {
-                const quote = request.type === 'buy'
-                  ? await getCraftworldBuyQuote({
-                      inputSymbol: 'COIN',
-                      outputSymbol: request.symbol,
-                      outputAmount: request.amount,
-                    })
-                  : await getCraftworldQuote({
-                      inputSymbol: request.symbol,
-                      outputSymbol: 'COIN',
-                      inputAmount: request.amount,
-                    });
-                return [request.key, quote] as const;
-              } catch {
-                return [request.key, null] as const;
-              }
-            }),
-          );
+        if (missingRequests.length === 0) {
+          setQuotedCount(quoteRequests.length);
+          await new Promise((resolve) => setTimeout(resolve, 800));
+        } else {
+          const alreadyCachedCount = quoteRequests.length - missingRequests.length;
+          setQuotedCount(alreadyCachedCount);
 
-          if (cancelled) return;
-          setQuotes((current) => ({ ...current, ...Object.fromEntries(entries) }));
-          setQuotedCount((current) => current + entries.length);
+          for (let index = 0; index < missingRequests.length; index += QUOTE_BATCH_SIZE) {
+            const batch = missingRequests.slice(index, index + QUOTE_BATCH_SIZE);
+            const entries = await Promise.all(
+              batch.map(async (request) => {
+                try {
+                  const quote = request.type === 'buy'
+                    ? await getCraftworldBuyQuote({
+                        inputSymbol: 'COIN',
+                        outputSymbol: request.symbol,
+                        outputAmount: request.amount,
+                      })
+                    : await getCraftworldQuote({
+                        inputSymbol: request.symbol,
+                        outputSymbol: 'COIN',
+                        inputAmount: request.amount,
+                      });
+                  return [request.key, quote] as const;
+                } catch {
+                  return [request.key, null] as const;
+                }
+              }),
+            );
+
+            if (cancelled) return;
+            setQuotes((current) => ({ ...current, ...Object.fromEntries(entries) }));
+            setQuotedCount((current) => current + entries.length);
+          }
+
+          setQuotedCount(quoteRequests.length);
+          await new Promise((resolve) => setTimeout(resolve, 800));
         }
       } catch {
         if (!cancelled) setQuoteError('Unable to load one or more Craft World quotes.');
@@ -569,12 +580,14 @@ export default function Profitability() {
                   {/* Progress bar wrapper */}
                   <div className="w-full max-w-[400px] h-4 bg-zinc-900 rounded-full overflow-hidden p-0.5 border border-white/[0.05]">
                     <div 
-                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300 relative animate-wave-bar"
+                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300 relative overflow-hidden"
                       style={{ 
                         width: `${progressPercent}%`,
                         boxShadow: '0 0 10px rgba(16, 185, 129, 0.4)' 
                       }}
-                    />
+                    >
+                      <div className="absolute inset-0 animate-wave-bar" />
+                    </div>
                   </div>
 
                   {/* Percentage Indicator */}
