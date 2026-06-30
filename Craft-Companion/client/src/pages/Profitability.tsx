@@ -632,6 +632,160 @@ export default function Profitability() {
           </Card>
         </div>
 
+        {/* Prototype Card Section for Profitability */}
+        <div className="max-w-[480px] mx-auto w-full mt-2 mb-6">
+          <Card title={language === 'es' ? 'Prototipo de Tarjeta de Rentabilidad' : 'Profitability Card Prototype'}>
+            <div 
+              style={{
+                backgroundColor: 'var(--bg-card)',
+                borderRadius: 'var(--radius)',
+                padding: '16px',
+                border: 'none'
+              }}
+              className="flex flex-col gap-4"
+            >
+              
+              {/* Header: Rank, Image, Factory info, and Main Profit Pill */}
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  {/* Rank & Factory Image container */}
+                  <div className="relative shrink-0">
+                    <div 
+                      className="w-14 h-14 bg-slate-900/60 flex items-center justify-center p-1.5"
+                      style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
+                    >
+                      <img 
+                        src="/assets/factories/Steel.gif" 
+                        alt="Steel Factory" 
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/assets/resources/Steel.png';
+                        }}
+                      />
+                    </div>
+                    {/* Rank Badge */}
+                    <div className="absolute -top-2 -left-2 bg-emerald-500 text-slate-950 font-black text-[10px] w-5 h-5 rounded-full flex items-center justify-center shadow-lg">
+                      #1
+                    </div>
+                  </div>
+
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] uppercase font-black text-orange-400">
+                        {language === 'es' ? 'Acero' : 'Steel'}
+                      </span>
+                      <span className="text-[9px] bg-slate-900/80 px-2 py-0.5 rounded-full text-slate-350 font-bold">
+                        Lv 10 • Craft Lv 10
+                      </span>
+                    </div>
+                    <h3 className="text-sm font-black text-white truncate mt-1">
+                      Flexible Plot
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Profit Metric Highlight */}
+                <div className="text-right shrink-0">
+                  <div className="text-[10px] text-slate-400 uppercase font-black tracking-wider">
+                    {language === 'es' ? 'Ganancia / Hora' : 'Profit / Hour'}
+                  </div>
+                  <div className="text-sm font-black text-emerald-400 mt-0.5">
+                    +3.773172 COIN
+                  </div>
+                  <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-[9px] text-emerald-400 font-bold mt-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    {language === 'es' ? 'Listo' : 'Ready'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Grid of details as badges */}
+              <div className="flex flex-wrap justify-center gap-2">
+                <div 
+                  className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                  style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                >
+                  <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Taller:' : 'Workshop:'}</span>
+                  <strong className="text-slate-200">82%</strong>
+                </div>
+
+                <div 
+                  className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                  style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                >
+                  <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Boost Activo:' : 'Active Boost:'}</span>
+                  <strong className="text-slate-200">232%</strong>
+                </div>
+
+                <div 
+                  className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                  style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                >
+                  <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Maestría:' : 'Mastery:'}</span>
+                  <strong className="text-slate-200">Lv 10 / 5.3%</strong>
+                </div>
+
+                <div 
+                  className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                  style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                >
+                  <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Tiempo Base:' : 'Base Time:'}</span>
+                  <strong className="text-slate-200">9h 0m 0s</strong>
+                </div>
+
+                <div 
+                  className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                  style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                >
+                  <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Tiempo Final:' : 'Output Time:'}</span>
+                  <strong className="text-slate-200">1h 29m 22s</strong>
+                </div>
+
+                <div 
+                  className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                  style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                >
+                  <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Velocidad:' : 'Speed:'}</span>
+                  <strong className="text-slate-200">604.24% / 6.04x</strong>
+                </div>
+
+                <div 
+                  className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                  style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                >
+                  <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ganancia / Ejecución:' : 'Profit / Run:'}</span>
+                  <strong className="text-emerald-400">5.620044 COIN</strong>
+                </div>
+
+                <div 
+                  className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                  style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                >
+                  <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Costo Compra:' : 'Input Cost:'}</span>
+                  <strong className="text-red-400">36.275479 COIN</strong>
+                </div>
+
+                <div 
+                  className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                  style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                >
+                  <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Valor Venta:' : 'Output Value:'}</span>
+                  <strong className="text-slate-200">41.895523 COIN</strong>
+                </div>
+
+                <div 
+                  className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                  style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                >
+                  <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Impacto:' : 'Impact:'}</span>
+                  <strong className="text-slate-200">0.3%</strong>
+                </div>
+              </div>
+
+            </div>
+          </Card>
+        </div>
+
         {advisorRows.length > 0 && (
           <div className="w-[95vw] max-w-[1800px] relative left-1/2 -translate-x-1/2">
             <Card title={language === 'es' ? 'Clasificación de Fábricas Coincidentes' : 'All Matched Factories Ranked'}>
