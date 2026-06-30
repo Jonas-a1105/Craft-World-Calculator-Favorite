@@ -122,6 +122,7 @@ export default function InventoryValue() {
   const [quotedCount, setQuotedCount] = useState(0);
   const [error, setError] = useState('');
   const [quoteError, setQuoteError] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>(() => (localStorage.getItem('inventoryViewMode') as 'list' | 'grid') || 'list');
 
   useEffect(() => {
     const load = async () => {
@@ -161,26 +162,37 @@ export default function InventoryValue() {
       try {
         const missingRequests = quoteRequests.filter((request) => quotes[request.key] === undefined);
 
-        for (let index = 0; index < missingRequests.length; index += QUOTE_BATCH_SIZE) {
-          const batch = missingRequests.slice(index, index + QUOTE_BATCH_SIZE);
-          const entries = await Promise.all(
-            batch.map(async (request) => {
-              try {
-                const quote = await getCraftworldQuote({
-                  inputSymbol: request.symbol,
-                  outputSymbol: 'COIN',
-                  inputAmount: request.amount,
-                });
-                return [request.key, quote] as const;
-              } catch {
-                return [request.key, null] as const;
-              }
-            }),
-          );
+        if (missingRequests.length === 0) {
+          setQuotedCount(quoteRequests.length);
+          await new Promise((resolve) => setTimeout(resolve, 800));
+        } else {
+          const alreadyCachedCount = quoteRequests.length - missingRequests.length;
+          setQuotedCount(alreadyCachedCount);
 
-          if (cancelled) return;
-          setQuotes((current) => ({ ...current, ...Object.fromEntries(entries) }));
-          setQuotedCount((current) => current + entries.length);
+          for (let index = 0; index < missingRequests.length; index += QUOTE_BATCH_SIZE) {
+            const batch = missingRequests.slice(index, index + QUOTE_BATCH_SIZE);
+            const entries = await Promise.all(
+              batch.map(async (request) => {
+                try {
+                  const quote = await getCraftworldQuote({
+                    inputSymbol: request.symbol,
+                    outputSymbol: 'COIN',
+                    inputAmount: request.amount,
+                  });
+                  return [request.key, quote] as const;
+                } catch {
+                  return [request.key, null] as const;
+                }
+              }),
+            );
+
+            if (cancelled) return;
+            setQuotes((current) => ({ ...current, ...Object.fromEntries(entries) }));
+            setQuotedCount((current) => current + entries.length);
+          }
+
+          setQuotedCount(quoteRequests.length);
+          await new Promise((resolve) => setTimeout(resolve, 800));
         }
       } catch {
         if (!cancelled) setQuoteError('Unable to load one or more inventory quotes.');
@@ -233,13 +245,62 @@ export default function InventoryValue() {
                   ? 'Esto estima el valor en monedas (COIN) de cada recurso en tu inventario usando cotizaciones en vivo del mercado.'
                   : 'This estimates the COIN value of every resource in your inventory using live Craft World quotes.'}
               </p>
-              {quoteLoading && (
-                <p className="text-sm text-slate-400">
-                  {language === 'es'
-                    ? `Cargando cotizaciones de inventario... ${quotedCount}/${quoteRequests.length} cotizaciones comprobadas.`
-                    : `Loading inventory prices in parallel batches... ${quotedCount}/${quoteRequests.length} quotes checked.`}
-                </p>
-              )}
+              {quoteLoading && (() => {
+                const progressPercent = quoteRequests.length > 0 ? Math.round((quotedCount / quoteRequests.length) * 100) : 0;
+                return (
+                  <div className="flex flex-col items-center justify-center p-6 bg-zinc-950/40 rounded-[12px] border-none space-y-4 my-4 z-10 relative">
+                    <style>{`
+                      @keyframes wave-stripes {
+                        from { background-position: 40px 0; }
+                        to { background-position: 0 0; }
+                      }
+                      .animate-wave-bar {
+                        background-image: linear-gradient(
+                          45deg,
+                          rgba(255, 255, 255, 0.15) 25%,
+                          transparent 25%,
+                          transparent 50%,
+                          rgba(255, 255, 255, 0.15) 50%,
+                          rgba(255, 255, 255, 0.15) 75%,
+                          transparent 75%,
+                          transparent
+                        );
+                        background-size: 40px 40px;
+                        animation: wave-stripes 1.2s linear infinite;
+                      }
+                    `}</style>
+                    
+                    <div className="text-center space-y-1">
+                      <p className="text-sm font-black text-white uppercase tracking-wider">
+                        {language === 'es' ? 'Cargando cotizaciones de inventario...' : 'Loading inventory quotes...'}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {language === 'es' 
+                          ? `Consultando cotizaciones en tiempo real: ${quotedCount} de ${quoteRequests.length}`
+                          : `Fetching live quotes: ${quotedCount} of ${quoteRequests.length}`}
+                      </p>
+                    </div>
+
+                    {/* Progress bar wrapper */}
+                    <div className="w-full max-w-[400px] h-4 bg-zinc-900 rounded-full overflow-hidden p-0.5 border border-white/[0.05]">
+                      <div 
+                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300 relative overflow-hidden"
+                        style={{ 
+                          width: `${progressPercent}%`,
+                          boxShadow: '0 0 10px rgba(16, 185, 129, 0.4)' 
+                        }}
+                      >
+                        <div className="absolute inset-0 animate-wave-bar" />
+                      </div>
+                    </div>
+
+                    {/* Percentage Indicator */}
+                    <span className="text-xs font-black text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full">
+                      {progressPercent}%
+                    </span>
+                  </div>
+                );
+              })()}
               {error && <p className="text-sm text-red-300">{error}</p>}
               {quoteError && <p className="text-sm text-red-300">{quoteError}</p>}
               {!inventory.length && (
@@ -267,7 +328,7 @@ export default function InventoryValue() {
           <Card title={language === 'es' ? 'Recurso de Mayor Valor' : 'Highest Value Resource'}>
             <div className="flex flex-col items-center justify-center py-1">
               {highestValueRow ? (
-                <div className="flex items-center gap-2 font-semibold">
+                <div className="flex items-center gap-2 font-black text-white bg-white/[0.01] px-3 py-1.5 rounded-full">
                   {getResourceImage(highestValueRow.symbol) && (
                     <img 
                       src={getResourceImage(highestValueRow.symbol)} 
@@ -276,7 +337,7 @@ export default function InventoryValue() {
                       style={{ borderRadius: 'var(--radius-resource-item)' }}
                     />
                   )}
-                  <span>{formatFactoryName(highestValueRow.symbol, language)}: {formatNumber(highestValueRow.value)} COIN</span>
+                  <span>{formatFactoryName(highestValueRow.symbol, language)}: <span className="text-amber-450">{formatNumber(highestValueRow.value)} COIN</span></span>
                 </div>
               ) : (
                 <span className="text-slate-400 text-sm">{language === 'es' ? 'Esperando precios' : 'Waiting for prices'}</span>
@@ -287,53 +348,167 @@ export default function InventoryValue() {
 
         {valueRows.length > 0 && (
           <Card title={language === 'es' ? 'Recursos Clasificados por Valor COIN' : 'Resources Ranked by COIN Value'}>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[720px] text-left text-sm">
-                <thead className="text-slate-300">
-                  <tr>
-                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Rango' : 'Rank'}</th>
-                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Recurso' : 'Resource'}</th>
-                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Cantidad de Propiedad' : 'Amount Owned'}</th>
-                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Valor COIN Estimado' : 'Estimated COIN Value'}</th>
-                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Impacto de Precio' : 'Price Impact'}</th>
-                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Estado' : 'Status'}</th>
-                  </tr>
-                </thead>
-                <tbody>
+            <div className="space-y-4">
+              <div className="flex justify-end gap-2">
+                <button 
+                  onClick={() => { setViewMode('list'); localStorage.setItem('inventoryViewMode', 'list'); }}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'list' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                  style={{ border: 'none' }}
+                >
+                  {language === 'es' ? 'Lista' : 'List'}
+                </button>
+                <button 
+                  onClick={() => { setViewMode('grid'); localStorage.setItem('inventoryViewMode', 'grid'); }}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'grid' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                  style={{ border: 'none' }}
+                >
+                  {language === 'es' ? 'Tarjetas' : 'Cards'}
+                </button>
+              </div>
+
+              {viewMode === 'list' ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[720px] text-left text-sm">
+                    <thead className="text-slate-300">
+                      <tr>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Rango' : 'Rank'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Recurso' : 'Resource'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Cantidad de Propiedad' : 'Amount Owned'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Valor COIN Estimado' : 'Estimated COIN Value'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Impacto de Precio' : 'Price Impact'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Estado' : 'Status'}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {valueRows.map((row, index) => {
+                        const img = getResourceImage(row.symbol);
+                        const resourceName = formatFactoryName(row.symbol, language);
+                        return (
+                          <tr key={row.symbol} className="border-t border-slate-800">
+                            <td className="p-2 whitespace-nowrap">{index + 1}</td>
+                            <td className="p-2 font-semibold whitespace-nowrap">
+                              <div className="flex items-center gap-2">
+                                {img && (
+                                  <img 
+                                    src={img} 
+                                    alt={row.symbol} 
+                                    className="h-5 w-5 object-contain" 
+                                    style={{ borderRadius: 'var(--radius-resource-item)' }}
+                                  />
+                                )}
+                                <span>{resourceName}</span>
+                              </div>
+                            </td>
+                            <td className="p-2 whitespace-nowrap">{formatNumber(row.amount)}</td>
+                            <td className="p-2 whitespace-nowrap text-emerald-350 font-bold">
+                              {row.quote ? `${formatNumber(row.value)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                            </td>
+                            <td className="p-2 whitespace-nowrap">
+                              {row.quote ? `${formatNumber(row.impact, 2)}%` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                            </td>
+                            <td className="p-2 whitespace-nowrap">
+                              {row.quote ? (language === 'es' ? 'Listo' : 'Ready') : (language === 'es' ? 'Buscando cotización' : 'Waiting for quote')}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full">
                   {valueRows.map((row, index) => {
                     const img = getResourceImage(row.symbol);
                     const resourceName = formatFactoryName(row.symbol, language);
                     return (
-                      <tr key={row.symbol} className="border-t border-slate-800">
-                        <td className="p-2 whitespace-nowrap">{index + 1}</td>
-                        <td className="p-2 font-semibold whitespace-nowrap">
-                          <div className="flex items-center gap-2">
-                            {img && (
+                      <div 
+                        key={row.symbol} 
+                        style={{
+                          backgroundColor: 'var(--bg-card)',
+                          borderRadius: 'var(--radius)',
+                          padding: '16px',
+                          border: 'none'
+                        }}
+                        className="flex flex-col gap-4 relative overflow-hidden"
+                      >
+                        {/* Rank indicator badge */}
+                        <div className="absolute top-3 right-3">
+                          <span className="text-[10px] font-black text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                            #{index + 1}
+                          </span>
+                        </div>
+
+                        {/* Header: Title + Image */}
+                        <div className="flex items-center gap-3">
+                          <div 
+                            className="w-12 h-12 bg-slate-900/60 flex items-center justify-center p-1 shrink-0"
+                            style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
+                          >
+                            {img ? (
                               <img 
                                 src={img} 
                                 alt={row.symbol} 
-                                className="h-5 w-5 object-contain" 
-                                style={{ borderRadius: 'var(--radius-resource-item)' }}
+                                className="w-full h-full object-contain"
                               />
+                            ) : (
+                              <div className="text-xs font-black text-slate-500">{row.symbol.slice(0, 3)}</div>
                             )}
-                            <span>{resourceName}</span>
                           </div>
-                        </td>
-                        <td className="p-2 whitespace-nowrap">{formatNumber(row.amount)}</td>
-                        <td className="p-2 whitespace-nowrap text-emerald-300">
-                          {row.quote ? `${formatNumber(row.value)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')}
-                        </td>
-                        <td className="p-2 whitespace-nowrap">
-                          {row.quote ? `${formatNumber(row.impact, 2)}%` : (language === 'es' ? 'Esperando' : 'Waiting')}
-                        </td>
-                        <td className="p-2 whitespace-nowrap">
-                          {row.quote ? (language === 'es' ? 'Listo' : 'Ready') : (language === 'es' ? 'Buscando cotización' : 'Waiting for quote')}
-                        </td>
-                      </tr>
+                          <div className="min-w-0 pr-10">
+                            <span className="text-[10px] uppercase font-black text-orange-400">
+                              {language === 'es' ? 'Recurso' : 'Resource'}
+                            </span>
+                            <h3 className="text-sm font-black text-white truncate mt-0.5">
+                              {resourceName}
+                            </h3>
+                          </div>
+                        </div>
+
+                        {/* Details grid as badges */}
+                        <div className="flex flex-wrap gap-2 pt-3 border-t border-white/[0.03] justify-center">
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Cant. Propia:' : 'Amount Owned:'}</span>
+                            <strong className="text-slate-200">{formatNumber(row.amount)}</strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Valor Estimado:' : 'Estimated Value:'}</span>
+                            <strong className="text-emerald-450">
+                              {row.quote ? `${formatNumber(row.value)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                            </strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Impacto:' : 'Price Impact:'}</span>
+                            <strong className="text-amber-450">
+                              {row.quote ? `${formatNumber(row.impact, 2)}%` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                            </strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Estado:' : 'Status:'}</span>
+                            <span className={`font-bold ${row.quote ? 'text-emerald-450' : 'text-yellow-500'}`}>
+                              {row.quote ? (language === 'es' ? 'Listo' : 'Ready') : (language === 'es' ? 'Buscando cotización' : 'Waiting for quote')}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
+                </div>
+              )}
             </div>
           </Card>
         )}
