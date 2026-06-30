@@ -195,6 +195,9 @@ export default function MyHome() {
   const [walletData, setWalletData] = useState<WalletData | null>(null);
   const [craftWorldUidInput, setCraftWorldUidInput] = useState('');
   const [error, setError] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>(() => {
+    return (localStorage.getItem('proficienciesViewMode') as 'list' | 'grid') || 'list';
+  });
   const [identityMessage, setIdentityMessage] = useState('');
 
   const load = async () => {
@@ -754,42 +757,136 @@ export default function MyHome() {
 
         {/* Proficiencies Card */}
         <div className="lg:col-span-12">
-          <Card title="Proficiencies">
+          <Card title={language === 'es' ? 'Maestrías / Profesiones' : 'Proficiencies'}>
             {sortedProficiencies.length ? (
-              <div className="space-y-3">
-                <p className="text-xs text-slate-400">
-                  {language === 'es' ? 'Cantidad recolectada y nivel de maestría reclamado devuelto por Craft World.' : 'Collected amount and claimed proficiency level returned by Craft World.'}
-                </p>
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[500px] text-left text-sm">
-                    <thead className="text-slate-300">
-                      <tr>
-                        <th className="p-2">{language === 'es' ? 'Recurso' : 'Resource'}</th>
-                        <th className="p-2">{language === 'es' ? 'Cantidad Recolectada' : 'Collected Amount'}</th>
-                        <th className="p-2">{language === 'es' ? 'Nivel Reclamado' : 'Claimed Level'}</th>
-                        <th className="p-2">{language === 'es' ? 'Siguiente Nivel' : 'Next Level'}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sortedProficiencies.map((item, index) => {
-                        const symbol = item.symbol || 'Unknown';
-                        const claimedLevel = typeof item.claimedLevel === 'number' ? item.claimedLevel : 0;
-                        const img = getResourceImage(symbol);
-                        return (
-                          <tr key={`${symbol}-${index}`} className="border-t border-slate-800">
-                            <td className="p-2 font-semibold flex items-center gap-2">
-                              {img && <img src={img} alt={symbol} className="h-5 w-5 object-contain" />}
-                              <span>{symbol}</span>
-                            </td>
-                            <td className="p-2">{formatNumber(item.collectedAmount)}</td>
-                            <td className="p-2">{formatNumber(claimedLevel)}</td>
-                            <td className="p-2">{claimedLevel + 1}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <p className="text-xs text-slate-400">
+                    {language === 'es' ? 'Cantidad recolectada y nivel de maestría reclamado devuelto por Craft World.' : 'Collected amount and claimed proficiency level returned by Craft World.'}
+                  </p>
+                  <div className="flex justify-end gap-2 shrink-0">
+                    <button 
+                      onClick={() => { setViewMode('list'); localStorage.setItem('proficienciesViewMode', 'list'); }}
+                      className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'list' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                      style={{ border: 'none' }}
+                    >
+                      {language === 'es' ? 'Lista' : 'List'}
+                    </button>
+                    <button 
+                      onClick={() => { setViewMode('grid'); localStorage.setItem('proficienciesViewMode', 'grid'); }}
+                      className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'grid' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                      style={{ border: 'none' }}
+                    >
+                      {language === 'es' ? 'Tarjetas' : 'Cards'}
+                    </button>
+                  </div>
                 </div>
+
+                {viewMode === 'list' ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[500px] text-left text-sm">
+                      <thead className="text-slate-300">
+                        <tr>
+                          <th className="p-2">{language === 'es' ? 'Recurso' : 'Resource'}</th>
+                          <th className="p-2">{language === 'es' ? 'Cantidad Recolectada' : 'Collected Amount'}</th>
+                          <th className="p-2">{language === 'es' ? 'Nivel Reclamado' : 'Claimed Level'}</th>
+                          <th className="p-2">{language === 'es' ? 'Siguiente Nivel' : 'Next Level'}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sortedProficiencies.map((item, index) => {
+                          const symbol = item.symbol || 'Unknown';
+                          const claimedLevel = typeof item.claimedLevel === 'number' ? item.claimedLevel : 0;
+                          const img = getResourceImage(symbol);
+                          return (
+                            <tr key={`${symbol}-${index}`} className="border-t border-slate-800">
+                              <td className="p-2 font-semibold flex items-center gap-2">
+                                {img && <img src={img} alt={symbol} className="h-5 w-5 object-contain" />}
+                                <span>{symbol}</span>
+                              </td>
+                              <td className="p-2">{formatNumber(item.collectedAmount)}</td>
+                              <td className="p-2">{formatNumber(claimedLevel)}</td>
+                              <td className="p-2">{claimedLevel + 1}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full">
+                    {sortedProficiencies.map((item, index) => {
+                      const symbol = item.symbol || 'Unknown';
+                      const claimedLevel = typeof item.claimedLevel === 'number' ? item.claimedLevel : 0;
+                      const img = getResourceImage(symbol);
+                      return (
+                        <div 
+                          key={`${symbol}-${index}`}
+                          style={{
+                            backgroundColor: 'var(--bg-card)',
+                            borderRadius: 'var(--radius)',
+                            padding: '16px',
+                            border: 'none'
+                          }}
+                          className="flex flex-col gap-4 relative overflow-hidden"
+                        >
+                          {/* Header: Resource Image + Name */}
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="w-12 h-12 bg-slate-900/60 flex items-center justify-center p-1 shrink-0"
+                              style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
+                            >
+                              {img ? (
+                                <img 
+                                  src={img} 
+                                  alt={symbol} 
+                                  className="w-full h-full object-contain"
+                                />
+                              ) : (
+                                <div className="text-xs font-black text-slate-500">{symbol.slice(0, 3)}</div>
+                              )}
+                            </div>
+                            <div className="min-w-0">
+                              <span className="text-[10px] uppercase font-black text-slate-400">
+                                {symbol}
+                              </span>
+                              <h3 className="text-sm font-black text-white truncate mt-0.5">
+                                {formatFactoryName(symbol, language)}
+                              </h3>
+                            </div>
+                          </div>
+
+                          {/* Details Badges List */}
+                          <div className="flex flex-wrap gap-2 pt-3 border-t border-white/[0.03] justify-center">
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Recolectado:' : 'Collected:'}</span>
+                              <strong className="text-slate-200">{formatNumber(item.collectedAmount)}</strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Nivel Reclamado:' : 'Claimed Level:'}</span>
+                              <strong className="text-slate-200">{formatNumber(claimedLevel)}</strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Siguiente Nivel:' : 'Next Level:'}</span>
+                              <strong className="text-amber-400">{claimedLevel + 1}</strong>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             ) : (
               <EmptyState>{language === 'es' ? 'Aún no hay datos de maestrías.' : 'No proficiency data found yet.'}</EmptyState>
