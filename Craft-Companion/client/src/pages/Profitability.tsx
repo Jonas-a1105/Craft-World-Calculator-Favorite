@@ -533,7 +533,28 @@ export default function Profitability() {
               )}
               
               {quoteLoading ? (
-                <div className="flex flex-col items-center justify-center p-8 bg-slate-955/40 rounded-[12px] border border-white/[0.03] space-y-4 my-4 z-10 relative">
+                <div className="flex flex-col items-center justify-center p-8 bg-zinc-950/40 rounded-[12px] border border-white/[0.03] space-y-4 my-4 z-10 relative">
+                  <style>{`
+                    @keyframes wave-stripes {
+                      from { background-position: 40px 0; }
+                      to { background-position: 0 0; }
+                    }
+                    .animate-wave-bar {
+                      background-image: linear-gradient(
+                        45deg,
+                        rgba(255, 255, 255, 0.15) 25%,
+                        transparent 25%,
+                        transparent 50%,
+                        rgba(255, 255, 255, 0.15) 50%,
+                        rgba(255, 255, 255, 0.15) 75%,
+                        transparent 75%,
+                        transparent
+                      );
+                      background-size: 40px 40px;
+                      animation: wave-stripes 1.2s linear infinite;
+                    }
+                  `}</style>
+                  
                   <div className="text-center space-y-1">
                     <p className="text-sm font-black text-white uppercase tracking-wider">
                       {language === 'es' ? 'Cargando cotizaciones de mercado...' : 'Loading market quotes...'}
@@ -546,17 +567,14 @@ export default function Profitability() {
                   </div>
 
                   {/* Progress bar wrapper */}
-                  <div className="w-full max-w-[400px] h-3 bg-slate-900 rounded-full overflow-hidden p-0.5 border border-white/[0.05]">
+                  <div className="w-full max-w-[400px] h-4 bg-zinc-900 rounded-full overflow-hidden p-0.5 border border-white/[0.05]">
                     <div 
-                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300 relative"
+                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300 relative animate-wave-bar"
                       style={{ 
                         width: `${progressPercent}%`,
                         boxShadow: '0 0 10px rgba(16, 185, 129, 0.4)' 
                       }}
-                    >
-                      {/* Animated light reflection */}
-                      <div className="absolute inset-0 bg-white/20 animate-pulse" />
-                    </div>
+                    />
                   </div>
 
                   {/* Percentage Indicator */}
@@ -704,7 +722,7 @@ export default function Profitability() {
                     }}
                     className="flex flex-col gap-4 w-full md:w-1/2"
                   >
-                    <div className="absolute inset-0 bg-blue-500/[0.01] pointer-events-none rounded-[12px]" />
+                    <div className="absolute inset-0 bg-amber-500/[0.01] pointer-events-none rounded-[12px]" />
 
                     {/* Header: Title + Coin Image + Daily Combined Profit */}
                     <div className="flex items-center justify-between gap-4 z-10">
@@ -721,7 +739,7 @@ export default function Profitability() {
                           )}
                         </div>
                         <div className="min-w-0">
-                          <span className="text-[9px] bg-blue-500/10 px-2 py-0.5 rounded-full text-blue-400 font-black uppercase tracking-wider">
+                          <span className="text-[9px] bg-amber-500/10 px-2 py-0.5 rounded-full text-amber-400 font-black uppercase tracking-wider">
                             {language === 'es' ? 'Ganancia total del imperio' : 'Total Empire Earnings'}
                           </span>
                           <h3 className="text-sm font-black text-white mt-1">
