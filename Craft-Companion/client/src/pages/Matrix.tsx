@@ -172,6 +172,9 @@ export default function Matrix() {
   const [countdown, setCountdown] = useState(0);
   const [lastPolledAt, setLastPolledAt] = useState('');
   const [error, setError] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>(() => {
+    return (localStorage.getItem('matrixViewMode') as 'list' | 'grid') || 'list';
+  });
 
   async function refreshCache() {
     try {
@@ -330,29 +333,48 @@ export default function Matrix() {
                 : 'The browser no longer scans. It only reloads the saved cache as the server writes new matrix cells.'}
             </p>
             {error && <p className="text-sm text-red-300">{error}</p>}
-            <div className="flex flex-wrap gap-2">
-              {Object.keys(tokenGroups).map((group) => {
-                const groupLabels: Record<string, string> = {
-                  EARTH: language === 'es' ? 'Tierra' : 'Earth',
-                  WATER: language === 'es' ? 'Agua' : 'Water',
-                  FIRE: language === 'es' ? 'Fuego' : 'Fire',
-                  ADVANCED: language === 'es' ? 'Avanzado' : 'Advanced',
-                  KEYS: language === 'es' ? 'Llaves' : 'Keys',
-                };
-                return (
-                  <button
-                    key={group}
-                    onClick={() => setSelectedGroup(group)}
-                    className={`rounded-[8px] border px-4 py-2 text-sm font-bold transition-all cursor-pointer ${
-                      selectedGroup === group 
-                        ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300' 
-                        : 'border-slate-800 bg-slate-900/50 hover:bg-slate-800 text-slate-400'
-                    }`}
-                  >
-                    {groupLabels[group] || group}
-                  </button>
-                );
-              })}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div className="flex flex-wrap gap-2">
+                {Object.keys(tokenGroups).map((group) => {
+                  const groupLabels: Record<string, string> = {
+                    EARTH: language === 'es' ? 'Tierra' : 'Earth',
+                    WATER: language === 'es' ? 'Agua' : 'Water',
+                    FIRE: language === 'es' ? 'Fuego' : 'Fire',
+                    ADVANCED: language === 'es' ? 'Avanzado' : 'Advanced',
+                    KEYS: language === 'es' ? 'Llaves' : 'Keys',
+                  };
+                  return (
+                    <button
+                      key={group}
+                      onClick={() => setSelectedGroup(group)}
+                      className={`rounded-[8px] border px-4 py-2 text-sm font-bold transition-all cursor-pointer ${
+                        selectedGroup === group 
+                          ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300' 
+                          : 'border-slate-800 bg-slate-900/50 hover:bg-slate-800 text-slate-400'
+                      }`}
+                    >
+                      {groupLabels[group] || group}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex gap-2 shrink-0">
+                <button 
+                  onClick={() => { setViewMode('list'); localStorage.setItem('matrixViewMode', 'list'); }}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'list' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                  style={{ border: 'none' }}
+                >
+                  {language === 'es' ? 'Lista' : 'List'}
+                </button>
+                <button 
+                  onClick={() => { setViewMode('grid'); localStorage.setItem('matrixViewMode', 'grid'); }}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'grid' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                  style={{ border: 'none' }}
+                >
+                  {language === 'es' ? 'Tarjetas' : 'Cards'}
+                </button>
+              </div>
             </div>
             <div className="grid gap-2 text-xs text-slate-400 md:grid-cols-5 border-t border-slate-800/50 pt-3">
               <p>
@@ -387,66 +409,167 @@ export default function Matrix() {
           </div>
         </Card>
 
-        <div className="overflow-x-auto rounded-xl matrix-container">
-          <table className="min-w-full border-collapse text-center text-sm matrix-table">
-            <thead className="sticky top-0 bg-slate-950">
-              <tr>
-                <th className="px-3 py-2 text-left text-slate-300 font-extrabold">{language === 'es' ? 'Nivel' : 'Lvl'}</th>
-                {selectedTokens.map((token) => {
-                  const img = getResourceImage(token);
-                  return (
-                    <th key={token} className={`px-3 py-2 text-slate-300 ${cache.scanColumn === token ? 'bg-emerald-500/10' : ''}`}>
-                      <div className="flex flex-col items-center gap-1">
-                        {img && <img src={img} alt={token} className="h-6 w-6 object-contain" style={{ borderRadius: 'var(--radius-resource-item)' }} />}
-                        <span className="font-bold">{formatFactoryName(token, language)}</span>
-                      </div>
-                    </th>
-                  );
-                })}
-              </tr>
-            </thead>
-            <tbody>
-              {Array.from({ length: maxLevel }, (_, index) => index + 1).map((level) => (
-                <tr key={level}>
-                  <td className="lvl-cell px-3 py-2 text-left text-slate-300">{level}</td>
+        {viewMode === 'list' ? (
+          <div className="overflow-x-auto rounded-xl matrix-container">
+            <table className="min-w-full border-collapse text-center text-sm matrix-table">
+              <thead className="sticky top-0 bg-slate-950">
+                <tr>
+                  <th className="px-3 py-2 text-left text-slate-300 font-extrabold">{language === 'es' ? 'Nivel' : 'Lvl'}</th>
                   {selectedTokens.map((token) => {
-                    const cell = cache.cells[cellKey(token, level)];
-                    const hasFactoryLevel = Boolean(rows.find((row) => row.token === token && row.level === level));
-                    if (!hasFactoryLevel) {
-                      return (
-                        <td key={`${token}-${level}`} className="empty-cell px-3 py-2 text-slate-700">
-                          ·
-                        </td>
-                      );
-                    }
-
-                    if (!cell?.isComplete) {
-                      return (
-                        <td key={`${token}-${level}`} className="waiting-cell px-3 py-2 text-slate-500" title={language === 'es' ? 'Esperando datos de caché global' : 'Waiting for global cache data'}>
-                          ...
-                        </td>
-                      );
-                    }
-
-                    const tooltip = language === 'es'
-                      ? `Valor de venta: ${formatNumber(cell.outputSellValue, 6)} COIN • Costo de ingredientes: ${formatNumber(cell.inputBuyCost, 6)} COIN • Impacto: ${formatNumber(cell.priceImpactPercentage, 2)}% • Actualizado: ${new Date(cell.updatedAt).toLocaleString()}`
-                      : `Output sell value ${formatNumber(cell.outputSellValue, 6)} COIN • Input buy cost ${formatNumber(cell.inputBuyCost, 6)} COIN • Impact ${formatNumber(cell.priceImpactPercentage, 2)}% • Updated ${new Date(cell.updatedAt).toLocaleString()}`;
-
+                    const img = getResourceImage(token);
                     return (
-                      <td
-                        key={`${token}-${level}`}
-                        className={`px-3 py-2 font-mono ${getCellClass(cell.returnPercent)}`}
-                        title={tooltip}
-                      >
-                        {cell.returnPercent >= 0 ? '+' : ''}{formatNumber(cell.returnPercent, 2)}%
-                      </td>
+                      <th key={token} className={`px-3 py-2 text-slate-300 ${cache.scanColumn === token ? 'bg-emerald-500/10' : ''}`}>
+                        <div className="flex flex-col items-center gap-1">
+                          {img && <img src={img} alt={token} className="h-6 w-6 object-contain" style={{ borderRadius: 'var(--radius-resource-item)' }} />}
+                          <span className="font-bold">{formatFactoryName(token, language)}</span>
+                        </div>
+                      </th>
                     );
                   })}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {Array.from({ length: maxLevel }, (_, index) => index + 1).map((level) => (
+                  <tr key={level}>
+                    <td className="lvl-cell px-3 py-2 text-left text-slate-300">{level}</td>
+                    {selectedTokens.map((token) => {
+                      const cell = cache.cells[cellKey(token, level)];
+                      const hasFactoryLevel = Boolean(rows.find((row) => row.token === token && row.level === level));
+                      if (!hasFactoryLevel) {
+                        return (
+                          <td key={`${token}-${level}`} className="empty-cell px-3 py-2 text-slate-700">
+                            ·
+                          </td>
+                        );
+                      }
+
+                      if (!cell?.isComplete) {
+                        return (
+                          <td key={`${token}-${level}`} className="waiting-cell px-3 py-2 text-slate-500" title={language === 'es' ? 'Esperando datos de caché global' : 'Waiting for global cache data'}>
+                            ...
+                          </td>
+                        );
+                      }
+
+                      const tooltip = language === 'es'
+                        ? `Valor de venta: ${formatNumber(cell.outputSellValue, 6)} COIN • Costo de ingredientes: ${formatNumber(cell.inputBuyCost, 6)} COIN • Impacto: ${formatNumber(cell.priceImpactPercentage, 2)}% • Actualizado: ${new Date(cell.updatedAt).toLocaleString()}`
+                        : `Output sell value ${formatNumber(cell.outputSellValue, 6)} COIN • Input buy cost ${formatNumber(cell.inputBuyCost, 6)} COIN • Impact ${formatNumber(cell.priceImpactPercentage, 2)}% • Updated ${new Date(cell.updatedAt).toLocaleString()}`;
+
+                      return (
+                        <td
+                          key={`${token}-${level}`}
+                          className={`px-3 py-2 font-mono ${getCellClass(cell.returnPercent)}`}
+                          title={tooltip}
+                        >
+                          {cell.returnPercent >= 0 ? '+' : ''}{formatNumber(cell.returnPercent, 2)}%
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full">
+            {selectedTokens.map((token) => {
+              const img = getResourceImage(token);
+              const isScanning = cache.scanColumn === token;
+              return (
+                <div 
+                  key={token} 
+                  style={{
+                    backgroundColor: 'var(--bg-card)',
+                    borderRadius: 'var(--radius)',
+                    padding: '16px',
+                    border: 'none'
+                  }}
+                  className={`flex flex-col gap-4 relative overflow-hidden ${isScanning ? 'ring-1 ring-emerald-500/30' : ''}`}
+                >
+                  {/* Scan indicator badge */}
+                  {isScanning && (
+                    <div className="absolute top-3 right-3">
+                      <span className="text-[9px] font-black text-emerald-450 bg-emerald-500/10 px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">
+                        {language === 'es' ? 'Escaneando' : 'Scanning'}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Header: Resource Image + Name */}
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="w-12 h-12 bg-slate-900/60 flex items-center justify-center p-1 shrink-0"
+                      style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
+                    >
+                      {img ? (
+                        <img 
+                          src={img} 
+                          alt={token} 
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <div className="text-xs font-black text-slate-500">{token.slice(0, 3)}</div>
+                      )}
+                    </div>
+                    <div className="min-w-0 pr-16">
+                      <span className="text-[10px] uppercase font-black text-slate-400">
+                        {token}
+                      </span>
+                      <h3 className="text-sm font-black text-white truncate mt-0.5">
+                        {formatFactoryName(token, language)}
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* Details grid as badges */}
+                  <div className="flex flex-wrap gap-2 pt-3 border-t border-white/[0.03] justify-start">
+                    {Array.from({ length: maxLevel }, (_, index) => index + 1).map((level) => {
+                      const cell = cache.cells[cellKey(token, level)];
+                      const hasFactoryLevel = Boolean(rows.find((row) => row.token === token && row.level === level));
+                      if (!hasFactoryLevel) return null;
+
+                      if (!cell?.isComplete) {
+                        return (
+                          <div 
+                            key={level}
+                            className="resource-item-badge flex items-center gap-1 text-[10px] text-slate-500 font-mono"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '3px 8px' }}
+                            title={language === 'es' ? 'Esperando datos de caché global' : 'Waiting for global cache data'}
+                          >
+                            <span className="opacity-70">L{level}:</span>
+                            <strong>...</strong>
+                          </div>
+                        );
+                      }
+
+                      const tooltip = language === 'es'
+                        ? `Valor de venta: ${formatNumber(cell.outputSellValue, 6)} COIN • Costo de ingredientes: ${formatNumber(cell.inputBuyCost, 6)} COIN • Impacto: ${formatNumber(cell.priceImpactPercentage, 2)}% • Actualizado: ${new Date(cell.updatedAt).toLocaleString()}`
+                        : `Output sell value ${formatNumber(cell.outputSellValue, 6)} COIN • Input buy cost ${formatNumber(cell.inputBuyCost, 6)} COIN • Impact ${formatNumber(cell.priceImpactPercentage, 2)}% • Updated ${new Date(cell.updatedAt).toLocaleString()}`;
+
+                      const isProfit = cell.returnPercent >= 0;
+                      return (
+                        <div 
+                          key={level}
+                          className="resource-item-badge flex items-center gap-1 text-[10px] font-mono transition-all"
+                          style={{ 
+                            backgroundColor: isProfit ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
+                            color: isProfit ? '#34d399' : '#f87171',
+                            border: 'none', 
+                            padding: '3px 8px' 
+                          }}
+                          title={tooltip}
+                        >
+                          <span className="opacity-70">L{level}:</span>
+                          <strong>{isProfit ? '+' : ''}{formatNumber(cell.returnPercent, 2)}%</strong>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </Layout>
   );
