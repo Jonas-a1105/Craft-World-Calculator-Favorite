@@ -514,7 +514,7 @@ export default function Profitability() {
   return (
     <Layout>
       <div className="space-y-4">
-        <div className="max-w-[720px] mx-auto w-full">
+        <div className="max-w-[900px] mx-auto w-full">
           <Card title={language === 'es' ? 'Asesor de Rentabilidad' : 'Profit Advisor'}>
             <div className="space-y-3">
               <p className="text-sm text-slate-300">
@@ -574,7 +574,7 @@ export default function Profitability() {
                           <span className="text-[9px] bg-emerald-500/10 px-2 py-0.5 rounded-full text-emerald-400 font-black uppercase tracking-wider">
                             {language === 'es' ? 'Mejor opción' : 'Best visible craft'}
                           </span>
-                          <h3 className="text-sm font-black text-white truncate mt-1">
+                          <h3 className="text-sm font-black text-white mt-1">
                             {formatFactoryLabel(bestAdvisorRow.option, language)}
                           </h3>
                         </div>
@@ -695,7 +695,7 @@ export default function Profitability() {
                           <span className="text-[9px] bg-blue-500/10 px-2 py-0.5 rounded-full text-blue-400 font-black uppercase tracking-wider">
                             {language === 'es' ? 'Ganancia total del imperio' : 'Total Empire Earnings'}
                           </span>
-                          <h3 className="text-sm font-black text-white truncate mt-1">
+                          <h3 className="text-sm font-black text-white mt-1">
                             {language === 'es' ? 'Todas las fábricas activas' : 'All active factories'}
                           </h3>
                         </div>
@@ -1012,7 +1012,7 @@ export default function Profitability() {
           </div>
         )}
 
-        <div className="max-w-[720px] mx-auto w-full relative z-20">
+        <div className="max-w-[900px] mx-auto w-full relative z-20">
           <Card 
             title={language === 'es' ? 'Calculadora de Rentabilidad' : 'Profitability Calculator'}
             style={{ overflow: 'visible' }}
@@ -1055,7 +1055,7 @@ export default function Profitability() {
         )}
 
         {selectedFactory && selectedRow && (
-          <div className="max-w-[720px] mx-auto w-full space-y-4">
+          <div className="max-w-[900px] mx-auto w-full space-y-4">
             <Card title={language === 'es' ? 'Fábrica Propia Seleccionada' : 'Selected Owned Factory'}>
               <div 
                 style={{
