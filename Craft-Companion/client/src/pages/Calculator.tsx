@@ -255,7 +255,7 @@ function QuoteLine({ label, quote }: { label: string; quote: Quote | null | unde
   const { language } = useTranslation();
   if (!quote) {
     return (
-      <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+      <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-[10px] text-xs">
         <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{label}</span>
         <span className="font-extrabold text-yellow-500 animate-pulse">
           {language === 'es' ? 'Buscando cotización...' : 'Fetching quote...'}
@@ -271,7 +271,7 @@ function QuoteLine({ label, quote }: { label: string; quote: Quote | null | unde
   const outputName = quote.output.symbol === 'COIN' ? 'COIN' : formatFactoryName(quote.output.symbol, language);
 
   return (
-    <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs gap-3">
+    <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-[10px] text-xs gap-3">
       <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px] shrink-0">{label}</span>
       <div className="flex items-center gap-1.5 flex-wrap justify-end text-right">
         <span className="font-black text-white">{fmt(quote.input.amount)}</span>
@@ -547,31 +547,31 @@ export default function Calculator() {
         <div className="grid gap-4 lg:grid-cols-3">
           <Card title={language === 'es' ? 'Resumen de Mejora' : 'Upgrade Summary'}>
             <div className="flex flex-col gap-2">
-              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+              <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-[10px] text-xs">
                 <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Costo Total de Mejora' : 'Total Upgrade Cost'}</span>
                 <span className="font-extrabold text-white">
                   {totalUpgradeMissing ? (language === 'es' ? 'Esperando cotizaciones' : 'Waiting for quotes') : `${fmt(totalUpgradeCost)} COIN`}
                 </span>
               </div>
-              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+              <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-[10px] text-xs">
                 <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'PNL Total Actual/Hora' : 'Current Total PNL/Hr'}</span>
                 <span className="font-extrabold text-emerald-400">
                   {currentPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(currentTotalProfitPerHour)} COIN`}
                 </span>
               </div>
-              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+              <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-[10px] text-xs">
                 <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'PNL Total Objetivo/Hora' : 'Target Total PNL/Hr'}</span>
                 <span className="font-extrabold text-emerald-450">
                   {targetPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(targetTotalProfitPerHour)} COIN`}
                 </span>
               </div>
-              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+              <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-[10px] text-xs">
                 <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Ganancia por Hora' : 'Gain Per Hour'}</span>
                 <span className="font-extrabold text-emerald-400">
                   {currentPnl.missingQuote || targetPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(pnlGainPerHour)} COIN`}
                 </span>
               </div>
-              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+              <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-[10px] text-xs">
                 <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Recuperación' : 'Break Even'}</span>
                 <span className="font-extrabold text-amber-400">
                   {Number.isFinite(breakEvenHours) 
@@ -618,27 +618,27 @@ export default function Calculator() {
 
           <Card title={language === 'es' ? 'Delta de PNL' : 'PNL Delta'}>
             <div className="flex flex-col gap-2">
-              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+              <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-[10px] text-xs">
                 <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Ganancia Actual por Ejecución' : 'Current Profit/Run'}</span>
                 <span className="font-extrabold text-emerald-400">
                   {currentPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(currentPnl.profitPerRun)} COIN`}
                 </span>
               </div>
-              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+              <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-[10px] text-xs">
                 <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Ganancia Objetivo por Ejecución' : 'Target Profit/Run'}</span>
                 <span className="font-extrabold text-emerald-400">
                   {targetPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(targetPnl.profitPerRun)} COIN`}
                 </span>
               </div>
-              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+              <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-[10px] text-xs">
                 <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Ejecuciones Actuales/Hora' : 'Current Runs/Hr'}</span>
                 <span className="font-extrabold text-white">{fmt(currentPnl.runsPerHour, 4)}</span>
               </div>
-              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+              <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-[10px] text-xs">
                 <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Ejecuciones Objetivo/Hora' : 'Target Runs/Hr'}</span>
                 <span className="font-extrabold text-white">{fmt(targetPnl.runsPerHour, 4)}</span>
               </div>
-              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+              <div className="flex justify-between items-center bg-white/[0.02] p-2.5 rounded-[10px] text-xs">
                 <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Ganancia PNL por Fábrica/Hora' : 'Per Factory PNL Gain/Hr'}</span>
                 <span className="font-extrabold text-emerald-400">
                   {currentPnl.missingQuote || targetPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(targetPnl.profitPerHour - currentPnl.profitPerHour)} COIN`}
