@@ -78,6 +78,9 @@ export default function Prices() {
   const [prices, setPrices] = useState<Record<string, LivePriceResult>>({});
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>(() => {
+    return (localStorage.getItem('pricesViewMode') as 'list' | 'grid') || 'list';
+  });
   
   // Auto-sync setting for COIN price
   const [autoSyncCoin, setAutoSyncCoin] = useState<boolean>(() => {
@@ -312,18 +315,86 @@ export default function Prices() {
         </div>
 
         <Card title={language === 'es' ? 'Precios de los Recursos' : 'Resource Prices'}>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-left text-sm">
-              <thead className="text-slate-300">
-                <tr>
-                  <th className="p-2 whitespace-nowrap">{t('prices.resourceName')}</th>
-                  <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Precio Compra (COIN)' : 'Buy Price (COIN)'}</th>
-                  <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Precio Venta (COIN)' : 'Sell Price (COIN)'}</th>
-                  <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ref. Compra (USD)' : 'Ref. Buy (USD)'}</th>
-                  <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ref. Venta (USD)' : 'Ref. Sell (USD)'}</th>
-                </tr>
-              </thead>
-              <tbody>
+          <div className="space-y-4">
+            <div className="flex justify-end gap-2">
+              <button 
+                onClick={() => { setViewMode('list'); localStorage.setItem('pricesViewMode', 'list'); }}
+                className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'list' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                style={{ border: 'none' }}
+              >
+                {language === 'es' ? 'Lista' : 'List'}
+              </button>
+              <button 
+                onClick={() => { setViewMode('grid'); localStorage.setItem('pricesViewMode', 'grid'); }}
+                className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'grid' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                style={{ border: 'none' }}
+              >
+                {language === 'es' ? 'Tarjetas' : 'Cards'}
+              </button>
+            </div>
+
+            {viewMode === 'list' ? (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[720px] text-left text-sm">
+                  <thead className="text-slate-300">
+                    <tr>
+                      <th className="p-2 whitespace-nowrap">{t('prices.resourceName')}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Precio Compra (COIN)' : 'Buy Price (COIN)'}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Precio Venta (COIN)' : 'Sell Price (COIN)'}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ref. Compra (USD)' : 'Ref. Buy (USD)'}</th>
+                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ref. Venta (USD)' : 'Ref. Sell (USD)'}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredTokens.map((token) => {
+                      const item = prices[token];
+                      const buyVal = item?.buyPriceCoin || 0;
+                      const sellVal = item?.sellPriceCoin || 0;
+                      const img = getResourceImage(token);
+                      const resourceName = formatFactoryName(token, language);
+                      
+                      return (
+                        <tr key={token} className="border-t border-slate-800">
+                          <td className="p-2 font-semibold whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              {img && (
+                                <img 
+                                  src={img} 
+                                  alt={token} 
+                                  className="h-5 w-5 object-contain" 
+                                  style={{ borderRadius: 'var(--radius-resource-item)' }}
+                                />
+                              )}
+                              <span>{resourceName}</span>
+                            </div>
+                          </td>
+                          <td className="p-2 whitespace-nowrap text-emerald-300">
+                            {buyVal > 0 ? `${formatNumber(buyVal, 3)}` : '-'}
+                          </td>
+                          <td className="p-2 whitespace-nowrap text-emerald-300">
+                            {sellVal > 0 ? `${formatNumber(sellVal, 3)}` : '-'}
+                          </td>
+                          <td className="p-2 whitespace-nowrap text-sky-400">
+                            {buyVal > 0 ? `$${formatNumber(buyVal * coinPrice, 4)}` : '-'}
+                          </td>
+                          <td className="p-2 whitespace-nowrap text-sky-400">
+                            {sellVal > 0 ? `$${formatNumber(sellVal * coinPrice, 4)}` : '-'}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {filteredTokens.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="p-2 text-slate-500 font-medium text-center py-8">
+                          {language === 'es' ? 'No se encontraron recursos' : 'No resources found'}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full">
                 {filteredTokens.map((token) => {
                   const item = prices[token];
                   const buyVal = item?.buyPriceCoin || 0;
@@ -332,44 +403,86 @@ export default function Prices() {
                   const resourceName = formatFactoryName(token, language);
                   
                   return (
-                    <tr key={token} className="border-t border-slate-800">
-                      <td className="p-2 font-semibold whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          {img && (
+                    <div 
+                      key={token} 
+                      style={{
+                        backgroundColor: 'var(--bg-card)',
+                        borderRadius: 'var(--radius)',
+                        padding: '16px',
+                        border: 'none'
+                      }}
+                      className="flex flex-col gap-4 relative overflow-hidden"
+                    >
+                      {/* Header: Resource Image + Name */}
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className="w-12 h-12 bg-slate-900/60 flex items-center justify-center p-1 shrink-0"
+                          style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
+                        >
+                          {img ? (
                             <img 
                               src={img} 
                               alt={token} 
-                              className="h-5 w-5 object-contain" 
-                              style={{ borderRadius: 'var(--radius-resource-item)' }}
+                              className="w-full h-full object-contain"
                             />
+                          ) : (
+                            <div className="text-xs font-black text-slate-500">{token.slice(0, 3)}</div>
                           )}
-                          <span>{resourceName}</span>
                         </div>
-                      </td>
-                      <td className="p-2 whitespace-nowrap text-emerald-300">
-                        {buyVal > 0 ? `${formatNumber(buyVal, 3)}` : '-'}
-                      </td>
-                      <td className="p-2 whitespace-nowrap text-emerald-300">
-                        {sellVal > 0 ? `${formatNumber(sellVal, 3)}` : '-'}
-                      </td>
-                      <td className="p-2 whitespace-nowrap text-sky-400">
-                        {buyVal > 0 ? `$${formatNumber(buyVal * coinPrice, 4)}` : '-'}
-                      </td>
-                      <td className="p-2 whitespace-nowrap text-sky-400">
-                        {sellVal > 0 ? `$${formatNumber(sellVal * coinPrice, 4)}` : '-'}
-                      </td>
-                    </tr>
+                        <div className="min-w-0">
+                          <span className="text-[10px] uppercase font-black text-slate-400">
+                            {token}
+                          </span>
+                          <h3 className="text-sm font-black text-white truncate mt-0.5">
+                            {resourceName}
+                          </h3>
+                        </div>
+                      </div>
+
+                      {/* Badges Container */}
+                      <div className="flex flex-wrap gap-2 pt-3 border-t border-white/[0.03] justify-center">
+                        <div 
+                          className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                          style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                        >
+                          <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Compra:' : 'Buy:'}</span>
+                          <strong className="text-emerald-300">{buyVal > 0 ? `${formatNumber(buyVal, 3)} COIN` : '-'}</strong>
+                        </div>
+
+                        <div 
+                          className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                          style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                        >
+                          <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Venta:' : 'Sell:'}</span>
+                          <strong className="text-emerald-300">{sellVal > 0 ? `${formatNumber(sellVal, 3)} COIN` : '-'}</strong>
+                        </div>
+
+                        <div 
+                          className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                          style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                        >
+                          <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ref. Compra USD:' : 'Ref. Buy USD:'}</span>
+                          <strong className="text-sky-400">{buyVal > 0 ? `$${formatNumber(buyVal * coinPrice, 4)}` : '-'}</strong>
+                        </div>
+
+                        <div 
+                          className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                          style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                        >
+                          <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ref. Venta USD:' : 'Ref. Sell USD:'}</span>
+                          <strong className="text-sky-400">{sellVal > 0 ? `$${formatNumber(sellVal * coinPrice, 4)}` : '-'}</strong>
+                        </div>
+                      </div>
+                    </div>
                   );
                 })}
                 {filteredTokens.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="p-2 text-slate-500 font-medium text-center py-8">
-                      {language === 'es' ? 'No se encontraron recursos' : 'No resources found'}
-                    </td>
-                  </tr>
+                  <div className="text-slate-500 font-medium text-center py-8 w-full col-span-full">
+                    {language === 'es' ? 'No se encontraron recursos' : 'No resources found'}
+                  </div>
                 )}
-              </tbody>
-            </table>
+              </div>
+            )}
           </div>
         </Card>
       </div>
