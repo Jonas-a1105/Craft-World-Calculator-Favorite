@@ -536,103 +536,203 @@ export default function Profitability() {
                     : `${missingCsvMatches} owned factories do not have a CSV match yet, so they are excluded from the ranking.`}
                 </p>
               )}
-              {bestAdvisorRow ? (
-                <div 
-                  className="flex gap-4 items-start bg-emerald-500/[0.08] backdrop-blur-md p-4 text-sm"
-                  style={{ borderRadius: 'var(--radius-resource-item)' }}
-                >
-                  {getFactoryImage(bestAdvisorRow.option.symbol) && (
-                    <img 
-                      src={getFactoryImage(bestAdvisorRow.option.symbol)} 
-                      alt={bestAdvisorRow.option.symbol} 
-                      className="h-16 w-16 shrink-0 bg-slate-900/60 object-contain p-1" 
-                      style={{ borderRadius: 'var(--radius-resource-item)' }}
-                    />
-                  )}
-                  <div className="space-y-1.5 flex-grow">
-                    <p className="font-semibold text-emerald-200">{language === 'es' ? 'Mejor fabricación visible ahora mismo' : 'Best visible craft right now'}</p>
-                    <p className="font-bold text-white text-base">{formatFactoryLabel(bestAdvisorRow.option, language)}</p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Aumento de velocidad del taller' : 'Workshop speed boost'}:</span>{' '}
-                      <strong>{formatNumber(bestAdvisorRow.workshopBoostPercent, 2)}%</strong>
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Boost activo' : 'Active boost'}:</span>{' '}
-                      <strong>{formatNumber(bestAdvisorRow.activeBoostPercent, 2)}%</strong>
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Tiempo base' : 'Base Time'}:</span>{' '}
-                      <strong>{formatDurationFromMinutes(bestAdvisorRow.baseDurationMinutes)}</strong>
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Tiempo final' : 'Output Time'}:</span>{' '}
-                      <strong>{formatDurationFromMinutes(bestAdvisorRow.calculatedDurationMinutes)}</strong>
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Velocidad efectiva' : 'Effective Speed'}:</span>{' '}
-                      <strong>{formatSpeed(bestAdvisorRow.effectiveSpeedPercent)}</strong>
-                    </p>
-                    <p className="flex items-center gap-1.5 text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Maestría' : 'Mastery'}:</span>{' '}
-                      <span>Lv {bestAdvisorRow.masteryLevel} / {formatNumber(bestAdvisorRow.masteryReductionPercent, 2)}%</span>
-                      {getResourceImage(bestAdvisorRow.row.token) && <img src={getResourceImage(bestAdvisorRow.row.token)} alt={bestAdvisorRow.row.token} className="h-4 w-4 object-contain shrink-0" />}
-                      <strong>{formatFactoryName(bestAdvisorRow.row.token, language)}</strong>
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Ganancia estimada por hora' : 'Estimated profit per hour'}:</span>{' '}
-                      <strong className="text-emerald-400">{formatNumber(bestAdvisorRow.profitPerHour)} COIN</strong>
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Ganancia estimada por día' : 'Estimated profit per day'}:</span>{' '}
-                      <strong className="text-emerald-400">{formatNumber(bestAdvisorRow.profitPerHour * 24)} COIN</strong>
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Ganancia estimada por ejecución' : 'Estimated profit per run'}:</span>{' '}
-                      <strong className="text-emerald-400">{formatNumber(bestAdvisorRow.profitPerRun)} COIN</strong>
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-sm text-slate-400">{language === 'es' ? 'Aún no hay recomendaciones de cotización disponibles.' : 'No fully quoted factory recommendation is available yet.'}</p>
-              )}
+              <div className="flex flex-col md:flex-row gap-4 mt-3">
+                {bestAdvisorRow ? (
+                  <div 
+                    style={{
+                      backgroundColor: 'var(--bg-card)',
+                      borderRadius: 'var(--radius)',
+                      padding: '16px',
+                      border: 'none',
+                      position: 'relative'
+                    }}
+                    className="flex flex-col gap-4 w-full md:w-1/2"
+                  >
+                    <div className="absolute inset-0 bg-emerald-500/[0.02] pointer-events-none rounded-[12px]" />
 
-              {readyAdvisorRows.length > 0 && (
-                <div 
-                  className="flex gap-4 items-start bg-blue-500/[0.08] backdrop-blur-md p-4 text-sm mt-3"
-                  style={{ borderRadius: 'var(--radius-resource-item)' }}
-                >
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-500/10 p-2">
-                    {getResourceImage("COIN") && (
-                      <img 
-                        src={getResourceImage("COIN")} 
-                        alt="COIN" 
-                        className="h-full w-full object-contain" 
-                      />
-                    )}
+                    {/* Header: Title + Image + Main Profit Metric */}
+                    <div className="flex items-center justify-between gap-4 z-10">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div 
+                          className="w-14 h-14 bg-slate-900/60 flex items-center justify-center p-1.5 shrink-0"
+                          style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
+                        >
+                          {getFactoryImage(bestAdvisorRow.option.symbol) ? (
+                            <img 
+                              src={getFactoryImage(bestAdvisorRow.option.symbol)} 
+                              alt={bestAdvisorRow.option.symbol} 
+                              className="w-full h-full object-contain"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = `/assets/resources/${bestAdvisorRow.option.symbol.charAt(0).toUpperCase() + bestAdvisorRow.option.symbol.slice(1).toLowerCase()}.png`;
+                              }}
+                            />
+                          ) : (
+                            <div className="text-xs font-black text-slate-500">{bestAdvisorRow.option.symbol.slice(0, 3)}</div>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-[9px] bg-emerald-500/10 px-2 py-0.5 rounded-full text-emerald-400 font-black uppercase tracking-wider">
+                            {language === 'es' ? 'Mejor opción' : 'Best visible craft'}
+                          </span>
+                          <h3 className="text-sm font-black text-white truncate mt-1">
+                            {formatFactoryLabel(bestAdvisorRow.option, language)}
+                          </h3>
+                        </div>
+                      </div>
+
+                      {/* Main Profit Metric Highlight */}
+                      <div className="text-right shrink-0">
+                        <div className="text-[10px] text-slate-400 uppercase font-black tracking-wider">
+                          {language === 'es' ? 'Ganancia / Hora' : 'Profit / Hour'}
+                        </div>
+                        <div className="text-sm font-black text-emerald-400 mt-0.5">
+                          +{formatNumber(bestAdvisorRow.profitPerHour)} COIN
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Badges container */}
+                    <div className="flex flex-wrap gap-2 justify-center z-10">
+                      <div 
+                        className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                        style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                      >
+                        <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Taller:' : 'Workshop:'}</span>
+                        <strong className="text-slate-200">{formatNumber(bestAdvisorRow.workshopBoostPercent, 2)}%</strong>
+                      </div>
+
+                      <div 
+                        className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                        style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                      >
+                        <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Boost Activo:' : 'Active Boost:'}</span>
+                        <strong className="text-slate-200">{formatNumber(bestAdvisorRow.activeBoostPercent, 2)}%</strong>
+                      </div>
+
+                      <div 
+                        className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                        style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                      >
+                        <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Tiempo Base:' : 'Base Time:'}</span>
+                        <strong className="text-slate-200">{formatDurationFromMinutes(bestAdvisorRow.baseDurationMinutes)}</strong>
+                      </div>
+
+                      <div 
+                        className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                        style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                      >
+                        <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Tiempo Final:' : 'Output Time:'}</span>
+                        <strong className="text-slate-200">{formatDurationFromMinutes(bestAdvisorRow.calculatedDurationMinutes)}</strong>
+                      </div>
+
+                      <div 
+                        className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                        style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                      >
+                        <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Velocidad:' : 'Speed:'}</span>
+                        <strong className="text-slate-200">{formatSpeed(bestAdvisorRow.effectiveSpeedPercent)}</strong>
+                      </div>
+
+                      <div 
+                        className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                        style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                      >
+                        <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Maestría:' : 'Mastery:'}</span>
+                        <strong className="text-slate-200">Lv {bestAdvisorRow.masteryLevel} / {formatNumber(bestAdvisorRow.masteryReductionPercent, 2)}%</strong>
+                      </div>
+
+                      <div 
+                        className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                        style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                      >
+                        <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ganancia / Día:' : 'Profit / Day:'}</span>
+                        <strong className="text-emerald-450">{formatNumber(bestAdvisorRow.profitPerHour * 24)} COIN</strong>
+                      </div>
+
+                      <div 
+                        className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                        style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                      >
+                        <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ganancia / Ejec.:' : 'Profit / Run:'}</span>
+                        <strong className="text-emerald-450">{formatNumber(bestAdvisorRow.profitPerRun)} COIN</strong>
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-1.5 flex-grow">
-                    <p className="font-semibold text-blue-200">
-                      {language === 'es' ? 'Ganancia total del imperio (Todas las fábricas)' : 'Total Empire Earnings (All active factories)'}
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Fábricas consultadas' : 'Checked factories'}:</span>{' '}
-                      <strong>{readyAdvisorRows.length}</strong>
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Ganancia total combinada por hora' : 'Total combined profit per hour'}:</span>{' '}
-                      <strong className={totalCombinedProfitPerHour >= 0 ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}>
-                        {formatNumber(totalCombinedProfitPerHour)} COIN
-                      </strong>
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Ganancia total combinada por día' : 'Total combined profit per day'}:</span>{' '}
-                      <strong className={totalCombinedProfitPerDay >= 0 ? 'text-emerald-400 font-extrabold text-base' : 'text-red-400 font-extrabold text-base'}>
-                        {formatNumber(totalCombinedProfitPerDay)} COIN
-                      </strong>
-                    </p>
+                ) : (
+                  <div className="w-full md:w-1/2 flex items-center justify-center p-6 bg-slate-900/60 rounded-[12px] text-sm text-slate-400">
+                    {language === 'es' ? 'Aún no hay recomendaciones de cotización disponibles.' : 'No fully quoted factory recommendation is available yet.'}
                   </div>
-                </div>
-              )}
+                )}
+
+                {readyAdvisorRows.length > 0 ? (
+                  <div 
+                    style={{
+                      backgroundColor: 'var(--bg-card)',
+                      borderRadius: 'var(--radius)',
+                      padding: '16px',
+                      border: 'none',
+                      position: 'relative'
+                    }}
+                    className="flex flex-col gap-4 w-full md:w-1/2"
+                  >
+                    <div className="absolute inset-0 bg-blue-500/[0.01] pointer-events-none rounded-[12px]" />
+
+                    {/* Header: Title + Coin Image + Daily Combined Profit */}
+                    <div className="flex items-center justify-between gap-4 z-10">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-slate-900/60 p-2">
+                          {getResourceImage("COIN") ? (
+                            <img 
+                              src={getResourceImage("COIN")} 
+                              alt="COIN" 
+                              className="h-full w-full object-contain" 
+                            />
+                          ) : (
+                            <span className="text-xs text-slate-500 font-bold">C</span>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-[9px] bg-blue-500/10 px-2 py-0.5 rounded-full text-blue-400 font-black uppercase tracking-wider">
+                            {language === 'es' ? 'Ganancia total del imperio' : 'Total Empire Earnings'}
+                          </span>
+                          <h3 className="text-sm font-black text-white truncate mt-1">
+                            {language === 'es' ? 'Todas las fábricas activas' : 'All active factories'}
+                          </h3>
+                        </div>
+                      </div>
+
+                      {/* Main Profit Metric Highlight */}
+                      <div className="text-right shrink-0">
+                        <div className="text-[10px] text-slate-400 uppercase font-black tracking-wider">
+                          {language === 'es' ? 'Combinado / Día' : 'Combined / Day'}
+                        </div>
+                        <div className={`text-base font-black ${totalCombinedProfitPerDay >= 0 ? 'text-emerald-400' : 'text-red-400'} mt-0.5`}>
+                          {formatNumber(totalCombinedProfitPerDay)} COIN
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Badges container */}
+                    <div className="flex flex-wrap gap-2 justify-center z-10">
+                      <div 
+                        className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                        style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                      >
+                        <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Fábricas Consultadas:' : 'Checked Factories:'}</span>
+                        <strong className="text-slate-200">{readyAdvisorRows.length}</strong>
+                      </div>
+
+                      <div 
+                        className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                        style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                      >
+                        <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Combinado / Hora:' : 'Combined / Hour:'}</span>
+                        <strong className={totalCombinedProfitPerHour >= 0 ? 'text-emerald-400' : 'text-red-400'}>{formatNumber(totalCombinedProfitPerHour)} COIN</strong>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
             </div>
           </Card>
         </div>
