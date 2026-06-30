@@ -183,6 +183,8 @@ function formatSpeed(value: number) {
   return `${formatNumber(value / 100, 2)}x`;
 }
 
+
+
 export default function MyHome() {
   const navigate = useNavigate();
   const { t, language } = useTranslation();
@@ -319,11 +321,21 @@ export default function MyHome() {
           {/* Welcome / Header Card */}
           <div className={profile ? "w-full md:w-[550px] shrink-0" : "w-full md:max-w-[550px] mx-auto"}>
             <Card>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-lg font-semibold">{language === 'es' ? `¡Hola de nuevo, ${profile?.displayName || me.username}!` : `Welcome back, ${profile?.displayName || me.username}!`}</p>
-                  <p className="text-sm text-slate-300">{language === 'es' ? 'UID de Craft World: ' : 'Craft World UID: '}{me.craftWorldUid || me.craftWorldUserId || (language === 'es' ? 'No establecido' : 'Not set')}</p>
-                  <p className="text-xs text-slate-400">{language === 'es' ? 'Última sincronización: ' : 'Last synced: '}{lastSynced}</p>
+                  <p className="text-lg font-black bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                    {language === 'es' ? `¡Hola de nuevo, ${profile?.displayName || me.username}!` : `Welcome back, ${profile?.displayName || me.username}!`}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2.5">
+                    <span className="resource-item-badge text-xs text-slate-200 flex items-center gap-1.5 px-3 py-1">
+                      <span className="text-[10px] text-slate-400 uppercase font-black">UID:</span>
+                      <strong className="text-emerald-400 font-bold">{me.craftWorldUid || me.craftWorldUserId || (language === 'es' ? 'No establecido' : 'Not set')}</strong>
+                    </span>
+                    <span className="resource-item-badge text-xs text-slate-200 flex items-center gap-1.5 px-3 py-1">
+                      <span className="text-[10px] text-slate-400 uppercase font-black">{language === 'es' ? 'Sincro' : 'Sync'}:</span>
+                      <strong className="text-teal-400 font-bold">{lastSynced}</strong>
+                    </span>
+                  </div>
                 </div>
                 <button onClick={load} className="retroBtn shrink-0">
                   {language === 'es' ? 'Actualizar Datos' : 'Refresh Data'}
@@ -348,6 +360,8 @@ export default function MyHome() {
             </div>
           )}
         </div>
+
+
 
         {/* Error Card */}
         {error && (

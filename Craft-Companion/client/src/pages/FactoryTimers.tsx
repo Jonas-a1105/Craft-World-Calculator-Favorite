@@ -325,6 +325,11 @@ export default function FactoryTimers() {
   const [now, setNow] = useState(() => new Date());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>(() => (localStorage.getItem('timersViewMode') as 'list' | 'grid') || 'list');
+
+  useEffect(() => {
+    localStorage.setItem('timersViewMode', viewMode);
+  }, [viewMode]);
 
   useEffect(() => {
     setTimers(loadTimers());
@@ -425,63 +430,184 @@ export default function FactoryTimers() {
 
         <div className="w-[95vw] max-w-[1800px] relative left-1/2 -translate-x-1/2">
           <Card title={language === 'es' ? 'Fábricas Activas' : 'Active Factories'}>
+            <div className="flex justify-end mb-4 gap-2">
+              <button 
+                onClick={() => setViewMode('list')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'list' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                style={{ border: 'none' }}
+              >
+                {language === 'es' ? 'Lista' : 'List'}
+              </button>
+              <button 
+                onClick={() => setViewMode('grid')}
+                className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'grid' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                style={{ border: 'none' }}
+              >
+                {language === 'es' ? 'Tarjetas' : 'Cards'}
+              </button>
+            </div>
+
             {timerRows.length ? (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[1220px] text-left text-sm">
-                  <thead className="text-slate-300">
-                    <tr>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Fábrica' : 'Factory'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ejecución' : 'Runtime'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Origen' : 'Source'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Iniciado' : 'Started'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Finaliza' : 'Ends'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Tiempo Restante' : 'Time to End'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ciclos / Hora' : 'Cycles / Hr'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ciclos / Día' : 'Cycles / Day'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Por Finalizar' : 'Remaining'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Progreso' : 'Progress'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Estimado Completado' : 'Est. Complete'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Acciones' : 'Actions'}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {timerRows.map(({ key, factory, row, cycle, status, cycleWindow, source, startedAt, estimatedCompleted }) => {
-                      const factImg = getFactoryImage(row.token);
-                      return (
-                        <tr key={key} className="border-t border-slate-800">
-                          <td className="p-2 font-semibold whitespace-nowrap">
-                            <div className="flex items-center gap-2">
-                              {factImg && (
+              viewMode === 'list' ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[1220px] text-left text-sm">
+                    <thead className="text-slate-300">
+                      <tr>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Fábrica' : 'Factory'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ejecución' : 'Runtime'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Origen' : 'Source'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Iniciado' : 'Started'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Finaliza' : 'Ends'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Tiempo Restante' : 'Time to End'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ciclos / Hora' : 'Cycles / Hr'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ciclos / Día' : 'Cycles / Day'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Por Finalizar' : 'Remaining'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Progreso' : 'Progress'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Estimado Completado' : 'Est. Complete'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Acciones' : 'Actions'}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {timerRows.map(({ key, factory, row, cycle, status, cycleWindow, source, startedAt, estimatedCompleted }) => {
+                        const factImg = getFactoryImage(row.token);
+                        return (
+                          <tr key={key} className="border-t border-slate-800">
+                            <td className="p-2 font-semibold whitespace-nowrap">
+                              <div className="flex items-center gap-2">
+                                {factImg && (
+                                  <img 
+                                    src={factImg} 
+                                    alt={row.token} 
+                                    className="h-8 w-8 bg-slate-900 object-contain p-0.5" 
+                                    style={{ borderRadius: 'var(--radius-resource-item)' }}
+                                  />
+                                )}
+                                <span>
+                                  {formatPlotName(factory.landPlotName || '', language)} • {formatFactoryName(row.token, language)} {language === 'es' ? 'Nivel' : 'Lv'} {row.level}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="p-2 whitespace-nowrap">{formatDurationFromMinutes(cycle.runtimeMinutes)}</td>
+                            <td className="p-2 whitespace-nowrap">{source}</td>
+                            <td className="p-2 whitespace-nowrap">{formatTimestamp(startedAt, language)}</td>
+                            <td className="p-2 whitespace-nowrap">{formatTimestamp(cycleWindow.endsAt, language)}</td>
+                            <td className="p-2 whitespace-nowrap">
+                              {cycleWindow.hasWindow 
+                                ? formatTimeToEnd(cycleWindow.secondsUntilEnd, cycleWindow.ended, language) 
+                                : (language === 'es' ? 'Esperando hora de inicio' : 'Waiting for start time')}
+                            </td>
+                            <td className="p-2 whitespace-nowrap">{fmt(cycle.runsPerHour, 3)}</td>
+                            <td className="p-2 whitespace-nowrap">{fmt(cycle.runsPerDay, 2)}</td>
+                            <td className="p-2 whitespace-nowrap">
+                              {status.requiresStartTime 
+                                ? (language === 'es' ? 'La cuenta regresiva requiere sincronización' : 'Cycle countdown requires start time sync') 
+                                : formatSeconds(status.remainingSeconds)}
+                              {status.paused ? (language === 'es' ? ' (pausado)' : ' (paused)') : ''}
+                            </td>
+                            <td className="p-2 text-center">
+                              <CircularProgress 
+                                progress={status.progressPercent}
+                                remainingSeconds={status.remainingSeconds}
+                                ended={cycleWindow.ended}
+                                paused={status.paused}
+                                language={language}
+                                uniqueId={key}
+                              />
+                            </td>
+                            <td className="p-2 whitespace-nowrap">
+                              {estimatedCompleted}
+                              {factory.unclaimedUnitsBeforeCurrentRun ? (
+                                <span className="ml-1 text-xs text-slate-400">
+                                  ({factory.unclaimedUnitsBeforeCurrentRun} {language === 'es' ? 'no reclamados antes de la actual' : 'unclaimed before current'})
+                                </span>
+                              ) : null}
+                            </td>
+                            <td className="p-2 whitespace-nowrap">
+                              <div className="flex flex-wrap gap-2">
+                                <button 
+                                  onClick={() => updateTimer(key, { startedAt: new Date().toISOString(), manual: true })} 
+                                  className="rounded-[8px] bg-blue-600 px-3 py-1.5 font-bold text-xs cursor-pointer hover:bg-blue-500 transition-colors"
+                                >
+                                  {language === 'es' ? 'Inicio manual' : 'Manual start'}
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    const existing = timers[key];
+                                    if (!existing?.manual || !existing.startedAt) return;
+                                    updateTimer(key, existing.pausedAt ? { startedAt: existing.startedAt, manual: true } : { ...existing, pausedAt: new Date().toISOString(), manual: true });
+                                  }}
+                                  className="rounded-[8px] bg-slate-700 px-3 py-1.5 font-bold text-xs cursor-pointer hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                  disabled={!timers[key]?.manual}
+                                >
+                                  {timers[key]?.pausedAt ? (language === 'es' ? 'Reanudar' : 'Resume') : (language === 'es' ? 'Pausar' : 'Pause')}
+                                </button>
+                                <button 
+                                  onClick={() => resetTimer(key)} 
+                                  className="rounded-[8px] bg-red-700 px-3 py-1.5 font-bold text-xs cursor-pointer hover:bg-red-650 transition-colors"
+                                >
+                                  {language === 'es' ? 'Usar API' : 'Use API'}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="flex flex-wrap justify-center gap-6 mt-2">
+                  {timerRows.map(({ key, factory, row, cycle, status, cycleWindow, source, startedAt, estimatedCompleted }) => {
+                    const factImg = getFactoryImage(row.token);
+                    return (
+                      <div 
+                        key={key}
+                        style={{
+                          backgroundColor: 'var(--bg-card)',
+                          borderRadius: 'var(--radius)',
+                          padding: '16px',
+                          border: 'none'
+                        }}
+                        className="flex flex-col gap-4 w-full max-w-[420px]"
+                      >
+                        
+                        {/* Header: Info + Circular Progress */}
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div 
+                              className="w-14 h-14 bg-slate-900/60 flex items-center justify-center p-1.5 shrink-0"
+                              style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
+                            >
+                              {factImg ? (
                                 <img 
                                   src={factImg} 
                                   alt={row.token} 
-                                  className="h-8 w-8 bg-slate-900 object-contain p-0.5" 
-                                  style={{ borderRadius: 'var(--radius-resource-item)' }}
+                                  className="w-full h-full object-contain" 
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = `/assets/resources/${row.token.charAt(0).toUpperCase() + row.token.slice(1).toLowerCase()}.png`;
+                                  }}
                                 />
+                              ) : (
+                                <div className="text-xs font-black text-slate-500">{row.token.slice(0, 3)}</div>
                               )}
-                              <span>
-                                {formatPlotName(factory.landPlotName || '', language)} • {formatFactoryName(row.token, language)} {language === 'es' ? 'Nivel' : 'Lv'} {row.level}
-                              </span>
                             </div>
-                          </td>
-                          <td className="p-2 whitespace-nowrap">{formatDurationFromMinutes(cycle.runtimeMinutes)}</td>
-                          <td className="p-2 whitespace-nowrap">{source}</td>
-                          <td className="p-2 whitespace-nowrap">{formatTimestamp(startedAt, language)}</td>
-                          <td className="p-2 whitespace-nowrap">{formatTimestamp(cycleWindow.endsAt, language)}</td>
-                          <td className="p-2 whitespace-nowrap">
-                            {cycleWindow.hasWindow 
-                              ? formatTimeToEnd(cycleWindow.secondsUntilEnd, cycleWindow.ended, language) 
-                              : (language === 'es' ? 'Esperando hora de inicio' : 'Waiting for start time')}
-                          </td>
-                          <td className="p-2 whitespace-nowrap">{fmt(cycle.runsPerHour, 3)}</td>
-                          <td className="p-2 whitespace-nowrap">{fmt(cycle.runsPerDay, 2)}</td>
-                          <td className="p-2 whitespace-nowrap">
-                            {status.requiresStartTime 
-                              ? (language === 'es' ? 'La cuenta regresiva requiere sincronización' : 'Cycle countdown requires start time sync') 
-                              : formatSeconds(status.remainingSeconds)}
-                            {status.paused ? (language === 'es' ? ' (pausado)' : ' (paused)') : ''}
-                          </td>
-                          <td className="p-2 text-center">
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="text-[10px] uppercase font-black text-orange-400">
+                                  {formatFactoryName(row.token, language)}
+                                </span>
+                                <span className="text-[9px] bg-slate-900/80 px-2 py-0.5 rounded-full text-slate-300 font-bold">
+                                  {language === 'es' ? `Nivel ${row.level}` : `Lv ${row.level}`}
+                                </span>
+                              </div>
+                              <h3 className="text-sm font-black text-white truncate mt-1">
+                                {formatPlotName(factory.landPlotName || '', language)}
+                              </h3>
+                            </div>
+                          </div>
+
+                          {/* CircularProgress */}
+                          <div className="shrink-0">
                             <CircularProgress 
                               progress={status.progressPercent}
                               remainingSeconds={status.remainingSeconds}
@@ -490,48 +616,128 @@ export default function FactoryTimers() {
                               language={language}
                               uniqueId={key}
                             />
-                          </td>
-                          <td className="p-2 whitespace-nowrap">
-                            {estimatedCompleted}
-                            {factory.unclaimedUnitsBeforeCurrentRun ? (
-                              <span className="ml-1 text-xs text-slate-400">
-                                ({factory.unclaimedUnitsBeforeCurrentRun} {language === 'es' ? 'no reclamados antes de la actual' : 'unclaimed before current'})
-                              </span>
-                            ) : null}
-                          </td>
-                          <td className="p-2 whitespace-nowrap">
-                            <div className="flex flex-wrap gap-2">
-                              <button 
-                                onClick={() => updateTimer(key, { startedAt: new Date().toISOString(), manual: true })} 
-                                className="rounded-[8px] bg-blue-600 px-3 py-1.5 font-bold text-xs cursor-pointer hover:bg-blue-500 transition-colors"
-                              >
-                                {language === 'es' ? 'Inicio manual' : 'Manual start'}
-                              </button>
-                              <button
-                                onClick={() => {
-                                  const existing = timers[key];
-                                  if (!existing?.manual || !existing.startedAt) return;
-                                  updateTimer(key, existing.pausedAt ? { startedAt: existing.startedAt, manual: true } : { ...existing, pausedAt: new Date().toISOString(), manual: true });
-                                }}
-                                className="rounded-[8px] bg-slate-700 px-3 py-1.5 font-bold text-xs cursor-pointer hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                disabled={!timers[key]?.manual}
-                              >
-                                {timers[key]?.pausedAt ? (language === 'es' ? 'Reanudar' : 'Resume') : (language === 'es' ? 'Pausar' : 'Pause')}
-                              </button>
-                              <button 
-                                onClick={() => resetTimer(key)} 
-                                className="rounded-[8px] bg-red-700 px-3 py-1.5 font-bold text-xs cursor-pointer hover:bg-red-650 transition-colors"
-                              >
-                                {language === 'es' ? 'Usar API' : 'Use API'}
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                          </div>
+                        </div>
+
+                        {/* Grid of Adaptive Badges (No borders, wraps to content size!) */}
+                        <div className="flex flex-wrap justify-center gap-2">
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ejecución:' : 'Runtime:'}</span>
+                            <strong className="text-slate-200">{formatDurationFromMinutes(cycle.runtimeMinutes)}</strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Origen:' : 'Source:'}</span>
+                            <strong className="text-slate-200">{source}</strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Iniciado:' : 'Started:'}</span>
+                            <strong className="text-slate-200">{formatTimestamp(startedAt, language)}</strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Finaliza:' : 'Ends:'}</span>
+                            <strong className="text-slate-200">{formatTimestamp(cycleWindow.endsAt, language)}</strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Tiempo Restante:' : 'Time to End:'}</span>
+                            <strong className="text-slate-200">
+                              {cycleWindow.hasWindow 
+                                ? formatTimeToEnd(cycleWindow.secondsUntilEnd, cycleWindow.ended, language) 
+                                : (language === 'es' ? 'Esperando hora' : 'Waiting for time')}
+                            </strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ciclos / Hora:' : 'Cycles / Hr:'}</span>
+                            <strong className="text-slate-200">{fmt(cycle.runsPerHour, 3)}</strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ciclos / Día:' : 'Cycles / Day:'}</span>
+                            <strong className="text-slate-200">{fmt(cycle.runsPerDay, 2)}</strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Por Finalizar:' : 'Remaining:'}</span>
+                            <strong className="text-slate-200">
+                              {status.requiresStartTime 
+                                ? (language === 'es' ? 'Sincro requ.' : 'Sync req.') 
+                                : formatSeconds(status.remainingSeconds)}
+                              {status.paused ? (language === 'es' ? ' (pausado)' : ' (paused)') : ''}
+                            </strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'No Reclamados:' : 'Unclaimed:'}</span>
+                            <strong className="text-slate-200">{factory.unclaimedUnitsBeforeCurrentRun || 0}</strong>
+                          </div>
+                        </div>
+
+                        {/* Action buttons (Styled match, no borders) */}
+                        <div className="flex justify-center gap-2 pt-2 border-t border-white/[0.03] flex-wrap">
+                          <button 
+                            onClick={() => updateTimer(key, { startedAt: new Date().toISOString(), manual: true })} 
+                            className="py-1.5 px-3 rounded-[8px] bg-slate-900/60 text-[10px] text-slate-350 font-bold hover:bg-slate-800 hover:text-white transition-colors cursor-pointer text-center" 
+                            style={{ border: 'none' }}
+                          >
+                            {language === 'es' ? 'Inicio manual' : 'Manual start'}
+                          </button>
+                          <button 
+                            onClick={() => {
+                              const existing = timers[key];
+                              if (!existing?.manual || !existing.startedAt) return;
+                              updateTimer(key, existing.pausedAt ? { startedAt: existing.startedAt, manual: true } : { ...existing, pausedAt: new Date().toISOString(), manual: true });
+                            }}
+                            disabled={!timers[key]?.manual}
+                            className="py-1.5 px-3 rounded-[8px] bg-slate-900/60 text-[10px] text-slate-350 font-bold hover:bg-slate-800 hover:text-white transition-colors cursor-pointer text-center disabled:opacity-50 disabled:cursor-not-allowed" 
+                            style={{ border: 'none' }}
+                          >
+                            {timers[key]?.pausedAt ? (language === 'es' ? 'Reanudar' : 'Resume') : (language === 'es' ? 'Pausar' : 'Pause')}
+                          </button>
+                          <button 
+                            onClick={() => resetTimer(key)} 
+                            className="py-1.5 px-3 rounded-[8px] bg-slate-900/60 text-[10px] text-slate-350 font-bold hover:bg-slate-800 hover:text-white transition-colors cursor-pointer text-center" 
+                            style={{ border: 'none' }}
+                          >
+                            {language === 'es' ? 'Usar API' : 'Use API'}
+                          </button>
+                        </div>
+
+                      </div>
+                    );
+                  })}
+                </div>
+              )
             ) : (
               <p className="text-sm text-slate-400">
                 {language === 'es' ? 'Aún no se encontraron fábricas activas coincidentes.' : 'No matched live factories were found yet.'}
