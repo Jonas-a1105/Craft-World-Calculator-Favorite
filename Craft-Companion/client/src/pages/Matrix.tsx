@@ -322,17 +322,17 @@ export default function Matrix() {
       <div className="space-y-4">
         <Card title={language === 'es' ? 'Matriz' : 'Matrix'}>
           <div className="space-y-3">
-            <p className="text-sm text-slate-300">
+            <p key="info1" className="text-sm text-slate-300">
               {language === 'es'
                 ? 'Esta página lee del caché de matriz global del servidor y fuerza una actualización cada segundo.'
                 : 'This page reads from the global server matrix cache and forces a fresh poll every second.'}
             </p>
-            <p className="text-sm text-yellow-200">
+            <p key="info2" className="text-sm text-yellow-200">
               {language === 'es'
                 ? 'El navegador ya no realiza el escaneo. Solo recarga el caché guardado a medida que el servidor escribe nuevas celdas.'
                 : 'The browser no longer scans. It only reloads the saved cache as the server writes new matrix cells.'}
             </p>
-            {error && <p className="text-sm text-red-300">{error}</p>}
+            {error && <p key="err" className="text-sm text-red-300">{error}</p>}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
               <div className="flex flex-wrap gap-2">
                 {Object.keys(tokenGroups).map((group) => {
@@ -377,29 +377,29 @@ export default function Matrix() {
               </div>
             </div>
             <div className="grid gap-2 text-xs text-slate-400 md:grid-cols-5 border-t border-slate-800/50 pt-3">
-              <p>
+              <p key="next">
                 {language === 'es' ? 'Próximo escaneo:' : 'Next global scan:'}{' '}
                 <span className="font-bold text-white">{countdown}s</span>
               </p>
-              <p>
+              <p key="status">
                 {language === 'es' ? 'Estado:' : 'Status:'}{' '}
                 <span className="font-bold text-white">
                   {cache.scanStatus === 'scanning' ? (language === 'es' ? 'escaneando' : 'scanning') : (language === 'es' ? 'inactivo' : 'idle')}
                 </span>
               </p>
-              <p>
+              <p key="column">
                 {language === 'es' ? 'Columna:' : 'Column:'}{' '}
                 <span className="font-bold text-white">
                   {cache.scanColumn ? formatFactoryName(cache.scanColumn, language) : (language === 'es' ? 'Ninguna' : 'None')}
                 </span>
               </p>
-              <p>
+              <p key="save">
                 {language === 'es' ? 'Último guardado:' : 'Last save:'}{' '}
                 <span className="font-bold text-white">
                   {cache.updatedAt ? new Date(cache.updatedAt).toLocaleString() : (language === 'es' ? 'Sin datos' : 'No save yet')}
                 </span>
               </p>
-              <p>
+              <p key="poll">
                 {language === 'es' ? 'Último sondeo:' : 'Last poll:'}{' '}
                 <span className="font-bold text-white">
                   {lastPolledAt ? new Date(lastPolledAt).toLocaleTimeString() : (language === 'es' ? 'Nunca' : 'Never')}
