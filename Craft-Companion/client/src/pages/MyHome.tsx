@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Card from '../components/Card';
 import Layout from '../components/Layout';
 import { SkeletonDashboardPage } from '../components/Skeleton';
@@ -183,6 +184,7 @@ function formatSpeed(value: number) {
 }
 
 export default function MyHome() {
+  const navigate = useNavigate();
   const { t, language } = useTranslation();
   const [me, setMe] = useState<any>();
   const [home, setHome] = useState<HomeData>();
@@ -223,8 +225,15 @@ export default function MyHome() {
       } catch {
         setWalletData(null);
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.error('Failed to load home data', err);
       setError(t('home.loadError'));
+      const errMsg = String(err?.message || '').toLowerCase();
+      if (errMsg.includes('unauthorized') || errMsg.includes('token') || errMsg.includes('fail') || errMsg.includes('auth')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('me');
+        navigate('/signin');
+      }
     }
   };
 
