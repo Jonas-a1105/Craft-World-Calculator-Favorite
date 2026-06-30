@@ -808,26 +808,19 @@ export default function UpgradeAdvisor() {
                             padding: '16px',
                             border: 'none'
                           }}
-                          className="flex flex-col gap-3.5 relative overflow-hidden"
+                          className="flex flex-col gap-4 relative overflow-hidden"
                         >
-                          {/* Badges container at top-right */}
-                          <div className="absolute top-3 right-3 flex items-center gap-1.5">
-                            <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${row.ready && row.gainPerHour > 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
-                              {row.ready 
-                                ? row.gainPerHour > 0 
-                                  ? (language === 'es' ? 'Candidato' : 'Candidate') 
-                                  : (language === 'es' ? 'Evitar' : 'Avoid') 
-                                : (language === 'es' ? 'Esperando' : 'Waiting')}
-                            </span>
+                          {/* Rank indicator badge */}
+                          <div className="absolute top-3 right-3">
                             <span className="text-[10px] font-black text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
                               #{index + 1}
                             </span>
                           </div>
 
                           {/* Header: Title + Image */}
-                          <div className="flex items-center gap-3 border-b border-white/[0.03] pb-3">
+                          <div className="flex items-center gap-3">
                             <div 
-                              className="w-11 h-11 bg-slate-900/60 flex items-center justify-center p-1 shrink-0"
+                              className="w-12 h-12 bg-slate-900/60 flex items-center justify-center p-1 shrink-0"
                               style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
                             >
                               {factImg ? (
@@ -840,97 +833,159 @@ export default function UpgradeAdvisor() {
                                 <div className="text-xs font-black text-slate-500">{row.option.symbol.slice(0, 3)}</div>
                               )}
                             </div>
-                            <div className="min-w-0 pr-20">
-                              <span className="text-[9px] uppercase font-black text-orange-400 tracking-wider">
+                            <div className="min-w-0 pr-10">
+                              <span className="text-[10px] uppercase font-black text-orange-400">
                                 {rowLabel(row.option, language).split('•')[0]}
                               </span>
-                              <h3 className="text-xs font-black text-white truncate mt-0.5">
+                              <h3 className="text-sm font-black text-white truncate mt-0.5">
                                 {rowLabel(row.option, language).split('•').slice(1).join('•') || rowLabel(row.option, language)}
                               </h3>
                             </div>
                           </div>
 
                           {/* Details grid as badges */}
-                          <div className="grid gap-2 text-xs">
-                            {/* Materials progress section */}
-                            <div className="bg-white/[0.01] p-2 rounded-[8px] space-y-1">
-                              <span className="text-[8px] uppercase font-black text-slate-400 tracking-wider">{language === 'es' ? 'Materiales' : 'Materials'}</span>
-                              <div className="grid grid-cols-3 gap-1 text-center text-[10px]">
-                                <div className="bg-slate-900/40 p-1.5 rounded-[6px]">
-                                  <span className="text-slate-400 block mb-0.5">{language === 'es' ? 'Necesita' : 'Need'}</span>
-                                  <div className="flex items-center justify-center gap-0.5">
-                                    <strong className="text-white">{fmt(row.needAmount)}</strong>
-                                    {resImg && <img src={resImg} alt={row.needToken} className="h-3 w-3 object-contain shrink-0" />}
-                                  </div>
-                                </div>
-                                <div className="bg-slate-900/40 p-1.5 rounded-[6px]">
-                                  <span className="text-slate-400 block mb-0.5">{language === 'es' ? 'Tiene' : 'Own'}</span>
-                                  <div className="flex items-center justify-center gap-0.5">
-                                    <strong className="text-white">{fmt(row.ownAmount)}</strong>
-                                    {resImg && <img src={resImg} alt={row.needToken} className="h-3 w-3 object-contain shrink-0" />}
-                                  </div>
-                                </div>
-                                <div className="bg-slate-900/40 p-1.5 rounded-[6px]">
-                                  <span className="text-slate-400 block mb-0.5">{language === 'es' ? 'Faltante' : 'Missing'}</span>
-                                  <div className="flex items-center justify-center gap-0.5">
-                                    <strong className="text-amber-450">{fmt(row.gapAmount)}</strong>
-                                    {resImg && <img src={resImg} alt={row.needToken} className="h-3 w-3 object-contain shrink-0" />}
-                                  </div>
-                                </div>
-                              </div>
+                          <div className="flex flex-wrap gap-2 pt-3 border-t border-white/[0.03] justify-center">
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Taller:' : 'Workshop:'}</span>
+                              <strong className="text-slate-200">{fmt(row.workshopBoostPercent, 2)}%</strong>
                             </div>
 
-                            {/* Efficiency & Boosts */}
-                            <div className="bg-white/[0.01] p-2 rounded-[8px] space-y-1">
-                              <span className="text-[8px] uppercase font-black text-slate-400 tracking-wider">{language === 'es' ? 'Producción y Maestría' : 'Production & Mastery'}</span>
-                              <div className="flex justify-between items-center text-[10px]">
-                                <span className="text-slate-400">{language === 'es' ? 'Velocidad taller / Boost:' : 'Workshop speed / Boost:'}</span>
-                                <strong className="text-white">{fmt(row.workshopBoostPercent, 2)}% / {fmt(row.activeBoostPercent, 2)}%</strong>
-                              </div>
-                              <div className="flex justify-between items-center text-[10px] pt-1 border-t border-white/[0.02]">
-                                <span className="text-slate-400">{language === 'es' ? 'Maestría (Act. → Sig.):' : 'Mastery (Cur. → Next):'}</span>
-                                <strong className="text-white text-right truncate pl-2" title={`${row.currentMasteryText} → ${row.nextMasteryText}`}>
-                                  {row.currentMasteryText.split('/')[0]} → {row.nextMasteryText.split('/')[0]}
-                                </strong>
-                              </div>
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Boost Activo:' : 'Active Boost:'}</span>
+                              <strong className="text-slate-200">{fmt(row.activeBoostPercent, 2)}%</strong>
                             </div>
 
-                            {/* Costs */}
-                            <div className="bg-white/[0.01] p-2 rounded-[8px] space-y-1">
-                              <span className="text-[8px] uppercase font-black text-slate-400 tracking-wider">{language === 'es' ? 'Costos de Mejora' : 'Upgrade Costs'}</span>
-                              <div className="flex justify-between items-center text-[10px]">
-                                <span className="text-slate-400">{language === 'es' ? 'Compra / Fabr.:' : 'Buy / Craft:'}</span>
-                                <strong className="text-white">
-                                  {row.buyCost === null ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(row.buyCost)}`} / {row.craftCost === null ? (language === 'es' ? 'N/A' : 'N/A') : `${fmt(row.craftCost)}`} COIN
-                                </strong>
-                              </div>
-                              <div className="flex justify-between items-center text-[10px] pt-1 border-t border-white/[0.02]">
-                                <span className="text-slate-400">{language === 'es' ? 'Mejor opción:' : 'Best choice:'}</span>
-                                <strong className="text-emerald-450">{formatBestChoice(row.bestChoice, language)}</strong>
-                              </div>
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Maestría:' : 'Mastery:'}</span>
+                              <strong className="text-slate-200">{row.currentMasteryText} → {row.nextMasteryText}</strong>
                             </div>
 
-                            {/* Performance & Returns */}
-                            <div className="bg-white/[0.01] p-2 rounded-[8px] space-y-1">
-                              <span className="text-[8px] uppercase font-black text-slate-400 tracking-wider">{language === 'es' ? 'Rendimiento y Retorno' : 'Performance & Returns'}</span>
-                              <div className="flex justify-between items-center text-[10px]">
-                                <span className="text-slate-400">{language === 'es' ? 'Ganancia Act / Sig:' : 'Profit Cur / Next:'}</span>
-                                <strong className="text-white">
-                                  {row.ready ? `${fmt(row.currentProfitPerHour)} / ${fmt(row.nextProfitPerHour)}` : (language === 'es' ? 'Esperando' : 'Waiting')}
-                                </strong>
-                              </div>
-                              <div className="flex justify-between items-center text-[10px] pt-1 border-t border-white/[0.02]">
-                                <span className="text-slate-400">{language === 'es' ? 'Ganancia / Impacto:' : 'Gain / Impact:'}</span>
-                                <strong className={`${row.gainPerHour >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                                  {row.ready ? `${fmt(row.gainPerHour)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')} ({row.ready ? `${fmt(row.impact, 2)}%` : 'N/A'})
-                                </strong>
-                              </div>
-                              <div className="flex justify-between items-center text-[10px] pt-1 border-t border-white/[0.02]">
-                                <span className="text-slate-400">{language === 'es' ? 'Tiempo de retorno:' : 'Break even:'}</span>
-                                <strong className="text-amber-400">
-                                  {row.ready ? fmtHours(row.breakEvenHours, language) : (language === 'es' ? 'Esperando' : 'Waiting')}
-                                </strong>
-                              </div>
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Necesita:' : 'Need:'}</span>
+                              {resImg && <img src={resImg} alt={row.needToken} className="h-4 w-4 object-contain shrink-0" />}
+                              <strong className="text-slate-200">{fmt(row.needAmount)} {formatFactoryName(row.needToken, language)}</strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Tiene:' : 'Own:'}</span>
+                              {resImg && <img src={resImg} alt={row.needToken} className="h-4 w-4 object-contain shrink-0" />}
+                              <strong className="text-slate-200">{fmt(row.ownAmount)} {formatFactoryName(row.needToken, language)}</strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Faltante:' : 'Missing:'}</span>
+                              {resImg && <img src={resImg} alt={row.needToken} className="h-4 w-4 object-contain shrink-0" />}
+                              <strong className="text-amber-450">{fmt(row.gapAmount)} {formatFactoryName(row.needToken, language)}</strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Costo Compra:' : 'Buy Cost:'}</span>
+                              <strong className="text-slate-200">
+                                {row.buyCost === null ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(row.buyCost)} COIN`}
+                              </strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Costo Fabr.:' : 'Craft Cost:'}</span>
+                              <strong className="text-slate-200">
+                                {row.craftCost === null ? (language === 'es' ? 'No disponible' : 'Not available') : `${fmt(row.craftCost)} COIN`}
+                              </strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Mejor Opción:' : 'Best Option:'}</span>
+                              <strong className="text-emerald-450">{formatBestChoice(row.bestChoice, language)}</strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ganancia Act/Hr:' : 'Current Profit/Hr:'}</span>
+                              <strong className="text-slate-200">
+                                {row.ready ? `${fmt(row.currentProfitPerHour)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                              </strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ganancia Sig/Hr:' : 'Next Profit/Hr:'}</span>
+                              <strong className="text-slate-200">
+                                {row.ready ? `${fmt(row.nextProfitPerHour)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                              </strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ganancia/Hr:' : 'Gain/Hr:'}</span>
+                              <strong className={`${row.gainPerHour >= 0 ? 'text-emerald-450' : 'text-red-400'}`}>
+                                {row.ready ? `${fmt(row.gainPerHour)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                              </strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Retorno:' : 'Break Even:'}</span>
+                              <strong className="text-amber-450">
+                                {row.ready ? fmtHours(row.breakEvenHours, language) : (language === 'es' ? 'Esperando' : 'Waiting')}
+                              </strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Impacto:' : 'Impact:'}</span>
+                              <strong className="text-slate-200">
+                                {row.ready ? `${fmt(row.impact, 2)}%` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                              </strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Estado:' : 'Status:'}</span>
+                              <span className={`font-bold ${row.ready ? 'text-emerald-450' : 'text-yellow-500 animate-pulse'}`}>
+                                {row.ready 
+                                  ? row.gainPerHour > 0 
+                                    ? (language === 'es' ? 'Candidato' : 'Candidate') 
+                                    : (language === 'es' ? 'No vale la pena' : 'Not worth it') 
+                                  : (language === 'es' ? 'Esperando' : 'Waiting')}
+                              </span>
                             </div>
                           </div>
                         </div>
