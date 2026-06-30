@@ -224,6 +224,7 @@ export default function EmpireDashboard() {
   const [factoryRows, setFactoryRows] = useState<FactoryDataRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>(() => (localStorage.getItem('comparisonViewMode') as 'list' | 'grid') || 'list');
 
   const load = async () => {
     setLoading(true);
@@ -508,70 +509,211 @@ export default function EmpireDashboard() {
         </div>
 
         {/* Factory Comparison Table */}
-        <Card title="Factory Comparison">
+        <Card title={language === 'es' ? 'Comparación de Fábricas' : 'Factory Comparison'}>
           {productionRows.length ? (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[1040px] text-left text-sm">
-                <thead className="text-slate-300">
-                  <tr>
-                    <th className="p-2">{language === 'es' ? 'Rango' : 'Rank'}</th>
-                    <th className="p-2">{language === 'es' ? 'Fábrica' : 'Factory'}</th>
-                    <th className="p-2">{language === 'es' ? 'Resultado' : 'Output'}</th>
-                    <th className="p-2">{language === 'es' ? 'Ejecución' : 'Runtime'}</th>
-                    <th className="p-2">{language === 'es' ? 'Ejec./Hr' : 'Runs/Hr'}</th>
-                    <th className="p-2">{language === 'es' ? 'Prod./Hr' : 'Output/Hr'}</th>
-                    <th className="p-2">{language === 'es' ? 'Prod./Día' : 'Output/Day'}</th>
-                    <th className="p-2">{language === 'es' ? 'Taller' : 'Workshop'}</th>
-                    <th className="p-2">{language === 'es' ? 'Boost Activo' : 'Active Boost'}</th>
-                  </tr>
-                </thead>
-                <tbody>
+            <div className="space-y-4">
+              <div className="flex justify-end gap-2">
+                <button 
+                  onClick={() => { setViewMode('list'); localStorage.setItem('comparisonViewMode', 'list'); }}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'list' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                  style={{ border: 'none' }}
+                >
+                  {language === 'es' ? 'Lista' : 'List'}
+                </button>
+                <button 
+                  onClick={() => { setViewMode('grid'); localStorage.setItem('comparisonViewMode', 'grid'); }}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'grid' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                  style={{ border: 'none' }}
+                >
+                  {language === 'es' ? 'Tarjetas' : 'Cards'}
+                </button>
+              </div>
+
+              {viewMode === 'list' ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[1040px] text-left text-sm">
+                    <thead className="text-slate-300">
+                      <tr>
+                        <th className="p-2">{language === 'es' ? 'Rango' : 'Rank'}</th>
+                        <th className="p-2">{language === 'es' ? 'Fábrica' : 'Factory'}</th>
+                        <th className="p-2">{language === 'es' ? 'Resultado' : 'Output'}</th>
+                        <th className="p-2">{language === 'es' ? 'Ejecución' : 'Runtime'}</th>
+                        <th className="p-2">{language === 'es' ? 'Ejec./Hr' : 'Runs/Hr'}</th>
+                        <th className="p-2">{language === 'es' ? 'Prod./Hr' : 'Output/Hr'}</th>
+                        <th className="p-2">{language === 'es' ? 'Prod./Día' : 'Output/Day'}</th>
+                        <th className="p-2">{language === 'es' ? 'Taller' : 'Workshop'}</th>
+                        <th className="p-2">{language === 'es' ? 'Boost Activo' : 'Active Boost'}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {productionRows.map((row, index) => {
+                        const factImg = getFactoryImage(row.symbol);
+                        const resImg = getResourceImage(row.outputToken);
+                        return (
+                          <tr key={row.key} className="border-t border-slate-800">
+                            <td className="p-2">{index + 1}</td>
+                            <td className="p-2 font-semibold">
+                              <div className="flex items-center gap-2">
+                                {factImg && (
+                                  <img 
+                                    src={factImg} 
+                                    alt={row.symbol} 
+                                    className="h-8 w-8 bg-slate-900 object-contain p-0.5" 
+                                    style={{ borderRadius: 'var(--radius-resource-item)' }}
+                                  />
+                                )}
+                                <span>{formatPlotName(row.plotName, language)} • {formatFactoryName(row.symbol, language)} • Lv {row.level}</span>
+                              </div>
+                            </td>
+                            <td className="p-2">
+                              <div className="flex items-center gap-1.5">
+                                {resImg && <img src={resImg} alt={row.outputToken} className="h-5 w-5 object-contain" />}
+                                <span>{fmt(row.outputAmount)} {formatFactoryName(row.outputToken, language)}</span>
+                              </div>
+                            </td>
+                            <td className="p-2">{formatDurationFromMinutes(row.effectiveDurationMinutes)}</td>
+                            <td className="p-2">{fmt(row.runsPerHour, 3)}</td>
+                            <td className="p-2">
+                              <div className="flex items-center gap-1.5">
+                                {resImg && <img src={resImg} alt={row.outputToken} className="h-5 w-5 object-contain" />}
+                                <span>{fmt(row.outputPerHour)} {formatFactoryName(row.outputToken, language)}</span>
+                              </div>
+                            </td>
+                            <td className="p-2">
+                              <div className="flex items-center gap-1.5">
+                                {resImg && <img src={resImg} alt={row.outputToken} className="h-5 w-5 object-contain" />}
+                                <span>{fmt(row.outputPerDay)} {formatFactoryName(row.outputToken, language)}</span>
+                              </div>
+                            </td>
+                            <td className="p-2">{fmt(row.workshopBoostPercent, 2)}%</td>
+                            <td className="p-2">{fmt(row.activeBoostPercent, 2)}%</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full">
                   {productionRows.map((row, index) => {
                     const factImg = getFactoryImage(row.symbol);
                     const resImg = getResourceImage(row.outputToken);
                     return (
-                      <tr key={row.key} className="border-t border-slate-800">
-                        <td className="p-2">{index + 1}</td>
-                        <td className="p-2 font-semibold">
-                          <div className="flex items-center gap-2">
-                            {factImg && (
+                      <div 
+                        key={row.key} 
+                        style={{
+                          backgroundColor: 'var(--bg-card)',
+                          borderRadius: 'var(--radius)',
+                          padding: '16px',
+                          border: 'none'
+                        }}
+                        className="flex flex-col gap-4 relative overflow-hidden"
+                      >
+                        {/* Rank indicator badge */}
+                        <div className="absolute top-3 right-3">
+                          <span className="text-[10px] font-black text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                            #{index + 1}
+                          </span>
+                        </div>
+
+                        {/* Header: Title + Image */}
+                        <div className="flex items-center gap-3">
+                          <div 
+                            className="w-12 h-12 bg-slate-900/60 flex items-center justify-center p-1 shrink-0"
+                            style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
+                          >
+                            {factImg ? (
                               <img 
                                 src={factImg} 
                                 alt={row.symbol} 
-                                className="h-8 w-8 bg-slate-900 object-contain p-0.5" 
-                                style={{ borderRadius: 'var(--radius-resource-item)' }}
+                                className="w-full h-full object-contain"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = `/assets/resources/${row.symbol.charAt(0).toUpperCase() + row.symbol.slice(1).toLowerCase()}.png`;
+                                }}
                               />
+                            ) : (
+                              <div className="text-xs font-black text-slate-500">{row.symbol.slice(0, 3)}</div>
                             )}
-                            <span>{formatPlotName(row.plotName, language)} • {formatFactoryName(row.symbol, language)} • Lv {row.level}</span>
                           </div>
-                        </td>
-                        <td className="p-2">
-                          <div className="flex items-center gap-1.5">
-                            {resImg && <img src={resImg} alt={row.outputToken} className="h-5 w-5 object-contain" />}
-                            <span>{fmt(row.outputAmount)} {formatFactoryName(row.outputToken, language)}</span>
+                          <div className="min-w-0 pr-10">
+                            <span className="text-[10px] uppercase font-black text-orange-400">
+                              {formatFactoryName(row.symbol, language)}
+                            </span>
+                            <h3 className="text-sm font-black text-white truncate mt-0.5">
+                              {formatPlotName(row.plotName, language)}
+                            </h3>
+                            <p className="text-[9.5px] text-slate-400 font-semibold mt-0.5">
+                              {language === 'es' ? `Nivel: ${row.level}` : `Level: ${row.level}`}
+                            </p>
                           </div>
-                        </td>
-                        <td className="p-2">{formatDurationFromMinutes(row.effectiveDurationMinutes)}</td>
-                        <td className="p-2">{fmt(row.runsPerHour, 3)}</td>
-                        <td className="p-2">
-                          <div className="flex items-center gap-1.5">
-                            {resImg && <img src={resImg} alt={row.outputToken} className="h-5 w-5 object-contain" />}
-                            <span>{fmt(row.outputPerHour)} {formatFactoryName(row.outputToken, language)}</span>
+                        </div>
+
+                        {/* Details grid as badges */}
+                        <div className="flex flex-wrap gap-2 pt-3 border-t border-white/[0.03] justify-center">
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Resultado:' : 'Output:'}</span>
+                            {resImg && <img src={resImg} alt={row.outputToken} className="h-4 w-4 object-contain shrink-0" />}
+                            <strong className="text-slate-200">{fmt(row.outputAmount)} {formatFactoryName(row.outputToken, language)}</strong>
                           </div>
-                        </td>
-                        <td className="p-2">
-                          <div className="flex items-center gap-1.5">
-                            {resImg && <img src={resImg} alt={row.outputToken} className="h-5 w-5 object-contain" />}
-                            <span>{fmt(row.outputPerDay)} {formatFactoryName(row.outputToken, language)}</span>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ejecución:' : 'Runtime:'}</span>
+                            <strong className="text-slate-200">{formatDurationFromMinutes(row.effectiveDurationMinutes)}</strong>
                           </div>
-                        </td>
-                        <td className="p-2">{fmt(row.workshopBoostPercent, 2)}%</td>
-                        <td className="p-2">{fmt(row.activeBoostPercent, 2)}%</td>
-                      </tr>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ejec./Hr:' : 'Runs/Hr:'}</span>
+                            <strong className="text-slate-200">{fmt(row.runsPerHour, 3)}</strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Prod./Hora:' : 'Output/Hr:'}</span>
+                            {resImg && <img src={resImg} alt={row.outputToken} className="h-4 w-4 object-contain shrink-0" />}
+                            <strong className="text-emerald-400">{fmt(row.outputPerHour)}/hr</strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Prod./Día:' : 'Output/Day:'}</span>
+                            {resImg && <img src={resImg} alt={row.outputToken} className="h-4 w-4 object-contain shrink-0" />}
+                            <strong className="text-amber-400">{fmt(row.outputPerDay)}/day</strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Taller:' : 'Workshop:'}</span>
+                            <strong className="text-slate-200">{fmt(row.workshopBoostPercent, 2)}%</strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Boost Activo:' : 'Active Boost:'}</span>
+                            <strong className="text-violet-400">{fmt(row.activeBoostPercent, 2)}%</strong>
+                          </div>
+                        </div>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
+                </div>
+              )}
             </div>
           ) : (
             <p className="text-sm text-slate-400">
