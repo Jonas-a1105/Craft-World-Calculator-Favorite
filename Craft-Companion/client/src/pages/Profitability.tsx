@@ -503,6 +503,8 @@ export default function Profitability() {
   const selectedEffectiveSpeedPercent = getEffectiveSpeedPercent(selectedBaseDurationMinutes, selectedCalculatedDurationMinutes);
   const upgradeCost = upgradeQuote?.input.amount || 0;
 
+  const progressPercent = quoteRequests.length > 0 ? Math.round((quotedCount / quoteRequests.length) * 100) : 0;
+
   if (loading) {
     return (
       <Layout>
@@ -522,13 +524,6 @@ export default function Profitability() {
                   ? 'Clasifica cada fábrica de tu propiedad que coincida con el CSV según la ganancia estimada en monedas (COIN) por hora usando cotizaciones en vivo del mercado para las salidas, cotizaciones de compra para los ingredientes, aumentos de velocidad del taller, boosts activos y reducciones por maestría de recursos.'
                   : 'This ranks every owned factory that matches the CSV by estimated COIN profit per hour using live Craft World sell quotes for outputs, buy quotes for inputs, workshop speed boosts, active boosts, and factory resource mastery input reductions.'}
               </p>
-              {quoteLoading && (
-                <p className="text-sm text-slate-400">
-                  {language === 'es' 
-                    ? `Cargando cotizaciones del mercado en lotes paralelos... ${quotedCount}/${quoteRequests.length} consultadas.`
-                    : `Loading live quote data in parallel batches... ${quotedCount}/${quoteRequests.length} quotes checked.`}
-                </p>
-              )}
               {missingCsvMatches > 0 && (
                 <p className="text-sm text-yellow-200">
                   {language === 'es'
@@ -536,7 +531,41 @@ export default function Profitability() {
                     : `${missingCsvMatches} owned factories do not have a CSV match yet, so they are excluded from the ranking.`}
                 </p>
               )}
-              <div className="flex flex-col md:flex-row gap-4 mt-3">
+              
+              {quoteLoading ? (
+                <div className="flex flex-col items-center justify-center p-8 bg-slate-955/40 rounded-[12px] border border-white/[0.03] space-y-4 my-4 z-10 relative">
+                  <div className="text-center space-y-1">
+                    <p className="text-sm font-black text-white uppercase tracking-wider">
+                      {language === 'es' ? 'Cargando cotizaciones de mercado...' : 'Loading market quotes...'}
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      {language === 'es' 
+                        ? `Consultando cotizaciones en tiempo real: ${quotedCount} de ${quoteRequests.length}`
+                        : `Fetching live market quotes: ${quotedCount} of ${quoteRequests.length}`}
+                    </p>
+                  </div>
+
+                  {/* Progress bar wrapper */}
+                  <div className="w-full max-w-[400px] h-3 bg-slate-900 rounded-full overflow-hidden p-0.5 border border-white/[0.05]">
+                    <div 
+                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300 relative"
+                      style={{ 
+                        width: `${progressPercent}%`,
+                        boxShadow: '0 0 10px rgba(16, 185, 129, 0.4)' 
+                      }}
+                    >
+                      {/* Animated light reflection */}
+                      <div className="absolute inset-0 bg-white/20 animate-pulse" />
+                    </div>
+                  </div>
+
+                  {/* Percentage Indicator */}
+                  <span className="text-xs font-black text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full">
+                    {progressPercent}%
+                  </span>
+                </div>
+              ) : (
+                <div className="flex flex-col md:flex-row gap-4 mt-3">
                 {bestAdvisorRow ? (
                   <div 
                     style={{
@@ -733,6 +762,7 @@ export default function Profitability() {
                   </div>
                 ) : null}
               </div>
+            )}
             </div>
           </Card>
         </div>
