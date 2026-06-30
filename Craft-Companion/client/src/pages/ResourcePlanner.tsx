@@ -514,7 +514,7 @@ export default function ResourcePlanner() {
                   className="flex flex-col gap-4 w-full"
                 >
                   {/* Header: Title + Image */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-col items-center gap-3 text-center justify-center w-full">
                     <div 
                       className="w-14 h-14 bg-slate-900/60 flex items-center justify-center p-1.5 shrink-0"
                       style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
@@ -532,8 +532,8 @@ export default function ResourcePlanner() {
                         <div className="text-xs font-black text-slate-500">{producerRow.token.slice(0, 3)}</div>
                       )}
                     </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
+                    <div className="min-w-0 flex flex-col items-center">
+                      <div className="flex items-center gap-1.5 flex-wrap justify-center">
                         <span className="text-[10px] uppercase font-black text-orange-400">
                           {formatFactoryName(producerRow.token, language)}
                         </span>
@@ -548,7 +548,7 @@ export default function ResourcePlanner() {
                   </div>
 
                   {/* Badges container */}
-                  <div className="flex flex-wrap gap-2 pt-2 border-t border-white/[0.03]">
+                  <div className="flex flex-wrap gap-2 pt-2 border-t border-white/[0.03] justify-center">
                     <div 
                       className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
                       style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
@@ -603,7 +603,7 @@ export default function ResourcePlanner() {
                   className="flex flex-col gap-4 w-full"
                 >
                   {/* Header: Title + Image */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-col items-center gap-3 text-center justify-center w-full">
                     <div 
                       className="w-12 h-12 bg-slate-900/60 flex items-center justify-center p-1 shrink-0"
                       style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
@@ -621,8 +621,8 @@ export default function ResourcePlanner() {
                         <div className="text-xs font-black text-slate-500">{selectedRow.token.slice(0, 3)}</div>
                       )}
                     </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
+                    <div className="min-w-0 flex flex-col items-center">
+                      <div className="flex items-center gap-1.5 flex-wrap justify-center">
                         <span className="text-[10px] uppercase font-black text-orange-400">
                           {formatFactoryName(selectedRow.token, language)}
                         </span>
@@ -630,7 +630,7 @@ export default function ResourcePlanner() {
                           {language === 'es' ? `Nivel ${selectedRow.level}` : `Level ${selectedRow.level}`}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mt-1">
+                      <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mt-1 justify-center">
                         <span>{language === 'es' ? 'Salida:' : 'Output:'}</span>
                         <strong className="text-white">{fmt(selectedRow.output_amount)}</strong>
                         {getResourceImage(selectedRow.output_token) && (
@@ -642,7 +642,7 @@ export default function ResourcePlanner() {
                   </div>
 
                   {/* Recipe details badges */}
-                  <div className="flex flex-wrap gap-2 pt-2 border-t border-white/[0.03]">
+                  <div className="flex flex-wrap gap-2 pt-2 border-t border-white/[0.03] justify-center">
                     <div 
                       className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
                       style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
