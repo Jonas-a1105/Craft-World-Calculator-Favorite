@@ -13,6 +13,10 @@ RUN cd Craft-Companion && npm install
 # Copy all source files
 COPY . .
 
+# Accept build arguments for public variables (like WalletConnect Project ID)
+ARG VITE_WALLETCONNECT_PROJECT_ID
+ENV VITE_WALLETCONNECT_PROJECT_ID=$VITE_WALLETCONNECT_PROJECT_ID
+
 # Build server and client
 RUN cd Craft-Companion && npm run build --workspace server
 RUN cd Craft-Companion && npm run build --workspace client
