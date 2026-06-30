@@ -1057,92 +1057,311 @@ export default function Profitability() {
         {selectedFactory && selectedRow && (
           <div className="max-w-[720px] mx-auto w-full space-y-4">
             <Card title={language === 'es' ? 'Fábrica Propia Seleccionada' : 'Selected Owned Factory'}>
-              <div className="flex gap-4 items-start text-sm">
-                {getFactoryImage(selectedFactory.symbol) && (
-                  <img 
-                    src={getFactoryImage(selectedFactory.symbol)} 
-                    alt={selectedFactory.symbol} 
-                    className="h-16 w-16 shrink-0 bg-slate-900/60 object-contain p-1" 
-                    style={{ borderRadius: 'var(--radius-resource-item)' }} 
-                  />
-                )}
-                <div className="grid gap-2 text-sm md:grid-cols-2 flex-grow">
-                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Parcela' : 'Plot'}:</span> <strong>{formatPlotName(selectedFactory.plotName, language)}</strong></p>
-                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Fábrica' : 'Factory'}:</span> <strong>{formatFactoryName(selectedFactory.symbol, language)}</strong></p>
-                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Nivel de propiedad' : 'Owned Display Level'}:</span> <strong>{selectedFactory.displayLevel}</strong></p>
-                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Siguiente nivel' : 'Next Display Level'}:</span> <strong>{selectedFactory.nextDisplayLevel}</strong></p>
-                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Nivel de fabricación' : 'Craft Level'}:</span> <strong>{selectedFactory.craftDisplayLevel || 'N/A'}</strong></p>
-                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Nivel CSV' : 'CSV Level'}:</span> <strong>{selectedRow.level}</strong></p>
-                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Duración original' : 'Original Duration'}:</span> <strong>{formatNumber(selectedRow.duration_min, 2)} min</strong></p>
-                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Tiempo base' : 'Base Time'}:</span> <strong>{formatDurationFromMinutes(selectedBaseDurationMinutes)}</strong></p>
-                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Tiempo final' : 'Output Time'}:</span> <strong>{formatDurationFromMinutes(selectedCalculatedDurationMinutes)}</strong></p>
-                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Velocidad efectiva' : 'Effective Speed'}:</span> <strong>{formatSpeed(selectedEffectiveSpeedPercent)}</strong></p>
-                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Velocidad taller' : 'Workshop Speed Boost'}:</span> <strong>{formatNumber(selectedWorkshopBoostPercent, 2)}%</strong></p>
-                  <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Boost activo' : 'Active Boost'}:</span> <strong>{formatNumber(selectedActiveBoostPercent, 2)}%</strong></p>
-                  <p className="flex items-center gap-1.5 text-slate-300">
-                    <span className="text-slate-400">{language === 'es' ? 'Maestría' : 'Mastery'}:</span>{' '}
-                    <span>Lv {selectedMasteryLevel} / {formatNumber(selectedMasteryReductionPercent, 2)}%</span>
-                    {getResourceImage(selectedRow.token) && <img src={getResourceImage(selectedRow.token)} alt={selectedRow.token} className="h-4 w-4 object-contain shrink-0" />}
-                    <strong>{formatFactoryName(selectedRow.token, language)}</strong>
-                  </p>
-                  <p className="flex items-center gap-1.5 text-slate-300">
-                    <span className="text-slate-400">{language === 'es' ? 'Salida' : 'Output'}:</span>{' '}
-                    <strong>{formatNumber(selectedRow.output_amount)}</strong>
-                    {getResourceImage(selectedRow.output_token) && <img src={getResourceImage(selectedRow.output_token)} alt={selectedRow.output_token} className="h-4 w-4 object-contain shrink-0" />}
-                    <strong>{formatFactoryName(selectedRow.output_token, language)}</strong>
-                  </p>
-                  <p className="flex items-center gap-1.5 text-slate-300">
-                    <span className="text-slate-400">{language === 'es' ? 'Ingrediente 1' : 'Input 1'}:</span>{' '}
-                    <strong>{formatNumber(selectedRow.input_amount_1)} → {formatNumber(selectedInput1AdjustedAmount)}</strong>
-                    {getResourceImage(selectedRow.input_token_1) && <img src={getResourceImage(selectedRow.input_token_1)} alt={selectedRow.input_token_1} className="h-4 w-4 object-contain shrink-0" />}
-                    <strong>{formatFactoryName(selectedRow.input_token_1, language)}</strong>
-                  </p>
-                  <p className="flex items-center gap-1.5 text-slate-300">
-                    <span className="text-slate-400">{language === 'es' ? 'Ingrediente 2' : 'Input 2'}:</span>{' '}
-                    {selectedRow.input_token_2 ? (
-                      <>
-                        <strong>{formatNumber(selectedRow.input_amount_2)} → {formatNumber(selectedInput2AdjustedAmount)}</strong>
-                        {getResourceImage(selectedRow.input_token_2) && <img src={getResourceImage(selectedRow.input_token_2)} alt={selectedRow.input_token_2} className="h-4 w-4 object-contain shrink-0" />}
-                        <strong>{formatFactoryName(selectedRow.input_token_2, language)}</strong>
-                      </>
-                    ) : 'N/A'}
-                  </p>
-                  <p className="flex items-center gap-1.5 md:col-span-2 text-slate-300">
-                    <span className="text-slate-400">{language === 'es' ? 'Mejora requiere' : 'Upgrade Requires'}:</span>{' '}
-                    {selectedUpgradeRow?.upgrade_token ? (
-                      <>
-                        <strong>{formatNumber(selectedUpgradeRow.upgrade_amount)}</strong>
-                        {getResourceImage(selectedUpgradeRow.upgrade_token) && <img src={getResourceImage(selectedUpgradeRow.upgrade_token)} alt={selectedUpgradeRow.upgrade_token} className="h-4 w-4 object-contain shrink-0" />}
-                        <strong>{formatFactoryName(selectedUpgradeRow.upgrade_token, language)}</strong>
-                      </>
-                    ) : 'No next CSV row'}
-                  </p>
+              <div 
+                style={{
+                  backgroundColor: 'var(--bg-card)',
+                  borderRadius: 'var(--radius)',
+                  padding: '16px',
+                  border: 'none'
+                }}
+                className="flex flex-col gap-4 w-full"
+              >
+                {/* Header: Plot, Name, level */}
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-14 h-14 bg-slate-900/60 flex items-center justify-center p-1.5 shrink-0"
+                    style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
+                  >
+                    {getFactoryImage(selectedFactory.symbol) ? (
+                      <img 
+                        src={getFactoryImage(selectedFactory.symbol)} 
+                        alt={selectedFactory.symbol} 
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = `/assets/resources/${selectedFactory.symbol.charAt(0).toUpperCase() + selectedFactory.symbol.slice(1).toLowerCase()}.png`;
+                        }}
+                      />
+                    ) : (
+                      <div className="text-xs font-black text-slate-500">{selectedFactory.symbol.slice(0, 3)}</div>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] uppercase font-black text-orange-400">
+                        {formatFactoryName(selectedFactory.symbol, language)}
+                      </span>
+                      <span className="text-[9px] bg-slate-900/80 px-2 py-0.5 rounded-full text-slate-300 font-bold">
+                        {language === 'es' ? `Nivel Propio ${selectedFactory.displayLevel}` : `Owned Lv ${selectedFactory.displayLevel}`}
+                      </span>
+                      <span className="text-[9px] bg-slate-900/80 px-2 py-0.5 rounded-full text-slate-400 font-bold">
+                        {language === 'es' ? `Nivel Fab. ${selectedFactory.craftDisplayLevel || 'N/A'}` : `Craft Lv ${selectedFactory.craftDisplayLevel || 'N/A'}`}
+                      </span>
+                    </div>
+                    <h3 className="text-sm font-black text-white truncate mt-1">
+                      {formatPlotName(selectedFactory.plotName, language)}
+                    </h3>
+                  </div>
                 </div>
+
+                {/* Subsections: Time & Speed Boosts */}
+                <div className="space-y-3 pt-2 border-t border-white/[0.03]">
+                  <h4 className="text-[10px] text-slate-400 uppercase font-black tracking-wider">
+                    {language === 'es' ? 'Tiempos y Rendimiento' : 'Times & Performance'}
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    <div 
+                      className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                      style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                    >
+                      <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Taller:' : 'Workshop:'}</span>
+                      <strong className="text-slate-200">{formatNumber(selectedWorkshopBoostPercent, 2)}%</strong>
+                    </div>
+                    <div 
+                      className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                      style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                    >
+                      <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Boost Activo:' : 'Active Boost:'}</span>
+                      <strong className="text-slate-200">{formatNumber(selectedActiveBoostPercent, 2)}%</strong>
+                    </div>
+                    <div 
+                      className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                      style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                    >
+                      <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Original:' : 'Original:'}</span>
+                      <strong className="text-slate-200">{formatNumber(selectedRow.duration_min, 2)} min</strong>
+                    </div>
+                    <div 
+                      className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                      style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                    >
+                      <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Tiempo Base:' : 'Base Time:'}</span>
+                      <strong className="text-slate-200">{formatDurationFromMinutes(selectedBaseDurationMinutes)}</strong>
+                    </div>
+                    <div 
+                      className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                      style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                    >
+                      <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Tiempo Final:' : 'Output Time:'}</span>
+                      <strong className="text-slate-200">{formatDurationFromMinutes(selectedCalculatedDurationMinutes)}</strong>
+                    </div>
+                    <div 
+                      className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                      style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                    >
+                      <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Velocidad:' : 'Speed:'}</span>
+                      <strong className="text-slate-200">{formatSpeed(selectedEffectiveSpeedPercent)}</strong>
+                    </div>
+                    <div 
+                      className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                      style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                    >
+                      <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Maestría:' : 'Mastery:'}</span>
+                      <strong className="text-slate-200">Lv {selectedMasteryLevel} / {formatNumber(selectedMasteryReductionPercent, 2)}%</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Subsections: Inputs & Outputs */}
+                <div className="space-y-3 pt-2 border-t border-white/[0.03]">
+                  <h4 className="text-[10px] text-slate-400 uppercase font-black tracking-wider">
+                    {language === 'es' ? 'Ingredientes y Producción' : 'Inputs & Output'}
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {/* Output */}
+                    <div 
+                      className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                      style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                    >
+                      <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Salida:' : 'Output:'}</span>
+                      <strong className="text-slate-200">{formatNumber(selectedRow.output_amount)}</strong>
+                      {getResourceImage(selectedRow.output_token) && <img src={getResourceImage(selectedRow.output_token)} alt={selectedRow.output_token} className="h-4.5 w-4.5 object-contain shrink-0" />}
+                      <span className="text-slate-300 font-semibold">{formatFactoryName(selectedRow.output_token, language)}</span>
+                    </div>
+
+                    {/* Input 1 */}
+                    <div 
+                      className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                      style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                    >
+                      <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ingrediente 1:' : 'Input 1:'}</span>
+                      <strong className="text-slate-200">{formatNumber(selectedRow.input_amount_1)} → {formatNumber(selectedInput1AdjustedAmount)}</strong>
+                      {getResourceImage(selectedRow.input_token_1) && <img src={getResourceImage(selectedRow.input_token_1)} alt={selectedRow.input_token_1} className="h-4.5 w-4.5 object-contain shrink-0" />}
+                      <span className="text-slate-300 font-semibold">{formatFactoryName(selectedRow.input_token_1, language)}</span>
+                    </div>
+
+                    {/* Input 2 */}
+                    {selectedRow.input_token_2 && (
+                      <div 
+                        className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                        style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                      >
+                        <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ingrediente 2:' : 'Input 2:'}</span>
+                        <strong className="text-slate-200">{formatNumber(selectedRow.input_amount_2)} → {formatNumber(selectedInput2AdjustedAmount)}</strong>
+                        {getResourceImage(selectedRow.input_token_2) && <img src={getResourceImage(selectedRow.input_token_2)} alt={selectedRow.input_token_2} className="h-4.5 w-4.5 object-contain shrink-0" />}
+                        <span className="text-slate-300 font-semibold">{formatFactoryName(selectedRow.input_token_2, language)}</span>
+                      </div>
+                    )}
+
+                    {/* Upgrade Requires */}
+                    {selectedUpgradeRow?.upgrade_token && (
+                      <div 
+                        className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                        style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                      >
+                        <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Siguiente Nivel Mejora:' : 'Next Level Upgrade:'}</span>
+                        <strong className="text-slate-200">{formatNumber(selectedUpgradeRow.upgrade_amount)}</strong>
+                        {getResourceImage(selectedUpgradeRow.upgrade_token) && <img src={getResourceImage(selectedUpgradeRow.upgrade_token)} alt={selectedUpgradeRow.upgrade_token} className="h-4.5 w-4.5 object-contain shrink-0" />}
+                        <span className="text-slate-300 font-semibold">{formatFactoryName(selectedUpgradeRow.upgrade_token, language)}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
               </div>
             </Card>
 
             <Card title={language === 'es' ? 'Cotizaciones de Monedas en Vivo' : 'Live COIN Quotes'}>
-              <div className="space-y-2 text-sm">
-                {quoteLoading && <p className="text-slate-400">{language === 'es' ? 'Cargando cotizaciones del mercado...' : 'Loading Craft World quotes...'}</p>}
-                <QuoteLine label={language === 'es' ? 'Valor de Venta de Salida' : 'Output Sell Value'} quote={outputQuote} />
-                <QuoteLine label={language === 'es' ? 'Costo Compra Ingrediente 1 tras Maestría' : 'Input 1 Buy Cost After Mastery'} quote={input1Quote} />
-                {selectedRow.input_token_2 && <QuoteLine label={language === 'es' ? 'Costo Compra Ingrediente 2 tras Maestría' : 'Input 2 Buy Cost After Mastery'} quote={input2Quote} />}
-                {selectedUpgradeRow?.upgrade_token && <QuoteLine label={language === 'es' ? 'Costo Compra de Mejora' : 'Upgrade Buy Cost'} quote={upgradeQuote} />}
+              <div 
+                style={{
+                  backgroundColor: 'var(--bg-card)',
+                  borderRadius: 'var(--radius)',
+                  padding: '16px',
+                  border: 'none'
+                }}
+                className="flex flex-col gap-3 w-full"
+              >
+                {quoteLoading && <p className="text-xs text-slate-400">{language === 'es' ? 'Cargando cotizaciones del mercado...' : 'Loading Craft World quotes...'}</p>}
+                
+                <div 
+                  className="resource-item-badge text-xs text-white w-full"
+                  style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '8px 12px' }}
+                >
+                  <QuoteLine label={language === 'es' ? 'Valor de Venta de Salida' : 'Output Sell Value'} quote={outputQuote} />
+                </div>
+
+                <div 
+                  className="resource-item-badge text-xs text-white w-full"
+                  style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '8px 12px' }}
+                >
+                  <QuoteLine label={language === 'es' ? 'Costo Compra Ingrediente 1 tras Maestría' : 'Input 1 Buy Cost After Mastery'} quote={input1Quote} />
+                </div>
+
+                {selectedRow.input_token_2 && (
+                  <div 
+                    className="resource-item-badge text-xs text-white w-full"
+                    style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '8px 12px' }}
+                  >
+                    <QuoteLine label={language === 'es' ? 'Costo Compra Ingrediente 2 tras Maestría' : 'Input 2 Buy Cost After Mastery'} quote={input2Quote} />
+                  </div>
+                )}
+
+                {selectedUpgradeRow?.upgrade_token && (
+                  <div 
+                    className="resource-item-badge text-xs text-white w-full"
+                    style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '8px 12px' }}
+                  >
+                    <QuoteLine label={language === 'es' ? 'Costo Compra de Mejora' : 'Upgrade Buy Cost'} quote={upgradeQuote} />
+                  </div>
+                )}
               </div>
             </Card>
 
             <Card title={language === 'es' ? 'Resultados' : 'Results'}>
-              <div className="grid gap-2 text-sm md:grid-cols-2">
-                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Costo Compra Ingredientes tras Maestría' : 'Input Buy Cost After Mastery'}:</span> <strong>{formatNumber(inputCost)} COIN</strong></p>
-                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Valor Venta de Salida' : 'Output Sell Value'}:</span> <strong>{formatNumber(outputValue)} COIN</strong></p>
-                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Ganancia por Ejecución' : 'Profit Per Run'}:</span> <strong className={profitPerRun >= 0 ? 'text-emerald-400' : 'text-red-400'}>{formatNumber(profitPerRun)} COIN</strong></p>
-                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Ganancia por Hora' : 'Profit Per Hour'}:</span> <strong className={profitPerHour >= 0 ? 'text-emerald-400 font-bold text-base' : 'text-red-400 font-bold text-base'}>{formatNumber(profitPerHour)} COIN</strong></p>
-                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Ganancia por Día' : 'Profit Per Day'}:</span> <strong className={profitPerHour >= 0 ? 'text-emerald-400 font-extrabold text-base' : 'text-red-400 font-extrabold text-base'}>{formatNumber(profitPerHour * 24)} COIN</strong></p>
-                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Ejecuciones por Hora' : 'Runs Per Hour'}:</span> <strong>{formatNumber(runsPerHour, 4)}</strong></p>
-                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Tiempo base' : 'Base Time'}:</span> <strong>{formatDurationFromMinutes(selectedBaseDurationMinutes)}</strong></p>
-                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Tiempo final' : 'Output Time'}:</span> <strong>{formatDurationFromMinutes(selectedCalculatedDurationMinutes)}</strong></p>
-                <p className="text-slate-300"><span className="text-slate-400">{language === 'es' ? 'Velocidad efectiva' : 'Effective Speed'}:</span> <strong>{formatSpeed(selectedEffectiveSpeedPercent)}</strong></p>
-                <p className="text-slate-300 md:col-span-2"><span className="text-slate-400">{language === 'es' ? 'Costo Compra de Mejora' : 'Upgrade Buy Cost'}:</span> <strong>{formatNumber(upgradeCost)} COIN</strong></p>
+              <div 
+                style={{
+                  backgroundColor: 'var(--bg-card)',
+                  borderRadius: 'var(--radius)',
+                  padding: '16px',
+                  border: 'none'
+                }}
+                className="flex flex-col gap-4 w-full"
+              >
+                {/* Highlight metric: Profit per Hour */}
+                <div className="flex items-center justify-between border-b border-white/[0.03] pb-3">
+                  <div>
+                    <h4 className="text-[10px] text-slate-400 uppercase font-black tracking-wider">
+                      {language === 'es' ? 'Ganancia por Hora' : 'Profit Per Hour'}
+                    </h4>
+                    <p className={`text-base font-black ${profitPerHour >= 0 ? 'text-emerald-400' : 'text-red-400'} mt-1`}>
+                      {profitPerHour >= 0 ? '+' : ''}{formatNumber(profitPerHour)} COIN
+                    </p>
+                  </div>
+
+                  <div className="text-right">
+                    <h4 className="text-[10px] text-slate-400 uppercase font-black tracking-wider">
+                      {language === 'es' ? 'Ganancia por Día' : 'Profit Per Day'}
+                    </h4>
+                    <p className={`text-base font-black ${profitPerHour >= 0 ? 'text-emerald-400' : 'text-red-400'} mt-1`}>
+                      {profitPerHour >= 0 ? '+' : ''}{formatNumber(profitPerHour * 24)} COIN
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <div 
+                    className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                    style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                  >
+                    <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Costo Ingredientes:' : 'Input Cost:'}</span>
+                    <strong className="text-red-400">{formatNumber(inputCost)} COIN</strong>
+                  </div>
+
+                  <div 
+                    className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                    style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                  >
+                    <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Valor Salida:' : 'Output Value:'}</span>
+                    <strong className="text-slate-200">{formatNumber(outputValue)} COIN</strong>
+                  </div>
+
+                  <div 
+                    className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                    style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                  >
+                    <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ganancia / Ejecución:' : 'Profit / Run:'}</span>
+                    <strong className={profitPerRun >= 0 ? 'text-emerald-400' : 'text-red-400'}>{formatNumber(profitPerRun)} COIN</strong>
+                  </div>
+
+                  <div 
+                    className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                    style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                  >
+                    <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ejecuciones / Hora:' : 'Runs / Hour:'}</span>
+                    <strong className="text-slate-200">{formatNumber(runsPerHour, 4)}</strong>
+                  </div>
+
+                  <div 
+                    className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                    style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                  >
+                    <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Tiempo Base:' : 'Base Time:'}</span>
+                    <strong className="text-slate-200">{formatDurationFromMinutes(selectedBaseDurationMinutes)}</strong>
+                  </div>
+
+                  <div 
+                    className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                    style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                  >
+                    <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Tiempo Final:' : 'Output Time:'}</span>
+                    <strong className="text-slate-200">{formatDurationFromMinutes(selectedCalculatedDurationMinutes)}</strong>
+                  </div>
+
+                  <div 
+                    className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                    style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                  >
+                    <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Velocidad:' : 'Speed:'}</span>
+                    <strong className="text-slate-200">{formatSpeed(selectedEffectiveSpeedPercent)}</strong>
+                  </div>
+
+                  <div 
+                    className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                    style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                  >
+                    <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Costo Mejora:' : 'Upgrade Buy Cost:'}</span>
+                    <strong className="text-slate-200">{formatNumber(upgradeCost)} COIN</strong>
+                  </div>
+                </div>
               </div>
             </Card>
           </div>
