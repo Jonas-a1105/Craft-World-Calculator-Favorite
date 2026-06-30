@@ -20,7 +20,13 @@ function translateNode(node: any, t: any): any {
   }
 
   if (Array.isArray(node)) {
-    return node.map((child) => translateNode(child, t));
+    return node.map((child, idx) => {
+      const translated = translateNode(child, t);
+      if (React.isValidElement(translated) && (translated.key === null || translated.key === undefined)) {
+        return React.cloneElement(translated, { key: `trans-${idx}` });
+      }
+      return translated;
+    });
   }
 
   if (React.isValidElement(node)) {
