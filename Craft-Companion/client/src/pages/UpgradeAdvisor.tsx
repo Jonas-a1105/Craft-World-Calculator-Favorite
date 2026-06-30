@@ -701,7 +701,7 @@ export default function UpgradeAdvisor() {
                           const factImg = getFactoryImage(row.option.symbol);
                           const resImg = getResourceImage(row.needToken);
                           return (
-                            <tr key={row.option.key} className="border-t border-slate-800">
+                            <tr key={`${row.option.key}-${index}`} className="border-t border-slate-800">
                               <td className="p-2 whitespace-nowrap">{index + 1}</td>
                               <td className="p-2 font-semibold whitespace-nowrap">
                                 <div className="flex items-center gap-2">
@@ -801,7 +801,7 @@ export default function UpgradeAdvisor() {
                       const resImg = getResourceImage(row.needToken);
                       return (
                         <div 
-                          key={row.option.key} 
+                          key={`${row.option.key}-${index}`} 
                           style={{
                             backgroundColor: 'var(--bg-card)',
                             borderRadius: 'var(--radius)',
