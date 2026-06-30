@@ -361,7 +361,7 @@ export default function FactoryTimers() {
         const level = getDisplayLevel(factory);
         const row = rows.find((item) => item.token === symbol && item.level === level) || null;
         if (!symbol || !row) return null;
-        const key = factory.id || `${factory.landPlotName || 'plot'}-${symbol}-${level}-${index}`;
+        const key = factory.id ? `${factory.id}-${index}` : `${factory.landPlotName || 'plot'}-${symbol}-${level}-${index}`;
         const cycle = calculateFactoryCycle(row, {}, { workshop: home?.workshop || [], activeBoosts: factory.activeBoosts || [] });
         const storedTimer = timers[key];
         const startedAt = timerStartedAt(factory, storedTimer);
