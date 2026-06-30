@@ -255,6 +255,7 @@ export default function UpgradeAdvisor() {
   const [quoteLoading, setQuoteLoading] = useState(false);
   const [quotedCount, setQuotedCount] = useState(0);
   const [error, setError] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>(() => (localStorage.getItem('advisorViewMode') as 'list' | 'grid') || 'list');
 
   useEffect(() => {
     const load = async () => {
@@ -340,21 +341,32 @@ export default function UpgradeAdvisor() {
       setQuotedCount(0);
       try {
         const missing = quoteRequests.filter((request) => quotes[request.key] === undefined);
-        for (let index = 0; index < missing.length; index += BATCH_SIZE) {
-          const batch = missing.slice(index, index + BATCH_SIZE);
-          const entries = await Promise.all(batch.map(async (request) => {
-            try {
-              const quote = request.type === 'buy'
-                ? await getCraftworldBuyQuote({ inputSymbol: 'COIN', outputSymbol: request.symbol, outputAmount: request.amount })
-                : await getCraftworldQuote({ inputSymbol: request.symbol, outputSymbol: 'COIN', inputAmount: request.amount });
-              return [request.key, quote] as const;
-            } catch {
-              return [request.key, null] as const;
-            }
-          }));
-          if (cancelled) return;
-          setQuotes((current) => ({ ...current, ...Object.fromEntries(entries) }));
-          setQuotedCount((current) => current + entries.length);
+        if (missing.length === 0) {
+          setQuotedCount(quoteRequests.length);
+          await new Promise((resolve) => setTimeout(resolve, 800));
+        } else {
+          const alreadyCachedCount = quoteRequests.length - missing.length;
+          setQuotedCount(alreadyCachedCount);
+
+          for (let index = 0; index < missing.length; index += BATCH_SIZE) {
+            const batch = missing.slice(index, index + BATCH_SIZE);
+            const entries = await Promise.all(batch.map(async (request) => {
+              try {
+                const quote = request.type === 'buy'
+                  ? await getCraftworldBuyQuote({ inputSymbol: 'COIN', outputSymbol: request.symbol, outputAmount: request.amount })
+                  : await getCraftworldQuote({ inputSymbol: request.symbol, outputSymbol: 'COIN', inputAmount: request.amount });
+                return [request.key, quote] as const;
+              } catch {
+                return [request.key, null] as const;
+              }
+            }));
+            if (cancelled) return;
+            setQuotes((current) => ({ ...current, ...Object.fromEntries(entries) }));
+            setQuotedCount((current) => current + entries.length);
+          }
+
+          setQuotedCount(quoteRequests.length);
+          await new Promise((resolve) => setTimeout(resolve, 800));
         }
       } finally {
         if (!cancelled) setQuoteLoading(false);
@@ -435,110 +447,200 @@ export default function UpgradeAdvisor() {
                   ? 'Muestra el material necesario para la siguiente mejora, lo que ya posees, lo que te falta y si es más barato comprar o fabricar la cantidad faltante. Se incluye la velocidad del taller, aumentos activos y la maestría de recursos de fábrica.'
                   : 'This shows the material needed for the next upgrade, what you already own, what you are missing, and whether buying or crafting the missing amount is cheaper. Workshop speed, active boosts, and factory resource mastery are included.'}
               </p>
-              {quoteLoading && (
-                <p className="text-sm text-slate-400">
-                  {language === 'es'
-                    ? `Cargando precios... ${quotedCount}/${quoteRequests.length} cotizaciones comprobadas.`
-                    : `Loading prices... ${quotedCount}/${quoteRequests.length} quotes checked.`}
-                </p>
-              )}
+              {quoteLoading && (() => {
+                const progressPercent = quoteRequests.length > 0 ? Math.round((quotedCount / quoteRequests.length) * 100) : 0;
+                return (
+                  <div className="flex flex-col items-center justify-center p-6 bg-zinc-950/40 rounded-[12px] border-none space-y-4 my-4 z-10 relative">
+                    <style>{`
+                      @keyframes wave-stripes {
+                        from { background-position: 40px 0; }
+                        to { background-position: 0 0; }
+                      }
+                      .animate-wave-bar {
+                        background-image: linear-gradient(
+                          45deg,
+                          rgba(255, 255, 255, 0.15) 25%,
+                          transparent 25%,
+                          transparent 50%,
+                          rgba(255, 255, 255, 0.15) 50%,
+                          rgba(255, 255, 255, 0.15) 75%,
+                          transparent 75%,
+                          transparent
+                        );
+                        background-size: 40px 40px;
+                        animation: wave-stripes 1.2s linear infinite;
+                      }
+                    `}</style>
+                    
+                    <div className="text-center space-y-1">
+                      <p className="text-sm font-black text-white uppercase tracking-wider">
+                        {language === 'es' ? 'Cargando cotizaciones de mejoras...' : 'Loading upgrade quotes...'}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {language === 'es' 
+                          ? `Consultando cotizaciones en tiempo real: ${quotedCount} de ${quoteRequests.length}`
+                          : `Fetching live quotes: ${quotedCount} of ${quoteRequests.length}`}
+                      </p>
+                    </div>
+
+                    {/* Progress bar wrapper */}
+                    <div className="w-full max-w-[400px] h-4 bg-zinc-900 rounded-full overflow-hidden p-0.5 border border-white/[0.05]">
+                      <div 
+                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300 relative overflow-hidden"
+                        style={{ 
+                          width: `${progressPercent}%`,
+                          boxShadow: '0 0 10px rgba(16, 185, 129, 0.4)' 
+                        }}
+                      >
+                        <div className="absolute inset-0 animate-wave-bar" />
+                      </div>
+                    </div>
+
+                    {/* Percentage Indicator */}
+                    <span className="text-xs font-black text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full">
+                      {progressPercent}%
+                    </span>
+                  </div>
+                );
+              })()}
               {error && <p className="text-sm text-red-300">{error}</p>}
               
               {bestUpgrade ? (
                 <div 
-                  className="flex gap-4 items-start rounded-[var(--radius-resource-item)] bg-emerald-500/[0.08] p-4 text-sm"
+                  style={{
+                    backgroundColor: 'var(--bg-card)',
+                    borderRadius: 'var(--radius)',
+                    padding: '20px',
+                    border: 'none'
+                  }}
+                  className="flex flex-col gap-4 relative overflow-hidden mt-4"
                 >
-                  {getFactoryImage(bestUpgrade.option.symbol) && (
-                    <img 
-                      src={getFactoryImage(bestUpgrade.option.symbol)} 
-                      alt={bestUpgrade.option.symbol} 
-                      className="h-16 w-16 shrink-0 rounded-[var(--radius-resource-item)] bg-emerald-950/60 object-contain p-1" 
-                    />
-                  )}
-                  <div className="space-y-1">
-                    <p className="font-semibold text-emerald-200">
-                      {language === 'es' ? 'Mejor candidato de mejora' : 'Best upgrade candidate'}
-                    </p>
-                    <p className="font-medium text-white">{rowLabel(bestUpgrade.option, language)}</p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Aumento velocidad taller' : 'Workshop speed boost'}:</span>{' '}
-                      {fmt(bestUpgrade.workshopBoostPercent, 2)}%
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Boost activo' : 'Active boost'}:</span>{' '}
-                      {fmt(bestUpgrade.activeBoostPercent, 2)}%
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Maestría receta actual' : 'Current recipe mastery'}:</span>{' '}
-                      {bestUpgrade.currentMasteryText}
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Maestría receta siguiente' : 'Next recipe mastery'}:</span>{' '}
-                      {bestUpgrade.nextMasteryText}
-                    </p>
-                    <p className="flex items-center gap-1.5 text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Necesita' : 'Need'}:</span>{' '}
-                      <span>{fmt(bestUpgrade.needAmount)}</span>
-                      {getResourceImage(bestUpgrade.needToken) && (
+                  {/* Status absolute badge */}
+                  <div className="absolute top-4 right-4">
+                    <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider ${bestUpgrade.bestChoice === 'Ready' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
+                      {bestUpgrade.bestChoice === 'Ready' ? (language === 'es' ? 'Listo' : 'Ready') : formatBestChoice(bestUpgrade.bestChoice, language)}
+                    </span>
+                  </div>
+
+                  {/* Header: Title + Image */}
+                  <div className="flex items-center gap-4 border-b border-white/[0.03] pb-4">
+                    <div 
+                      className="w-16 h-16 bg-slate-900/60 flex items-center justify-center p-1.5 shrink-0"
+                      style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
+                    >
+                      {getFactoryImage(bestUpgrade.option.symbol) ? (
                         <img 
-                          src={getResourceImage(bestUpgrade.needToken)} 
-                          alt={bestUpgrade.needToken} 
-                          className="h-4 w-4 object-contain" 
-                          style={{ borderRadius: 'var(--radius-resource-item)' }} 
+                          src={getFactoryImage(bestUpgrade.option.symbol)} 
+                          alt={bestUpgrade.option.symbol} 
+                          className="w-full h-full object-contain"
                         />
+                      ) : (
+                        <div className="text-xs font-black text-slate-500">{bestUpgrade.option.symbol.slice(0, 3)}</div>
                       )}
-                      <span>{formatFactoryName(bestUpgrade.needToken, language)}</span>
-                    </p>
-                    <p className="flex items-center gap-1.5 text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Tiene' : 'Own'}:</span>{' '}
-                      <span>{fmt(bestUpgrade.ownAmount)}</span>
-                      {getResourceImage(bestUpgrade.needToken) && (
-                        <img 
-                          src={getResourceImage(bestUpgrade.needToken)} 
-                          alt={bestUpgrade.needToken} 
-                          className="h-4 w-4 object-contain" 
-                          style={{ borderRadius: 'var(--radius-resource-item)' }} 
-                        />
-                      )}
-                      <span>{formatFactoryName(bestUpgrade.needToken, language)}</span>
-                    </p>
-                    <p className="flex items-center gap-1.5 text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Faltante' : 'Missing'}:</span>{' '}
-                      <span>{fmt(bestUpgrade.gapAmount)}</span>
-                      {getResourceImage(bestUpgrade.needToken) && (
-                        <img 
-                          src={getResourceImage(bestUpgrade.needToken)} 
-                          alt={bestUpgrade.needToken} 
-                          className="h-4 w-4 object-contain" 
-                          style={{ borderRadius: 'var(--radius-resource-item)' }} 
-                        />
-                      )}
-                      <span>{formatFactoryName(bestUpgrade.needToken, language)}</span>
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Costo compra' : 'Buy cost'}:</span>{' '}
-                      {bestUpgrade.buyCost === null ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(bestUpgrade.buyCost)} COIN`}
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Costo fabricación' : 'Craft cost'}:</span>{' '}
-                      {bestUpgrade.craftCost === null ? (language === 'es' ? 'No disponible' : 'Not available') : `${fmt(bestUpgrade.craftCost)} COIN`}
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Mejor opción' : 'Best choice'}:</span>{' '}
-                      <span className="font-semibold text-emerald-300">{formatBestChoice(bestUpgrade.bestChoice, language)}</span>
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Ganancia actual por hora' : 'Current profit per hour'}:</span>{' '}
-                      {fmt(bestUpgrade.currentProfitPerHour)} COIN
-                    </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">{language === 'es' ? 'Ganancia siguiente por hora' : 'Next profit per hour'}:</span>{' '}
-                      {fmt(bestUpgrade.nextProfitPerHour)} COIN
-                    </p>
-                    <p className="text-slate-300 font-semibold">
-                      <span className="text-slate-400">{language === 'es' ? 'Tiempo de retorno' : 'Break even'}:</span>{' '}
-                      {fmtHours(bestUpgrade.breakEvenHours, language)}
-                    </p>
+                    </div>
+                    <div className="min-w-0 pr-24">
+                      <span className="text-[10px] uppercase font-black text-orange-400 tracking-wider">
+                        {language === 'es' ? 'Mejor candidato de mejora' : 'Best upgrade candidate'}
+                      </span>
+                      <h3 className="text-base font-black text-white truncate mt-0.5">
+                        {rowLabel(bestUpgrade.option, language)}
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* Metrics sub-cards */}
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {/* Taller / Boosts card */}
+                    <div className="bg-white/[0.01] p-3 rounded-[12px] space-y-1.5 flex flex-col justify-center">
+                      <span className="text-[9px] uppercase font-black text-slate-400 tracking-wider">{language === 'es' ? 'Información de Producción' : 'Production Info'}</span>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-slate-400">{language === 'es' ? 'Aumento velocidad taller:' : 'Workshop speed boost:'}</span>
+                        <strong className="text-white">{fmt(bestUpgrade.workshopBoostPercent, 2)}%</strong>
+                      </div>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-slate-400">{language === 'es' ? 'Boost activo:' : 'Active boost:'}</span>
+                        <strong className="text-white">{fmt(bestUpgrade.activeBoostPercent, 2)}%</strong>
+                      </div>
+                    </div>
+
+                    {/* Maestría card */}
+                    <div className="bg-white/[0.01] p-3 rounded-[12px] space-y-1.5 flex flex-col justify-center">
+                      <span className="text-[9px] uppercase font-black text-slate-400 tracking-wider">{language === 'es' ? 'Maestría' : 'Mastery'}</span>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-slate-400">{language === 'es' ? 'Receta actual:' : 'Current recipe:'}</span>
+                        <strong className="text-white">{bestUpgrade.currentMasteryText}</strong>
+                      </div>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-slate-400">{language === 'es' ? 'Receta siguiente:' : 'Next recipe:'}</span>
+                        <strong className="text-white">{bestUpgrade.nextMasteryText}</strong>
+                      </div>
+                    </div>
+
+                    {/* Materiales card */}
+                    <div className="bg-white/[0.01] p-3 rounded-[12px] space-y-1.5 flex flex-col justify-center sm:col-span-2">
+                      <span className="text-[9px] uppercase font-black text-slate-400 tracking-wider">{language === 'es' ? 'Materiales Necesarios' : 'Materials Needed'}</span>
+                      <div className="grid gap-2 grid-cols-3 text-xs text-center">
+                        <div className="bg-slate-900/40 p-2 rounded-[8px] flex flex-col items-center">
+                          <span className="text-slate-400 text-[10px] mb-1">{language === 'es' ? 'Necesita' : 'Need'}</span>
+                          <div className="flex items-center gap-1">
+                            <strong className="text-white">{fmt(bestUpgrade.needAmount)}</strong>
+                            {getResourceImage(bestUpgrade.needToken) && <img src={getResourceImage(bestUpgrade.needToken)} alt={bestUpgrade.needToken} className="h-4.5 w-4.5 object-contain" />}
+                          </div>
+                        </div>
+                        <div className="bg-slate-900/40 p-2 rounded-[8px] flex flex-col items-center">
+                          <span className="text-slate-400 text-[10px] mb-1">{language === 'es' ? 'Tiene' : 'Own'}</span>
+                          <div className="flex items-center gap-1">
+                            <strong className="text-white">{fmt(bestUpgrade.ownAmount)}</strong>
+                            {getResourceImage(bestUpgrade.needToken) && <img src={getResourceImage(bestUpgrade.needToken)} alt={bestUpgrade.needToken} className="h-4.5 w-4.5 object-contain" />}
+                          </div>
+                        </div>
+                        <div className="bg-slate-900/40 p-2 rounded-[8px] flex flex-col items-center">
+                          <span className="text-slate-400 text-[10px] mb-1">{language === 'es' ? 'Faltante' : 'Missing'}</span>
+                          <div className="flex items-center gap-1">
+                            <strong className="text-amber-450">{fmt(bestUpgrade.gapAmount)}</strong>
+                            {getResourceImage(bestUpgrade.needToken) && <img src={getResourceImage(bestUpgrade.needToken)} alt={bestUpgrade.needToken} className="h-4.5 w-4.5 object-contain" />}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Costos card */}
+                    <div className="bg-white/[0.01] p-3 rounded-[12px] space-y-1.5 flex flex-col justify-center">
+                      <span className="text-[9px] uppercase font-black text-slate-400 tracking-wider">{language === 'es' ? 'Costos de Mejora' : 'Upgrade Costs'}</span>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-slate-400">{language === 'es' ? 'Costo compra:' : 'Buy cost:'}</span>
+                        <strong className="text-white">
+                          {bestUpgrade.buyCost === null ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(bestUpgrade.buyCost)} COIN`}
+                        </strong>
+                      </div>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-slate-400">{language === 'es' ? 'Costo fabricación:' : 'Craft cost:'}</span>
+                        <strong className="text-white">
+                          {bestUpgrade.craftCost === null ? (language === 'es' ? 'No disponible' : 'Not available') : `${fmt(bestUpgrade.craftCost)} COIN`}
+                        </strong>
+                      </div>
+                      <div className="flex justify-between items-center text-xs pt-1 border-t border-white/[0.02]">
+                        <span className="text-slate-400">{language === 'es' ? 'Mejor opción:' : 'Best choice:'}</span>
+                        <strong className="text-emerald-400">{formatBestChoice(bestUpgrade.bestChoice, language)}</strong>
+                      </div>
+                    </div>
+
+                    {/* Rendimiento card */}
+                    <div className="bg-white/[0.01] p-3 rounded-[12px] space-y-1.5 flex flex-col justify-center">
+                      <span className="text-[9px] uppercase font-black text-slate-400 tracking-wider">{language === 'es' ? 'Análisis de Rendimiento' : 'Performance Analysis'}</span>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-slate-400">{language === 'es' ? 'Ganancia actual/hora:' : 'Current profit/hr:'}</span>
+                        <strong className="text-white">{fmt(bestUpgrade.currentProfitPerHour)} COIN</strong>
+                      </div>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-slate-400">{language === 'es' ? 'Ganancia siguiente/hora:' : 'Next profit/hr:'}</span>
+                        <strong className="text-white">{fmt(bestUpgrade.nextProfitPerHour)} COIN</strong>
+                      </div>
+                      <div className="flex justify-between items-center text-xs pt-1 border-t border-white/[0.02]">
+                        <span className="text-slate-400">{language === 'es' ? 'Tiempo de retorno:' : 'Break even:'}</span>
+                        <strong className="text-amber-400">{fmtHours(bestUpgrade.breakEvenHours, language)}</strong>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -549,130 +651,301 @@ export default function UpgradeAdvisor() {
             </div>
           </Card>
         </div>
-
-        <div className="w-[95vw] max-w-[1800px] relative left-1/2 -translate-x-1/2">
+                <div className="w-[95vw] max-w-[1800px] relative left-1/2 -translate-x-1/2">
           <Card title={language === 'es' ? 'Todos los Candidatos de Mejora' : 'All Upgrade Candidates'}>
             {advisorRows.length ? (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[1480px] text-left text-sm">
-                  <thead className="text-slate-300">
-                    <tr>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Rango' : 'Rank'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Fábrica' : 'Factory'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Taller' : 'Workshop'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Boost Activo' : 'Active Boost'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Maestría' : 'Mastery'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Necesita' : 'Need'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Tiene' : 'Own'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Faltante' : 'Missing'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Costo Compra' : 'Buy Cost'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Costo Fabr.' : 'Craft Cost'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Mejor Opción' : 'Best Choice'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ganancia Act/Hr' : 'Current Profit/Hr'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ganancia Sig/Hr' : 'Next Profit/Hr'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ganancia/Hr' : 'Gain/Hr'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Retorno' : 'Break Even'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Impacto' : 'Impact'}</th>
-                      <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Estado' : 'Status'}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+              <div className="space-y-4">
+                <div className="flex justify-end gap-2">
+                  <button 
+                    onClick={() => { setViewMode('list'); localStorage.setItem('advisorViewMode', 'list'); }}
+                    className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'list' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                    style={{ border: 'none' }}
+                  >
+                    {language === 'es' ? 'Lista' : 'List'}
+                  </button>
+                  <button 
+                    onClick={() => { setViewMode('grid'); localStorage.setItem('advisorViewMode', 'grid'); }}
+                    className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'grid' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                    style={{ border: 'none' }}
+                  >
+                    {language === 'es' ? 'Tarjetas' : 'Cards'}
+                  </button>
+                </div>
+
+                {viewMode === 'list' ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[1480px] text-left text-sm">
+                      <thead className="text-slate-300">
+                        <tr>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Rango' : 'Rank'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Fábrica' : 'Factory'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Taller' : 'Workshop'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Boost Activo' : 'Active Boost'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Maestría' : 'Mastery'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Necesita' : 'Need'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Tiene' : 'Own'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Faltante' : 'Missing'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Costo Compra' : 'Buy Cost'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Costo Fabr.' : 'Craft Cost'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Mejor Opción' : 'Best Choice'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ganancia Act/Hr' : 'Current Profit/Hr'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ganancia Sig/Hr' : 'Next Profit/Hr'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Ganancia/Hr' : 'Gain/Hr'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Retorno' : 'Break Even'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Impacto' : 'Impact'}</th>
+                          <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Estado' : 'Status'}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {advisorRows.map((row, index) => {
+                          const factImg = getFactoryImage(row.option.symbol);
+                          const resImg = getResourceImage(row.needToken);
+                          return (
+                            <tr key={row.option.key} className="border-t border-slate-800">
+                              <td className="p-2 whitespace-nowrap">{index + 1}</td>
+                              <td className="p-2 font-semibold whitespace-nowrap">
+                                <div className="flex items-center gap-2">
+                                  {factImg && (
+                                    <img 
+                                      src={factImg} 
+                                      alt={row.option.symbol} 
+                                      className="h-8 w-8 rounded-[var(--radius-resource-item)] bg-slate-900 object-contain p-0.5" 
+                                    />
+                                  )}
+                                  <span>{rowLabel(row.option, language)}</span>
+                                </div>
+                              </td>
+                              <td className="p-2 whitespace-nowrap">{fmt(row.workshopBoostPercent, 2)}%</td>
+                              <td className="p-2 whitespace-nowrap">{fmt(row.activeBoostPercent, 2)}%</td>
+                              <td className="p-2 whitespace-nowrap">{row.currentMasteryText} → {row.nextMasteryText}</td>
+                              <td className="p-2 whitespace-nowrap">
+                                <div className="flex items-center gap-1.5">
+                                  {resImg && (
+                                    <img 
+                                      src={resImg} 
+                                      alt={row.needToken} 
+                                      className="h-4 w-4 object-contain" 
+                                      style={{ borderRadius: 'var(--radius-resource-item)' }} 
+                                    />
+                                  )}
+                                  <span>{fmt(row.needAmount)} {formatFactoryName(row.needToken, language)}</span>
+                                </div>
+                              </td>
+                              <td className="p-2 whitespace-nowrap">
+                                <div className="flex items-center gap-1.5">
+                                  {resImg && (
+                                    <img 
+                                      src={resImg} 
+                                      alt={row.needToken} 
+                                      className="h-4 w-4 object-contain" 
+                                      style={{ borderRadius: 'var(--radius-resource-item)' }} 
+                                    />
+                                  )}
+                                  <span>{fmt(row.ownAmount)} {formatFactoryName(row.needToken, language)}</span>
+                                </div>
+                              </td>
+                              <td className="p-2 whitespace-nowrap">
+                                <div className="flex items-center gap-1.5">
+                                  {resImg && (
+                                    <img 
+                                      src={resImg} 
+                                      alt={row.needToken} 
+                                      className="h-4 w-4 object-contain" 
+                                      style={{ borderRadius: 'var(--radius-resource-item)' }} 
+                                    />
+                                  )}
+                                  <span>{fmt(row.gapAmount)} {formatFactoryName(row.needToken, language)}</span>
+                                </div>
+                              </td>
+                              <td className="p-2 whitespace-nowrap">
+                                {row.buyCost === null ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(row.buyCost)} COIN`}
+                              </td>
+                              <td className="p-2 whitespace-nowrap">
+                                {row.craftCost === null ? (language === 'es' ? 'No disponible' : 'Not available') : `${fmt(row.craftCost)} COIN`}
+                              </td>
+                              <td className="p-2 font-semibold whitespace-nowrap">
+                                {formatBestChoice(row.bestChoice, language)}
+                              </td>
+                              <td className="p-2 whitespace-nowrap">
+                                {row.ready ? `${fmt(row.currentProfitPerHour)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                              </td>
+                              <td className="p-2 whitespace-nowrap">
+                                {row.ready ? `${fmt(row.nextProfitPerHour)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                              </td>
+                              <td className={`p-2 whitespace-nowrap ${row.gainPerHour >= 0 ? 'text-emerald-350 font-bold' : 'text-red-400 font-bold'}`}>
+                                {row.ready ? `${fmt(row.gainPerHour)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                              </td>
+                              <td className="p-2 whitespace-nowrap">
+                                {row.ready ? fmtHours(row.breakEvenHours, language) : (language === 'es' ? 'Esperando' : 'Waiting')}
+                              </td>
+                              <td className="p-2 whitespace-nowrap">
+                                {row.ready ? `${fmt(row.impact, 2)}%` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                              </td>
+                              <td className="p-2 whitespace-nowrap">
+                                {row.ready 
+                                  ? row.gainPerHour > 0 
+                                    ? (language === 'es' ? 'Candidato' : 'Candidate') 
+                                    : (language === 'es' ? 'No vale la pena aún' : 'Not worth it yet') 
+                                  : (language === 'es' ? 'Esperando cotizaciones' : 'Waiting for quotes')}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full">
                     {advisorRows.map((row, index) => {
                       const factImg = getFactoryImage(row.option.symbol);
                       const resImg = getResourceImage(row.needToken);
                       return (
-                        <tr key={row.option.key} className="border-t border-slate-800">
-                          <td className="p-2 whitespace-nowrap">{index + 1}</td>
-                          <td className="p-2 font-semibold whitespace-nowrap">
-                            <div className="flex items-center gap-2">
-                              {factImg && (
+                        <div 
+                          key={row.option.key} 
+                          style={{
+                            backgroundColor: 'var(--bg-card)',
+                            borderRadius: 'var(--radius)',
+                            padding: '16px',
+                            border: 'none'
+                          }}
+                          className="flex flex-col gap-4 relative overflow-hidden"
+                        >
+                          {/* Rank indicator badge */}
+                          <div className="absolute top-3 right-3">
+                            <span className="text-[10px] font-black text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                              #{index + 1}
+                            </span>
+                          </div>
+
+                          {/* Header: Title + Image */}
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="w-12 h-12 bg-slate-900/60 flex items-center justify-center p-1 shrink-0"
+                              style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
+                            >
+                              {factImg ? (
                                 <img 
                                   src={factImg} 
                                   alt={row.option.symbol} 
-                                  className="h-8 w-8 rounded-[var(--radius-resource-item)] bg-slate-900 object-contain p-0.5" 
+                                  className="w-full h-full object-contain"
                                 />
+                              ) : (
+                                <div className="text-xs font-black text-slate-500">{row.option.symbol.slice(0, 3)}</div>
                               )}
-                              <span>{rowLabel(row.option, language)}</span>
                             </div>
-                          </td>
-                          <td className="p-2 whitespace-nowrap">{fmt(row.workshopBoostPercent, 2)}%</td>
-                          <td className="p-2 whitespace-nowrap">{fmt(row.activeBoostPercent, 2)}%</td>
-                          <td className="p-2 whitespace-nowrap">{row.currentMasteryText} → {row.nextMasteryText}</td>
-                          <td className="p-2 whitespace-nowrap">
-                            <div className="flex items-center gap-1.5">
-                              {resImg && (
-                                <img 
-                                  src={resImg} 
-                                  alt={row.needToken} 
-                                  className="h-4 w-4 object-contain" 
-                                  style={{ borderRadius: 'var(--radius-resource-item)' }} 
-                                />
-                              )}
-                              <span>{fmt(row.needAmount)} {formatFactoryName(row.needToken, language)}</span>
+                            <div className="min-w-0 pr-10">
+                              <span className="text-[10px] uppercase font-black text-orange-400">
+                                {rowLabel(row.option, language).split('•')[0]}
+                              </span>
+                              <h3 className="text-sm font-black text-white truncate mt-0.5">
+                                {rowLabel(row.option, language).split('•').slice(1).join('•') || rowLabel(row.option, language)}
+                              </h3>
                             </div>
-                          </td>
-                          <td className="p-2 whitespace-nowrap">
-                            <div className="flex items-center gap-1.5">
-                              {resImg && (
-                                <img 
-                                  src={resImg} 
-                                  alt={row.needToken} 
-                                  className="h-4 w-4 object-contain" 
-                                  style={{ borderRadius: 'var(--radius-resource-item)' }} 
-                                />
-                              )}
-                              <span>{fmt(row.ownAmount)} {formatFactoryName(row.needToken, language)}</span>
+                          </div>
+
+                          {/* Details grid as badges */}
+                          <div className="flex flex-wrap gap-2 pt-3 border-t border-white/[0.03] justify-center">
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Taller:' : 'Workshop:'}</span>
+                              <strong className="text-slate-200">{fmt(row.workshopBoostPercent, 2)}%</strong>
                             </div>
-                          </td>
-                          <td className="p-2 whitespace-nowrap">
-                            <div className="flex items-center gap-1.5">
-                              {resImg && (
-                                <img 
-                                  src={resImg} 
-                                  alt={row.needToken} 
-                                  className="h-4 w-4 object-contain" 
-                                  style={{ borderRadius: 'var(--radius-resource-item)' }} 
-                                />
-                              )}
-                              <span>{fmt(row.gapAmount)} {formatFactoryName(row.needToken, language)}</span>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Boost Activo:' : 'Active Boost:'}</span>
+                              <strong className="text-slate-200">{fmt(row.activeBoostPercent, 2)}%</strong>
                             </div>
-                          </td>
-                          <td className="p-2 whitespace-nowrap">
-                            {row.buyCost === null ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(row.buyCost)} COIN`}
-                          </td>
-                          <td className="p-2 whitespace-nowrap">
-                            {row.craftCost === null ? (language === 'es' ? 'No disponible' : 'Not available') : `${fmt(row.craftCost)} COIN`}
-                          </td>
-                          <td className="p-2 font-semibold whitespace-nowrap">
-                            {formatBestChoice(row.bestChoice, language)}
-                          </td>
-                          <td className="p-2 whitespace-nowrap">
-                            {row.ready ? `${fmt(row.currentProfitPerHour)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')}
-                          </td>
-                          <td className="p-2 whitespace-nowrap">
-                            {row.ready ? `${fmt(row.nextProfitPerHour)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')}
-                          </td>
-                          <td className={`p-2 whitespace-nowrap ${row.gainPerHour >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
-                            {row.ready ? `${fmt(row.gainPerHour)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')}
-                          </td>
-                          <td className="p-2 whitespace-nowrap">
-                            {row.ready ? fmtHours(row.breakEvenHours, language) : (language === 'es' ? 'Esperando' : 'Waiting')}
-                          </td>
-                          <td className="p-2 whitespace-nowrap">
-                            {row.ready ? `${fmt(row.impact, 2)}%` : (language === 'es' ? 'Esperando' : 'Waiting')}
-                          </td>
-                          <td className="p-2 whitespace-nowrap">
-                            {row.ready 
-                              ? row.gainPerHour > 0 
-                                ? (language === 'es' ? 'Candidato' : 'Candidate') 
-                                : (language === 'es' ? 'No vale la pena aún' : 'Not worth it yet') 
-                              : (language === 'es' ? 'Esperando cotizaciones' : 'Waiting for quotes')}
-                          </td>
-                        </tr>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Necesita:' : 'Need:'}</span>
+                              {resImg && <img src={resImg} alt={row.needToken} className="h-4 w-4 object-contain shrink-0" />}
+                              <strong className="text-slate-200">{fmt(row.needAmount)} {formatFactoryName(row.needToken, language)}</strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Faltante:' : 'Missing:'}</span>
+                              {resImg && <img src={resImg} alt={row.needToken} className="h-4 w-4 object-contain shrink-0" />}
+                              <strong className="text-amber-450">{fmt(row.gapAmount)} {formatFactoryName(row.needToken, language)}</strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Costo Compra:' : 'Buy Cost:'}</span>
+                              <strong className="text-slate-200">
+                                {row.buyCost === null ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(row.buyCost)} COIN`}
+                              </strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Costo Fabr.:' : 'Craft Cost:'}</span>
+                              <strong className="text-slate-200">
+                                {row.craftCost === null ? (language === 'es' ? 'No disponible' : 'Not available') : `${fmt(row.craftCost)} COIN`}
+                              </strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Mejor Opción:' : 'Best Option:'}</span>
+                              <strong className="text-emerald-450">{formatBestChoice(row.bestChoice, language)}</strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Ganancia/Hr:' : 'Gain/Hr:'}</span>
+                              <strong className={`${row.gainPerHour >= 0 ? 'text-emerald-450' : 'text-red-400'}`}>
+                                {row.ready ? `${fmt(row.gainPerHour)} COIN` : (language === 'es' ? 'Esperando' : 'Waiting')}
+                              </strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Retorno:' : 'Break Even:'}</span>
+                              <strong className="text-amber-400">
+                                {row.ready ? fmtHours(row.breakEvenHours, language) : (language === 'es' ? 'Esperando' : 'Waiting')}
+                              </strong>
+                            </div>
+
+                            <div 
+                              className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                              style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                            >
+                              <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Estado:' : 'Status:'}</span>
+                              <span className={`font-bold ${row.ready ? 'text-emerald-450' : 'text-yellow-500 animate-pulse'}`}>
+                                {row.ready 
+                                  ? row.gainPerHour > 0 
+                                    ? (language === 'es' ? 'Candidato' : 'Candidate') 
+                                    : (language === 'es' ? 'No vale la pena' : 'Not worth it') 
+                                  : (language === 'es' ? 'Esperando' : 'Waiting')}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
                       );
                     })}
-                  </tbody>
-                </table>
+                  </div>
+                )}
               </div>
             ) : (
               <p className="text-sm text-slate-400">
