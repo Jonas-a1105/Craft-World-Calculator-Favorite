@@ -442,7 +442,7 @@ export default function UpgradeAdvisor() {
         <div className="max-w-[720px] mx-auto w-full">
           <Card title={language === 'es' ? 'Asesor de Mejoras' : 'Upgrade Advisor'}>
             <div className="space-y-3">
-              <p className="text-sm text-slate-300">
+              <p key="desc" className="text-sm text-slate-300">
                 {language === 'es'
                   ? 'Muestra el material necesario para la siguiente mejora, lo que ya posees, lo que te falta y si es más barato comprar o fabricar la cantidad faltante. Se incluye la velocidad del taller, aumentos activos y la maestría de recursos de fábrica.'
                   : 'This shows the material needed for the next upgrade, what you already own, what you are missing, and whether buying or crafting the missing amount is cheaper. Workshop speed, active boosts, and factory resource mastery are included.'}
@@ -450,7 +450,7 @@ export default function UpgradeAdvisor() {
               {quoteLoading && (() => {
                 const progressPercent = quoteRequests.length > 0 ? Math.round((quotedCount / quoteRequests.length) * 100) : 0;
                 return (
-                  <div className="flex flex-col items-center justify-center p-6 bg-zinc-950/40 rounded-[12px] border-none space-y-4 my-4 z-10 relative">
+                  <div key="quote-loading" className="flex flex-col items-center justify-center p-6 bg-zinc-950/40 rounded-[12px] border-none space-y-4 my-4 z-10 relative">
                     <style>{`
                       @keyframes wave-stripes {
                         from { background-position: 40px 0; }
@@ -503,10 +503,11 @@ export default function UpgradeAdvisor() {
                   </div>
                 );
               })()}
-              {error && <p className="text-sm text-red-300">{error}</p>}
+              {error && <p key="err" className="text-sm text-red-300">{error}</p>}
               
               {bestUpgrade ? (
                 <div 
+                  key="best-upgrade"
                   style={{
                     backgroundColor: 'var(--bg-card)',
                     borderRadius: 'var(--radius)',
@@ -644,7 +645,7 @@ export default function UpgradeAdvisor() {
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-slate-400">
+                <p key="no-best" className="text-sm text-slate-400">
                   {language === 'es' ? 'Ninguna recomendación de mejora está lista todavía.' : 'No upgrade recommendation is ready yet.'}
                 </p>
               )}
