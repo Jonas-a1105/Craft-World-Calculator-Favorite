@@ -253,7 +253,16 @@ function calculateRecipePnl(row: FactoryDataRow | null, quotes: QuoteMap): Recip
 
 function QuoteLine({ label, quote }: { label: string; quote: Quote | null | undefined }) {
   const { language } = useTranslation();
-  if (!quote) return <p>{label}: {language === 'es' ? 'Buscando cotización' : 'Waiting for quote'}</p>;
+  if (!quote) {
+    return (
+      <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+        <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{label}</span>
+        <span className="font-extrabold text-yellow-500 animate-pulse">
+          {language === 'es' ? 'Buscando cotización...' : 'Fetching quote...'}
+        </span>
+      </div>
+    );
+  }
 
   const inputImg = getResourceImage(quote.input.symbol);
   const outputImg = getResourceImage(quote.output.symbol);
@@ -262,12 +271,20 @@ function QuoteLine({ label, quote }: { label: string; quote: Quote | null | unde
   const outputName = quote.output.symbol === 'COIN' ? 'COIN' : formatFactoryName(quote.output.symbol, language);
 
   return (
-    <div className="flex items-center gap-1.5 flex-wrap">
-      <span>{label}: {fmt(quote.input.amount)}</span>
-      {inputImg && <img src={inputImg} alt={quote.input.symbol} className="h-4 w-4 object-contain inline" />}
-      <span>{inputName} {language === 'es' ? 'por' : 'for'} {fmt(quote.output.amount)}</span>
-      {outputImg && <img src={outputImg} alt={quote.output.symbol} className="h-4 w-4 object-contain inline" />}
-      <span>{outputName} • {language === 'es' ? 'Impacto' : 'Impact'} {fmt(quote.details?.priceImpactPercentage || 0, 2)}%</span>
+    <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs gap-3">
+      <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px] shrink-0">{label}</span>
+      <div className="flex items-center gap-1.5 flex-wrap justify-end text-right">
+        <span className="font-black text-white">{fmt(quote.input.amount)}</span>
+        {inputImg && <img src={inputImg} alt={quote.input.symbol} className="h-4.5 w-4.5 object-contain shrink-0" />}
+        <span className="text-slate-350 font-semibold">{inputName}</span>
+        <span className="text-slate-400 font-medium">{language === 'es' ? 'por' : 'for'}</span>
+        <span className="font-black text-white">{fmt(quote.output.amount)}</span>
+        {outputImg && <img src={outputImg} alt={quote.output.symbol} className="h-4.5 w-4.5 object-contain shrink-0" />}
+        <span className="text-slate-350 font-semibold">{outputName}</span>
+        <span className="text-[10px] bg-slate-900/60 px-2 py-0.5 rounded-full text-slate-300 font-bold ml-1">
+          {language === 'es' ? 'Imp.' : 'Imp.'} {fmt(quote.details?.priceImpactPercentage || 0, 2)}%
+        </span>
+      </div>
     </div>
   );
 }
@@ -284,6 +301,7 @@ export default function Calculator() {
   const [quoteLoading, setQuoteLoading] = useState(false);
   const [quotedCount, setQuotedCount] = useState(0);
   const [error, setError] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>(() => (localStorage.getItem('calculatorViewMode') as 'list' | 'grid') || 'list');
 
   useEffect(() => {
     const load = async () => {
@@ -528,31 +546,39 @@ export default function Calculator() {
 
         <div className="grid gap-4 lg:grid-cols-3">
           <Card title={language === 'es' ? 'Resumen de Mejora' : 'Upgrade Summary'}>
-            <div className="space-y-2 text-sm text-slate-300">
-              <p>
-                <span className="text-slate-400">{language === 'es' ? 'Costo Total de Mejora' : 'Total Upgrade Cost'}:</span>{' '}
-                <strong>{totalUpgradeMissing ? (language === 'es' ? 'Esperando cotizaciones' : 'Waiting for quotes') : `${fmt(totalUpgradeCost)} COIN`}</strong>
-              </p>
-              <p>
-                <span className="text-slate-400">{language === 'es' ? 'PNL Total Actual/Hora' : 'Current Total PNL/Hr'}:</span>{' '}
-                <strong>{currentPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(currentTotalProfitPerHour)} COIN`}</strong>
-              </p>
-              <p>
-                <span className="text-slate-400">{language === 'es' ? 'PNL Total Objetivo/Hora' : 'Target Total PNL/Hr'}:</span>{' '}
-                <strong>{targetPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(targetTotalProfitPerHour)} COIN`}</strong>
-              </p>
-              <p>
-                <span className="text-slate-400">{language === 'es' ? 'Ganancia por Hora' : 'Gain Per Hour'}:</span>{' '}
-                <strong>{currentPnl.missingQuote || targetPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(pnlGainPerHour)} COIN`}</strong>
-              </p>
-              <p>
-                <span className="text-slate-400">{language === 'es' ? 'Recuperación' : 'Break Even'}:</span>{' '}
-                <strong>
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+                <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Costo Total de Mejora' : 'Total Upgrade Cost'}</span>
+                <span className="font-extrabold text-white">
+                  {totalUpgradeMissing ? (language === 'es' ? 'Esperando cotizaciones' : 'Waiting for quotes') : `${fmt(totalUpgradeCost)} COIN`}
+                </span>
+              </div>
+              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+                <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'PNL Total Actual/Hora' : 'Current Total PNL/Hr'}</span>
+                <span className="font-extrabold text-emerald-400">
+                  {currentPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(currentTotalProfitPerHour)} COIN`}
+                </span>
+              </div>
+              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+                <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'PNL Total Objetivo/Hora' : 'Target Total PNL/Hr'}</span>
+                <span className="font-extrabold text-emerald-450">
+                  {targetPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(targetTotalProfitPerHour)} COIN`}
+                </span>
+              </div>
+              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+                <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Ganancia por Hora' : 'Gain Per Hour'}</span>
+                <span className="font-extrabold text-emerald-400">
+                  {currentPnl.missingQuote || targetPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(pnlGainPerHour)} COIN`}
+                </span>
+              </div>
+              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+                <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Recuperación' : 'Break Even'}</span>
+                <span className="font-extrabold text-amber-400">
                   {Number.isFinite(breakEvenHours) 
                     ? (language === 'es' ? `${fmt(breakEvenHours, 2)} horas` : `${fmt(breakEvenHours, 2)} hours`) 
                     : (language === 'es' ? 'No rentable o esperando' : 'Not profitable or waiting')}
-                </strong>
-              </p>
+                </span>
+              </div>
             </div>
           </Card>
 
@@ -565,6 +591,11 @@ export default function Calculator() {
                   <div 
                     key={token} 
                     className="resource-item-badge flex flex-col items-center justify-center p-4 text-center min-w-[110px] flex-1 max-w-[180px]"
+                    style={{
+                      backgroundColor: 'var(--bg-resource-item)',
+                      border: 'none',
+                      borderRadius: 'var(--radius-resource-item)',
+                    }}
                   >
                     {img && (
                       <img 
@@ -574,7 +605,7 @@ export default function Calculator() {
                       />
                     )}
                     <span className="text-xs text-slate-400 font-medium mb-1">{name}</span>
-                    <span className="text-sm font-bold text-white">{fmt(amount)}</span>
+                    <span className="text-sm font-black text-amber-400">{fmt(amount)}</span>
                   </div>
                 );
               }) : (
@@ -586,27 +617,33 @@ export default function Calculator() {
           </Card>
 
           <Card title={language === 'es' ? 'Delta de PNL' : 'PNL Delta'}>
-            <div className="space-y-2 text-sm text-slate-300">
-              <p>
-                <span className="text-slate-400">{language === 'es' ? 'Ganancia Actual por Ejecución' : 'Current Profit/Run'}:</span>{' '}
-                <strong>{currentPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(currentPnl.profitPerRun)} COIN`}</strong>
-              </p>
-              <p>
-                <span className="text-slate-400">{language === 'es' ? 'Ganancia Objetivo por Ejecución' : 'Target Profit/Run'}:</span>{' '}
-                <strong>{targetPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(targetPnl.profitPerRun)} COIN`}</strong>
-              </p>
-              <p>
-                <span className="text-slate-400">{language === 'es' ? 'Ejecuciones Actuales/Hora' : 'Current Runs/Hr'}:</span>{' '}
-                <strong>{fmt(currentPnl.runsPerHour, 4)}</strong>
-              </p>
-              <p>
-                <span className="text-slate-400">{language === 'es' ? 'Ejecuciones Objetivo/Hora' : 'Target Runs/Hr'}:</span>{' '}
-                <strong>{fmt(targetPnl.runsPerHour, 4)}</strong>
-              </p>
-              <p>
-                <span className="text-slate-400">{language === 'es' ? 'Ganancia PNL por Fábrica/Hora' : 'Per Factory PNL Gain/Hr'}:</span>{' '}
-                <strong>{currentPnl.missingQuote || targetPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(targetPnl.profitPerHour - currentPnl.profitPerHour)} COIN`}</strong>
-              </p>
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+                <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Ganancia Actual por Ejecución' : 'Current Profit/Run'}</span>
+                <span className="font-extrabold text-emerald-400">
+                  {currentPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(currentPnl.profitPerRun)} COIN`}
+                </span>
+              </div>
+              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+                <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Ganancia Objetivo por Ejecución' : 'Target Profit/Run'}</span>
+                <span className="font-extrabold text-emerald-400">
+                  {targetPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(targetPnl.profitPerRun)} COIN`}
+                </span>
+              </div>
+              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+                <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Ejecuciones Actuales/Hora' : 'Current Runs/Hr'}</span>
+                <span className="font-extrabold text-white">{fmt(currentPnl.runsPerHour, 4)}</span>
+              </div>
+              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+                <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Ejecuciones Objetivo/Hora' : 'Target Runs/Hr'}</span>
+                <span className="font-extrabold text-white">{fmt(targetPnl.runsPerHour, 4)}</span>
+              </div>
+              <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.03] p-2.5 rounded-[10px] text-xs">
+                <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">{language === 'es' ? 'Ganancia PNL por Fábrica/Hora' : 'Per Factory PNL Gain/Hr'}</span>
+                <span className="font-extrabold text-emerald-400">
+                  {currentPnl.missingQuote || targetPnl.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(targetPnl.profitPerHour - currentPnl.profitPerHour)} COIN`}
+                </span>
+              </div>
             </div>
           </Card>
         </div>
@@ -616,9 +653,14 @@ export default function Calculator() {
             <div className="space-y-2 text-sm text-slate-300">
               {currentRow ? (
                 <>
-                  <p className="font-semibold text-slate-200">
-                    {language === 'es' ? 'Receta Actual' : 'Current Recipe'}: {formatFactoryName(factoryType, language)} {language === 'es' ? 'Nivel' : 'Level'} {currentLevel}
-                  </p>
+                  <div className="text-center pb-2 border-b border-white/[0.03] mb-3">
+                    <span className="text-[10px] uppercase font-black text-orange-400">
+                      {language === 'es' ? 'Receta Actual' : 'Current Recipe'}
+                    </span>
+                    <h4 className="text-sm font-black text-white mt-0.5">
+                      {formatFactoryName(factoryType, language)} {language === 'es' ? `Nivel ${currentLevel}` : `Level ${currentLevel}`}
+                    </h4>
+                  </div>
                   <QuoteLine label={language === 'es' ? 'Valor Venta de Salida' : 'Output Sell Value'} quote={quotes[sellKey(currentRow.output_token, currentRow.output_amount)]} />
                   {currentRow.input_token_1 && <QuoteLine label={language === 'es' ? 'Costo Compra Ingrediente 1' : 'Input 1 Buy Cost'} quote={quotes[buyKey(currentRow.input_token_1, currentRow.input_amount_1)]} />}
                   {currentRow.input_token_2 && <QuoteLine label={language === 'es' ? 'Costo Compra Ingrediente 2' : 'Input 2 Buy Cost'} quote={quotes[buyKey(currentRow.input_token_2, currentRow.input_amount_2)]} />}
@@ -633,9 +675,14 @@ export default function Calculator() {
             <div className="space-y-2 text-sm text-slate-300">
               {targetRow ? (
                 <>
-                  <p className="font-semibold text-slate-200">
-                    {language === 'es' ? 'Receta Objetivo' : 'Target Recipe'}: {formatFactoryName(factoryType, language)} {language === 'es' ? 'Nivel' : 'Level'} {targetLevel}
-                  </p>
+                  <div className="text-center pb-2 border-b border-white/[0.03] mb-3">
+                    <span className="text-[10px] uppercase font-black text-orange-400">
+                      {language === 'es' ? 'Receta Objetivo' : 'Target Recipe'}
+                    </span>
+                    <h4 className="text-sm font-black text-white mt-0.5">
+                      {formatFactoryName(factoryType, language)} {language === 'es' ? `Nivel ${targetLevel}` : `Level ${targetLevel}`}
+                    </h4>
+                  </div>
                   <QuoteLine label={language === 'es' ? 'Valor Venta de Salida' : 'Output Sell Value'} quote={quotes[sellKey(targetRow.output_token, targetRow.output_amount)]} />
                   {targetRow.input_token_1 && <QuoteLine label={language === 'es' ? 'Costo Compra Ingrediente 1' : 'Input 1 Buy Cost'} quote={quotes[buyKey(targetRow.input_token_1, targetRow.input_amount_1)]} />}
                   {targetRow.input_token_2 && <QuoteLine label={language === 'es' ? 'Costo Compra Ingrediente 2' : 'Input 2 Buy Cost'} quote={quotes[buyKey(targetRow.input_token_2, targetRow.input_amount_2)]} />}
@@ -647,79 +694,193 @@ export default function Calculator() {
 
         <Card title={language === 'es' ? 'Ruta de Mejora' : 'Upgrade Path'}>
           {upgradeSteps.length ? (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[900px] text-left text-sm">
-                <thead className="text-slate-300">
-                  <tr>
-                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Paso' : 'Step'}</th>
-                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Recurso de Mejora' : 'Upgrade Token'}</th>
-                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Cantidad por Fábrica' : 'Amount Per Factory'}</th>
-                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Cantidad Total' : 'Total Amount'}</th>
-                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Costo de Compra' : 'Buy Cost'}</th>
-                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Impacto' : 'Impact'}</th>
-                    <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Estado' : 'Status'}</th>
-                  </tr>
-                </thead>
-                <tbody>
+            <div className="space-y-4">
+              <div className="flex justify-end gap-2">
+                <button 
+                  onClick={() => { setViewMode('list'); localStorage.setItem('calculatorViewMode', 'list'); }}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'list' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                  style={{ border: 'none' }}
+                >
+                  {language === 'es' ? 'Lista' : 'List'}
+                </button>
+                <button 
+                  onClick={() => { setViewMode('grid'); localStorage.setItem('calculatorViewMode', 'grid'); }}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-[8px] transition-colors cursor-pointer ${viewMode === 'grid' ? 'bg-white text-black' : 'bg-slate-900/60 text-slate-400 hover:text-white'}`}
+                  style={{ border: 'none' }}
+                >
+                  {language === 'es' ? 'Tarjetas' : 'Cards'}
+                </button>
+              </div>
+
+              {viewMode === 'list' ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[900px] text-left text-sm">
+                    <thead className="text-slate-300">
+                      <tr>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Paso' : 'Step'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Recurso de Mejora' : 'Upgrade Token'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Cantidad por Fábrica' : 'Amount Per Factory'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Cantidad Total' : 'Total Amount'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Costo de Compra' : 'Buy Cost'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Impacto' : 'Impact'}</th>
+                        <th className="p-2 whitespace-nowrap">{language === 'es' ? 'Estado' : 'Status'}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {upgradeSteps.map((step) => {
+                        const img = getResourceImage(step.token);
+                        const tokenName = formatFactoryName(step.token, language);
+                        return (
+                          <tr key={`${step.fromLevel}-${step.toLevel}-${step.token}`} className="border-t border-slate-800">
+                            <td className="p-2 whitespace-nowrap">{language === 'es' ? 'Nivel' : 'Lv'} {step.fromLevel} → {language === 'es' ? 'Nivel' : 'Lv'} {step.toLevel}</td>
+                            <td className="p-2 font-semibold whitespace-nowrap">
+                              <div className="flex items-center gap-1.5">
+                                {img && (
+                                  <img 
+                                    src={img} 
+                                    alt={step.token} 
+                                    className="h-5 w-5 object-contain" 
+                                    style={{ borderRadius: 'var(--radius-resource-item)' }} 
+                                  />
+                                )}
+                                <span>{tokenName}</span>
+                              </div>
+                            </td>
+                            <td className="p-2 whitespace-nowrap">
+                              <div className="flex items-center gap-1.5">
+                                {img && (
+                                  <img 
+                                    src={img} 
+                                    alt={step.token} 
+                                    className="h-4 w-4 object-contain" 
+                                    style={{ borderRadius: 'var(--radius-resource-item)' }} 
+                                  />
+                                )}
+                                <span>{fmt(step.amountPerFactory)} {tokenName}</span>
+                              </div>
+                            </td>
+                            <td className="p-2 whitespace-nowrap">
+                              <div className="flex items-center gap-1.5">
+                                {img && (
+                                  <img 
+                                    src={img} 
+                                    alt={step.token} 
+                                    className="h-4 w-4 object-contain" 
+                                    style={{ borderRadius: 'var(--radius-resource-item)' }} 
+                                  />
+                                )}
+                                <span>{fmt(step.totalAmount)} {tokenName}</span>
+                              </div>
+                            </td>
+                            <td className="p-2 whitespace-nowrap font-bold text-slate-300">
+                              {step.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(step.cost)} COIN`}
+                            </td>
+                            <td className="p-2 whitespace-nowrap">
+                              {step.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(step.impact, 2)}%`}
+                            </td>
+                            <td className="p-2 whitespace-nowrap">
+                              {step.missingQuote ? (language === 'es' ? 'Buscando cotización' : 'Waiting for quote') : (language === 'es' ? 'Listo' : 'Ready')}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full">
                   {upgradeSteps.map((step) => {
                     const img = getResourceImage(step.token);
                     const tokenName = formatFactoryName(step.token, language);
                     return (
-                      <tr key={`${step.fromLevel}-${step.toLevel}-${step.token}`} className="border-t border-slate-800">
-                        <td className="p-2 whitespace-nowrap">{language === 'es' ? 'Nivel' : 'Lv'} {step.fromLevel} → {language === 'es' ? 'Nivel' : 'Lv'} {step.toLevel}</td>
-                        <td className="p-2 font-semibold whitespace-nowrap">
-                          <div className="flex items-center gap-1.5">
-                            {img && (
+                      <div 
+                        key={`${step.fromLevel}-${step.toLevel}-${step.token}`}
+                        style={{
+                          backgroundColor: 'var(--bg-card)',
+                          borderRadius: 'var(--radius)',
+                          padding: '16px',
+                          border: 'none'
+                        }}
+                        className="flex flex-col gap-4 relative overflow-hidden"
+                      >
+                        {/* Status absolute badge */}
+                        <div className="absolute top-3 right-3">
+                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${step.missingQuote ? 'bg-yellow-500/10 text-yellow-500 animate-pulse' : 'bg-emerald-500/10 text-emerald-400'}`}>
+                            {step.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : (language === 'es' ? 'Listo' : 'Ready')}
+                          </span>
+                        </div>
+
+                        {/* Header: Title + Image */}
+                        <div className="flex items-center gap-3">
+                          <div 
+                            className="w-12 h-12 bg-slate-900/60 flex items-center justify-center p-1 shrink-0"
+                            style={{ borderRadius: 'var(--radius-resource-item)', border: 'none' }}
+                          >
+                            {img ? (
                               <img 
                                 src={img} 
                                 alt={step.token} 
-                                className="h-5 w-5 object-contain" 
-                                style={{ borderRadius: 'var(--radius-resource-item)' }} 
+                                className="w-full h-full object-contain"
                               />
+                            ) : (
+                              <div className="text-xs font-black text-slate-500">{step.token.slice(0, 3)}</div>
                             )}
-                            <span>{tokenName}</span>
                           </div>
-                        </td>
-                        <td className="p-2 whitespace-nowrap">
-                          <div className="flex items-center gap-1.5">
-                            {img && (
-                              <img 
-                                src={img} 
-                                alt={step.token} 
-                                className="h-4 w-4 object-contain" 
-                                style={{ borderRadius: 'var(--radius-resource-item)' }} 
-                              />
-                            )}
-                            <span>{fmt(step.amountPerFactory)} {tokenName}</span>
+                          <div className="min-w-0 pr-16">
+                            <span className="text-[10px] uppercase font-black text-orange-400">
+                              {tokenName}
+                            </span>
+                            <h3 className="text-sm font-black text-white truncate mt-0.5">
+                              {language === 'es' ? 'Nivel' : 'Lv'} {step.fromLevel} → {language === 'es' ? 'Nivel' : 'Lv'} {step.toLevel}
+                            </h3>
                           </div>
-                        </td>
-                        <td className="p-2 whitespace-nowrap">
-                          <div className="flex items-center gap-1.5">
-                            {img && (
-                              <img 
-                                src={img} 
-                                alt={step.token} 
-                                className="h-4 w-4 object-contain" 
-                                style={{ borderRadius: 'var(--radius-resource-item)' }} 
-                              />
-                            )}
-                            <span>{fmt(step.totalAmount)} {tokenName}</span>
+                        </div>
+
+                        {/* Details grid as badges */}
+                        <div className="flex flex-wrap gap-2 pt-3 border-t border-white/[0.03] justify-center">
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Cantidad por Fábrica:' : 'Amount Per Factory:'}</span>
+                            {img && <img src={img} alt={step.token} className="h-4 w-4 object-contain shrink-0" />}
+                            <strong className="text-slate-200">{fmt(step.amountPerFactory)} {tokenName}</strong>
                           </div>
-                        </td>
-                        <td className="p-2 whitespace-nowrap font-bold text-slate-300">
-                          {step.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(step.cost)} COIN`}
-                        </td>
-                        <td className="p-2 whitespace-nowrap">
-                          {step.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(step.impact, 2)}%`}
-                        </td>
-                        <td className="p-2 whitespace-nowrap">
-                          {step.missingQuote ? (language === 'es' ? 'Buscando cotización' : 'Waiting for quote') : (language === 'es' ? 'Listo' : 'Ready')}
-                        </td>
-                      </tr>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Cantidad Total:' : 'Total Amount:'}</span>
+                            {img && <img src={img} alt={step.token} className="h-4 w-4 object-contain shrink-0" />}
+                            <strong className="text-slate-200">{fmt(step.totalAmount)} {tokenName}</strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Costo de Compra:' : 'Buy Cost:'}</span>
+                            <strong className="text-emerald-400">
+                              {step.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(step.cost)} COIN`}
+                            </strong>
+                          </div>
+
+                          <div 
+                            className="resource-item-badge flex items-center gap-1.5 text-xs text-white"
+                            style={{ backgroundColor: 'var(--bg-resource-item)', border: 'none', padding: '4px 10px' }}
+                          >
+                            <span className="text-[9px] text-slate-400 uppercase font-black">{language === 'es' ? 'Impacto:' : 'Impact:'}</span>
+                            <strong className="text-amber-400">
+                              {step.missingQuote ? (language === 'es' ? 'Esperando' : 'Waiting') : `${fmt(step.impact, 2)}%`}
+                            </strong>
+                          </div>
+                        </div>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
+                </div>
+              )}
             </div>
           ) : <p className="text-sm text-slate-400">{language === 'es' ? 'No se encontraron pasos de mejora para este rango.' : 'No upgrade steps found for this range.'}</p>}
         </Card>
