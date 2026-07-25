@@ -1,244 +1,229 @@
 import { Router } from 'express';
 import { getUsers, saveUsers } from '../storage/userStorage.js';
-import { getMatrixCache, saveMatrixCache } from '../storage/matrixCacheStorage.js';
-import { getCraftworldHomeData } from '../services/craftworldGraphql.js';
-import { getCraftworldProfileByUid, getCraftworldWallets } from '../services/craftworldIdentity.js';
-import { getMockCraftworldHomeData } from '../services/mockCraftworldData.js';
-import { getCraftworldExactInputQuote, getCraftworldExactOutputQuote } from '../services/craftworldQuote.js';
+import { refreshCraftworldToken } from '../services/craftworldOauth.js';
 import {
-  exchangeCraftworldCustomToken,
-  getCraftworldAccountIdentity,
-  loginCraftworldWithSignedPayload,
-  lookupCraftworldFirebaseAccount,
-  refreshCraftworldIdToken,
-  requestCraftworldAuthPayload,
-} from '../services/craftworldAuth.js';
+  getExternalProfile,
+  getExternalCraftWorld,
+  getExternalMasterpieces,
+  getExternalCraft,
+  getExternalExchange,
+  getExternalOnchain,
+  getExternalInventory,
+  getExternalPurchases,
+  getExternalPriceList,
+  getExternalDynoProductionCycle,
+} from '../services/craftworldExternalApi.js';
 
 export const craftworldRouter = Router();
 
-function getPrimaryWalletAddress(account: any, fallbackAddress = '') {
-  const wallets = Array.isArray(account?.wallets) ? account.wallets : [];
-
-  const primary = wallets.find((wallet: any) => wallet?.primary && wallet?.address)?.address;
-
-  const nonJwt = wallets.find(
-    (wallet: any) =>
-      wallet?.address &&
-      String(wallet?.provider || '').toLowerCase() !== 'jwt' &&
-      String(wallet?.providerId || '').toLowerCase() !== 'inappwallet',
-  )?.address;
-
-  const first = wallets.find((wallet: any) => wallet?.address)?.address;
-
-  return String(primary || nonJwt || first || fallbackAddress || '').toLowerCase();
-}
-
-async function getFreshCraftworldTokens(user: any) {
-  if (!user) return [process.env.CRAFTWORLD_AUTH_TOKEN].filter(Boolean) as string[];
-
-  const expiresAt = user.craftWorldTokenExpiresAt ? new Date(user.craftWorldTokenExpiresAt).getTime() : 0;
-  const shouldRefresh = Boolean(user.craftWorldRefreshToken && (!user.craftWorldIdToken || expiresAt < Date.now() + 2 * 60 * 1000));
-
-  if (shouldRefresh) {
-    const refreshed = await refreshCraftworldIdToken(user.craftWorldRefreshToken);
-    const expiresInMs = Number(refreshed.expiresIn || 3600) * 1000;
-    user.craftWorldIdToken = refreshed.idToken;
-    user.craftWorldRefreshToken = refreshed.refreshToken;
-    user.craftWorldTokenExpiresAt = new Date(Date.now() + expiresInMs).toISOString();
+async function getFreshAccessToken(user: any): Promise<string> {
+  if (!user.craftWorldRefreshToken) throw new Error('No refresh token stored');
+  if (
+    user.craftWorldTokenExpiresAt &&
+    new Date(user.craftWorldTokenExpiresAt).getTime() > Date.now() + 60000
+  ) {
+    return user.craftWorldAccessToken || '';
   }
-
-  return [user.craftWorldIdToken, user.craftWorldCustomToken, process.env.CRAFTWORLD_AUTH_TOKEN].filter(Boolean) as string[];
+  const refreshed = await refreshCraftworldToken(user.craftWorldRefreshToken);
+  user.craftWorldAccessToken = refreshed.accessToken;
+  user.craftWorldRefreshToken = refreshed.refreshToken;
+  user.craftWorldTokenExpiresAt = new Date(Date.now() + refreshed.expiresIn * 1000).toISOString();
+  return refreshed.accessToken;
 }
 
-async function getCurrentUserAndFreshToken(req: any) {
+async function getUserAndToken(req: any) {
   const users = await getUsers();
   const user = users.find((u) => u.id === req.user?.id);
-  const tokens = await getFreshCraftworldTokens(user);
-  if (user) await saveUsers(users);
-  return { user, token: tokens[0] || '' };
+  if (!user) throw new Error('User not found');
+  const accessToken = await getFreshAccessToken(user);
+  await saveUsers(users);
+  return { user, accessToken };
 }
-
-async function getPublicProfileHomeFallback(uid: string) {
-  const home = getMockCraftworldHomeData();
-  if (!uid) return home;
-
-  try {
-    const profile = await getCraftworldProfileByUid(uid);
-    home.profile = {
-      uid: profile.uid,
-      displayName: profile.displayName,
-      avatarUrl: profile.avatarUrl,
-      walletAddress: profile.walletAddress,
-    };
-    home.account.walletAddress = profile.walletAddress;
-  } catch {
-    home.profile = { uid };
-  }
-
-  return home;
-}
-
-craftworldRouter.get('/home', async (req: any, res) => {
-  const users = await getUsers();
-  const user = users.find((u) => u.id === req.user?.id);
-  const uid = user?.craftWorldFirebaseUserId || user?.walletAddress || user?.craftWorldUid || user?.craftWorldUserId || req.user.craftWorldFirebaseUserId || req.user.walletAddress || req.user.craftWorldUid || req.user.craftWorldUserId;
-
-  try {
-    const tokens = await getFreshCraftworldTokens(user);
-    if (user) await saveUsers(users);
-    const data = await getCraftworldHomeData(uid || '', tokens);
-    res.json(data);
-  } catch (error: any) {
-    console.error('Protected Craft World home failed, returning public profile fallback', error.message);
-    const fallback = await getPublicProfileHomeFallback(uid || '');
-    res.json(fallback);
-  }
-});
 
 craftworldRouter.get('/profile', async (req: any, res) => {
-  const user = (await getUsers()).find((u) => u.id === req.user?.id);
-  const uid = user?.craftWorldFirebaseUserId || user?.walletAddress || user?.craftWorldUid || user?.craftWorldUserId || req.user.craftWorldFirebaseUserId || req.user.walletAddress || req.user.craftWorldUid || req.user.craftWorldUserId;
-  if (!uid) return res.status(400).json({ message: 'Craft World UID is not set.' });
-
   try {
-    const profile = await getCraftworldProfileByUid(uid);
+    const { accessToken } = await getUserAndToken(req);
+    const profile = await getExternalProfile(accessToken);
     res.json(profile);
-  } catch (error: any) {
-    res.status(502).json({ message: error.message || 'Unable to load Craft World profile.' });
+  } catch (err: any) {
+    res.status(502).json({ message: err.message || 'Unable to load profile.' });
   }
 });
 
-craftworldRouter.get('/wallets', async (req: any, res) => {
-  const { user, token } = await getCurrentUserAndFreshToken(req);
-
+craftworldRouter.get('/craft-world', async (req: any, res) => {
   try {
-    const wallets = await getCraftworldWallets(token);
-    res.json(wallets);
-  } catch (error: any) {
-    console.error('Craft World wallets failed, returning saved wallet fallback', {
-      userId: user?.id,
-      walletAddress: user?.walletAddress,
-      message: error?.message,
-    });
+    const { accessToken } = await getUserAndToken(req);
+    const data = await getExternalCraftWorld(accessToken);
+    res.json(data);
+  } catch (err: any) {
+    res.status(502).json({ message: err.message || 'Unable to load craft world data.' });
+  }
+});
 
-    const fallbackWallet = user?.walletAddress
-      ? [{ address: user.walletAddress, primary: true, provider: 'saved', type: 'external' }]
-      : [];
+craftworldRouter.get('/masterpieces', async (req: any, res) => {
+  try {
+    const { accessToken } = await getUserAndToken(req);
+    const data = await getExternalMasterpieces(accessToken);
+    res.json(data);
+  } catch (err: any) {
+    const status = err.status === 403 ? 403 : 502;
+    res
+      .status(status)
+      .json({ message: err.message || 'Unable to load masterpieces.', code: err.code });
+  }
+});
+
+craftworldRouter.get('/craft', async (req: any, res) => {
+  try {
+    const { accessToken } = await getUserAndToken(req);
+    const data = await getExternalCraft(accessToken);
+    res.json(data);
+  } catch (err: any) {
+    const status = err.status === 403 ? 403 : 502;
+    res
+      .status(status)
+      .json({ message: err.message || 'Unable to load craft data.', code: err.code });
+  }
+});
+
+craftworldRouter.get('/exchange', async (req: any, res) => {
+  try {
+    const { accessToken } = await getUserAndToken(req);
+    const data = await getExternalExchange(accessToken);
+    res.json(data);
+  } catch (err: any) {
+    const status = err.status === 403 ? 403 : 502;
+    res
+      .status(status)
+      .json({ message: err.message || 'Unable to load exchange data.', code: err.code });
+  }
+});
+
+craftworldRouter.get('/onchain', async (req: any, res) => {
+  try {
+    const { accessToken } = await getUserAndToken(req);
+    const data = await getExternalOnchain(accessToken);
+    res.json(data);
+  } catch (err: any) {
+    const status = err.status === 403 ? 403 : 502;
+    res
+      .status(status)
+      .json({ message: err.message || 'Unable to load onchain data.', code: err.code });
+  }
+});
+
+craftworldRouter.get('/inventory', async (req: any, res) => {
+  try {
+    const { accessToken } = await getUserAndToken(req);
+    const data = await getExternalInventory(accessToken);
+    res.json(data);
+  } catch (err: any) {
+    const status = err.status === 403 ? 403 : 502;
+    res
+      .status(status)
+      .json({ message: err.message || 'Unable to load inventory data.', code: err.code });
+  }
+});
+
+craftworldRouter.get('/purchases', async (req: any, res) => {
+  try {
+    const { accessToken } = await getUserAndToken(req);
+    const data = await getExternalPurchases(accessToken);
+    res.json(data);
+  } catch (err: any) {
+    const status = err.status === 403 ? 403 : 502;
+    res
+      .status(status)
+      .json({ message: err.message || 'Unable to load purchases data.', code: err.code });
+  }
+});
+
+craftworldRouter.get('/price-list', async (req: any, res) => {
+  try {
+    const { accessToken } = await getUserAndToken(req);
+    const data = await getExternalPriceList(accessToken);
+    res.json(data);
+  } catch (err: any) {
+    res.status(502).json({ message: err.message || 'Unable to load price list.' });
+  }
+});
+
+craftworldRouter.get('/dyno-cycle', async (req: any, res) => {
+  try {
+    const { accessToken } = await getUserAndToken(req);
+    const data = await getExternalDynoProductionCycle(accessToken);
+    res.json(data);
+  } catch (err: any) {
+    res.status(502).json({ message: err.message || 'Unable to load dyno production cycle.' });
+  }
+});
+
+craftworldRouter.get('/home', async (req: any, res) => {
+  try {
+    const { accessToken } = await getUserAndToken(req);
+    const [
+      profile,
+      craftWorld,
+      masterpieces,
+      craft,
+      exchange,
+      onchain,
+      inventory,
+      purchases,
+      priceList,
+      dynoCycle,
+    ] = await Promise.all([
+      getExternalProfile(accessToken).catch(
+        (err) => (console.warn('Failed profile:', err.message), null),
+      ),
+      getExternalCraftWorld(accessToken).catch(
+        (err) => (console.warn('Failed craft-world:', err.message), null),
+      ),
+      getExternalMasterpieces(accessToken).catch(
+        (err) => (console.warn('Failed masterpieces:', err.message), null),
+      ),
+      getExternalCraft(accessToken).catch(
+        (err) => (console.warn('Failed craft:', err.message), null),
+      ),
+      getExternalExchange(accessToken).catch(
+        (err) => (console.warn('Failed exchange:', err.message), null),
+      ),
+      getExternalOnchain(accessToken).catch(
+        (err) => (console.warn('Failed onchain:', err.message), null),
+      ),
+      getExternalInventory(accessToken).catch(
+        (err) => (console.warn('Failed inventory:', err.message), null),
+      ),
+      getExternalPurchases(accessToken).catch(
+        (err) => (console.warn('Failed purchases:', err.message), null),
+      ),
+      getExternalPriceList(accessToken).catch(
+        (err) => (console.warn('Failed price-list:', err.message), null),
+      ),
+      getExternalDynoProductionCycle(accessToken).catch(
+        (err) => (console.warn('Failed dyno-cycle:', err.message), null),
+      ),
+    ]);
 
     res.json({
-      wallets: fallbackWallet,
-      primaryWalletAddress: user?.walletAddress,
+      profile,
+      craftWorld,
+      masterpieces,
+      craft,
+      exchange,
+      onchain,
+      inventory,
+      purchases,
+      priceList,
+      dynoCycle,
+      serverTime: new Date().toISOString(),
       lastSyncedAt: new Date().toISOString(),
     });
-  }
-});
-
-craftworldRouter.post('/quote', async (req: any, res) => {
-  const { inputSymbol, outputSymbol = 'COIN', inputAmount } = req.body ?? {};
-
-  try {
-    const { token } = await getCurrentUserAndFreshToken(req);
-    const quote = await getCraftworldExactInputQuote(
-      {
-        inputSymbol: String(inputSymbol || ''),
-        outputSymbol: String(outputSymbol || 'COIN'),
-        inputAmount: Number(inputAmount || 0),
-      },
-      token,
-    );
-    res.json(quote);
-  } catch (error: any) {
-    console.error('Quote error:', error);
-    res.status(502).json({ message: error.message || 'Unable to load Craft World quote.' });
-  }
-});
-
-craftworldRouter.post('/buy-quote', async (req: any, res) => {
-  const { inputSymbol = 'COIN', outputSymbol, outputAmount } = req.body ?? {};
-
-  try {
-    const { token } = await getCurrentUserAndFreshToken(req);
-    const quote = await getCraftworldExactOutputQuote(
-      {
-        inputSymbol: String(inputSymbol || 'COIN'),
-        outputSymbol: String(outputSymbol || ''),
-        outputAmount: Number(outputAmount || 0),
-      },
-      token,
-    );
-    res.json(quote);
-  } catch (error: any) {
-    console.error('Buy quote error:', error);
-    res.status(502).json({ message: error.message || 'Unable to load Craft World buy quote.' });
-  }
-});
-
-craftworldRouter.get('/matrix-cache', async (_req, res) => {
-  try {
-    res.json(await getMatrixCache());
-  } catch (error: any) {
-    res.status(500).json({ message: error.message || 'Unable to load matrix cache.' });
-  }
-});
-
-craftworldRouter.put('/matrix-cache', async (req, res) => {
-  try {
-    const { selectedGroup, cells } = req.body ?? {};
-    const saved = await saveMatrixCache({
-      updatedAt: new Date().toISOString(),
-      selectedGroup: typeof selectedGroup === 'string' ? selectedGroup : undefined,
-      cells: cells && typeof cells === 'object' ? cells : {},
-    });
-    res.json(saved);
-  } catch (error: any) {
-    res.status(500).json({ message: error.message || 'Unable to save matrix cache.' });
-  }
-});
-
-craftworldRouter.post('/auth/payload', async (req, res) => {
-  const { address } = req.body ?? {};
-  if (!address) return res.status(400).json({ message: 'Wallet address is required.' });
-
-  try {
-    const payload = await requestCraftworldAuthPayload(String(address));
-    res.json({ payload });
-  } catch (error: any) {
-    res.status(502).json({ message: error.message || 'Unable to create Craft World auth payload.' });
-  }
-});
-
-craftworldRouter.post('/auth/login', async (req: any, res) => {
-  const { payload, signature } = req.body ?? {};
-  if (!payload || !signature) return res.status(400).json({ message: 'Payload and signature are required.' });
-
-  try {
-    const craftWorldAuth = await loginCraftworldWithSignedPayload(payload, String(signature));
-    const firebaseAuth = await exchangeCraftworldCustomToken(craftWorldAuth.customToken);
-    const firebaseAccount = await lookupCraftworldFirebaseAccount(firebaseAuth.idToken);
-    const account = await getCraftworldAccountIdentity(firebaseAuth.idToken, payload.walletAddress || payload.address || '');
-
-    const users = await getUsers();
-    const user = users.find((u) => u.id === req.user?.id);
-    if (!user) return res.status(404).json({ message: 'User not found.' });
-
-    const expiresInMs = Number(firebaseAuth.expiresIn || 3600) * 1000;
-    user.craftWorldUid = firebaseAccount.localId || craftWorldAuth.uid;
-    user.craftWorldUserId = firebaseAccount.localId || craftWorldAuth.uid;
-    user.walletAddress = getPrimaryWalletAddress(account, payload.walletAddress || payload.address || '');
-    user.craftWorldCustomToken = craftWorldAuth.customToken;
-    user.craftWorldIdToken = firebaseAuth.idToken;
-    user.craftWorldRefreshToken = firebaseAuth.refreshToken;
-    user.craftWorldTokenExpiresAt = new Date(Date.now() + expiresInMs).toISOString();
-
-    await saveUsers(users);
-
-    res.json({
-      uid: user.craftWorldUid,
-      walletAddress: user.walletAddress,
-      expiresAt: user.craftWorldTokenExpiresAt,
-      isNewUser: firebaseAuth.isNewUser,
-    });
-  } catch (error: any) {
-    res.status(502).json({ message: error.message || 'Unable to complete Craft World auth login.' });
+  } catch (err: any) {
+    console.error('Error in /api/craftworld/home:', err);
+    const status = err.status === 401 || String(err.message || '').includes('token') ? 401 : 502;
+    res
+      .status(status)
+      .json({ message: err.message || 'Unable to load home data.', code: err.code });
   }
 });

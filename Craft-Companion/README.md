@@ -5,7 +5,7 @@ Craftworld Companion is a full-stack MVP dashboard shell for Craft World player 
 ## Stack
 - Frontend: React + Vite + TypeScript + Tailwind CSS
 - Backend: Node.js + Express + TypeScript
-- Auth: bcrypt + JWT
+- Auth: OAuth 2.0 Authorization Code with PKCE (S256)
 - Storage: file-based JSON (`users.json`)
 
 ## Setup
@@ -23,12 +23,24 @@ npm run dev
 ## Environment variables
 Copy `.env.example` to `.env` (and for server/client if desired).
 
-- `PORT=3001`
-- `JWT_SECRET=replace_me`
-- `DATA_DIR=./data`
-- `CRAFTWORLD_GRAPHQL_ENDPOINT=https://craft-world.gg/graphql`
-- `CRAFTWORLD_AUTH_TOKEN=` (optional; when empty, Craft World dashboard sections return empty data instead of fake sample data)
-- `VITE_API_BASE_URL=http://localhost:3001`
+### Required for OAuth
+- `CRAFTWORLD_OAUTH_CLIENT_ID` — Public client identifier (provided by Craft World)
+- `CRAFTWORLD_OAUTH_CLIENT_SECRET` — Secret for confidential clients (shown once at registration)
+- `CRAFTWORLD_OAUTH_REDIRECT_URI` — Exact callback URL registered for your app
+- `CRAFTWORLD_OAUTH_SCOPES` — Space-delimited scopes (default: `profile:read craft:read masterpiece:read`)
+
+### Other server vars
+- `PORT` — Server port (default 3001)
+- `JWT_SECRET` — Secret for session signing (used as fallback)
+- `DATA_DIR` — Directory for JSON storage (default `./data`)
+- `CRAFTWORLD_BASE_URL` — Craft World base URL (default `https://craft-world.gg`)
+- `CRAFTWORLD_EXTERNAL_API_BASE` — External API base (default `https://craft-world.gg/api/2/external`)
+- `CLIENT_ORIGIN` / `FRONTEND_URL` — Client origin for CORS and redirects
+- `SESSION_SECRET` — Session cookie signing secret
+- `SESSION_MAX_AGE_SECONDS` — Session cookie max age (default 7 days)
+
+### Client vars
+- `VITE_API_BASE_URL` — API base URL (default `http://localhost:3001`)
 
 ## DATA_DIR and Render
 User data is stored in:
@@ -40,11 +52,45 @@ Default data dir:
 On Render, attach a persistent disk at `/var/data` and set:
 - `DATA_DIR=/var/data`
 
-## Craft World GraphQL
-GraphQL query lives in:
-- `server/src/services/craftworldGraphql.ts`
+## OAuth Flow (Authorization Code + PKCE)
+1. Generate PKCE `code_verifier` and `code_challenge` (S256) + random `state` in session storage
+2. Redirect user to `/api/oauth/authorize` → Craft World consent screen
+3. Callback `/api/oauth/callback?code=...&state=...` exchanges code for tokens
+4. Store `access_token`, `refresh_token`, `expires_in`, `scope` in user record
+5. Call External API with `Authorization: Bearer <access_token>`
+6. Refresh tokens via `/api/oauth/token` (grant_type=refresh_token) — old refresh token is revoked
+7. Logout via `/api/oauth/logout` (revokes refresh token)
 
-If `CRAFTWORLD_AUTH_TOKEN` is empty, the backend returns empty Craft World data arrays.
-If token is set, backend calls `CRAFTWORLD_GRAPHQL_ENDPOINT` with the configured credentials.
+## External API Scopes (current)
+| Scope | Endpoint | Data |
+|-------|----------|------|
+| `profile:read` | `GET /me/profile` | uid, display name, avatar URL, level |
+| `craft:read` | `GET /me/craft-world` | level, resource balances |
+| `masterpiece:read` | `GET /me/masterpieces` | claimed masterpiece IDs, active battle passes |
 
-> Do not commit real tokens or secrets.
+> Note: Dynos, factories, land plots, vaults, workshop, proficiencies, currencies, power, skill points, wallets, and quotes are **not available** via the current partner External API. Request additional scopes via Discord: https://discord.gg/AngryDynomites
+
+## OpenAPI
+Machine-readable contract: https://craft-world.gg/api/2/external/openapi.json
+
+## Security requirements
+- Always use PKCE with S256
+- Validate `state` on every callback
+- Use exact registered redirect URIs — no wildcards
+- Store `client_secret` only on trusted server; never ship in browser or mobile binary
+- Transmit tokens only over HTTPS
+- Do not call first-party Craft World APIs with OAuth tokens — they will be rejected
+
+## Checklist
+- [ ] Received `client_id` (and secret if confidential)
+- [ ] Redirect URI(s) and browser origin(s) registered
+- [ ] Allowed scopes confirmed for your use case
+- [ ] PKCE + state implemented on authorize
+- [ ] Callback exchanges code within 60 seconds
+- [ ] External API calls use Bearer tokens against `https://craft-world.gg/api/2/external` only
+- [ ] Refresh rotation handled (store new refresh token each time)
+- [ ] Revocation on disconnect / logout implemented
+- [ ] OpenAPI imported from `https://craft-world.gg/api/2/external/openapi.json`
+
+## License
+MIT

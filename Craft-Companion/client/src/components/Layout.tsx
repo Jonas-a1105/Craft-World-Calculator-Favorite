@@ -22,7 +22,10 @@ function translateNode(node: any, t: any): any {
   if (Array.isArray(node)) {
     return node.map((child, idx) => {
       const translated = translateNode(child, t);
-      if (React.isValidElement(translated) && (translated.key === null || translated.key === undefined)) {
+      if (
+        React.isValidElement(translated) &&
+        (translated.key === null || translated.key === undefined)
+      ) {
         return React.cloneElement(translated, { key: `trans-${idx}` });
       }
       return translated;
@@ -147,14 +150,13 @@ export default function Layout({ children }: { children: any }) {
     let homeDataFactories: any[] = [];
 
     // Load data once on Layout mount
-    Promise.all([
-      loadFactoryData().catch(() => []),
-      getCraftworldHome().catch(() => null)
-    ]).then(([rows, home]) => {
-      if (!active) return;
-      factoryRows = rows;
-      homeDataFactories = home?.factories || [];
-    });
+    Promise.all([loadFactoryData().catch(() => []), getCraftworldHome().catch(() => null)]).then(
+      ([rows, home]) => {
+        if (!active) return;
+        factoryRows = rows;
+        homeDataFactories = home?.factories || [];
+      },
+    );
 
     // Track already notified runs (plotName -> startedAt) to prevent duplicate alerts
     const notifiedMap: Record<string, string> = (() => {
@@ -177,20 +179,22 @@ export default function Layout({ children }: { children: any }) {
       for (const factory of homeDataFactories) {
         const key = factory.plotName;
         const timer = storedTimers[key];
-        
+
         const startedAt = timer?.manual ? timer.startedAt : factory.startedAt;
         if (!startedAt) continue;
 
         // Skip if already notified for this particular cycle start
         if (notifiedMap[key] === startedAt) continue;
 
-        const levelData = factoryRows.find(r => r.token === factory.token && r.level === factory.level);
+        const levelData = factoryRows.find(
+          (r) => r.token === factory.token && r.level === factory.level,
+        );
         if (!levelData) continue;
 
         const durationMin = levelData.duration_min || 0;
         const runtimeSeconds = durationMin * 60;
         const startedMs = new Date(startedAt).getTime();
-        
+
         // Skip if timer is paused
         if (timer?.pausedAt) continue;
 
@@ -199,22 +203,25 @@ export default function Layout({ children }: { children: any }) {
 
         if (remainingSeconds <= 0) {
           // Trigger system notification
-          const resourceName = language === 'es' 
-            ? formatFactoryName(factory.token, 'es')
-            : formatFactoryName(factory.token, 'en');
+          const resourceName =
+            language === 'es'
+              ? formatFactoryName(factory.token, 'es')
+              : formatFactoryName(factory.token, 'en');
 
-          const title = language === 'es'
-            ? `¡Fábrica de ${resourceName} Completada!`
-            : `Factory ${resourceName} Completed!`;
+          const title =
+            language === 'es'
+              ? `¡Fábrica de ${resourceName} Completada!`
+              : `Factory ${resourceName} Completed!`;
 
-          const body = language === 'es'
-            ? `La producción de ${resourceName} ha finalizado en la parcela.`
-            : `${resourceName} production cycle on the plot has finished.`;
+          const body =
+            language === 'es'
+              ? `La producción de ${resourceName} ha finalizado en la parcela.`
+              : `${resourceName} production cycle on the plot has finished.`;
 
           try {
             new Notification(title, {
               body,
-              icon: `/assets/resources/${factory.token.charAt(0).toUpperCase() + factory.token.slice(1).toLowerCase()}.png`
+              icon: `/assets/resources/${factory.token.charAt(0).toUpperCase() + factory.token.slice(1).toLowerCase()}.png`,
             });
           } catch (e) {
             console.error('Failed to trigger notification:', e);
@@ -241,7 +248,7 @@ export default function Layout({ children }: { children: any }) {
             <img src="/assets/logo.png" className={styles.logoImg} alt="Logo" />
           </Link>
         </div>
-        
+
         <div
           className={styles.navCenter}
           ref={navRef}
@@ -282,51 +289,95 @@ export default function Layout({ children }: { children: any }) {
 }
 
 function formatFactoryName(symbol: string, lang: string): string {
-  const normalized = String(symbol || '').trim().toUpperCase();
+  const normalized = String(symbol || '')
+    .trim()
+    .toUpperCase();
   if (lang === 'es') {
     switch (normalized) {
-      case 'STEEL': return 'Acero';
-      case 'WOOD': return 'Madera';
-      case 'WATER': return 'Agua';
-      case 'ALGAE': return 'Alga';
-      case 'BOLTS': return 'Pernos';
-      case 'BONESOUP': return 'Sopa de Huesos';
-      case 'CEMENT': return 'Cemento';
-      case 'CERAMICKEY': return 'Llave Cerámica';
-      case 'CERAMICS': return 'Cerámicas';
-      case 'CLAY': return 'Arcilla';
-      case 'COPPER': return 'Cobre';
-      case 'DYNAMITE': return 'Dinamita';
-      case 'EARTH': return 'Tierra';
-      case 'EXPLOSIVES': return 'Explosivos';
-      case 'FERTILIZER': return 'Fertilizante';
-      case 'FIRE': return 'Fuego';
-      case 'FISH': return 'Pescado';
-      case 'GLASS': return 'Vidrio';
-      case 'GOLD': return 'Oro';
-      case 'GRAIN': return 'Grano';
-      case 'IRON': return 'Hierro';
-      case 'LEATHER': return 'Cuero';
-      case 'LIMESTONE': return 'Caliza';
-      case 'MUD': return 'Lodo';
-      case 'OXYGEN': return 'Oxígeno';
-      case 'PAPER': return 'Papel';
-      case 'PLASTIC': return 'Plástico';
-      case 'SAND': return 'Arena';
-      case 'SCREWS': return 'Tornillos';
-      case 'SILICA': return 'Sílice';
-      case 'STONE': return 'Piedra';
-      case 'SULFUR': return 'Azufre';
-      case 'TEXTILE': return 'Textil';
-      case 'VEGETABLES': return 'Vegetales';
-      case 'GAS': return 'Gas';
-      case 'OIL': return 'Petróleo';
-      case 'HEAT': return 'Calor';
-      case 'ACID': return 'Ácido';
-      case 'SEAWATER': return 'Agua de Mar';
-      case 'FUEL': return 'Combustible';
-      case 'COAL': return 'Carbón';
-      case 'AIR': return 'Aire';
+      case 'STEEL':
+        return 'Acero';
+      case 'WOOD':
+        return 'Madera';
+      case 'WATER':
+        return 'Agua';
+      case 'ALGAE':
+        return 'Alga';
+      case 'BOLTS':
+        return 'Pernos';
+      case 'BONESOUP':
+        return 'Sopa de Huesos';
+      case 'CEMENT':
+        return 'Cemento';
+      case 'CERAMICKEY':
+        return 'Llave Cerámica';
+      case 'CERAMICS':
+        return 'Cerámicas';
+      case 'CLAY':
+        return 'Arcilla';
+      case 'COPPER':
+        return 'Cobre';
+      case 'DYNAMITE':
+        return 'Dinamita';
+      case 'EARTH':
+        return 'Tierra';
+      case 'EXPLOSIVES':
+        return 'Explosivos';
+      case 'FERTILIZER':
+        return 'Fertilizante';
+      case 'FIRE':
+        return 'Fuego';
+      case 'FISH':
+        return 'Pescado';
+      case 'GLASS':
+        return 'Vidrio';
+      case 'GOLD':
+        return 'Oro';
+      case 'GRAIN':
+        return 'Grano';
+      case 'IRON':
+        return 'Hierro';
+      case 'LEATHER':
+        return 'Cuero';
+      case 'LIMESTONE':
+        return 'Caliza';
+      case 'MUD':
+        return 'Lodo';
+      case 'OXYGEN':
+        return 'Oxígeno';
+      case 'PAPER':
+        return 'Papel';
+      case 'PLASTIC':
+        return 'Plástico';
+      case 'SAND':
+        return 'Arena';
+      case 'SCREWS':
+        return 'Tornillos';
+      case 'SILICA':
+        return 'Sílice';
+      case 'STONE':
+        return 'Piedra';
+      case 'SULFUR':
+        return 'Azufre';
+      case 'TEXTILE':
+        return 'Textil';
+      case 'VEGETABLES':
+        return 'Vegetales';
+      case 'GAS':
+        return 'Gas';
+      case 'OIL':
+        return 'Petróleo';
+      case 'HEAT':
+        return 'Calor';
+      case 'ACID':
+        return 'Ácido';
+      case 'SEAWATER':
+        return 'Agua de Mar';
+      case 'FUEL':
+        return 'Combustible';
+      case 'COAL':
+        return 'Carbón';
+      case 'AIR':
+        return 'Aire';
       default:
         return symbol.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
     }

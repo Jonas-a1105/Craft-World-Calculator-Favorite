@@ -56,7 +56,11 @@ export function getMasteryInputReductionPercent(symbol: string, proficiencies: P
   return Math.max(0, getMasteryYieldBonusPercent(symbol, proficiencies) - 100);
 }
 
-export function applyMasteryInputReduction(amount: number, symbol: string, proficiencies: ProficiencyItem[]) {
+export function applyMasteryInputReduction(
+  amount: number,
+  symbol: string,
+  proficiencies: ProficiencyItem[],
+) {
   const inputAmount = Number(amount || 0);
   if (!Number.isFinite(inputAmount) || inputAmount <= 0) return 0;
 

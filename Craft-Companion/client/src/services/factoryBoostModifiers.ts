@@ -15,7 +15,9 @@ function isBoostActive(boost: FactoryBoost, now = Date.now()) {
 }
 
 function normalizeSource(source?: string) {
-  return String(source || '').trim().toLowerCase();
+  return String(source || '')
+    .trim()
+    .toLowerCase();
 }
 
 export function getFactoryBoostMultiplier(boost: FactoryBoost) {
@@ -30,18 +32,15 @@ export function getFactoryBoostMultiplier(boost: FactoryBoost) {
   return value;
 }
 
-export function getActiveFactoryBoosts(boosts: FactoryBoost[] = []) {
-  return boosts
-    .filter((boost) => isBoostActive(boost))
-    .filter((boost) => {
-      // The API returns source="factory" boosts that do not appear to affect the visible timer.
-      // Counting this source makes KEY, CERAMICKEY, and BOLTS finish exactly 2x too fast.
-      return normalizeSource(boost.source) !== 'factory';
-    });
+export function getActiveFactoryBoosts(boosts: FactoryBoost[] = [], now = Date.now()) {
+  return boosts.filter((boost) => isBoostActive(boost, now));
 }
 
 export function getTotalFactoryBoostMultiplier(boosts: FactoryBoost[] = []) {
-  return getActiveFactoryBoosts(boosts).reduce((total, boost) => total * getFactoryBoostMultiplier(boost), 1);
+  return getActiveFactoryBoosts(boosts).reduce(
+    (total, boost) => total * getFactoryBoostMultiplier(boost),
+    1,
+  );
 }
 
 export function getActiveFactoryBoostPercent(boosts: FactoryBoost[] = []) {
@@ -58,7 +57,10 @@ export function applyFactoryBoostsToDuration(durationMinutes: number, boosts: Fa
   return duration / multiplier;
 }
 
-export function getRunsPerHourWithFactoryBoosts(durationMinutes: number, boosts: FactoryBoost[] = []) {
+export function getRunsPerHourWithFactoryBoosts(
+  durationMinutes: number,
+  boosts: FactoryBoost[] = [],
+) {
   const adjustedDuration = applyFactoryBoostsToDuration(durationMinutes, boosts);
   return adjustedDuration > 0 && Number.isFinite(adjustedDuration) ? 60 / adjustedDuration : 0;
 }

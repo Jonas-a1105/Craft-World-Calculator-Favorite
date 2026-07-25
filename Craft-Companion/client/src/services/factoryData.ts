@@ -43,7 +43,7 @@ export const ACTIVE_RESOURCES = new Set([
   'KEY',
   'CERAMICKEY',
   'GLASSKEY',
-  'DYNOKEY'
+  'DYNOKEY',
 ]);
 
 const csvPaths = [
@@ -66,10 +66,7 @@ function normalizeHeader(value: unknown): string {
 function parseNumber(value: unknown, fallback = 0): number {
   if (value === undefined || value === null) return fallback;
 
-  const cleaned = String(value)
-    .trim()
-    .replace(/,/g, '')
-    .replace(/%/g, '');
+  const cleaned = String(value).trim().replace(/,/g, '').replace(/%/g, '');
 
   if (!cleaned) return fallback;
 
@@ -78,7 +75,9 @@ function parseNumber(value: unknown, fallback = 0): number {
 }
 
 function parseToken(value: unknown): string {
-  return String(value ?? '').trim().toUpperCase();
+  return String(value ?? '')
+    .trim()
+    .toUpperCase();
 }
 
 function parseCsvLine(line: string) {
@@ -161,14 +160,7 @@ function parseFactoryCsv(csv: string): FactoryDataRow[] {
           ]),
         ),
 
-        level: parseNumber(
-          getFirst(row, [
-            'level',
-            'factory_level',
-            'lvl',
-          ]),
-          1,
-        ),
+        level: parseNumber(getFirst(row, ['level', 'factory_level', 'lvl']), 1),
 
         duration_min: parseNumber(
           getFirst(row, [
@@ -184,13 +176,7 @@ function parseFactoryCsv(csv: string): FactoryDataRow[] {
         ),
 
         output_token: parseToken(
-          getFirst(row, [
-            'output_token',
-            'output',
-            'produces',
-            'result',
-            'result_token',
-          ]),
+          getFirst(row, ['output_token', 'output', 'produces', 'result', 'result_token']),
         ),
 
         output_amount: parseNumber(
@@ -243,20 +229,11 @@ function parseFactoryCsv(csv: string): FactoryDataRow[] {
         ),
 
         upgrade_token: parseToken(
-          getFirst(row, [
-            'upgrade_token',
-            'upgrade',
-            'upgrade_resource',
-            'upgrade_cost_token',
-          ]),
+          getFirst(row, ['upgrade_token', 'upgrade', 'upgrade_resource', 'upgrade_cost_token']),
         ),
 
         upgrade_amount: parseNumber(
-          getFirst(row, [
-            'upgrade_amount',
-            'upgrade_cost',
-            'upgrade_cost_amount',
-          ]),
+          getFirst(row, ['upgrade_amount', 'upgrade_cost', 'upgrade_cost_amount']),
         ),
       };
 
@@ -343,10 +320,7 @@ export async function getFactoryLevelData(token: unknown, level: number) {
 
   return (
     rows.find((row) => {
-      return (
-        normalizeFactoryToken(row.token) === normalizedToken &&
-        row.level === level
-      );
+      return normalizeFactoryToken(row.token) === normalizedToken && row.level === level;
     }) || null
   );
 }

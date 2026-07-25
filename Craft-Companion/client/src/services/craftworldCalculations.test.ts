@@ -14,7 +14,12 @@ import {
   type PriceMap,
 } from './craftworldCalculations';
 import { computePriceDelta, savePriceSnapshots } from './priceHistory';
-import { exportPlayerConfig, importPlayerConfig, loadPlayerConfig, savePlayerConfig } from './playerConfig';
+import {
+  exportPlayerConfig,
+  importPlayerConfig,
+  loadPlayerConfig,
+  savePlayerConfig,
+} from './playerConfig';
 
 const baseRow: FactoryDataRow = {
   token: 'MUD',
@@ -74,7 +79,9 @@ test('base factory with no modifiers', () => {
 
 test('same factory with 2x boost applied', () => {
   const runtime = calculateFactoryRuntime(baseRow, {
-    activeBoosts: [{ source: 'consumable', boostValue: 0.5, startTime: '2020-01-01T00:00:00.000Z' }],
+    activeBoosts: [
+      { source: 'consumable', boostValue: 0.5, startTime: '2020-01-01T00:00:00.000Z' },
+    ],
   });
   assert.equal(runtime, 5);
 });
@@ -89,7 +96,9 @@ test('same factory with workshop applied', () => {
 });
 
 test('same factory with mastery applied', () => {
-  const cycle = calculateFactoryCycle(baseRow, prices, { proficiencies: [{ symbol: 'MUD', claimedLevel: 10 }] });
+  const cycle = calculateFactoryCycle(baseRow, prices, {
+    proficiencies: [{ symbol: 'MUD', claimedLevel: 10 }],
+  });
   assert.equal(Number(cycle.input1PerCycle.toFixed(3)), 4.735);
 });
 
@@ -114,17 +123,32 @@ test('negative profit case', () => {
 });
 
 test('time-until-resources with enough resources already', () => {
-  assert.deepEqual(calculateTimeUntilResources(10, 10, 5), { missingAmount: 0, hours: 0, ready: true });
+  assert.deepEqual(calculateTimeUntilResources(10, 10, 5), {
+    missingAmount: 0,
+    hours: 0,
+    ready: true,
+  });
 });
 
 test('time-until-resources with missing inputs', () => {
-  assert.deepEqual(calculateTimeUntilResources(20, 5, 5), { missingAmount: 15, hours: 3, ready: false });
+  assert.deepEqual(calculateTimeUntilResources(20, 5, 5), {
+    missingAmount: 15,
+    hours: 3,
+    ready: false,
+  });
 });
 
 test('recipe tree with nested ingredients', () => {
   const rows: FactoryDataRow[] = [
     baseRow,
-    { ...baseRow, token: 'BRICK', output_token: 'BRICK', input_token_1: 'MUD', input_amount_1: 2, output_amount: 1 },
+    {
+      ...baseRow,
+      token: 'BRICK',
+      output_token: 'BRICK',
+      input_token_1: 'MUD',
+      input_amount_1: 2,
+      output_amount: 1,
+    },
   ];
   const tree = buildRecipeTree(rows, 'BRICK', 1);
   const flat = flattenRecipeToBaseResources(tree);
@@ -134,10 +158,25 @@ test('recipe tree with nested ingredients', () => {
 test('price delta snapshots', () => {
   const storage = new MemoryStorage();
   const now = new Date();
-  const history = savePriceSnapshots([
-    { symbol: 'MUD', sellPriceCoin: 1, timestamp: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(), source: 'test', stale: false },
-    { symbol: 'MUD', sellPriceCoin: 2, timestamp: now.toISOString(), source: 'test', stale: false },
-  ], storage);
+  const history = savePriceSnapshots(
+    [
+      {
+        symbol: 'MUD',
+        sellPriceCoin: 1,
+        timestamp: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
+        source: 'test',
+        stale: false,
+      },
+      {
+        symbol: 'MUD',
+        sellPriceCoin: 2,
+        timestamp: now.toISOString(),
+        source: 'test',
+        stale: false,
+      },
+    ],
+    storage,
+  );
   const delta = computePriceDelta(history, 'MUD', now.toISOString());
   assert.equal(delta.twentyFourHourPercent, 100);
   assert.equal(delta.state, 'up');
@@ -147,7 +186,10 @@ test('localStorage config survives export/import and malformed storage', () => {
   const storage = new MemoryStorage();
   storage.setItem('craftworld.playerConfig.v1', '{bad json');
   assert.deepEqual(loadPlayerConfig(storage).factories, {});
-  const saved = savePlayerConfig({ version: 1, updatedAt: '', factories: { MUD: { enabled: true, factoryCount: 2 } as any } }, storage);
+  const saved = savePlayerConfig(
+    { version: 1, updatedAt: '', factories: { MUD: { enabled: true, factoryCount: 2 } as any } },
+    storage,
+  );
   const imported = importPlayerConfig(exportPlayerConfig(saved), storage);
   assert.equal(imported.factories.MUD.factoryCount, 2);
   assert.equal(imported.factories.MUD.enabled, true);

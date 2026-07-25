@@ -4,29 +4,81 @@ import { useTranslation } from '../utils/i18n';
 type ResourceAmount = { symbol?: string; amount?: number };
 
 const CATEGORY_MAP: Record<string, string> = {
-  COIN: 'BASIC', EARTH: 'BASIC', WATER: 'BASIC', FIRE: 'BASIC',
-  MUD: 'BASIC', CLAY: 'BASIC', SAND: 'BASIC', COPPER: 'BASIC',
-  SEAWATER: 'BASIC', HEAT: 'BASIC', ALGAE: 'BASIC', LAVA: 'BASIC',
-  STONE: 'BASIC', SULFUR: 'BASIC',
-  CERAMICS: 'PROCESSED', STEEL: 'PROCESSED', OXYGEN: 'PROCESSED',
-  GLASS: 'PROCESSED', GAS: 'PROCESSED', STEAM: 'PROCESSED',
-  SCREWS: 'PROCESSED', FUEL: 'PROCESSED', CEMENT: 'PROCESSED',
-  OIL: 'PROCESSED', ACID: 'PROCESSED', PLASTICS: 'PROCESSED',
-  FIBERGLASS: 'PROCESSED', ENERGY: 'PROCESSED', HYDROGEN: 'PROCESSED',
-  DYNAMITE: 'PROCESSED', BOLTS: 'PROCESSED',
-  KEY: 'KEYS', CERAMICKEY: 'KEYS', GLASSKEY: 'KEYS', DYNOKEY: 'KEYS', BOOK: 'KEYS',
+  COIN: 'BASIC',
+  EARTH: 'BASIC',
+  WATER: 'BASIC',
+  FIRE: 'BASIC',
+  MUD: 'BASIC',
+  CLAY: 'BASIC',
+  SAND: 'BASIC',
+  COPPER: 'BASIC',
+  SEAWATER: 'BASIC',
+  HEAT: 'BASIC',
+  ALGAE: 'BASIC',
+  LAVA: 'BASIC',
+  STONE: 'BASIC',
+  SULFUR: 'BASIC',
+  CERAMICS: 'PROCESSED',
+  STEEL: 'PROCESSED',
+  OXYGEN: 'PROCESSED',
+  GLASS: 'PROCESSED',
+  GAS: 'PROCESSED',
+  STEAM: 'PROCESSED',
+  SCREWS: 'PROCESSED',
+  FUEL: 'PROCESSED',
+  CEMENT: 'PROCESSED',
+  OIL: 'PROCESSED',
+  ACID: 'PROCESSED',
+  PLASTICS: 'PROCESSED',
+  FIBERGLASS: 'PROCESSED',
+  ENERGY: 'PROCESSED',
+  HYDROGEN: 'PROCESSED',
+  DYNAMITE: 'PROCESSED',
+  BOLTS: 'PROCESSED',
+  KEY: 'KEYS',
+  CERAMICKEY: 'KEYS',
+  GLASSKEY: 'KEYS',
+  DYNOKEY: 'KEYS',
+  BOOK: 'KEYS',
 };
 
 const RESOURCE_COLORS: Record<string, string> = {
-  COIN: '#f59e0b', EARTH: '#a16207', WATER: '#3b82f6', FIRE: '#ef4444',
-  MUD: '#713f12', CLAY: '#ea580c', SAND: '#fbbf24', COPPER: '#ea580c',
-  SEAWATER: '#06b6d4', HEAT: '#f472b6', ALGAE: '#10b981', LAVA: '#f97316',
-  STONE: '#6b7280', SULFUR: '#fbbf24', CERAMICS: '#cbd5e1', STEEL: '#94a3b8',
-  OXYGEN: '#4ade80', GLASS: '#38bdf8', GAS: '#818cf8', STEAM: '#e2e8f0',
-  SCREWS: '#94a3b8', FUEL: '#22c55e', CEMENT: '#4b5563', OIL: '#334155',
-  ACID: '#a3e635', PLASTICS: '#60a5fa', FIBERGLASS: '#9ca3af', ENERGY: '#facc15',
-  HYDROGEN: '#3b82f6', DYNAMITE: '#ef4444', BOLTS: '#cbd5e1',
-  KEY: '#eab308', CERAMICKEY: '#f8fafc', GLASSKEY: '#38bdf8', DYNOKEY: '#f87171', BOOK: '#c084fc',
+  COIN: '#f59e0b',
+  EARTH: '#a16207',
+  WATER: '#3b82f6',
+  FIRE: '#ef4444',
+  MUD: '#713f12',
+  CLAY: '#ea580c',
+  SAND: '#fbbf24',
+  COPPER: '#ea580c',
+  SEAWATER: '#06b6d4',
+  HEAT: '#f472b6',
+  ALGAE: '#10b981',
+  LAVA: '#f97316',
+  STONE: '#6b7280',
+  SULFUR: '#fbbf24',
+  CERAMICS: '#cbd5e1',
+  STEEL: '#94a3b8',
+  OXYGEN: '#4ade80',
+  GLASS: '#38bdf8',
+  GAS: '#818cf8',
+  STEAM: '#e2e8f0',
+  SCREWS: '#94a3b8',
+  FUEL: '#22c55e',
+  CEMENT: '#4b5563',
+  OIL: '#334155',
+  ACID: '#a3e635',
+  PLASTICS: '#60a5fa',
+  FIBERGLASS: '#9ca3af',
+  ENERGY: '#facc15',
+  HYDROGEN: '#3b82f6',
+  DYNAMITE: '#ef4444',
+  BOLTS: '#cbd5e1',
+  KEY: '#eab308',
+  CERAMICKEY: '#f8fafc',
+  GLASSKEY: '#38bdf8',
+  DYNOKEY: '#f87171',
+  BOOK: '#c084fc',
 };
 
 function getResourceImage(symbol?: string) {
@@ -41,12 +93,15 @@ export default function OLEDInventoryPanel({ inventory }: { inventory: ResourceA
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('ALL');
 
-  const categories = useMemo(() => [
-    { key: 'ALL', label: language === 'es' ? 'Todos' : 'All' },
-    { key: 'BASIC', label: language === 'es' ? 'Básicos' : 'Basic' },
-    { key: 'PROCESSED', label: language === 'es' ? 'Procesados' : 'Processed' },
-    { key: 'KEYS', label: language === 'es' ? 'Llaves' : 'Keys' },
-  ], [language]);
+  const categories = useMemo(
+    () => [
+      { key: 'ALL', label: language === 'es' ? 'Todos' : 'All' },
+      { key: 'BASIC', label: language === 'es' ? 'Básicos' : 'Basic' },
+      { key: 'PROCESSED', label: language === 'es' ? 'Procesados' : 'Processed' },
+      { key: 'KEYS', label: language === 'es' ? 'Llaves' : 'Keys' },
+    ],
+    [language],
+  );
 
   const filtered = useMemo(() => {
     return inventory.filter((item) => {
@@ -145,7 +200,9 @@ export default function OLEDInventoryPanel({ inventory }: { inventory: ResourceA
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black/40 flex items-center justify-center p-0.5 shrink-0">
-                      {img && <img src={img} alt={symbol} className="w-full h-full object-contain" />}
+                      {img && (
+                        <img src={img} alt={symbol} className="w-full h-full object-contain" />
+                      )}
                     </div>
                     <span className="text-[11px] sm:text-[12.5px] font-bold text-gray-400 group-hover:text-white transition-colors truncate">
                       {symbol}
@@ -163,7 +220,9 @@ export default function OLEDInventoryPanel({ inventory }: { inventory: ResourceA
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-10 text-center text-gray-500">
-            <p className="text-xs">{language === 'es' ? 'No se encontraron recursos.' : 'No resources found.'}</p>
+            <p className="text-xs">
+              {language === 'es' ? 'No se encontraron recursos.' : 'No resources found.'}
+            </p>
           </div>
         )}
       </div>
@@ -175,7 +234,10 @@ export default function OLEDInventoryPanel({ inventory }: { inventory: ResourceA
             {language === 'es' ? 'Inventario Activo' : 'Active Inventory'}
           </span>
           <div className="text-[12px] text-gray-300 font-medium mt-1">
-            {language === 'es' ? 'Elementos:' : 'Items:'} <span className="text-white font-extrabold">{activeCount}/{inventory.length}</span>
+            {language === 'es' ? 'Elementos:' : 'Items:'}{' '}
+            <span className="text-white font-extrabold">
+              {activeCount}/{inventory.length}
+            </span>
           </div>
         </div>
       </div>

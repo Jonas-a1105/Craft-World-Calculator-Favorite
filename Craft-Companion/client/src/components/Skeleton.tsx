@@ -8,10 +8,7 @@ function SkeletonBase({ className }: { className: string }) {
 // Line (full width)
 export function SkeletonLine({ width }: { width?: string }) {
   return (
-    <div
-      className={`${styles.skeleton} ${styles.line}`}
-      style={width ? { width } : undefined}
-    />
+    <div className={`${styles.skeleton} ${styles.line}`} style={width ? { width } : undefined} />
   );
 }
 
@@ -33,7 +30,9 @@ export function SkeletonCard({ lines = 4 }: { lines?: number }) {
       {Array.from({ length: lines }).map((_, i) => (
         <div key={i} className={styles.row}>
           <div className={`${styles.skeleton} ${styles.cell} ${styles.cellWide}`} />
-          <div className={`${styles.skeleton} ${styles.cell} ${i === 0 ? styles.cellNarrow : ''}`} />
+          <div
+            className={`${styles.skeleton} ${styles.cell} ${i === 0 ? styles.cellNarrow : ''}`}
+          />
         </div>
       ))}
     </div>
@@ -68,12 +67,7 @@ export function SkeletonTable({ rows = 5, cols = 4 }: { rows?: number; cols?: nu
 
 // Block (custom height)
 export function SkeletonBlock({ height = 120 }: { height?: number }) {
-  return (
-    <div
-      className={`${styles.skeleton} ${styles.block}`}
-      style={{ height }}
-    />
-  );
+  return <div className={`${styles.skeleton} ${styles.block}`} style={{ height }} />;
 }
 
 // Stat card skeleton (used in dashboards)

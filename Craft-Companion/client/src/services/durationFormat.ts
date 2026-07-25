@@ -16,9 +16,18 @@ export function getDurationMinutesFromRunsPerHour(runsPerHour: number) {
   return 60 / runs;
 }
 
-export function getEffectiveSpeedPercent(baseDurationMinutes: number, calculatedDurationMinutes: number) {
+export function getEffectiveSpeedPercent(
+  baseDurationMinutes: number,
+  calculatedDurationMinutes: number,
+) {
   const baseDuration = Number(baseDurationMinutes || 0);
   const calculatedDuration = Number(calculatedDurationMinutes || 0);
-  if (!Number.isFinite(baseDuration) || !Number.isFinite(calculatedDuration) || baseDuration <= 0 || calculatedDuration <= 0) return 0;
+  if (
+    !Number.isFinite(baseDuration) ||
+    !Number.isFinite(calculatedDuration) ||
+    baseDuration <= 0 ||
+    calculatedDuration <= 0
+  )
+    return 0;
   return (baseDuration / calculatedDuration) * 100;
 }

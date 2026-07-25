@@ -20,7 +20,11 @@ async function ensureCacheFile() {
   try {
     await fs.access(matrixCacheFile);
   } catch {
-    await fs.writeFile(matrixCacheFile, JSON.stringify({ updatedAt: '', scanStatus: 'idle', cells: {} }, null, 2), 'utf-8');
+    await fs.writeFile(
+      matrixCacheFile,
+      JSON.stringify({ updatedAt: '', scanStatus: 'idle', cells: {} }, null, 2),
+      'utf-8',
+    );
   }
 }
 

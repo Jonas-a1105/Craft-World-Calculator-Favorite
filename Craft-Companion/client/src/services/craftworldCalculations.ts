@@ -136,7 +136,14 @@ function finiteNumber(value: unknown, fallback = 0) {
 }
 
 function normalizeSymbol(symbol?: string) {
-  return String(symbol || '').trim().toUpperCase();
+  return String(symbol || '')
+    .trim()
+    .toUpperCase();
+}
+
+export function getFactoryDisplayLevel(rawLevel: number): number {
+  const lvl = Math.max(0, Math.floor(Number(rawLevel || 0)));
+  return lvl + 1;
 }
 
 function clampPositive(value: number, fallback = 0) {
@@ -159,8 +166,15 @@ function getWorkerMultiplier(context: RuntimeContext = {}) {
 }
 
 export function calculateFactoryRuntime(row: FactoryDataRow, context: RuntimeContext = {}) {
-  const workshopDuration = applyWorkshopSpeedToDuration(row.duration_min, row.token, context.workshop || []);
-  const boostedDuration = applyFactoryBoostsToDuration(workshopDuration, context.activeBoosts || []);
+  const workshopDuration = applyWorkshopSpeedToDuration(
+    row.duration_min,
+    row.token,
+    context.workshop || [],
+  );
+  const boostedDuration = applyFactoryBoostsToDuration(
+    workshopDuration,
+    context.activeBoosts || [],
+  );
   const manualDuration = boostedDuration / getManualBoostMultiplier(context);
   const workerDuration = manualDuration / getWorkerMultiplier(context);
   return clampPositive(workerDuration, 0);
@@ -172,96 +186,158 @@ export function calculateFactoryOutput(row: FactoryDataRow, context: RuntimeCont
 
 export function calculateProductionPerHour(row: FactoryDataRow, context: RuntimeContext = {}) {
   const runtimeMinutes = calculateFactoryRuntime(row, context);
-  return runtimeMinutes > 0 ? calculateFactoryOutput(row, context) * (MINUTES_PER_HOUR / runtimeMinutes) : 0;
+  return runtimeMinutes > 0
+    ? calculateFactoryOutput(row, context) * (MINUTES_PER_HOUR / runtimeMinutes)
+    : 0;
 }
 
 export function calculateProductionPerDay(row: FactoryDataRow, context: RuntimeContext = {}) {
   return calculateProductionPerHour(row, context) * HOURS_PER_DAY;
 }
 
-export function calculateAdjustedInputAmount(row: FactoryDataRow, amount: number, context: RuntimeContext = {}) {
+export function calculateAdjustedInputAmount(
+  row: FactoryDataRow,
+  amount: number,
+  context: RuntimeContext = {},
+) {
   return applyMasteryInputReduction(amount, row.token, context.proficiencies || []);
 }
 
-export function calculateInputCost(row: FactoryDataRow, prices: PriceMap, context: RuntimeContext = {}) {
+export function calculateInputCost(
+  row: FactoryDataRow,
+  prices: PriceMap,
+  context: RuntimeContext = {},
+) {
   const input1Amount = calculateAdjustedInputAmount(row, row.input_amount_1, context);
-  const input2Amount = row.input_token_2 ? calculateAdjustedInputAmount(row, row.input_amount_2, context) : 0;
+  const input2Amount = row.input_token_2
+    ? calculateAdjustedInputAmount(row, row.input_amount_2, context)
+    : 0;
   const input1Price = finiteNumber(prices[normalizeSymbol(row.input_token_1)], 0);
-  const input2Price = row.input_token_2 ? finiteNumber(prices[normalizeSymbol(row.input_token_2)], 0) : 0;
+  const input2Price = row.input_token_2
+    ? finiteNumber(prices[normalizeSymbol(row.input_token_2)], 0)
+    : 0;
   return (input1Amount * input1Price + input2Amount * input2Price) * getFactoryCount(context);
 }
 
-export function calculateRevenue(row: FactoryDataRow, prices: PriceMap, context: RuntimeContext = {}) {
-  return calculateFactoryOutput(row, context) * finiteNumber(prices[normalizeSymbol(row.output_token)], 0);
+export function calculateRevenue(
+  row: FactoryDataRow,
+  prices: PriceMap,
+  context: RuntimeContext = {},
+) {
+  return (
+    calculateFactoryOutput(row, context) *
+    finiteNumber(prices[normalizeSymbol(row.output_token)], 0)
+  );
 }
 
-export function calculateProfitPerCycle(row: FactoryDataRow, prices: PriceMap, context: RuntimeContext = {}) {
+export function calculateProfitPerCycle(
+  row: FactoryDataRow,
+  prices: PriceMap,
+  context: RuntimeContext = {},
+) {
   return calculateRevenue(row, prices, context) - calculateInputCost(row, prices, context);
 }
 
-export function calculateProfitPerHour(row: FactoryDataRow, prices: PriceMap, context: RuntimeContext = {}) {
+export function calculateProfitPerHour(
+  row: FactoryDataRow,
+  prices: PriceMap,
+  context: RuntimeContext = {},
+) {
   const runtimeMinutes = calculateFactoryRuntime(row, context);
-  return runtimeMinutes > 0 ? calculateProfitPerCycle(row, prices, context) * (MINUTES_PER_HOUR / runtimeMinutes) : 0;
+  return runtimeMinutes > 0
+    ? calculateProfitPerCycle(row, prices, context) * (MINUTES_PER_HOUR / runtimeMinutes)
+    : 0;
 }
 
-export function calculateProfitPerDay(row: FactoryDataRow, prices: PriceMap, context: RuntimeContext = {}) {
+export function calculateProfitPerDay(
+  row: FactoryDataRow,
+  prices: PriceMap,
+  context: RuntimeContext = {},
+) {
   return calculateProfitPerHour(row, prices, context) * HOURS_PER_DAY;
 }
 
 export function calculatePowerCostPerHour(row: FactoryDataRow, context: RuntimeContext = {}) {
-  const powerCost = finiteNumber((row as FactoryDataRow & { power_cost?: number }).power_cost, 0) * getFactoryCount(context);
+  const powerCost =
+    finiteNumber((row as FactoryDataRow & { power_cost?: number }).power_cost, 0) *
+    getFactoryCount(context);
   const runtimeMinutes = calculateFactoryRuntime(row, context);
   return runtimeMinutes > 0 ? powerCost * (MINUTES_PER_HOUR / runtimeMinutes) : 0;
 }
 
 export function calculateXpPerHour(row: FactoryDataRow, context: RuntimeContext = {}) {
-  const xpPerCycle = finiteNumber((row as FactoryDataRow & { xp_per_output?: number }).xp_per_output, 0) * calculateFactoryOutput(row, context);
+  const xpPerCycle =
+    finiteNumber((row as FactoryDataRow & { xp_per_output?: number }).xp_per_output, 0) *
+    calculateFactoryOutput(row, context);
   const runtimeMinutes = calculateFactoryRuntime(row, context);
   return runtimeMinutes > 0 ? xpPerCycle * (MINUTES_PER_HOUR / runtimeMinutes) : 0;
 }
 
-export function calculateXpPerCoin(row: FactoryDataRow, prices: PriceMap, context: RuntimeContext = {}) {
+export function calculateXpPerCoin(
+  row: FactoryDataRow,
+  prices: PriceMap,
+  context: RuntimeContext = {},
+) {
   const cost = calculateInputCost(row, prices, context);
-  const xp = finiteNumber((row as FactoryDataRow & { xp_per_output?: number }).xp_per_output, 0) * calculateFactoryOutput(row, context);
+  const xp =
+    finiteNumber((row as FactoryDataRow & { xp_per_output?: number }).xp_per_output, 0) *
+    calculateFactoryOutput(row, context);
   return cost > 0 ? xp / cost : null;
 }
 
-export function buildPriceMapFromCycleQuotes(row: FactoryDataRow, quotes: Record<string, QuoteLike>, context: RuntimeContext = {}) {
+export function buildPriceMapFromCycleQuotes(
+  row: FactoryDataRow,
+  quotes: Record<string, QuoteLike>,
+  context: RuntimeContext = {},
+) {
   const prices: PriceMap = {};
   const outputQuote = quotes[sellQuoteKey(row.output_token, row.output_amount)];
   if (outputQuote?.output?.amount && row.output_amount > 0) {
-    prices[normalizeSymbol(row.output_token)] = finiteNumber(outputQuote.output.amount) / row.output_amount;
+    prices[normalizeSymbol(row.output_token)] =
+      finiteNumber(outputQuote.output.amount) / row.output_amount;
   }
 
   const input1Amount = calculateAdjustedInputAmount(row, row.input_amount_1, context);
   const input1Quote = quotes[buyQuoteKey(row.input_token_1, input1Amount)];
   if (input1Quote?.input?.amount && input1Amount > 0) {
-    prices[normalizeSymbol(row.input_token_1)] = finiteNumber(input1Quote.input.amount) / input1Amount;
+    prices[normalizeSymbol(row.input_token_1)] =
+      finiteNumber(input1Quote.input.amount) / input1Amount;
   }
 
   if (row.input_token_2 && row.input_amount_2 > 0) {
     const input2Amount = calculateAdjustedInputAmount(row, row.input_amount_2, context);
     const input2Quote = quotes[buyQuoteKey(row.input_token_2, input2Amount)];
     if (input2Quote?.input?.amount && input2Amount > 0) {
-      prices[normalizeSymbol(row.input_token_2)] = finiteNumber(input2Quote.input.amount) / input2Amount;
+      prices[normalizeSymbol(row.input_token_2)] =
+        finiteNumber(input2Quote.input.amount) / input2Amount;
     }
   }
 
   return prices;
 }
 
-export function calculateFactoryCycle(row: FactoryDataRow, prices: PriceMap, context: RuntimeContext = {}): FactoryCycleResult {
+export function calculateFactoryCycle(
+  row: FactoryDataRow,
+  prices: PriceMap,
+  context: RuntimeContext = {},
+): FactoryCycleResult {
   const factoryCount = getFactoryCount(context);
   const runtimeMinutes = calculateFactoryRuntime(row, context);
   const runsPerHour = runtimeMinutes > 0 ? MINUTES_PER_HOUR / runtimeMinutes : 0;
   const runsPerDay = runsPerHour * HOURS_PER_DAY;
-  const input1PerCycle = calculateAdjustedInputAmount(row, row.input_amount_1, context) * factoryCount;
-  const input2PerCycle = row.input_token_2 ? calculateAdjustedInputAmount(row, row.input_amount_2, context) * factoryCount : 0;
+  const input1PerCycle =
+    calculateAdjustedInputAmount(row, row.input_amount_1, context) * factoryCount;
+  const input2PerCycle = row.input_token_2
+    ? calculateAdjustedInputAmount(row, row.input_amount_2, context) * factoryCount
+    : 0;
   const inputCostPerCycle = calculateInputCost(row, prices, context);
   const revenuePerCycle = calculateRevenue(row, prices, context);
   const profitPerCycle = revenuePerCycle - inputCostPerCycle;
-  const xpPerCycle = finiteNumber((row as FactoryDataRow & { xp_per_output?: number }).xp_per_output, 0) * calculateFactoryOutput(row, context);
-  const powerCostPerCycle = finiteNumber((row as FactoryDataRow & { power_cost?: number }).power_cost, 0) * factoryCount;
+  const xpPerCycle =
+    finiteNumber((row as FactoryDataRow & { xp_per_output?: number }).xp_per_output, 0) *
+    calculateFactoryOutput(row, context);
+  const powerCostPerCycle =
+    finiteNumber((row as FactoryDataRow & { power_cost?: number }).power_cost, 0) * factoryCount;
   const missingPrices = [row.output_token, row.input_token_1, row.input_token_2]
     .filter((symbol): symbol is string => Boolean(symbol))
     .map(normalizeSymbol)
@@ -292,22 +368,49 @@ export function calculateFactoryCycle(row: FactoryDataRow, prices: PriceMap, con
     powerCostPerHour: powerCostPerCycle * runsPerHour,
     workshopBoostPercent: getWorkshopSpeedBoostPercent(row.token, context.workshop || []),
     activeBoostPercent: getActiveFactoryBoostPercent(context.activeBoosts || []),
-    activeBoostMultiplier: getTotalFactoryBoostMultiplier(context.activeBoosts || []) * getManualBoostMultiplier(context) * getWorkerMultiplier(context),
+    activeBoostMultiplier:
+      getTotalFactoryBoostMultiplier(context.activeBoosts || []) *
+      getManualBoostMultiplier(context) *
+      getWorkerMultiplier(context),
     masteryLevel: getMasteryLevel(row.token, context.proficiencies || []),
-    masteryReductionPercent: getMasteryInputReductionPercent(row.token, context.proficiencies || []),
+    masteryReductionPercent: getMasteryInputReductionPercent(
+      row.token,
+      context.proficiencies || [],
+    ),
     missingPrices,
   };
 }
 
-export function calculateFactoryROI(current: FactoryDataRow, next: FactoryDataRow | undefined, prices: PriceMap, context: RuntimeContext = {}) {
-  if (!next) return { upgradeCost: null, extraProfitPerDay: 0, paybackDays: null, warning: 'upgrade cost missing' };
-  if (!next.upgrade_token || next.upgrade_amount <= 0) return { upgradeCost: null, extraProfitPerDay: 0, paybackDays: null, warning: 'upgrade cost missing' };
+export function calculateFactoryROI(
+  current: FactoryDataRow,
+  next: FactoryDataRow | undefined,
+  prices: PriceMap,
+  context: RuntimeContext = {},
+) {
+  if (!next)
+    return {
+      upgradeCost: null,
+      extraProfitPerDay: 0,
+      paybackDays: null,
+      warning: 'upgrade cost missing',
+    };
+  if (!next.upgrade_token || next.upgrade_amount <= 0)
+    return {
+      upgradeCost: null,
+      extraProfitPerDay: 0,
+      paybackDays: null,
+      warning: 'upgrade cost missing',
+    };
 
-  const upgradeCost = next.upgrade_amount * finiteNumber(prices[normalizeSymbol(next.upgrade_token)], 0) * getFactoryCount(context);
+  const upgradeCost =
+    next.upgrade_amount *
+    finiteNumber(prices[normalizeSymbol(next.upgrade_token)], 0) *
+    getFactoryCount(context);
   const currentProfit = calculateProfitPerDay(current, prices, context);
   const nextProfit = calculateProfitPerDay(next, prices, context);
   const extraProfitPerDay = nextProfit - currentProfit;
-  const paybackDays = upgradeCost > 0 && extraProfitPerDay > 0 ? upgradeCost / extraProfitPerDay : null;
+  const paybackDays =
+    upgradeCost > 0 && extraProfitPerDay > 0 ? upgradeCost / extraProfitPerDay : null;
   return {
     upgradeCost: upgradeCost > 0 ? upgradeCost : null,
     extraProfitPerDay,
@@ -316,7 +419,11 @@ export function calculateFactoryROI(current: FactoryDataRow, next: FactoryDataRo
   };
 }
 
-export function calculateUpgradeRecommendation(rows: FactoryDataRow[], prices: PriceMap, context: RuntimeContext = {}): UpgradeRecommendation[] {
+export function calculateUpgradeRecommendation(
+  rows: FactoryDataRow[],
+  prices: PriceMap,
+  context: RuntimeContext = {},
+): UpgradeRecommendation[] {
   const byKey = new Map(rows.map((row) => [`${row.token}:${row.level}`, row]));
   return rows
     .map((row) => {
@@ -327,7 +434,8 @@ export function calculateUpgradeRecommendation(rows: FactoryDataRow[], prices: P
       const addedProfitPerDay = next ? next.profitPerDay - current.profitPerDay : 0;
       const addedProductionPerDay = next ? next.outputPerDay - current.outputPerDay : 0;
       const addedXpPerDay = next ? next.xpPerDay - current.xpPerDay : 0;
-      const label: UpgradeRecommendation['label'] = roi.paybackDays !== null ? 'Best ROI' : 'Not enough data';
+      const label: UpgradeRecommendation['label'] =
+        roi.paybackDays !== null ? 'Best ROI' : 'Not enough data';
       const reason = nextRow
         ? `Upgrade ${row.token} from level ${row.level} to ${nextRow.level}: adds ${addedProductionPerDay.toLocaleString(undefined, { maximumFractionDigits: 3 })}/day and ${addedProfitPerDay.toLocaleString(undefined, { maximumFractionDigits: 3 })} COIN/day.`
         : `No next level data for ${row.token} level ${row.level}.`;
@@ -352,14 +460,26 @@ export function calculateUpgradeRecommendation(rows: FactoryDataRow[], prices: P
     });
 }
 
-export function calculateTimeUntilResources(targetAmount: number, currentAmount: number, productionPerHour: number) {
+export function calculateTimeUntilResources(
+  targetAmount: number,
+  currentAmount: number,
+  productionPerHour: number,
+) {
   const missingAmount = Math.max(finiteNumber(targetAmount) - finiteNumber(currentAmount), 0);
   if (missingAmount <= 0) return { missingAmount: 0, hours: 0, ready: true };
   const rate = finiteNumber(productionPerHour, 0);
-  return { missingAmount, hours: rate > 0 ? missingAmount / rate : Number.POSITIVE_INFINITY, ready: false };
+  return {
+    missingAmount,
+    hours: rate > 0 ? missingAmount / rate : Number.POSITIVE_INFINITY,
+    ready: false,
+  };
 }
 
-export function calculateCycleWindow(runtimeMinutes: number, startedAt?: string | null, now?: string | Date): CycleWindow {
+export function calculateCycleWindow(
+  runtimeMinutes: number,
+  startedAt?: string | null,
+  now?: string | Date,
+): CycleWindow {
   const durationSeconds = Math.max(0, Math.round(finiteNumber(runtimeMinutes, 0) * 60));
   const startedMs = startedAt ? new Date(startedAt).getTime() : 0;
   const nowMs = now instanceof Date ? now.getTime() : new Date(now || new Date()).getTime();
@@ -375,7 +495,9 @@ export function calculateCycleWindow(runtimeMinutes: number, startedAt?: string 
   }
 
   const endsMs = startedMs + durationSeconds * 1000;
-  const secondsUntilEnd = Number.isFinite(nowMs) ? Math.ceil((endsMs - nowMs) / 1000) : durationSeconds;
+  const secondsUntilEnd = Number.isFinite(nowMs)
+    ? Math.ceil((endsMs - nowMs) / 1000)
+    : durationSeconds;
 
   return {
     startedAt,
@@ -389,7 +511,8 @@ export function calculateCycleWindow(runtimeMinutes: number, startedAt?: string 
 
 export function calculateCycleTimerStatus(input: CycleTimerInput): CycleTimerStatus {
   const runtimeSeconds = Math.max(0, Math.round(finiteNumber(input.runtimeMinutes, 0) * 60));
-  const nowMs = input.now instanceof Date ? input.now.getTime() : new Date(input.now || new Date()).getTime();
+  const nowMs =
+    input.now instanceof Date ? input.now.getTime() : new Date(input.now || new Date()).getTime();
   const startedMs = input.startedAt ? new Date(input.startedAt).getTime() : 0;
   const pausedMs = input.pausedAt ? new Date(input.pausedAt).getTime() : 0;
   const effectiveNow = Number.isFinite(pausedMs) && pausedMs > 0 ? pausedMs : nowMs;
@@ -407,10 +530,12 @@ export function calculateCycleTimerStatus(input: CycleTimerInput): CycleTimerSta
   }
 
   const elapsedSeconds = Math.max(0, Math.floor((effectiveNow - startedMs) / 1000));
-  const completedCycles = runtimeSeconds > 0 ? Math.floor(elapsedSeconds / runtimeSeconds) : 0;
-  const secondsIntoCycle = runtimeSeconds > 0 ? elapsedSeconds % runtimeSeconds : 0;
-  const remainingSeconds = runtimeSeconds > 0 ? Math.max(runtimeSeconds - secondsIntoCycle, 0) : 0;
-  const progressPercent = runtimeSeconds > 0 ? (secondsIntoCycle / runtimeSeconds) * 100 : 0;
+
+  // Single production run countdown: counts down to 00:00:00 and marks completed/ready when elapsed >= runtime
+  const remainingSeconds = runtimeSeconds > 0 ? Math.max(0, runtimeSeconds - elapsedSeconds) : 0;
+  const progressPercent =
+    runtimeSeconds > 0 ? Math.min(100, (elapsedSeconds / runtimeSeconds) * 100) : 0;
+  const completedCycles = elapsedSeconds >= runtimeSeconds ? 1 : 0;
 
   return {
     runtimeSeconds,
@@ -423,24 +548,36 @@ export function calculateCycleTimerStatus(input: CycleTimerInput): CycleTimerSta
   };
 }
 
-export function buildRecipeTree(rows: FactoryDataRow[], token: string, amount = 1, level?: number, seen = new Set<string>()): RecipeNode {
+export function buildRecipeTree(
+  rows: FactoryDataRow[],
+  token: string,
+  amount = 1,
+  level?: number,
+  seen = new Set<string>(),
+): RecipeNode {
   const normalized = normalizeSymbol(token);
   const key = `${normalized}:${level || 'best'}`;
   if (seen.has(key)) return { token: normalized, amount, children: [], circular: true };
 
   const candidates = rows.filter((row) => normalizeSymbol(row.output_token) === normalized);
-  const row = typeof level === 'number'
-    ? candidates.find((item) => item.level === level)
-    : [...candidates].sort((a, b) => b.level - a.level)[0];
+  const row =
+    typeof level === 'number'
+      ? candidates.find((item) => item.level === level)
+      : [...candidates].sort((a, b) => a.level - b.level)[0];
 
-  if (!row || row.output_amount <= 0) return { token: normalized, amount, children: [], missingRecipe: true };
+  if (!row || row.output_amount <= 0)
+    return { token: normalized, amount, children: [], missingRecipe: true };
 
   const nextSeen = new Set(seen);
   nextSeen.add(key);
   const scale = amount / row.output_amount;
   const children = [
-    row.input_token_1 ? buildRecipeTree(rows, row.input_token_1, row.input_amount_1 * scale, undefined, nextSeen) : null,
-    row.input_token_2 ? buildRecipeTree(rows, row.input_token_2, row.input_amount_2 * scale, undefined, nextSeen) : null,
+    row.input_token_1
+      ? buildRecipeTree(rows, row.input_token_1, row.input_amount_1 * scale, undefined, nextSeen)
+      : null,
+    row.input_token_2
+      ? buildRecipeTree(rows, row.input_token_2, row.input_amount_2 * scale, undefined, nextSeen)
+      : null,
   ].filter((child): child is RecipeNode => Boolean(child));
 
   return { token: normalized, amount, row, children };
@@ -458,16 +595,23 @@ export function flattenRecipeToBaseResources(node: RecipeNode, out: Record<strin
 
 export function validateFactoryData(rows: FactoryDataRow[]) {
   const warnings: string[] = [];
-  const knownOutputs = new Set(rows.map((row) => normalizeSymbol(row.output_token)).filter(Boolean));
+  const knownOutputs = new Set(
+    rows.map((row) => normalizeSymbol(row.output_token)).filter(Boolean),
+  );
 
   rows.forEach((row) => {
     if (!row.token) warnings.push(`Factory row level ${row.level} is missing token.`);
-    if (!row.output_token) warnings.push(`${row.token} level ${row.level} is missing output token.`);
+    if (!row.output_token)
+      warnings.push(`${row.token} level ${row.level} is missing output token.`);
     if (row.duration_min <= 0) warnings.push(`${row.token} level ${row.level} has no runtime.`);
-    if (row.output_amount <= 0) warnings.push(`${row.token} level ${row.level} has no output amount.`);
+    if (row.output_amount <= 0)
+      warnings.push(`${row.token} level ${row.level} has no output amount.`);
     [row.input_token_1, row.input_token_2].filter(Boolean).forEach((input) => {
       const normalized = normalizeSymbol(input);
-      if (!knownOutputs.has(normalized) && !['COIN', 'EARTH', 'WATER', 'FIRE'].includes(normalized)) {
+      if (
+        !knownOutputs.has(normalized) &&
+        !['COIN', 'EARTH', 'WATER', 'FIRE'].includes(normalized)
+      ) {
         warnings.push(`${row.token} level ${row.level} references unknown input ${normalized}.`);
       }
     });

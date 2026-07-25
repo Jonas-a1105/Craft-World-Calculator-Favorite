@@ -48,7 +48,7 @@ export default function Dropdown<T extends string | number = string | number>({
   }, [isOpen]);
 
   const filteredOptions = options.filter((opt) =>
-    opt.label.toLowerCase().includes(searchTerm.toLowerCase())
+    opt.label.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -69,7 +69,9 @@ export default function Dropdown<T extends string | number = string | number>({
               />
             </div>
           )}
-          <span className="truncate">{selectedOption ? selectedOption.label : placeholder || 'Select...'}</span>
+          <span className="truncate">
+            {selectedOption ? selectedOption.label : placeholder || 'Select...'}
+          </span>
         </div>
         <svg
           className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200 ${
@@ -85,7 +87,7 @@ export default function Dropdown<T extends string | number = string | number>({
 
       {/* Floating menu */}
       {isOpen && (
-        <div 
+        <div
           className="absolute left-0 right-0 z-50 mt-1.5 flex flex-col rounded-xl shadow-2xl overflow-hidden max-h-[360px]"
           style={{
             backgroundColor: 'rgba(20, 20, 20, 0.95)',
@@ -125,7 +127,11 @@ export default function Dropdown<T extends string | number = string | number>({
                   >
                     {opt.image && (
                       <div className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-950/50 p-0.5 shrink-0">
-                        <img src={opt.image} alt={opt.label} className="h-full w-full object-contain" />
+                        <img
+                          src={opt.image}
+                          alt={opt.label}
+                          className="h-full w-full object-contain"
+                        />
                       </div>
                     )}
                     <span className="truncate">{opt.label}</span>

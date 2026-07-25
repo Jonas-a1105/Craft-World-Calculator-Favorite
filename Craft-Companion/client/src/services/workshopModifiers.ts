@@ -4,7 +4,17 @@ export type WorkshopItem = {
 };
 
 const TIER_ONE = ['MUD', 'CLAY', 'SAND'];
-const TIER_TWO = ['COPPER', 'SEAWATER', 'HEAT', 'ALGAE', 'LAVA', 'CERAMICS', 'STEEL', 'OXYGEN', 'GLASS'];
+const TIER_TWO = [
+  'COPPER',
+  'SEAWATER',
+  'HEAT',
+  'ALGAE',
+  'LAVA',
+  'CERAMICS',
+  'STEEL',
+  'OXYGEN',
+  'GLASS',
+];
 const TIER_THREE = ['GAS', 'STONE', 'STEAM', 'SCREWS', 'FUEL', 'CEMENT', 'OIL', 'ACID', 'SULFUR'];
 const TIER_FOUR = ['PLASTICS', 'PLASTIC', 'FIBERGLASS', 'ENERGY', 'HYDROGEN', 'DYNAMITE'];
 
@@ -16,7 +26,9 @@ const WORKSHOP_BOOSTS_BY_TIER: Record<number, number[]> = {
 };
 
 function normalizeSymbol(symbol?: string) {
-  return String(symbol || '').trim().toUpperCase();
+  return String(symbol || '')
+    .trim()
+    .toUpperCase();
 }
 
 export function getWorkshopTier(symbol?: string) {
@@ -52,7 +64,11 @@ export function getWorkshopSpeedBoostPercent(symbol: string, workshop: WorkshopI
   return WORKSHOP_BOOSTS_BY_TIER[tier]?.[boostIndex] || 0;
 }
 
-export function applyWorkshopSpeedToDuration(durationMinutes: number, symbol: string, workshop: WorkshopItem[]) {
+export function applyWorkshopSpeedToDuration(
+  durationMinutes: number,
+  symbol: string,
+  workshop: WorkshopItem[],
+) {
   const boostPercent = getWorkshopSpeedBoostPercent(symbol, workshop);
   const duration = Number(durationMinutes || 0);
   if (!Number.isFinite(duration) || duration <= 0) return duration;
@@ -63,7 +79,11 @@ export function applyWorkshopSpeedToDuration(durationMinutes: number, symbol: st
   return duration / (1 + boostPercent / 100);
 }
 
-export function getRunsPerHourWithWorkshop(durationMinutes: number, symbol: string, workshop: WorkshopItem[]) {
+export function getRunsPerHourWithWorkshop(
+  durationMinutes: number,
+  symbol: string,
+  workshop: WorkshopItem[],
+) {
   const adjustedDuration = applyWorkshopSpeedToDuration(durationMinutes, symbol, workshop);
   return adjustedDuration > 0 && Number.isFinite(adjustedDuration) ? 60 / adjustedDuration : 0;
 }

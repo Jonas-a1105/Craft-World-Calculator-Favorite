@@ -1,35 +1,39 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { authRouter } from './routes/auth.js';
+import { oauthRouter } from './routes/oauth.js';
 import { meRouter } from './routes/me.js';
 import { craftworldRouter } from './routes/craftworld.js';
-import { startMatrixScanner } from './services/matrixScanner.js';
+import { requireSession } from './auth/requireSession.js';
 
-dotenv.config();
+console.log('CWD:', process.cwd());
+console.log('OAUTH_CLIENT_ID:', process.env.CRAFTWORLD_OAUTH_CLIENT_ID?.slice(0, 20) + '...');
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const clientDistPath = path.resolve(__dirname, '../../client/dist');
 
-app.use(cors());
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+        return callback(null, true);
+      }
+      const allowed = process.env.FRONTEND_URL || 'http://localhost:5173';
+      if (origin === allowed) return callback(null, true);
+      callback(null, true);
+    },
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
-const auth = (req: any, res: any, next: any) => {
-  const token = req.headers.authorization?.replace('Bearer ', '');
-  if (!token) return res.status(401).json({ message: 'Unauthorized' });
-  try { req.user = jwt.verify(token, process.env.JWT_SECRET || 'replace_me'); next(); }
-  catch { return res.status(401).json({ message: 'Invalid token' }); }
-};
-
-app.use('/api/auth', authRouter);
-app.use('/api/me', auth, meRouter);
-app.use('/api/craftworld', auth, craftworldRouter);
-
-startMatrixScanner();
+app.use('/api/oauth', oauthRouter);
+app.use('/api/auth', oauthRouter);
+app.use('/api/me', requireSession, meRouter);
+app.use('/api/craftworld', requireSession, craftworldRouter);
 
 app.use(express.static(clientDistPath));
 app.get('*', (_req, res) => {

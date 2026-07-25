@@ -34,8 +34,8 @@
   --transition-normal: 0.15s ease;
 
   /* Global Resource Card Item Styling Variables */
-  --bg-resource-item: rgba(30, 30, 30, 0.45);
-  --bg-resource-item-hover: rgba(45, 45, 45, 0.65);
+  --bg-resource-item: rgba(18, 22, 28, 0.92);
+  --bg-resource-item-hover: rgba(28, 34, 44, 0.96);
   --radius-resource-item: 16px;
   --padding-resource-item-x: 14px;
   --padding-resource-item-y: 10px;

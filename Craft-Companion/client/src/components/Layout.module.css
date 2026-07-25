@@ -65,7 +65,7 @@
   user-select: none;
 }
 
-.navCenter[data-down="true"] {
+.navCenter[data-down='true'] {
   cursor: grabbing !important;
 }
 
