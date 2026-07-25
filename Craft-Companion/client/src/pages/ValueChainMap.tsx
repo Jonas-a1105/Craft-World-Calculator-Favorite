@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Layout from '../components/Layout';
 import Card from '../components/Card';
 import { SkeletonDashboardPage } from '../components/Skeleton';
@@ -14,20 +14,51 @@ function formatNumber(value: unknown, digits = 2) {
     : '0';
 }
 
-const AVAILABLE_TARGETS = [
-  'MUD',
-  'CLAY',
-  'SAND',
-  'COPPER',
-  'STEEL',
-  'SCREWS',
-  'GLASS',
-  'CEMENT',
-  'DYNAMITE',
-  'CERAMICS',
-  'SEAWATER',
-  'HEAT',
-  'LAVA',
+type NodePos = {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  inputs: string[];
+  branchColor: string;
+};
+
+// Blueprint Graph Node Layout coordinates matching Craft World official matrix
+const MATRIX_NODES: NodePos[] = [
+  // Base raw nodes (Level 0)
+  { id: 'EARTH', name: 'EARTH', x: 250, y: 60, inputs: [], branchColor: '#22c55e' },
+  { id: 'WATER', name: 'WATER', x: 550, y: 60, inputs: [], branchColor: '#3b82f6' },
+  { id: 'FIRE', name: 'FIRE', x: 850, y: 60, inputs: [], branchColor: '#ef4444' },
+
+  // Tier 1
+  { id: 'MUD', name: 'MUD', x: 250, y: 170, inputs: ['EARTH'], branchColor: '#22c55e' },
+  { id: 'SEAWATER', name: 'SEAWATER', x: 550, y: 170, inputs: ['WATER'], branchColor: '#3b82f6' },
+  { id: 'HEAT', name: 'HEAT', x: 850, y: 170, inputs: ['FIRE'], branchColor: '#ef4444' },
+
+  // Tier 2
+  { id: 'CLAY', name: 'CLAY', x: 250, y: 280, inputs: ['MUD'], branchColor: '#22c55e' },
+  { id: 'ALGAE', name: 'ALGAE', x: 550, y: 280, inputs: ['SEAWATER'], branchColor: '#3b82f6' },
+  { id: 'LAVA', name: 'LAVA', x: 850, y: 280, inputs: ['HEAT'], branchColor: '#ef4444' },
+
+  // Tier 3
+  { id: 'SAND', name: 'SAND', x: 180, y: 390, inputs: ['CLAY'], branchColor: '#eab308' },
+  { id: 'CERAMICS', name: 'CERAMICS', x: 330, y: 390, inputs: ['CLAY', 'SEAWATER'], branchColor: '#38bdf8' },
+  { id: 'OXYGEN', name: 'OXYGEN', x: 550, y: 390, inputs: ['ALGAE'], branchColor: '#06b6d4' },
+
+  // Tier 4
+  { id: 'COPPER', name: 'COPPER', x: 250, y: 500, inputs: ['SAND'], branchColor: '#f97316' },
+  { id: 'GAS', name: 'GAS', x: 550, y: 500, inputs: ['OXYGEN'], branchColor: '#0284c7' },
+  { id: 'GLASS', name: 'GLASS', x: 820, y: 500, inputs: ['SAND', 'HEAT'], branchColor: '#38bdf8' },
+
+  // Tier 5
+  { id: 'STEEL', name: 'STEEL', x: 250, y: 610, inputs: ['COPPER'], branchColor: '#94a3b8' },
+  { id: 'FUEL', name: 'FUEL', x: 520, y: 610, inputs: ['GAS'], branchColor: '#10b981' },
+  { id: 'CEMENT', name: 'CEMENT', x: 650, y: 610, inputs: ['CLAY', 'WATER'], branchColor: '#cbd5e1' },
+
+  // Tier 6
+  { id: 'SCREWS', name: 'SCREWS', x: 250, y: 720, inputs: ['STEEL'], branchColor: '#64748b' },
+  { id: 'PLASTICS', name: 'PLASTICS', x: 520, y: 720, inputs: ['FUEL', 'SEAWATER'], branchColor: '#0ea5e9' },
+  { id: 'DYNAMITE', name: 'DYNAMITE', x: 750, y: 720, inputs: ['PLASTICS', 'HEAT'], branchColor: '#f43f5e' },
 ];
 
 export default function ValueChainMap() {
@@ -35,7 +66,7 @@ export default function ValueChainMap() {
   const [rows, setRows] = useState<FactoryDataRow[]>([]);
   const [prices, setPrices] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
-  const [selectedToken, setSelectedToken] = useState<string>('COPPER');
+  const [selectedToken, setSelectedToken] = useState<string>('CERAMICS');
   const [selectedLevel, setSelectedLevel] = useState<number>(18);
   const [mode, setMode] = useState<'self_crafted' | 'market_buy'>('self_crafted');
   const [proficiencies, setProficiencies] = useState<any[]>([]);
@@ -65,6 +96,45 @@ export default function ValueChainMap() {
       .finally(() => setLoading(false));
   }, []);
 
+  const analysis: ValueChainAnalysis | null = useMemo(() => {
+    if (rows.length === 0) return null;
+    return computeValueChain(selectedToken, selectedLevel, rows, prices, proficiencies, mode);
+  }, [selectedToken, selectedLevel, rows, prices, proficiencies, mode]);
+
+  // Recursively compute active ancestor nodes for selected target
+  const activeNodeIds = useMemo(() => {
+    const active = new Set<string>();
+
+    function addAncestors(id: string) {
+      if (active.has(id)) return;
+      active.add(id);
+      const node = MATRIX_NODES.find((n) => n.id === id);
+      if (node) {
+        node.inputs.forEach(addAncestors);
+      }
+    }
+
+    addAncestors(selectedToken);
+    return active;
+  }, [selectedToken]);
+
+  // Compute active connection edges (parent -> child)
+  const activeEdges = useMemo(() => {
+    const edges = new Set<string>();
+
+    function addEdge(childId: string) {
+      const childNode = MATRIX_NODES.find((n) => n.id === childId);
+      if (!childNode) return;
+      childNode.inputs.forEach((parentId) => {
+        edges.add(`${parentId}->${childId}`);
+        addEdge(parentId);
+      });
+    }
+
+    addEdge(selectedToken);
+    return edges;
+  }, [selectedToken]);
+
   if (loading) {
     return (
       <Layout>
@@ -73,262 +143,275 @@ export default function ValueChainMap() {
     );
   }
 
-  const analysis: ValueChainAnalysis | null = computeValueChain(
-    selectedToken,
-    selectedLevel,
-    rows,
-    prices,
-    proficiencies,
-    mode
-  );
+  const selectedNode = MATRIX_NODES.find((n) => n.id === selectedToken) || MATRIX_NODES[0];
 
   return (
     <Layout>
       <div className="space-y-6">
-        {/* Header Title Banner */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-gray-900/60 backdrop-blur border border-emerald-500/20 p-6 rounded-2xl">
+        {/* Header Title & Controls */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-[#0e1738] border border-blue-500/30 p-6 rounded-2xl shadow-xl">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
-              🗺️ {language === 'es' ? 'Mapa Aislado de Cadenas de Valor' : 'Isolated Value Chain Map'}
+            <h1 className="text-2xl md:text-3xl font-extrabold text-blue-100 flex items-center gap-2">
+              <span>🗺️</span>
+              <span>{language === 'es' ? 'Mapa Blueprint de Cadena de Valor' : 'Blueprint Value Chain Map'}</span>
             </h1>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-sm text-blue-300/80 mt-1">
               {language === 'es'
-                ? 'Visualiza paso a paso la ganancia real multiplicada al transformar tus materias primas base (Tierra/Agua) en productos avanzados.'
-                : 'Visualize step-by-step real multiplied profit from transforming raw base resources (Earth/Water) into advanced goods.'}
+                ? 'Toca cualquier fábrica del árbol para iluminar su ruta de producción con cables neón amarillos y ver su profit real.'
+                : 'Tap any factory on the tree to illuminate its production path with yellow neon cables and see its real profit.'}
             </p>
           </div>
 
-          {/* Mode Switcher */}
-          <div className="flex items-center gap-2 bg-gray-800/80 p-1.5 rounded-xl border border-gray-700/60">
-            <button
-              onClick={() => setMode('self_crafted')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                mode === 'self_crafted'
-                  ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              🌱 {language === 'es' ? '100% Farmeo Propio ($0 Costo)' : '100% Self-Harvested ($0 Cost)'}
-            </button>
-            <button
-              onClick={() => setMode('market_buy')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                mode === 'market_buy'
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              🛒 {language === 'es' ? 'Comprar del Mercado' : 'Market Buy'}
-            </button>
-          </div>
-        </div>
-
-        {/* Target Resource Selector Bar */}
-        <Card className="p-4 bg-gray-900/40 border border-gray-800">
-          <div className="flex flex-col gap-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-              {language === 'es' ? 'Selecciona Recurso Objetivo:' : 'Select Target Resource:'}
-            </span>
-            <div className="flex flex-wrap items-center gap-2">
-              {AVAILABLE_TARGETS.map((tok) => {
-                const isSelected = selectedToken === tok;
-                return (
-                  <button
-                    key={tok}
-                    onClick={() => setSelectedToken(tok)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all border ${
-                      isSelected
-                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-400/50 shadow-md shadow-emerald-900/40 scale-105'
-                        : 'bg-gray-800/60 text-gray-300 border-gray-700/50 hover:bg-gray-700/60 hover:text-white'
-                    }`}
-                  >
-                    <ResourceIcon symbol={tok} className="w-4 h-4" />
-                    <span>{tok}</span>
-                  </button>
-                );
-              })}
+          <div className="flex items-center gap-3">
+            {/* Mode Switcher */}
+            <div className="flex items-center gap-2 bg-[#16224f] p-1.5 rounded-xl border border-blue-500/40">
+              <button
+                onClick={() => setMode('self_crafted')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                  mode === 'self_crafted'
+                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                🌱 {language === 'es' ? '100% Farmeo Propio ($0)' : '100% Self-Harvested ($0)'}
+              </button>
+              <button
+                onClick={() => setMode('market_buy')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                  mode === 'market_buy'
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                🛒 {language === 'es' ? 'Mercado' : 'Market'}
+              </button>
             </div>
 
-            {/* Level Slider / Selector */}
-            <div className="flex items-center gap-4 mt-2 pt-3 border-t border-gray-800/60">
-              <label className="text-xs text-gray-400 font-medium">
-                {language === 'es' ? 'Nivel de Fábrica a Simular:' : 'Factory Level to Simulate:'}
-              </label>
+            {/* Level Selector */}
+            <div className="flex items-center gap-2 bg-[#16224f] px-3 py-1.5 rounded-xl border border-blue-500/40">
+              <span className="text-xs text-blue-200 font-semibold">Nvl:</span>
               <input
-                type="range"
+                type="number"
                 min="1"
                 max="40"
                 value={selectedLevel}
-                onChange={(e) => setSelectedLevel(Number(e.target.value))}
-                className="w-48 accent-emerald-500 cursor-pointer"
+                onChange={(e) => setSelectedLevel(Math.min(40, Math.max(1, Number(e.target.value))))}
+                className="w-14 bg-gray-900 border border-blue-500/50 rounded text-center text-xs font-bold text-emerald-400 focus:outline-none"
               />
-              <span className="text-sm font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2.5 py-0.5 rounded-lg">
-                Nivel {selectedLevel}
-              </span>
             </div>
           </div>
-        </Card>
+        </div>
 
-        {/* Top KPI Cards */}
+        {/* Floating Active Target Info Banner / Modal Header */}
         {analysis && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Raw Insumos Required */}
-            <Card className="p-4 bg-gray-900/50 border border-gray-800">
-              <div className="text-xs text-gray-400 font-medium">
-                📦 {language === 'es' ? 'Materia Prima Base (Día)' : 'Raw Base Material (Day)'}
-              </div>
-              <div className="mt-2 space-y-1">
-                {Object.entries(analysis.rawMaterialsNeeded).length > 0 ? (
-                  Object.entries(analysis.rawMaterialsNeeded).map(([tok, amt]) => (
-                    <div key={tok} className="flex items-center gap-2">
-                      <ResourceIcon symbol={tok} className="w-4 h-4" />
-                      <span className="text-lg font-bold text-gray-100">
-                        {formatNumber(amt, 0)} {tok}
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <span className="text-sm text-gray-500">Materia Base Directa</span>
-                )}
-              </div>
-            </Card>
+          <div className="bg-[#122254] border-2 border-cyan-400/80 rounded-2xl p-5 shadow-2xl shadow-cyan-950/50 relative overflow-hidden">
+            {/* Background Glow */}
+            <div className="absolute -right-10 -top-10 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
-            {/* Opportunity Cost */}
-            <Card className="p-4 bg-gray-900/50 border border-gray-800">
-              <div className="text-xs text-gray-400 font-medium">
-                💵 {language === 'es' ? 'Valor Vendiéndolo Crudo' : 'Raw Opportunity Value'}
-              </div>
-              <div className="mt-2 text-2xl font-bold text-yellow-400">
-                {formatNumber(analysis.rawOpportunityCostDay)} <span className="text-xs font-semibold text-yellow-500/80">COIN/día</span>
-              </div>
-              <div className="text-[11px] text-gray-500 mt-1">
-                {language === 'es' ? 'Si vendes la Tierra/Agua sin procesar' : 'If selling raw Earth/Water directly'}
-              </div>
-            </Card>
-
-            {/* Final Product Value */}
-            <Card className="p-4 bg-gray-900/50 border border-gray-800">
-              <div className="text-xs text-gray-400 font-medium">
-                🚀 {language === 'es' ? 'Valor Vendiéndolo Procesado' : 'Processed Output Value'}
-              </div>
-              <div className="mt-2 text-2xl font-bold text-cyan-400">
-                {formatNumber(analysis.finalOutputValueDay)} <span className="text-xs font-semibold text-cyan-500/80">COIN/día</span>
-              </div>
-              <div className="text-[11px] text-gray-500 mt-1">
-                {language === 'es' ? `Al vender ${selectedToken} Nivel ${selectedLevel}` : `When selling ${selectedToken} Level ${selectedLevel}`}
-              </div>
-            </Card>
-
-            {/* Multiplier / Extra Net Profit */}
-            <Card className="p-4 bg-gradient-to-br from-emerald-950/60 to-teal-950/40 border border-emerald-500/30">
-              <div className="text-xs text-emerald-400 font-semibold uppercase tracking-wider">
-                🔥 {language === 'es' ? 'Beneficio Extra por Crafteo' : 'Extra Net Profit Added'}
-              </div>
-              <div className="mt-2 text-2xl font-extrabold text-emerald-300">
-                +{formatNumber(analysis.netProfitDay)} <span className="text-xs font-bold text-emerald-400">COIN/día</span>
-              </div>
-              <div className="mt-1 flex items-center gap-1.5 text-xs font-bold text-emerald-400 bg-emerald-900/40 border border-emerald-700/40 px-2 py-0.5 rounded-md w-fit">
-                <span>⚡ {formatNumber(analysis.totalMultiplier, 1)}% Extra Profit</span>
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {/* Visual Node Chain Flow Map */}
-        {analysis && (
-          <Card className="p-6 bg-gray-900/40 border border-gray-800">
-            <h2 className="text-base font-bold text-gray-200 mb-4 flex items-center gap-2">
-              <span>🌳</span>
-              <span>{language === 'es' ? 'Flujo Visual del Árbol de Transformación' : 'Visual Production Flow Tree'}</span>
-            </h2>
-
-            <div className="relative overflow-x-auto pb-4">
-              <div className="flex items-center min-w-[700px] gap-3">
-                {/* Initial Harvest Node */}
-                <div className="flex-1 bg-gray-800/80 border border-emerald-500/30 rounded-xl p-4 text-center min-w-[160px]">
-                  <div className="flex justify-center mb-1">
-                    <ResourceIcon symbol="EARTH" className="w-8 h-8" />
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-cyan-500/20 border border-cyan-400 flex items-center justify-center shadow-md">
+                  <ResourceIcon symbol={selectedToken} className="w-7 h-7" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl font-black text-cyan-200 uppercase tracking-wide">{selectedToken}</span>
+                    <span className="text-xs font-extrabold text-emerald-400 bg-emerald-950 border border-emerald-600/60 px-2 py-0.5 rounded-md">
+                      Nivel {selectedLevel}
+                    </span>
                   </div>
-                  <div className="text-xs font-bold text-emerald-400 uppercase tracking-wide">
-                    {language === 'es' ? 'Recolección Base' : 'Base Harvest'}
+                  <div className="text-xs text-cyan-300/80 mt-0.5">
+                    {language === 'es' ? 'Ruta activa iluminada en amarillo neón en el plano' : 'Active production route glowing in yellow neon'}
                   </div>
-                  <div className="text-sm font-semibold text-gray-200 mt-1">
-                    {formatNumber(Object.values(analysis.rawMaterialsNeeded)[0] || 0, 0)} Tierra
+                </div>
+              </div>
+
+              {/* Profit Metrics */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full md:w-auto">
+                <div className="bg-[#0b1638] p-3 rounded-xl border border-blue-500/30 text-center">
+                  <div className="text-[10px] uppercase font-bold text-gray-400">
+                    {language === 'es' ? 'Vender Crudo' : 'Raw Value'}
                   </div>
-                  <div className="text-[10px] text-emerald-400/80 mt-1 bg-emerald-950/60 border border-emerald-800/40 rounded px-1.5 py-0.5">
-                    $0 Costo (Tu Mapa)
+                  <div className="text-sm font-extrabold text-yellow-400 mt-0.5">
+                    {formatNumber(analysis.rawOpportunityCostDay)} <span className="text-[10px]">COIN/d</span>
                   </div>
                 </div>
 
-                {/* Chain Steps */}
-                {analysis.steps.map((st, idx) => (
-                  <div key={st.token} className="flex items-center flex-1 gap-3">
-                    {/* Arrow */}
-                    <div className="flex flex-col items-center justify-center text-emerald-400">
-                      <span className="text-xs font-bold bg-gray-800 px-2 py-0.5 rounded border border-gray-700">
-                        {st.masteryDiscountPercent > 0 ? `-${formatNumber(st.masteryDiscountPercent, 1)}% M.` : '100%'}
-                      </span>
-                      <span className="text-xl animate-pulse">➔</span>
-                    </div>
-
-                    {/* Step Card */}
-                    <div className="flex-1 bg-gray-800/90 border border-gray-700/80 rounded-xl p-4 min-w-[180px] shadow-lg">
-                      <div className="flex items-center justify-between gap-2 mb-2">
-                        <div className="flex items-center gap-1.5">
-                          <FactoryIcon symbol={st.token} className="w-5 h-5" />
-                          <span className="text-xs font-bold text-gray-100">{st.token}</span>
-                        </div>
-                        <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950 border border-emerald-800/60 px-1.5 py-0.5 rounded">
-                          Nvl {st.factoryLevel}
-                        </span>
-                      </div>
-
-                      <div className="space-y-1 text-xs text-gray-300">
-                        <div className="flex justify-between text-[11px]">
-                          <span className="text-gray-400">Duración:</span>
-                          <span className="font-mono">{formatNumber(st.durationMin, 1)} min</span>
-                        </div>
-                        <div className="flex justify-between text-[11px]">
-                          <span className="text-gray-400">Ciclos/Día:</span>
-                          <span className="font-mono">{formatNumber(st.cyclesPerDay, 1)}</span>
-                        </div>
-                        <div className="flex justify-between text-[11px] font-bold pt-1 border-t border-gray-700/60">
-                          <span className="text-gray-300">Profit/Día:</span>
-                          <span className="text-emerald-400">+{formatNumber(st.netProfitPerDay)} COIN</span>
-                        </div>
-                      </div>
-                    </div>
+                <div className="bg-[#0b1638] p-3 rounded-xl border border-blue-500/30 text-center">
+                  <div className="text-[10px] uppercase font-bold text-gray-400">
+                    {language === 'es' ? 'Vender Procesado' : 'Processed Value'}
                   </div>
-                ))}
+                  <div className="text-sm font-extrabold text-cyan-400 mt-0.5">
+                    {formatNumber(analysis.finalOutputValueDay)} <span className="text-[10px]">COIN/d</span>
+                  </div>
+                </div>
+
+                <div className="bg-emerald-950/70 p-3 rounded-xl border border-emerald-500/50 text-center col-span-2 sm:col-span-1">
+                  <div className="text-[10px] uppercase font-extrabold text-emerald-300">
+                    {language === 'es' ? 'Profit Neto Extra' : 'Extra Net Profit'}
+                  </div>
+                  <div className="text-sm font-black text-emerald-300 mt-0.5">
+                    +{formatNumber(analysis.netProfitDay)} <span className="text-[10px]">COIN/d</span>
+                  </div>
+                </div>
               </div>
             </div>
-          </Card>
+          </div>
         )}
+
+        {/* Blueprint Tree Interactive Canvas */}
+        <Card className="p-0 bg-[#0d1633] border-2 border-blue-900/80 rounded-2xl overflow-hidden shadow-2xl relative">
+          {/* Blueprint Grid Background Pattern */}
+          <div
+            className="w-full relative min-h-[820px] p-6 select-none"
+            style={{
+              backgroundColor: '#0c1530',
+              backgroundImage: `
+                radial-gradient(rgba(59, 130, 246, 0.25) 1px, transparent 1px),
+                linear-gradient(to right, rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(59, 130, 246, 0.05) 1px, transparent 1px)
+              `,
+              backgroundSize: '24px 24px, 48px 48px, 48px 48px',
+            }}
+          >
+            {/* Blackboard Chalk / Graffiti Doodles */}
+            <div className="absolute top-12 left-1/3 text-blue-500/20 font-mono text-xl font-bold rotate-[-12deg] pointer-events-none">
+              LFG! 🚀
+            </div>
+            <div className="absolute top-72 right-1/4 text-blue-500/15 font-mono text-sm font-semibold rotate-[8deg] pointer-events-none">
+              E = mc² 🧪
+            </div>
+            <div className="absolute bottom-40 left-1/4 text-blue-500/15 font-mono text-lg font-bold rotate-[-6deg] pointer-events-none">
+              WAGMI 💎
+            </div>
+            <div className="absolute bottom-12 right-12 text-blue-500/20 font-mono text-sm font-bold rotate-[15deg] pointer-events-none">
+              TO THE MOON! 🌙
+            </div>
+
+            {/* SVG Connecting Cables Layer */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
+              <defs>
+                {/* Glowing Yellow Filter for Active Path */}
+                <filter id="glow-yellow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {MATRIX_NODES.map((node) => {
+                return node.inputs.map((parentId) => {
+                  const parentNode = MATRIX_NODES.find((n) => n.id === parentId);
+                  if (!parentNode) return null;
+
+                  const edgeKey = `${parentId}->${node.id}`;
+                  const isActive = activeEdges.has(edgeKey);
+
+                  // Calculate curve points
+                  const startX = parentNode.x;
+                  const startY = parentNode.y + 24;
+                  const endX = node.x;
+                  const endY = node.y - 24;
+                  const midY = (startY + endY) / 2;
+
+                  const pathD = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
+
+                  return (
+                    <g key={edgeKey}>
+                      {/* Background Cable */}
+                      <path
+                        d={pathD}
+                        fill="none"
+                        stroke={isActive ? '#fbbf24' : parentNode.branchColor}
+                        strokeWidth={isActive ? '4' : '2'}
+                        strokeDasharray={isActive ? '8,6' : 'none'}
+                        strokeOpacity={isActive ? '1' : activeNodeIds.size > 0 ? '0.2' : '0.6'}
+                        filter={isActive ? 'url(#glow-yellow)' : undefined}
+                        className={isActive ? 'animate-pulse' : ''}
+                      />
+                    </g>
+                  );
+                });
+              })}
+            </svg>
+
+            {/* Matrix Nodes Layer */}
+            <div className="relative z-20 w-full h-full min-h-[800px]">
+              {MATRIX_NODES.map((node) => {
+                const isSelected = selectedToken === node.id;
+                const isActive = activeNodeIds.has(node.id);
+                const opacityClass = activeNodeIds.size > 0 && !isActive ? 'opacity-25 scale-95' : 'opacity-100 scale-100';
+
+                return (
+                  <div
+                    key={node.id}
+                    onClick={() => setSelectedToken(node.id)}
+                    style={{ left: `${node.x - 36}px`, top: `${node.y - 36}px` }}
+                    className={`absolute cursor-pointer transition-all duration-300 ${opacityClass}`}
+                  >
+                    {/* Node Container Box matching Craft World Skill Tree */}
+                    <div
+                      className={`w-18 h-18 rounded-2xl flex flex-col items-center justify-center p-2 relative shadow-xl border-2 transition-all ${
+                        isSelected
+                          ? 'bg-[#1b2b68] border-cyan-400 shadow-cyan-500/50 scale-110 z-30'
+                          : isActive
+                          ? 'bg-[#142252] border-yellow-400 shadow-yellow-500/30'
+                          : 'bg-[#101b3d] border-blue-900/80 hover:border-blue-400/60'
+                      }`}
+                    >
+                      {/* Checkmark Badge on Top Left */}
+                      <div className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-emerald-500 border border-emerald-300 rounded-full flex items-center justify-center text-[10px] text-white font-black shadow-md">
+                        ✓
+                      </div>
+
+                      {/* Icon */}
+                      <ResourceIcon symbol={node.id} className="w-8 h-8 drop-shadow-md" />
+
+                      {/* Token Label */}
+                      <span className="text-[10px] font-extrabold text-blue-100 mt-1 tracking-tight truncate max-w-full">
+                        {node.name}
+                      </span>
+                    </div>
+
+                    {/* Active Target Floating Badge */}
+                    {isSelected && (
+                      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-cyan-400 text-gray-950 font-black text-[9px] uppercase px-2 py-0.5 rounded-full shadow-lg border border-cyan-200">
+                        {language === 'es' ? 'Seleccionado' : 'Target'}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </Card>
 
         {/* Step Breakdown Table */}
         {analysis && (
           <Card className="p-6 bg-gray-900/40 border border-gray-800">
             <h2 className="text-base font-bold text-gray-200 mb-4 flex items-center gap-2">
               <span>📋</span>
-              <span>{language === 'es' ? 'Desglose Paso a Paso por Fábrica' : 'Step-by-Step Factory Breakdown'}</span>
+              <span>{language === 'es' ? 'Desglose Detallado de la Ruta Seleccionada' : 'Selected Path Breakdown Table'}</span>
             </h2>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-gray-300">
-                <thead className="bg-gray-800/80 text-gray-400 uppercase text-[10px] tracking-wider border-b border-gray-700">
+                <thead className="bg-[#121f47] text-blue-300 uppercase text-[10px] tracking-wider border-b border-blue-800/60">
                   <tr>
                     <th className="py-3 px-3">Paso</th>
                     <th className="py-3 px-3">Fábrica</th>
-                    <th className="py-3 px-3">Insumos Exigidos</th>
-                    <th className="py-3 px-3">Producción</th>
+                    <th className="py-3 px-3">Insumos por Ciclo</th>
+                    <th className="py-3 px-3">Producción por Ciclo</th>
                     <th className="py-3 px-3 text-right">Profit / Ciclo</th>
                     <th className="py-3 px-3 text-right">Profit / Día</th>
-                    <th className="py-3 px-3 text-right">Valor Agregado Total</th>
+                    <th className="py-3 px-3 text-right">Ganancia Acumulada</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800/60">
                   {analysis.steps.map((st) => (
-                    <tr key={st.token} className="hover:bg-gray-800/40 transition">
+                    <tr key={st.token} className="hover:bg-blue-950/30 transition">
                       <td className="py-3 px-3 font-bold text-gray-400">#{st.stepIndex}</td>
                       <td className="py-3 px-3 font-bold text-gray-100 flex items-center gap-2">
                         <FactoryIcon symbol={st.token} className="w-4 h-4" />
