@@ -109,104 +109,44 @@ Machine-readable contract: https://craft-world.gg/api/2/external/openapi.json
 - [ ] Revocation on disconnect / logout implemented
 - [ ] OpenAPI imported from `https://craft-world.gg/api/2/external/openapi.json`
 
-## Guía de Colaboración para Desarrolladores (Team Workflow)
-
-### 1. Agregar un nuevo Colaborador en GitHub
-
-1. Ingresar al repositorio en GitHub: `https://github.com/Jonas-a1105/Craft-World-Calculator-Favorite`
-2. En las pestañas superiores, ir a **Settings** > **Collaborators**.
-3. Hacer clic en el botón verde **Add people**.
-4. Escribir el nombre de usuario de GitHub o correo electrónico del desarrollador y confirmar la invitación.
-
-### 2. Configuración Inicial en la PC del Desarrollador
+## Instalación y Ejecución (Español)
 
 ```bash
 # 1. Clonar el repositorio
 git clone https://github.com/Jonas-a1105/Craft-World-Calculator-Favorite.git
 
-# 2. Entrar al directorio del proyecto
+# 2. Entrar a la carpeta del proyecto
 cd Craft-World-Calculator-Favorite/Craft-Companion
 
 # 3. Instalar dependencias
 npm install
-```
 
-### 3. Flujo Diario de Trabajo en Git
-
-#### A. Antes de empezar a programar (descargar actualizaciones):
-
-```bash
-git pull origin main
-```
-
-#### B. Ejecutar la aplicación en modo desarrollo local:
-
-```bash
+# 4. Iniciar servidor local
 npm run dev
-```
-
-- Cliente Web (React + Vite): `http://localhost:5173`
-- Servidor API (Node + Express): `http://localhost:3001`
-
-#### C. Subir cambios al repositorio remoto:
-
-```bash
-git add .
-git commit -m "Descripción clara de las mejoras realizadas"
-git push origin main
 ```
 
 ---
 
-## Developer Collaboration Guide (Team Workflow - English)
-
-### 1. Add a New Collaborator on GitHub
-
-1. Open the repository on GitHub: `https://github.com/Jonas-a1105/Craft-World-Calculator-Favorite`
-2. In the top navigation tabs, go to **Settings** > **Collaborators**.
-3. Click the green **Add people** button.
-4. Search for your developer's GitHub username or email address and confirm the invitation.
-
-### 2. First-Time Setup on Developer's Machine
+## Installation & Setup (English)
 
 ```bash
 # 1. Clone the repository
 git clone https://github.com/Jonas-a1105/Craft-World-Calculator-Favorite.git
 
-# 2. Navigate to the project workspace directory
+# 2. Navigate to project directory
 cd Craft-World-Calculator-Favorite/Craft-Companion
 
-# 3. Install workspace dependencies
+# 3. Install dependencies
 npm install
-```
 
-### 3. Daily Git Workflow
-
-#### A. Download latest changes before starting work:
-
-```bash
-git pull origin main
-```
-
-#### B. Start the local development server:
-
-```bash
+# 4. Run local server
 npm run dev
-```
-
-- Web Client (React + Vite): `http://localhost:5173`
-- API Server (Node + Express): `http://localhost:3001`
-
-#### C. Stage, commit, and push your changes:
-
-```bash
-git add .
-git commit -m "Clear description of changes made"
-git push origin main
 ```
 
 ---
 
 ## License
+
+MIT
 
 MIT
