@@ -13,7 +13,10 @@ import {
 } from '../services/craftworldCalculations';
 import { getCraftworldHome } from '../services/api';
 import { ResourceIcon, FactoryIcon } from '../components/GameIcon';
-import { applyMasteryInputReduction } from '../services/masteryModifiers';
+import {
+  applyMasteryInputReduction,
+  getMasteryInputReductionPercent,
+} from '../services/masteryModifiers';
 
 function formatNumber(value: unknown, digits = 2) {
   return typeof value === 'number' && Number.isFinite(value)
@@ -116,17 +119,24 @@ export default function Profitability() {
       const tree = buildRecipeTree(rows, row.token, 1, row.level);
       const baseReqs = flattenRecipeToBaseResources(tree, {});
 
+      const parentMasteryRed = useMastery
+        ? getMasteryInputReductionPercent(row.token, context.proficiencies || [])
+        : 0;
+
       let rawCostPerOutput = 0;
       const rawTextParts: string[] = [];
       Object.entries(baseReqs).forEach(([tok, amt]) => {
         if (tok !== row.token) {
-          // Apply mastery input reduction if enabled
+          // Apply raw material mastery reduction if enabled
           const adjustedAmt = useMastery
             ? applyMasteryInputReduction(amt, tok, context.proficiencies || [])
             : amt;
+          // Apply parent factory's mastery input reduction
+          const finalAmtPerUnit = adjustedAmt * (1 - parentMasteryRed / 100);
+
           const p = typeof prices[tok] === 'number' && prices[tok] > 0 ? prices[tok] : 0.00394;
-          rawCostPerOutput += adjustedAmt * p;
-          rawTextParts.push(`${tok} (${formatNumber(adjustedAmt * baseCycle.outputPerCycle, 1)})`);
+          rawCostPerOutput += finalAmtPerUnit * p;
+          rawTextParts.push(`${tok} (${formatNumber(finalAmtPerUnit * baseCycle.outputPerCycle, 1)})`);
         }
       });
 
