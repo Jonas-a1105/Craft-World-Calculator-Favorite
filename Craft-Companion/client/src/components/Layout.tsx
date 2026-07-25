@@ -84,6 +84,7 @@ export default function Layout({ children }: { children: any }) {
     { path: '/empire-dashboard', label: t('nav.empire') },
     { path: '/resource-planner', label: t('nav.planner') },
     { path: '/profitability', label: t('nav.profitability') },
+    { path: '/value-chain-map', label: language === 'es' ? '🗺️ Mapa de Cadena' : '🗺️ Chain Map' },
     { path: '/calculator', label: t('nav.calculator') },
     { path: '/inventory-value', label: t('nav.inventoryValue') },
     { path: '/upgrade-advisor', label: t('nav.upgradeAdvisor') },

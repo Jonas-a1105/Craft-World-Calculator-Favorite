@@ -15,6 +15,7 @@ import ResourcePlanner from './pages/ResourcePlanner';
 import Settings from './pages/Settings';
 import SignIn from './pages/SignIn';
 import UpgradeAdvisor from './pages/UpgradeAdvisor';
+import ValueChainMap from './pages/ValueChainMap';
 import Prices from './pages/Prices';
 
 export default function App() {
@@ -120,6 +121,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/value-chain-map"
+            element={
+              <ProtectedRoute>
+                <ValueChainMap />
               </ProtectedRoute>
             }
           />
