@@ -158,6 +158,55 @@ git push origin main
 
 ---
 
+## Developer Collaboration Guide (Team Workflow - English)
+
+### 1. Add a New Collaborator on GitHub
+
+1. Open the repository on GitHub: `https://github.com/Jonas-a1105/Craft-World-Calculator-Favorite`
+2. In the top navigation tabs, go to **Settings** > **Collaborators**.
+3. Click the green **Add people** button.
+4. Search for your developer's GitHub username or email address and confirm the invitation.
+
+### 2. First-Time Setup on Developer's Machine
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/Jonas-a1105/Craft-World-Calculator-Favorite.git
+
+# 2. Navigate to the project workspace directory
+cd Craft-World-Calculator-Favorite/Craft-Companion
+
+# 3. Install workspace dependencies
+npm install
+```
+
+### 3. Daily Git Workflow
+
+#### A. Download latest changes before starting work:
+
+```bash
+git pull origin main
+```
+
+#### B. Start the local development server:
+
+```bash
+npm run dev
+```
+
+- Web Client (React + Vite): `http://localhost:5173`
+- API Server (Node + Express): `http://localhost:3001`
+
+#### C. Stage, commit, and push your changes:
+
+```bash
+git add .
+git commit -m "Clear description of changes made"
+git push origin main
+```
+
+---
+
 ## License
 
 MIT
