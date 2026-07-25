@@ -13,6 +13,9 @@ export type FactoryDataRow = {
 };
 
 export const ACTIVE_RESOURCES = new Set([
+  'EARTH',
+  'WATER',
+  'FIRE',
   'MUD',
   'CLAY',
   'SAND',
@@ -265,6 +268,35 @@ function parseFactoryCsv(csv: string): FactoryDataRow[] {
   return rows;
 }
 
+function ensureBaseResourceRows(parsed: FactoryDataRow[]): FactoryDataRow[] {
+  const existingTokens = new Set(parsed.map((r) => r.token.toUpperCase()));
+  const baseTokens = ['EARTH', 'WATER', 'FIRE'];
+  const newRows: FactoryDataRow[] = [...parsed];
+
+  baseTokens.forEach((tok) => {
+    if (!existingTokens.has(tok)) {
+      for (let lvl = 1; lvl <= 40; lvl++) {
+        const outputAmount = Math.round(1500 * Math.pow(1.054, lvl - 1));
+        newRows.push({
+          token: tok,
+          level: lvl,
+          duration_min: 60,
+          output_token: tok,
+          output_amount: outputAmount,
+          input_token_1: '',
+          input_amount_1: 0,
+          input_token_2: '',
+          input_amount_2: 0,
+          upgrade_token: tok,
+          upgrade_amount: lvl * 500,
+        });
+      }
+    }
+  });
+
+  return newRows;
+}
+
 export async function loadFactoryData() {
   if (factoryDataCache) return factoryDataCache;
 
@@ -291,7 +323,7 @@ export async function loadFactoryData() {
         continue;
       }
 
-      factoryDataCache = parsed;
+      factoryDataCache = ensureBaseResourceRows(parsed);
       return factoryDataCache;
     } catch (error) {
       lastError = error;
