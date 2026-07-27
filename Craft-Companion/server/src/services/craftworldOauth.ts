@@ -13,10 +13,11 @@ export const oauthConfig = {
     return process.env.CRAFTWORLD_OAUTH_CLIENT_SECRET || '';
   },
   get redirectUri() {
-    return (
-      process.env.CRAFTWORLD_OAUTH_REDIRECT_URI ||
-      'https://coquerokli-craft-world-calculator-favorite.hf.space/api/auth/callback'
-    );
+    const raw = process.env.CRAFTWORLD_OAUTH_REDIRECT_URI || '';
+    if (raw.includes('coquerokli-craft-world-calculator-favorite.hf.space') && raw.includes('/api/auth/callback')) {
+      return raw;
+    }
+    return 'https://coquerokli-craft-world-calculator-favorite.hf.space/api/auth/callback';
   },
   get scopes() {
     return (
