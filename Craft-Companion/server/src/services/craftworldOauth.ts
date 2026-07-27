@@ -13,7 +13,10 @@ export const oauthConfig = {
     return process.env.CRAFTWORLD_OAUTH_CLIENT_SECRET || '';
   },
   get redirectUri() {
-    return process.env.CRAFTWORLD_OAUTH_REDIRECT_URI || 'http://localhost:3001/api/oauth/callback';
+    return (
+      process.env.CRAFTWORLD_OAUTH_REDIRECT_URI ||
+      'https://coquerokli-craft-world-calculator-favorite.hf.space/api/auth/callback'
+    );
   },
   get scopes() {
     return (

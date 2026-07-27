@@ -21,7 +21,15 @@ declare global {
   }
 }
 
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+function getRequestOrigin(req: Request): string {
+  if (process.env.CLIENT_ORIGIN) return process.env.CLIENT_ORIGIN;
+  const host = req.headers.host;
+  if (host && !host.includes('localhost') && !host.includes('127.0.0.1')) {
+    const proto = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
+    return `${proto}://${host}`;
+  }
+  return 'http://localhost:5173';
+}
 
 export const oauthRouter = Router();
 
@@ -33,7 +41,7 @@ oauthRouter.get('/authorize', async (req, res) => {
   }
 
   const referer = req.headers.referer || req.headers.origin;
-  let clientOrigin = CLIENT_ORIGIN;
+  let clientOrigin = getRequestOrigin(req);
   if (typeof referer === 'string' && referer.startsWith('http')) {
     try {
       const u = new URL(referer);
@@ -59,7 +67,7 @@ oauthRouter.get('/callback', async (req, res) => {
   const { code, state, error, error_description } = req.query as Record<string, string | undefined>;
 
   const session = state ? await consumeOauthSession(state) : null;
-  const activeOrigin = session?.clientOrigin || CLIENT_ORIGIN;
+  const activeOrigin = session?.clientOrigin || getRequestOrigin(req);
   const redirectBase = `${activeOrigin}/signin`;
 
   if (error) {

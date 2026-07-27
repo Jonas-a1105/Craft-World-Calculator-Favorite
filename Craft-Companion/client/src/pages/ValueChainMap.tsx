@@ -14,51 +14,17 @@ function formatNumber(value: unknown, digits = 2) {
     : '0';
 }
 
-type NodePos = {
-  id: string;
-  name: string;
-  x: number;
-  y: number;
-  inputs: string[];
-  branchColor: string;
-};
-
-// Blueprint Graph Node Layout coordinates matching Craft World official matrix
-const MATRIX_NODES: NodePos[] = [
-  // Base raw nodes (Level 0)
-  { id: 'EARTH', name: 'EARTH', x: 250, y: 60, inputs: [], branchColor: '#22c55e' },
-  { id: 'WATER', name: 'WATER', x: 550, y: 60, inputs: [], branchColor: '#3b82f6' },
-  { id: 'FIRE', name: 'FIRE', x: 850, y: 60, inputs: [], branchColor: '#ef4444' },
-
-  // Tier 1
-  { id: 'MUD', name: 'MUD', x: 250, y: 170, inputs: ['EARTH'], branchColor: '#22c55e' },
-  { id: 'SEAWATER', name: 'SEAWATER', x: 550, y: 170, inputs: ['WATER'], branchColor: '#3b82f6' },
-  { id: 'HEAT', name: 'HEAT', x: 850, y: 170, inputs: ['FIRE'], branchColor: '#ef4444' },
-
-  // Tier 2
-  { id: 'CLAY', name: 'CLAY', x: 250, y: 280, inputs: ['MUD'], branchColor: '#22c55e' },
-  { id: 'ALGAE', name: 'ALGAE', x: 550, y: 280, inputs: ['SEAWATER'], branchColor: '#3b82f6' },
-  { id: 'LAVA', name: 'LAVA', x: 850, y: 280, inputs: ['HEAT'], branchColor: '#ef4444' },
-
-  // Tier 3
-  { id: 'SAND', name: 'SAND', x: 180, y: 390, inputs: ['CLAY'], branchColor: '#eab308' },
-  { id: 'CERAMICS', name: 'CERAMICS', x: 330, y: 390, inputs: ['CLAY', 'SEAWATER'], branchColor: '#38bdf8' },
-  { id: 'OXYGEN', name: 'OXYGEN', x: 550, y: 390, inputs: ['ALGAE'], branchColor: '#06b6d4' },
-
-  // Tier 4
-  { id: 'COPPER', name: 'COPPER', x: 250, y: 500, inputs: ['SAND'], branchColor: '#f97316' },
-  { id: 'GAS', name: 'GAS', x: 550, y: 500, inputs: ['OXYGEN'], branchColor: '#0284c7' },
-  { id: 'GLASS', name: 'GLASS', x: 820, y: 500, inputs: ['SAND', 'HEAT'], branchColor: '#38bdf8' },
-
-  // Tier 5
-  { id: 'STEEL', name: 'STEEL', x: 250, y: 610, inputs: ['COPPER'], branchColor: '#94a3b8' },
-  { id: 'FUEL', name: 'FUEL', x: 520, y: 610, inputs: ['GAS'], branchColor: '#10b981' },
-  { id: 'CEMENT', name: 'CEMENT', x: 650, y: 610, inputs: ['CLAY', 'WATER'], branchColor: '#cbd5e1' },
-
-  // Tier 6
-  { id: 'SCREWS', name: 'SCREWS', x: 250, y: 720, inputs: ['STEEL'], branchColor: '#64748b' },
-  { id: 'PLASTICS', name: 'PLASTICS', x: 520, y: 720, inputs: ['FUEL', 'SEAWATER'], branchColor: '#0ea5e9' },
-  { id: 'DYNAMITE', name: 'DYNAMITE', x: 750, y: 720, inputs: ['PLASTICS', 'HEAT'], branchColor: '#f43f5e' },
+const FEATURED_TARGETS = [
+  { token: 'MUD', label: 'Barro', desc: 'Receta básica de Tierra' },
+  { token: 'CLAY', label: 'Arcilla', desc: 'Barro procesado' },
+  { token: 'SAND', label: 'Arena', desc: 'Arcilla refinada' },
+  { token: 'COPPER', label: 'Cobre', desc: 'Arena fundida' },
+  { token: 'STEEL', label: 'Acero', desc: 'Cobre aleado' },
+  { token: 'SCREWS', label: 'Tornillos', desc: 'Acero forjado' },
+  { token: 'GLASS', label: 'Vidrio', desc: 'Arena horneada' },
+  { token: 'CEMENT', label: 'Cemento', desc: 'Mezcla de Arcilla' },
+  { token: 'DYNAMITE', label: 'Dinamita', desc: 'Explosivo avanzado' },
+  { token: 'CERAMICS', label: 'Cerámica', desc: 'Arcilla salada' },
 ];
 
 export default function ValueChainMap() {
@@ -66,7 +32,7 @@ export default function ValueChainMap() {
   const [rows, setRows] = useState<FactoryDataRow[]>([]);
   const [prices, setPrices] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
-  const [selectedToken, setSelectedToken] = useState<string>('CERAMICS');
+  const [selectedToken, setSelectedToken] = useState<string>('COPPER');
   const [selectedLevel, setSelectedLevel] = useState<number>(18);
   const [mode, setMode] = useState<'self_crafted' | 'market_buy'>('self_crafted');
   const [proficiencies, setProficiencies] = useState<any[]>([]);
@@ -101,40 +67,6 @@ export default function ValueChainMap() {
     return computeValueChain(selectedToken, selectedLevel, rows, prices, proficiencies, mode);
   }, [selectedToken, selectedLevel, rows, prices, proficiencies, mode]);
 
-  // Recursively compute active ancestor nodes for selected target
-  const activeNodeIds = useMemo(() => {
-    const active = new Set<string>();
-
-    function addAncestors(id: string) {
-      if (active.has(id)) return;
-      active.add(id);
-      const node = MATRIX_NODES.find((n) => n.id === id);
-      if (node) {
-        node.inputs.forEach(addAncestors);
-      }
-    }
-
-    addAncestors(selectedToken);
-    return active;
-  }, [selectedToken]);
-
-  // Compute active connection edges (parent -> child)
-  const activeEdges = useMemo(() => {
-    const edges = new Set<string>();
-
-    function addEdge(childId: string) {
-      const childNode = MATRIX_NODES.find((n) => n.id === childId);
-      if (!childNode) return;
-      childNode.inputs.forEach((parentId) => {
-        edges.add(`${parentId}->${childId}`);
-        addEdge(parentId);
-      });
-    }
-
-    addEdge(selectedToken);
-    return edges;
-  }, [selectedToken]);
-
   if (loading) {
     return (
       <Layout>
@@ -143,281 +75,290 @@ export default function ValueChainMap() {
     );
   }
 
-  const selectedNode = MATRIX_NODES.find((n) => n.id === selectedToken) || MATRIX_NODES[0];
-
   return (
     <Layout>
       <div className="space-y-6">
-        {/* Header Title & Controls */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-[#0e1738] border border-blue-500/30 p-6 rounded-2xl shadow-xl">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-blue-100 flex items-center gap-2">
-              <span>🗺️</span>
-              <span>{language === 'es' ? 'Mapa Blueprint de Cadena de Valor' : 'Blueprint Value Chain Map'}</span>
-            </h1>
-            <p className="text-sm text-blue-300/80 mt-1">
-              {language === 'es'
-                ? 'Toca cualquier fábrica del árbol para iluminar su ruta de producción con cables neón amarillos y ver su profit real.'
-                : 'Tap any factory on the tree to illuminate its production path with yellow neon cables and see its real profit.'}
-            </p>
-          </div>
+        {/* Modern Studio Hero Header */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-gray-950 via-slate-900 to-indigo-950 border border-slate-800 p-6 md:p-8 rounded-3xl shadow-2xl">
+          {/* Background Ambient Glow */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="flex items-center gap-3">
-            {/* Mode Switcher */}
-            <div className="flex items-center gap-2 bg-[#16224f] p-1.5 rounded-xl border border-blue-500/40">
-              <button
-                onClick={() => setMode('self_crafted')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                  mode === 'self_crafted'
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                🌱 {language === 'es' ? '100% Farmeo Propio ($0)' : '100% Self-Harvested ($0)'}
-              </button>
-              <button
-                onClick={() => setMode('market_buy')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                  mode === 'market_buy'
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                🛒 {language === 'es' ? 'Mercado' : 'Market'}
-              </button>
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-3 py-1 rounded-full w-fit mb-3">
+                <span>⚡ ANALIZADOR DE CADENA INDUSTRIAL</span>
+              </div>
+              <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+                Mapa de Valor y Transformación
+              </h1>
+              <p className="text-sm text-slate-300 max-w-2xl mt-2 leading-relaxed">
+                Calcula exactamente cuánto dinero ganas al procesar tus materias primas paso a paso en lugar de vender la tierra cruda en la bolsa.
+              </p>
             </div>
 
-            {/* Level Selector */}
-            <div className="flex items-center gap-2 bg-[#16224f] px-3 py-1.5 rounded-xl border border-blue-500/40">
-              <span className="text-xs text-blue-200 font-semibold">Nvl:</span>
-              <input
-                type="number"
-                min="1"
-                max="40"
-                value={selectedLevel}
-                onChange={(e) => setSelectedLevel(Math.min(40, Math.max(1, Number(e.target.value))))}
-                className="w-14 bg-gray-900 border border-blue-500/50 rounded text-center text-xs font-bold text-emerald-400 focus:outline-none"
-              />
+            {/* Mode & Level Selection Controls */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-slate-900/90 p-2 rounded-2xl border border-slate-700/60 backdrop-blur">
+              <div className="flex items-center bg-slate-950 p-1 rounded-xl">
+                <button
+                  onClick={() => setMode('self_crafted')}
+                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                    mode === 'self_crafted'
+                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-900/40'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  🌱 Farmeo Propio ($0)
+                </button>
+                <button
+                  onClick={() => setMode('market_buy')}
+                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                    mode === 'market_buy'
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-900/40'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  🛒 Mercado
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2 px-3 py-2 bg-slate-950 rounded-xl border border-slate-800">
+                <span className="text-xs font-semibold text-slate-400">Nivel:</span>
+                <input
+                  type="number"
+                  min="1"
+                  max="40"
+                  value={selectedLevel}
+                  onChange={(e) => setSelectedLevel(Math.min(40, Math.max(1, Number(e.target.value))))}
+                  className="w-12 bg-slate-900 border border-slate-700 rounded text-center text-xs font-extrabold text-cyan-400 focus:outline-none focus:border-cyan-400"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Floating Active Target Info Banner / Modal Header */}
+        {/* Target Product Selection Bar */}
+        <div className="bg-slate-900/60 backdrop-blur border border-slate-800/80 p-4 rounded-2xl">
+          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+            Selecciona el Producto Terminado a Simular:
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-2">
+            {FEATURED_TARGETS.map((t) => {
+              const isSelected = selectedToken === t.token;
+              return (
+                <button
+                  key={t.token}
+                  onClick={() => setSelectedToken(t.token)}
+                  className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${
+                    isSelected
+                      ? 'bg-gradient-to-b from-cyan-950/80 to-slate-900 border-cyan-400 text-white shadow-xl shadow-cyan-950/50 scale-105 ring-2 ring-cyan-400/40'
+                      : 'bg-slate-900/60 border-slate-800/80 text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'
+                  }`}
+                >
+                  <ResourceIcon symbol={t.token} className="w-8 h-8 mb-1.5 drop-shadow-md" />
+                  <span className="text-xs font-black tracking-tight">{t.token}</span>
+                  <span className="text-[10px] opacity-75 font-medium">{t.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* KPI Dashboard Grid */}
         {analysis && (
-          <div className="bg-[#122254] border-2 border-cyan-400/80 rounded-2xl p-5 shadow-2xl shadow-cyan-950/50 relative overflow-hidden">
-            {/* Background Glow */}
-            <div className="absolute -right-10 -top-10 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative z-10">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/20 border border-cyan-400 flex items-center justify-center shadow-md">
-                  <ResourceIcon symbol={selectedToken} className="w-7 h-7" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl font-black text-cyan-200 uppercase tracking-wide">{selectedToken}</span>
-                    <span className="text-xs font-extrabold text-emerald-400 bg-emerald-950 border border-emerald-600/60 px-2 py-0.5 rounded-md">
-                      Nivel {selectedLevel}
-                    </span>
-                  </div>
-                  <div className="text-xs text-cyan-300/80 mt-0.5">
-                    {language === 'es' ? 'Ruta activa iluminada en amarillo neón en el plano' : 'Active production route glowing in yellow neon'}
-                  </div>
-                </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Raw Insumos Required */}
+            <div className="bg-slate-900/70 border border-slate-800 p-5 rounded-2xl shadow-xl">
+              <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                📦 Insumos Iniciales Usados
               </div>
+              <div className="mt-3 space-y-1">
+                {Object.entries(analysis.rawMaterialsNeeded).length > 0 ? (
+                  Object.entries(analysis.rawMaterialsNeeded).map(([tok, amt]) => (
+                    <div key={tok} className="flex items-center gap-2">
+                      <ResourceIcon symbol={tok} className="w-5 h-5" />
+                      <span className="text-xl font-extrabold text-white">
+                        {formatNumber(amt, 0)} {tok}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <span className="text-sm font-semibold text-slate-400">Materia Prima Directa</span>
+                )}
+              </div>
+              <div className="text-[11px] text-slate-500 mt-2">
+                Consumo total de tus parcelas por día
+              </div>
+            </div>
 
-              {/* Profit Metrics */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full md:w-auto">
-                <div className="bg-[#0b1638] p-3 rounded-xl border border-blue-500/30 text-center">
-                  <div className="text-[10px] uppercase font-bold text-gray-400">
-                    {language === 'es' ? 'Vender Crudo' : 'Raw Value'}
-                  </div>
-                  <div className="text-sm font-extrabold text-yellow-400 mt-0.5">
-                    {formatNumber(analysis.rawOpportunityCostDay)} <span className="text-[10px]">COIN/d</span>
-                  </div>
-                </div>
+            {/* Raw Opportunity Value */}
+            <div className="bg-slate-900/70 border border-slate-800 p-5 rounded-2xl shadow-xl">
+              <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                💵 Valor Vendiéndolo Crudo
+              </div>
+              <div className="mt-3 text-2xl font-black text-amber-400">
+                {formatNumber(analysis.rawOpportunityCostDay)} <span className="text-xs font-bold text-amber-500/80">COIN/día</span>
+              </div>
+              <div className="text-[11px] text-slate-500 mt-2">
+                Lo que obtendrías si vendieras la Tierra sin procesar
+              </div>
+            </div>
 
-                <div className="bg-[#0b1638] p-3 rounded-xl border border-blue-500/30 text-center">
-                  <div className="text-[10px] uppercase font-bold text-gray-400">
-                    {language === 'es' ? 'Vender Procesado' : 'Processed Value'}
-                  </div>
-                  <div className="text-sm font-extrabold text-cyan-400 mt-0.5">
-                    {formatNumber(analysis.finalOutputValueDay)} <span className="text-[10px]">COIN/d</span>
-                  </div>
-                </div>
+            {/* Processed Output Revenue */}
+            <div className="bg-slate-900/70 border border-slate-800 p-5 rounded-2xl shadow-xl">
+              <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                🚀 Valor Vendiéndolo Procesado
+              </div>
+              <div className="mt-3 text-2xl font-black text-cyan-400">
+                {formatNumber(analysis.finalOutputValueDay)} <span className="text-xs font-bold text-cyan-500/80">COIN/día</span>
+              </div>
+              <div className="text-[11px] text-slate-500 mt-2">
+                Venta total del producto final {selectedToken} (Nvl {selectedLevel})
+              </div>
+            </div>
 
-                <div className="bg-emerald-950/70 p-3 rounded-xl border border-emerald-500/50 text-center col-span-2 sm:col-span-1">
-                  <div className="text-[10px] uppercase font-extrabold text-emerald-300">
-                    {language === 'es' ? 'Profit Neto Extra' : 'Extra Net Profit'}
-                  </div>
-                  <div className="text-sm font-black text-emerald-300 mt-0.5">
-                    +{formatNumber(analysis.netProfitDay)} <span className="text-[10px]">COIN/d</span>
-                  </div>
-                </div>
+            {/* Extra Net Profit Multiplier */}
+            <div className="bg-gradient-to-br from-emerald-950/80 via-slate-900 to-teal-950/60 border border-emerald-500/40 p-5 rounded-2xl shadow-2xl relative overflow-hidden">
+              <div className="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">
+                🔥 Ganancia Extra por Crafteo
+              </div>
+              <div className="mt-3 text-3xl font-black text-emerald-300">
+                +{formatNumber(analysis.netProfitDay)} <span className="text-xs font-bold text-emerald-400">COIN/día</span>
+              </div>
+              <div className="mt-2 flex items-center gap-1.5 text-xs font-black text-emerald-300 bg-emerald-900/60 border border-emerald-700/60 px-2.5 py-1 rounded-lg w-fit">
+                <span>⚡ +{formatNumber(analysis.totalMultiplier, 1)}% Extra Profit</span>
               </div>
             </div>
           </div>
         )}
 
-        {/* Blueprint Tree Interactive Canvas */}
-        <Card className="p-0 bg-[#0d1633] border-2 border-blue-900/80 rounded-2xl overflow-hidden shadow-2xl relative">
-          {/* Blueprint Grid Background Pattern */}
-          <div
-            className="w-full relative min-h-[820px] p-6 select-none"
-            style={{
-              backgroundColor: '#0c1530',
-              backgroundImage: `
-                radial-gradient(rgba(59, 130, 246, 0.25) 1px, transparent 1px),
-                linear-gradient(to right, rgba(59, 130, 246, 0.05) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(59, 130, 246, 0.05) 1px, transparent 1px)
-              `,
-              backgroundSize: '24px 24px, 48px 48px, 48px 48px',
-            }}
-          >
-            {/* Blackboard Chalk / Graffiti Doodles */}
-            <div className="absolute top-12 left-1/3 text-blue-500/20 font-mono text-xl font-bold rotate-[-12deg] pointer-events-none">
-              LFG! 🚀
-            </div>
-            <div className="absolute top-72 right-1/4 text-blue-500/15 font-mono text-sm font-semibold rotate-[8deg] pointer-events-none">
-              E = mc² 🧪
-            </div>
-            <div className="absolute bottom-40 left-1/4 text-blue-500/15 font-mono text-lg font-bold rotate-[-6deg] pointer-events-none">
-              WAGMI 💎
-            </div>
-            <div className="absolute bottom-12 right-12 text-blue-500/20 font-mono text-sm font-bold rotate-[15deg] pointer-events-none">
-              TO THE MOON! 🌙
-            </div>
+        {/* Clean Step-by-Step Flow Cards */}
+        {analysis && (
+          <div className="bg-slate-900/60 border border-slate-800 p-6 rounded-3xl shadow-2xl">
+            <h2 className="text-lg font-extrabold text-white mb-6 flex items-center gap-2">
+              <span className="text-emerald-400">🌱</span>
+              <span>Cadena de Producción Paso a Paso</span>
+            </h2>
 
-            {/* SVG Connecting Cables Layer */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible">
-              <defs>
-                {/* Glowing Yellow Filter for Active Path */}
-                <filter id="glow-yellow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 relative">
+              {/* Step 0: Raw Harvest Card */}
+              <div className="bg-slate-950 border border-emerald-500/30 p-5 rounded-2xl shadow-lg relative flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[10px] font-black text-emerald-400 uppercase tracking-wider bg-emerald-950 border border-emerald-800 px-2 py-0.5 rounded-md">
+                      Paso #0 — Inicio
+                    </span>
+                    <span className="text-xs font-bold text-emerald-400">$0 Costo</span>
+                  </div>
 
-              {MATRIX_NODES.map((node) => {
-                return node.inputs.map((parentId) => {
-                  const parentNode = MATRIX_NODES.find((n) => n.id === parentId);
-                  if (!parentNode) return null;
+                  <div className="flex items-center gap-3 my-3">
+                    <ResourceIcon symbol="EARTH" className="w-10 h-10 drop-shadow-md" />
+                    <div>
+                      <div className="text-base font-extrabold text-white">EARTH</div>
+                      <div className="text-xs font-semibold text-slate-400">Farmeo de Parcelas</div>
+                    </div>
+                  </div>
 
-                  const edgeKey = `${parentId}->${node.id}`;
-                  const isActive = activeEdges.has(edgeKey);
+                  <div className="text-xs text-slate-300 space-y-1 mt-3 pt-3 border-t border-slate-800">
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Total Recolectado:</span>
+                      <span className="font-bold text-white font-mono">
+                        {formatNumber(Object.values(analysis.rawMaterialsNeeded)[0] || 0, 0)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Valor de Mercado:</span>
+                      <span className="font-bold text-yellow-400 font-mono">
+                        {formatNumber(analysis.rawOpportunityCostDay)} COIN/día
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-                  // Calculate curve points
-                  const startX = parentNode.x;
-                  const startY = parentNode.y + 24;
-                  const endX = node.x;
-                  const endY = node.y - 24;
-                  const midY = (startY + endY) / 2;
-
-                  const pathD = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
-
-                  return (
-                    <g key={edgeKey}>
-                      {/* Background Cable */}
-                      <path
-                        d={pathD}
-                        fill="none"
-                        stroke={isActive ? '#fbbf24' : parentNode.branchColor}
-                        strokeWidth={isActive ? '4' : '2'}
-                        strokeDasharray={isActive ? '8,6' : 'none'}
-                        strokeOpacity={isActive ? '1' : activeNodeIds.size > 0 ? '0.2' : '0.6'}
-                        filter={isActive ? 'url(#glow-yellow)' : undefined}
-                        className={isActive ? 'animate-pulse' : ''}
-                      />
-                    </g>
-                  );
-                });
-              })}
-            </svg>
-
-            {/* Matrix Nodes Layer */}
-            <div className="relative z-20 w-full h-full min-h-[800px]">
-              {MATRIX_NODES.map((node) => {
-                const isSelected = selectedToken === node.id;
-                const isActive = activeNodeIds.has(node.id);
-                const opacityClass = activeNodeIds.size > 0 && !isActive ? 'opacity-25 scale-95' : 'opacity-100 scale-100';
-
-                return (
-                  <div
-                    key={node.id}
-                    onClick={() => setSelectedToken(node.id)}
-                    style={{ left: `${node.x - 36}px`, top: `${node.y - 36}px` }}
-                    className={`absolute cursor-pointer transition-all duration-300 ${opacityClass}`}
-                  >
-                    {/* Node Container Box matching Craft World Skill Tree */}
-                    <div
-                      className={`w-18 h-18 rounded-2xl flex flex-col items-center justify-center p-2 relative shadow-xl border-2 transition-all ${
-                        isSelected
-                          ? 'bg-[#1b2b68] border-cyan-400 shadow-cyan-500/50 scale-110 z-30'
-                          : isActive
-                          ? 'bg-[#142252] border-yellow-400 shadow-yellow-500/30'
-                          : 'bg-[#101b3d] border-blue-900/80 hover:border-blue-400/60'
-                      }`}
-                    >
-                      {/* Checkmark Badge on Top Left */}
-                      <div className="absolute -top-1.5 -left-1.5 w-5 h-5 bg-emerald-500 border border-emerald-300 rounded-full flex items-center justify-center text-[10px] text-white font-black shadow-md">
-                        ✓
-                      </div>
-
-                      {/* Icon */}
-                      <ResourceIcon symbol={node.id} className="w-8 h-8 drop-shadow-md" />
-
-                      {/* Token Label */}
-                      <span className="text-[10px] font-extrabold text-blue-100 mt-1 tracking-tight truncate max-w-full">
-                        {node.name}
+              {/* Steps Cards */}
+              {analysis.steps.map((st) => (
+                <div
+                  key={st.token}
+                  className="bg-slate-950 border border-slate-800 hover:border-cyan-500/50 transition-all p-5 rounded-2xl shadow-lg flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-black text-cyan-400 uppercase tracking-wider bg-cyan-950 border border-cyan-800 px-2 py-0.5 rounded-md">
+                        Paso #{st.stepIndex}
+                      </span>
+                      <span className="text-xs font-bold text-emerald-400 bg-emerald-950 border border-emerald-800 px-2 py-0.5 rounded-md">
+                        Nivel {st.factoryLevel}
                       </span>
                     </div>
 
-                    {/* Active Target Floating Badge */}
-                    {isSelected && (
-                      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-cyan-400 text-gray-950 font-black text-[9px] uppercase px-2 py-0.5 rounded-full shadow-lg border border-cyan-200">
-                        {language === 'es' ? 'Seleccionado' : 'Target'}
+                    <div className="flex items-center gap-3 my-3">
+                      <FactoryIcon symbol={st.token} className="w-10 h-10 drop-shadow-md group-hover:scale-110 transition-transform" />
+                      <div>
+                        <div className="text-base font-extrabold text-white">{st.token}</div>
+                        <div className="text-xs font-semibold text-cyan-400">
+                          {st.masteryDiscountPercent > 0 ? `-${formatNumber(st.masteryDiscountPercent, 1)}% Maestría` : 'Fábrica'}
+                        </div>
                       </div>
-                    )}
+                    </div>
+
+                    <div className="text-xs text-slate-300 space-y-1.5 mt-3 pt-3 border-t border-slate-800 font-mono">
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Insumos/Ciclo:</span>
+                        <span className="font-bold text-slate-200">
+                          {st.input1Token && `${formatNumber(st.input1AmountPerCycle, 1)} ${st.input1Token}`}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Producción/Ciclo:</span>
+                        <span className="font-bold text-emerald-400">
+                          {formatNumber(st.outputAmountPerCycle, 0)} {st.token}
+                        </span>
+                      </div>
+                      <div className="flex justify-between pt-1 border-t border-slate-800/80">
+                        <span className="text-slate-400">Profit Agregado/Día:</span>
+                        <span className="font-extrabold text-emerald-400">
+                          +{formatNumber(st.netProfitPerDay)} COIN
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </div>
-        </Card>
+        )}
 
-        {/* Step Breakdown Table */}
+        {/* Detailed Breakdown Table */}
         {analysis && (
-          <Card className="p-6 bg-gray-900/40 border border-gray-800">
-            <h2 className="text-base font-bold text-gray-200 mb-4 flex items-center gap-2">
+          <div className="bg-slate-900/60 border border-slate-800 p-6 rounded-3xl shadow-2xl">
+            <h2 className="text-base font-extrabold text-white mb-4 flex items-center gap-2">
               <span>📋</span>
-              <span>{language === 'es' ? 'Desglose Detallado de la Ruta Seleccionada' : 'Selected Path Breakdown Table'}</span>
+              <span>Tabla de Desglose de Inversión por Fábrica</span>
             </h2>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-gray-300">
-                <thead className="bg-[#121f47] text-blue-300 uppercase text-[10px] tracking-wider border-b border-blue-800/60">
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
                   <tr>
-                    <th className="py-3 px-3">Paso</th>
-                    <th className="py-3 px-3">Fábrica</th>
-                    <th className="py-3 px-3">Insumos por Ciclo</th>
-                    <th className="py-3 px-3">Producción por Ciclo</th>
-                    <th className="py-3 px-3 text-right">Profit / Ciclo</th>
-                    <th className="py-3 px-3 text-right">Profit / Día</th>
-                    <th className="py-3 px-3 text-right">Ganancia Acumulada</th>
+                    <th className="py-3 px-4">Paso</th>
+                    <th className="py-3 px-4">Fábrica</th>
+                    <th className="py-3 px-4">Insumos Exigidos</th>
+                    <th className="py-3 px-4">Producción</th>
+                    <th className="py-3 px-4 text-right">Profit / Ciclo</th>
+                    <th className="py-3 px-4 text-right">Profit / Día</th>
+                    <th className="py-3 px-4 text-right">Ganancia Acumulada</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-800/60">
+                <tbody className="divide-y divide-slate-800/60">
                   {analysis.steps.map((st) => (
-                    <tr key={st.token} className="hover:bg-blue-950/30 transition">
-                      <td className="py-3 px-3 font-bold text-gray-400">#{st.stepIndex}</td>
-                      <td className="py-3 px-3 font-bold text-gray-100 flex items-center gap-2">
+                    <tr key={st.token} className="hover:bg-slate-800/40 transition">
+                      <td className="py-3 px-4 font-bold text-slate-500">#{st.stepIndex}</td>
+                      <td className="py-3 px-4 font-extrabold text-white flex items-center gap-2">
                         <FactoryIcon symbol={st.token} className="w-4 h-4" />
                         <span>{st.token} (Nvl {st.factoryLevel})</span>
                       </td>
-                      <td className="py-3 px-3 font-mono text-gray-300">
+                      <td className="py-3 px-4 font-mono text-slate-300">
                         {st.input1Token && (
                           <span>
                             {formatNumber(st.input1AmountPerCycle, 1)} {st.input1Token}
@@ -430,16 +371,16 @@ export default function ValueChainMap() {
                           </span>
                         )}
                       </td>
-                      <td className="py-3 px-3 font-mono text-emerald-400 font-semibold">
+                      <td className="py-3 px-4 font-mono text-emerald-400 font-bold">
                         {formatNumber(st.outputAmountPerCycle, 0)} {st.token}
                       </td>
-                      <td className="py-3 px-3 text-right font-mono font-bold text-gray-200">
+                      <td className="py-3 px-4 text-right font-mono font-bold text-slate-200">
                         +{formatNumber(st.netProfitPerCycle)} COIN
                       </td>
-                      <td className="py-3 px-3 text-right font-mono font-bold text-emerald-400">
+                      <td className="py-3 px-4 text-right font-mono font-extrabold text-emerald-400">
                         +{formatNumber(st.netProfitPerDay)} COIN
                       </td>
-                      <td className="py-3 px-3 text-right font-mono font-bold text-cyan-400">
+                      <td className="py-3 px-4 text-right font-mono font-extrabold text-cyan-400">
                         +{formatNumber(st.cumulativeProfitPerDay)} COIN
                       </td>
                     </tr>
@@ -447,7 +388,7 @@ export default function ValueChainMap() {
                 </tbody>
               </table>
             </div>
-          </Card>
+          </div>
         )}
       </div>
     </Layout>

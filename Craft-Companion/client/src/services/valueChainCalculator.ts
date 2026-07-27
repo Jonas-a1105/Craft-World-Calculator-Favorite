@@ -51,7 +51,13 @@ export function computeValueChain(
     ...prices,
   };
 
-  // Build ordered chain path from target down to base raw resources
+  const targetRow = allRows.find((r) => r.token.toUpperCase() === normalizedTarget && r.level === targetLevel);
+  if (!targetRow) return null;
+
+  const targetDuration = targetRow.duration_min || 1;
+  const targetRunsPerDay = (24 * 60) / targetDuration;
+  const targetOutputAmountPerDay = targetRow.output_amount * targetRunsPerDay;
+
   const path: string[] = [];
   const visited = new Set<string>();
 
@@ -59,80 +65,105 @@ export function computeValueChain(
     if (visited.has(token)) return;
     visited.add(token);
 
-    const row = allRows.find((r) => r.token.toUpperCase() === token && r.level === 1);
-    if (!row) {
+    const r = allRows.find((row) => row.token.toUpperCase() === token);
+    if (!r) {
       path.push(token);
       return;
     }
 
-    if (row.input_token_1) buildPath(row.input_token_1.toUpperCase());
-    if (row.input_token_2) buildPath(row.input_token_2.toUpperCase());
+    if (r.input_token_1) buildPath(r.input_token_1.toUpperCase());
+    if (r.input_token_2) buildPath(r.input_token_2.toUpperCase());
 
     path.push(token);
   }
-
   buildPath(normalizedTarget);
 
-  if (path.length === 0) return null;
+  const demand: Record<string, number> = {
+    [normalizedTarget]: targetOutputAmountPerDay,
+  };
 
-  // Track raw base material accumulation
+  const stepRuns: Record<string, number> = {};
   const rawMaterialsNeeded: Record<string, number> = {};
+
+  for (let i = path.length - 1; i >= 0; i--) {
+    const token = path[i];
+    const isBaseResource = ['EARTH', 'WATER', 'FIRE'].includes(token);
+
+    if (isBaseResource) {
+      rawMaterialsNeeded[token] = (rawMaterialsNeeded[token] || 0) + (demand[token] || 0);
+      continue;
+    }
+
+    const neededQty = demand[token] || 0;
+    if (neededQty <= 0) continue;
+
+    const levelToUse = token === normalizedTarget ? targetLevel : 18;
+    const row =
+      allRows.find((r) => r.token.toUpperCase() === token && r.level === levelToUse) ||
+      allRows.find((r) => r.token.toUpperCase() === token && r.level === 1);
+
+    if (!row) continue;
+
+    const runsNeeded = neededQty / row.output_amount;
+    stepRuns[token] = runsNeeded;
+
+    const masteryDiscountPercent = getMasteryInputReductionPercent(row.token, proficiencies);
+
+    if (row.input_token_1) {
+      const input1 = row.input_token_1.toUpperCase();
+      const rawInputAmt = row.input_amount_1 * runsNeeded;
+      const inputAmt = rawInputAmt * (1 - masteryDiscountPercent / 100);
+      demand[input1] = (demand[input1] || 0) + inputAmt;
+    }
+
+    if (row.input_token_2) {
+      const input2 = row.input_token_2.toUpperCase();
+      const rawInputAmt = row.input_amount_2 * runsNeeded;
+      const inputAmt = rawInputAmt * (1 - masteryDiscountPercent / 100);
+      demand[input2] = (demand[input2] || 0) + inputAmt;
+    }
+  }
+
   const steps: ChainStep[] = [];
   let cumulativeProfitDay = 0;
 
   for (let i = 0; i < path.length; i++) {
     const token = path[i];
-    const isBaseResource = ['EARTH', 'WATER', 'FIRE'].includes(token);
+    if (['EARTH', 'WATER', 'FIRE'].includes(token)) continue;
 
-    if (isBaseResource) {
-      continue;
-    }
-
+    const levelToUse = token === normalizedTarget ? targetLevel : 18;
     const row =
-      allRows.find((r) => r.token.toUpperCase() === token && r.level === targetLevel) ||
+      allRows.find((r) => r.token.toUpperCase() === token && r.level === levelToUse) ||
       allRows.find((r) => r.token.toUpperCase() === token && r.level === 1);
 
     if (!row) continue;
 
+    const runsPerDay = stepRuns[token] || 0;
+    const outputAmountPerDay = row.output_amount * runsPerDay;
+
     const masteryDiscountPercent = getMasteryInputReductionPercent(row.token, proficiencies);
-    const durationMin = row.duration_min || 1;
-    const cyclesPerDay = (24 * 60) / durationMin;
 
     const input1Token = row.input_token_1 ? row.input_token_1.toUpperCase() : '';
-    const rawInput1Amt = row.input_amount_1 || 0;
-    const input1Amt = rawInput1Amt * (1 - masteryDiscountPercent / 100);
+    const input1AmtPerDay = row.input_amount_1 * runsPerDay * (1 - masteryDiscountPercent / 100);
 
     const input2Token = row.input_token_2 ? row.input_token_2.toUpperCase() : '';
-    const rawInput2Amt = row.input_amount_2 || 0;
-    const input2Amt = rawInput2Amt * (1 - masteryDiscountPercent / 100);
+    const input2AmtPerDay = row.input_amount_2 * runsPerDay * (1 - masteryDiscountPercent / 100);
 
-    const outputAmt = row.output_amount || 1;
-    const outputPrice = (basePriceMap[token] || 0) * 0.95; // 5% exchange fee deducted
-
+    const outputPrice = (basePriceMap[token] || 0) * 0.95;
     const input1Price = basePriceMap[input1Token] || 0;
     const input2Price = basePriceMap[input2Token] || 0;
 
-    let inputCostPerCycle = 0;
+    let inputCostPerDay = 0;
     if (mode === 'market_buy') {
-      inputCostPerCycle = input1Amt * input1Price + input2Amt * input2Price;
+      inputCostPerDay = input1AmtPerDay * input1Price + input2AmtPerDay * input2Price;
     } else {
-      // In self_crafted mode, raw base resources (EARTH/WATER/FIRE) are harvested at 0 purchase cost
-      const cost1 = ['EARTH', 'WATER', 'FIRE'].includes(input1Token) ? 0 : input1Amt * input1Price;
-      const cost2 = ['EARTH', 'WATER', 'FIRE'].includes(input2Token) ? 0 : input2Amt * input2Price;
-      inputCostPerCycle = cost1 + cost2;
+      const cost1 = ['EARTH', 'WATER', 'FIRE'].includes(input1Token) ? 0 : input1AmtPerDay * input1Price;
+      const cost2 = ['EARTH', 'WATER', 'FIRE'].includes(input2Token) ? 0 : input2AmtPerDay * input2Price;
+      inputCostPerDay = cost1 + cost2;
     }
 
-    const outputValuePerCycle = outputAmt * outputPrice;
-    const netProfitPerCycle = outputValuePerCycle - inputCostPerCycle;
-    const netProfitPerDay = netProfitPerCycle * cyclesPerDay;
-
-    // Track raw base resources required per day
-    if (['EARTH', 'WATER', 'FIRE'].includes(input1Token)) {
-      rawMaterialsNeeded[input1Token] = (rawMaterialsNeeded[input1Token] || 0) + input1Amt * cyclesPerDay;
-    }
-    if (['EARTH', 'WATER', 'FIRE'].includes(input2Token)) {
-      rawMaterialsNeeded[input2Token] = (rawMaterialsNeeded[input2Token] || 0) + input2Amt * cyclesPerDay;
-    }
+    const outputValuePerDay = outputAmountPerDay * outputPrice;
+    const netProfitPerDay = outputValuePerDay - inputCostPerDay;
 
     cumulativeProfitDay += netProfitPerDay;
 
@@ -146,19 +177,19 @@ export function computeValueChain(
       stepIndex: steps.length + 1,
       token,
       factoryLevel: row.level,
-      durationMin,
-      cyclesPerDay,
-      outputAmountPerCycle: outputAmt,
+      durationMin: row.duration_min,
+      cyclesPerDay: runsPerDay,
+      outputAmountPerCycle: outputAmountPerDay,
       input1Token,
-      input1AmountPerCycle: input1Amt,
+      input1AmountPerCycle: input1AmtPerDay,
       input2Token,
-      input2AmountPerCycle: input2Amt,
+      input2AmountPerCycle: input2AmtPerDay,
       rawBaseUnitsRequired: { ...rawMaterialsNeeded },
       masteryDiscountPercent,
       unitPrice: basePriceMap[token] || 0,
-      outputValuePerCycle,
-      inputCostPerCycle,
-      netProfitPerCycle,
+      outputValuePerCycle: outputValuePerDay,
+      inputCostPerCycle: inputCostPerDay,
+      netProfitPerCycle: netProfitPerDay,
       netProfitPerDay,
       cumulativeProfitPerDay: cumulativeProfitDay,
       valueMultiplier,
@@ -170,7 +201,7 @@ export function computeValueChain(
   }, 0);
 
   const finalStep = steps[steps.length - 1];
-  const finalOutputValueDay = finalStep ? finalStep.outputValuePerCycle * finalStep.cyclesPerDay : 0;
+  const finalOutputValueDay = finalStep ? finalStep.outputValuePerCycle : 0;
   const netProfitDay = cumulativeProfitDay;
   const totalMultiplier = rawOpportunityCostDay > 0 ? ((finalOutputValueDay - rawOpportunityCostDay) / rawOpportunityCostDay) * 100 : 0;
 
