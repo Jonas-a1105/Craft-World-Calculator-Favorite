@@ -18,7 +18,14 @@ async function req(path: string, init: RequestInit = {}) {
   return res.json();
 }
 
-export const oauthAuthorize = () => (window.location.href = `${API}/api/oauth/authorize`);
+export const oauthAuthorize = () => {
+  const url = `${API}/api/oauth/authorize`;
+  if (window.top && window.top !== window) {
+    window.top.location.href = url;
+  } else {
+    window.location.href = url;
+  }
+};
 export const oauthCallback = () => req('/api/oauth/callback');
 export const oauthLogout = () => req('/api/oauth/logout', { method: 'POST' });
 export const getMe = () => req('/api/me') as Promise<Me>;
