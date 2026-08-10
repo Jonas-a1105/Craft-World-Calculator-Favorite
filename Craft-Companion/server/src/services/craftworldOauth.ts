@@ -7,10 +7,14 @@ const revokeUrl = `${craftWorldBaseUrl}/oauth/revoke`;
 
 export const oauthConfig = {
   get clientId() {
-    return process.env.CRAFTWORLD_OAUTH_CLIENT_ID || 'client_019f6f69-da4f-7069-b15b-bb947f5c117c';
+    const envId = process.env.CRAFTWORLD_OAUTH_CLIENT_ID;
+    if (envId && envId.startsWith('client_019f6f69')) return envId;
+    return 'client_019f6f69-da4f-7069-b15b-bb947f5c117c';
   },
   get clientSecret() {
-    return process.env.CRAFTWORLD_OAUTH_CLIENT_SECRET || 'secret_019f6f69-da4f-7069-b15b-bb947f5c0c3e';
+    const envSecret = process.env.CRAFTWORLD_OAUTH_CLIENT_SECRET;
+    if (envSecret && envSecret.startsWith('secret_019f6f69')) return envSecret;
+    return 'secret_019f6f69-da4f-7069-b15b-bb947f5c0c3e';
   },
   get redirectUri() {
     const raw = process.env.CRAFTWORLD_OAUTH_REDIRECT_URI || '';
