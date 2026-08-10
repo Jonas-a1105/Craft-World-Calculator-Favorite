@@ -122,9 +122,17 @@ export async function exchangeAuthorizationCode(
   });
   if (clientSecret) body.set('client_secret', clientSecret);
 
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+  if (clientId && clientSecret) {
+    const encoded = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+    headers['Authorization'] = `Basic ${encoded}`;
+  }
+
   const res = await fetch(tokenUrl, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers,
     body,
   });
   const data = await readJson<CraftworldTokenResponse>(res);
@@ -146,9 +154,17 @@ export async function refreshCraftworldToken(refreshToken: string): Promise<Craf
   });
   if (clientSecret) body.set('client_secret', clientSecret);
 
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+  if (clientId && clientSecret) {
+    const encoded = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+    headers['Authorization'] = `Basic ${encoded}`;
+  }
+
   const res = await fetch(tokenUrl, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers,
     body,
   });
   const data = await readJson<CraftworldTokenResponse>(res);
