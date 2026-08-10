@@ -7,10 +7,10 @@ const revokeUrl = `${craftWorldBaseUrl}/oauth/revoke`;
 
 export const oauthConfig = {
   get clientId() {
-    return process.env.CRAFTWORLD_OAUTH_CLIENT_ID || '';
+    return process.env.CRAFTWORLD_OAUTH_CLIENT_ID || 'client_019f6f69-da4f-7069-b15b-bb947f5c117c';
   },
   get clientSecret() {
-    return process.env.CRAFTWORLD_OAUTH_CLIENT_SECRET || '';
+    return process.env.CRAFTWORLD_OAUTH_CLIENT_SECRET || 'secret_019f6f69-da4f-7069-b15b-bb947f5c0c3e';
   },
   get redirectUri() {
     const raw = process.env.CRAFTWORLD_OAUTH_REDIRECT_URI || '';
@@ -22,7 +22,7 @@ export const oauthConfig = {
   get scopes() {
     return (
       process.env.CRAFTWORLD_OAUTH_SCOPES ||
-      'craft:read exchange:read inventory:read onchain:read purchases:read'
+      'profile craft:read exchange:read inventory:read onchain:read purchases:read'
     )
       .split(/\s+/)
       .filter(Boolean);
