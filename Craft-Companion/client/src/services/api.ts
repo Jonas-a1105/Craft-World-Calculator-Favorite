@@ -19,12 +19,17 @@ async function req(path: string, init: RequestInit = {}) {
 }
 
 export const oauthAuthorize = () => {
-  const url = `${API}/api/oauth/authorize`;
-  if (window.top && window.top !== window) {
-    window.top.location.href = url;
-  } else {
-    window.location.href = url;
+  const base = API || window.location.origin;
+  const targetUrl = `${base}/api/oauth/authorize`;
+  try {
+    if (window.top && window.top !== window) {
+      window.top.location.href = targetUrl;
+      return;
+    }
+  } catch (err) {
+    console.warn('Cannot navigate window.top:', err);
   }
+  window.location.href = targetUrl;
 };
 export const oauthCallback = () => req('/api/oauth/callback');
 export const oauthLogout = () => req('/api/oauth/logout', { method: 'POST' });

@@ -10,8 +10,11 @@ export default function SignIn() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('error') === 'access_denied') setE(t('signin.error.denied'));
-    else if (params.get('error')) setE(t('signin.error.server'));
+    const err = params.get('oauth_error') || params.get('error_description') || params.get('error');
+    if (err) {
+      if (err === 'access_denied') setE(t('signin.error.denied'));
+      else setE(decodeURIComponent(err));
+    }
   }, []);
 
   return (
