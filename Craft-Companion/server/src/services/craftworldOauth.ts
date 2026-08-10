@@ -26,7 +26,7 @@ export const oauthConfig = {
   get scopes() {
     return (
       process.env.CRAFTWORLD_OAUTH_SCOPES ||
-      'profile craft:read exchange:read inventory:read onchain:read purchases:read'
+      'craft:read exchange:read inventory:read onchain:read purchases:read'
     )
       .split(/\s+/)
       .filter(Boolean);
