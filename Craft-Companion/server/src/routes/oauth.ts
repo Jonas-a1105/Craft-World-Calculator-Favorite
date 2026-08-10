@@ -137,7 +137,7 @@ oauthRouter.get('/callback', async (req, res) => {
   const maxAgeSeconds = Number(process.env.SESSION_MAX_AGE_SECONDS || 7 * 24 * 60 * 60);
   res.setHeader('Set-Cookie', [
     `${SESSION_COOKIE}=${signSession(user.id)}; ${sessionCookieOptions()}`,
-    `cc_logged_in=true; Path=/; SameSite=Lax; Max-Age=${maxAgeSeconds}`,
+    `cc_logged_in=true; Path=/; SameSite=None; Secure; Max-Age=${maxAgeSeconds}`,
   ]);
   res.redirect(`${activeOrigin}/home`);
 });

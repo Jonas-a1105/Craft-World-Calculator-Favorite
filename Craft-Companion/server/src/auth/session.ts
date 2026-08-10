@@ -47,8 +47,7 @@ export function parseCookies(header: string | undefined): Record<string, string>
 }
 
 export function sessionCookieOptions(): string {
-  const flags = ['Path=/', 'HttpOnly', 'SameSite=Lax'];
-  if (process.env.NODE_ENV === 'production') flags.push('Secure');
+  const flags = ['Path=/', 'HttpOnly', 'SameSite=None', 'Secure'];
   const maxAgeSeconds = Number(process.env.SESSION_MAX_AGE_SECONDS || 7 * 24 * 60 * 60);
   flags.push(`Max-Age=${maxAgeSeconds}`);
   return flags.join('; ');
