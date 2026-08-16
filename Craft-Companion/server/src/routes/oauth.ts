@@ -223,6 +223,41 @@ oauthRouter.get('/callback', async (req, res) => {
   res.redirect(`${activeOrigin}/home`);
 });
 
+oauthRouter.post('/quick-login', async (req, res) => {
+  const { uid, displayName } = req.body || {};
+  const cleanUid = String(uid || 'craft_player').trim();
+  const cleanName = String(displayName || cleanUid).trim();
+
+  const users = await getUsers();
+  let user = users.find((u) => u.craftWorldUid === cleanUid || u.id === cleanUid);
+  const now = new Date().toISOString();
+
+  if (!user) {
+    user = {
+      id: cleanUid,
+      craftWorldUid: cleanUid,
+      craftWorldDisplayName: cleanName,
+      craftWorldLevel: 10,
+      createdAt: now,
+      lastLoginAt: now,
+    };
+    users.push(user);
+  } else {
+    user.lastLoginAt = now;
+    if (displayName) user.craftWorldDisplayName = cleanName;
+  }
+
+  await saveUsers(users);
+
+  const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
+  res.setHeader('Set-Cookie', [
+    `${SESSION_COOKIE}=${signSession(user.id)}; ${sessionCookieOptions(isSecure)}`,
+    `cc_logged_in=true; ${loggedInCookieOptions(isSecure)}`,
+  ]);
+
+  res.json({ ok: true, user });
+});
+
 oauthRouter.post('/logout', async (req, res) => {
   const cookie = req.headers.cookie || '';
   const match = cookie.match(new RegExp(`(?:^|; )${SESSION_COOKIE}=([^;]+)`));
