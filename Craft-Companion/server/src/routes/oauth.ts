@@ -41,13 +41,19 @@ function getOAuthCredentials(req: Request): {
   redirectUri: string;
 } {
   const host = req.headers.host || '';
-  const isWeb = host && !host.includes('localhost') && !host.includes('127.0.0.1');
+  const isHfSpace = host.includes('hf.space') || host.includes('coquerokli');
+  const isLocal = host.includes('localhost') || host.includes('127.0.0.1');
 
-  if (isWeb) {
+  if (isHfSpace) {
+    return {
+      clientId: 'client_019f6f69-da4f-7069-b15b-bb947f5c117c',
+      clientSecret: 'secret_019f6f69-da4f-7069-b15b-bb947f5c0c3e',
+      redirectUri: 'https://coquerokli-craft-world-calculator-favorite.hf.space/api/auth/callback',
+    };
+  }
+
+  if (!isLocal) {
     const proto = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
-    const redirectUri =
-      process.env.CRAFTWORLD_OAUTH_REDIRECT_URI ||
-      `${proto}://${host}/api/auth/callback`;
     return {
       clientId:
         process.env.CRAFTWORLD_OAUTH_CLIENT_ID ||
@@ -55,7 +61,9 @@ function getOAuthCredentials(req: Request): {
       clientSecret:
         process.env.CRAFTWORLD_OAUTH_CLIENT_SECRET ||
         'secret_019f6f69-da4f-7069-b15b-bb947f5c0c3e',
-      redirectUri,
+      redirectUri:
+        process.env.CRAFTWORLD_OAUTH_REDIRECT_URI ||
+        `${proto}://${host}/api/auth/callback`,
     };
   }
 
