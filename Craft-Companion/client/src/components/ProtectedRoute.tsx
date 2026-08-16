@@ -14,6 +14,16 @@ export default function ProtectedRoute({ children }: { children: any }) {
 
   useEffect(() => {
     let mounted = true;
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get('token');
+    if (urlToken) {
+      localStorage.setItem('cc_token', urlToken);
+      urlParams.delete('token');
+      const newQuery = urlParams.toString();
+      const newUrl = `${window.location.pathname}${newQuery ? `?${newQuery}` : ''}`;
+      window.history.replaceState({}, '', newUrl);
+    }
+
     getMe()
       .then((me) => {
         if (mounted) {

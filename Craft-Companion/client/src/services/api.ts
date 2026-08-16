@@ -10,11 +10,28 @@ const API =
     ? 'http://localhost:5000'
     : '');
 
+// Capturar token de la URL si se redirige desde OAuth
+if (typeof window !== 'undefined') {
+  const urlToken = new URLSearchParams(window.location.search).get('token');
+  if (urlToken) {
+    localStorage.setItem('cc_token', urlToken);
+  }
+}
+
 async function req(path: string, init: RequestInit = {}) {
+  const token = typeof localStorage !== 'undefined' ? localStorage.getItem('cc_token') : null;
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...((init.headers as Record<string, string>) || {}),
+  };
+  if (token && !headers['Authorization']) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API}${path}`, {
     ...init,
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...(init.headers || {}) },
+    headers,
   });
   if (!res.ok) {
     let errorMsg = 'Request failed';

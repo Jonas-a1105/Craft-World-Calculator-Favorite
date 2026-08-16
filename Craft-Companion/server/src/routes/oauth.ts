@@ -215,12 +215,13 @@ oauthRouter.get('/callback', async (req, res) => {
   user.lastLoginAt = now;
   await saveUsers(users);
 
+  const signedToken = signSession(user.id);
   const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
   res.setHeader('Set-Cookie', [
-    `${SESSION_COOKIE}=${signSession(user.id)}; ${sessionCookieOptions(isSecure)}`,
+    `${SESSION_COOKIE}=${signedToken}; ${sessionCookieOptions(isSecure)}`,
     `cc_logged_in=true; ${loggedInCookieOptions(isSecure)}`,
   ]);
-  res.redirect(`${activeOrigin}/home`);
+  res.redirect(`${activeOrigin}/home?token=${encodeURIComponent(signedToken)}`);
 });
 
 oauthRouter.post('/quick-login', async (req, res) => {
