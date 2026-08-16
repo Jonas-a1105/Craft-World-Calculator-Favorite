@@ -50,8 +50,8 @@ export const ACTIVE_RESOURCES = new Set([
 ]);
 
 const csvPaths = [
-  '/data/Game%20Data%20-%20Factories%20-%20rev.%20v_01%20%2Bevents%20(2)%20(1).csv',
   '/data/factories.csv',
+  '/data/Game%20Data%20-%20Factories%20-%20rev.%20v_01%20%2Bevents%20(2)%20(1).csv',
 ];
 
 let factoryDataCache: FactoryDataRow[] | null = null;

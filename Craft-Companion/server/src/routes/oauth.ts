@@ -11,7 +11,12 @@ import {
 import { consumeOauthSession, createOauthSession } from '../storage/oauthSessionStorage.js';
 import { getExternalProfile } from '../services/craftworldExternalApi.js';
 import { getUsers, saveUsers } from '../storage/userStorage.js';
-import { signSession, sessionCookieOptions, SESSION_COOKIE } from '../auth/session.js';
+import {
+  signSession,
+  sessionCookieOptions,
+  loggedInCookieOptions,
+  SESSION_COOKIE,
+} from '../auth/session.js';
 
 declare global {
   namespace Express {
@@ -22,13 +27,24 @@ declare global {
 }
 
 function getRequestOrigin(req: Request): string {
-  if (process.env.CLIENT_ORIGIN) return process.env.CLIENT_ORIGIN;
   const host = req.headers.host;
   if (host && !host.includes('localhost') && !host.includes('127.0.0.1')) {
     const proto = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
     return `${proto}://${host}`;
   }
-  return 'http://localhost:5173';
+  return process.env.CLIENT_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:5173';
+}
+
+function getRedirectUri(req: Request): string {
+  if (process.env.CRAFTWORLD_OAUTH_REDIRECT_URI) {
+    return process.env.CRAFTWORLD_OAUTH_REDIRECT_URI;
+  }
+  const host = req.headers.host;
+  if (host && !host.includes('localhost') && !host.includes('127.0.0.1')) {
+    const proto = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
+    return `${proto}://${host}/api/auth/callback`;
+  }
+  return 'http://localhost:5000/api/auth/callback';
 }
 
 export const oauthRouter = Router();
@@ -54,11 +70,12 @@ oauthRouter.get('/authorize', async (req, res) => {
 
   const pkce = generatePkcePair();
   const state = generateState();
-  await createOauthSession({ state, codeVerifier: pkce.codeVerifier, clientOrigin });
-  console.log('OAuth config redirectUri:', oauthConfig.redirectUri);
+  const redirectUri = getRedirectUri(req);
+  await createOauthSession({ state, codeVerifier: pkce.codeVerifier, clientOrigin, redirectUri });
+  console.log('OAuth config redirectUri:', redirectUri);
   console.log('OAuth config scopes:', oauthConfig.scopes);
   console.log('OAuth clientOrigin:', clientOrigin);
-  const url = buildAuthorizeUrl({ state, codeChallenge: pkce.codeChallenge });
+  const url = buildAuthorizeUrl({ state, codeChallenge: pkce.codeChallenge, redirectUri });
   console.log('Generated authorize URL:', url);
   res.redirect(url);
 });
@@ -101,7 +118,7 @@ oauthRouter.get('/callback', async (req, res) => {
 
   let tokens;
   try {
-    tokens = await exchangeAuthorizationCode(code, session.codeVerifier);
+    tokens = await exchangeAuthorizationCode(code, session.codeVerifier, session.redirectUri);
   } catch (err: any) {
     console.error('OAuth token exchange failed', err?.message);
     return res.redirect(
@@ -134,9 +151,9 @@ oauthRouter.get('/callback', async (req, res) => {
   }
 
   user.craftWorldUid = uid;
-  user.craftWorldDisplayName = profile.displayName;
-  user.craftWorldAvatarUrl = profile.avatarUrl;
-  user.craftWorldLevel = profile.level;
+  user.craftWorldDisplayName = profile.displayName || user.craftWorldDisplayName;
+  user.craftWorldAvatarUrl = profile.avatarUrl || user.craftWorldAvatarUrl;
+  user.craftWorldLevel = profile.level || user.craftWorldLevel;
   user.craftWorldAccessToken = tokens.accessToken;
   user.craftWorldRefreshToken = tokens.refreshToken;
   user.craftWorldTokenExpiresAt = tokenExpiresAt;
@@ -144,10 +161,10 @@ oauthRouter.get('/callback', async (req, res) => {
   user.lastLoginAt = now;
   await saveUsers(users);
 
-  const maxAgeSeconds = Number(process.env.SESSION_MAX_AGE_SECONDS || 7 * 24 * 60 * 60);
+  const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
   res.setHeader('Set-Cookie', [
-    `${SESSION_COOKIE}=${signSession(user.id)}; ${sessionCookieOptions()}`,
-    `cc_logged_in=true; Path=/; SameSite=None; Secure; Max-Age=${maxAgeSeconds}`,
+    `${SESSION_COOKIE}=${signSession(user.id)}; ${sessionCookieOptions(isSecure)}`,
+    `cc_logged_in=true; ${loggedInCookieOptions(isSecure)}`,
   ]);
   res.redirect(`${activeOrigin}/home`);
 });

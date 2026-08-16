@@ -530,12 +530,12 @@ export function calculateCycleTimerStatus(input: CycleTimerInput): CycleTimerSta
   }
 
   const elapsedSeconds = Math.max(0, Math.floor((effectiveNow - startedMs) / 1000));
-
-  // Single production run countdown: counts down to 00:00:00 and marks completed/ready when elapsed >= runtime
-  const remainingSeconds = runtimeSeconds > 0 ? Math.max(0, runtimeSeconds - elapsedSeconds) : 0;
+  const completedCycles = runtimeSeconds > 0 ? Math.floor(elapsedSeconds / runtimeSeconds) : 0;
+  const currentCycleElapsed = runtimeSeconds > 0 ? elapsedSeconds % runtimeSeconds : 0;
+  const remainingSeconds =
+    runtimeSeconds > 0 ? (completedCycles > 0 && currentCycleElapsed === 0 ? 0 : runtimeSeconds - currentCycleElapsed) : 0;
   const progressPercent =
-    runtimeSeconds > 0 ? Math.min(100, (elapsedSeconds / runtimeSeconds) * 100) : 0;
-  const completedCycles = elapsedSeconds >= runtimeSeconds ? 1 : 0;
+    runtimeSeconds > 0 ? Math.min(100, (currentCycleElapsed / runtimeSeconds) * 100) : 0;
 
   return {
     runtimeSeconds,

@@ -46,8 +46,25 @@ export function parseCookies(header: string | undefined): Record<string, string>
   return out;
 }
 
-export function sessionCookieOptions(): string {
-  const flags = ['Path=/', 'HttpOnly', 'SameSite=None', 'Secure'];
+export function sessionCookieOptions(isSecure = false): string {
+  const flags = ['Path=/', 'HttpOnly'];
+  if (isSecure || process.env.NODE_ENV === 'production') {
+    flags.push('SameSite=None', 'Secure');
+  } else {
+    flags.push('SameSite=Lax');
+  }
+  const maxAgeSeconds = Number(process.env.SESSION_MAX_AGE_SECONDS || 7 * 24 * 60 * 60);
+  flags.push(`Max-Age=${maxAgeSeconds}`);
+  return flags.join('; ');
+}
+
+export function loggedInCookieOptions(isSecure = false): string {
+  const flags = ['Path=/'];
+  if (isSecure || process.env.NODE_ENV === 'production') {
+    flags.push('SameSite=None', 'Secure');
+  } else {
+    flags.push('SameSite=Lax');
+  }
   const maxAgeSeconds = Number(process.env.SESSION_MAX_AGE_SECONDS || 7 * 24 * 60 * 60);
   flags.push(`Max-Age=${maxAgeSeconds}`);
   return flags.join('; ');

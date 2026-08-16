@@ -1,12 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from '../utils/i18n';
-import { oauthAuthorize } from '../services/api';
+import { oauthAuthorize, getMe } from '../services/api';
 
 export default function SignIn() {
   const nav = useNavigate();
   const { t, language } = useTranslation();
   const [e, setE] = useState('');
+
+  useEffect(() => {
+    getMe()
+      .then((me: any) => {
+        if (me && me.id) {
+          nav('/home', { replace: true });
+        }
+      })
+      .catch(() => {});
+  }, [nav]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -15,7 +25,7 @@ export default function SignIn() {
       if (err === 'access_denied') setE(t('signin.error.denied'));
       else setE(decodeURIComponent(err));
     }
-  }, []);
+  }, [t]);
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center px-4 relative z-10 py-12">

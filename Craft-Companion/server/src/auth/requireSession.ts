@@ -13,7 +13,12 @@ declare global {
 export async function requireSession(req: Request, res: Response, next: NextFunction) {
   const cookie = req.headers.cookie || '';
   const match = cookie.match(new RegExp(`(?:^|; )${SESSION_COOKIE}=([^;]+)`));
-  const token = match?.[1];
+  let token = match?.[1];
+
+  if (!token && req.headers.authorization?.startsWith('Bearer ')) {
+    token = req.headers.authorization.slice(7).trim();
+  }
+
   if (!token) return res.status(401).json({ message: 'Unauthorized' });
 
   const userId = verifySession(token);

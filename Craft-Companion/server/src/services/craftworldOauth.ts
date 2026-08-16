@@ -6,24 +6,25 @@ const tokenUrl = `${craftWorldBaseUrl}/oauth/token`;
 const revokeUrl = `${craftWorldBaseUrl}/oauth/revoke`;
 
 export const oauthConfig = {
-  get clientId() {
-    const envId = process.env.CRAFTWORLD_OAUTH_CLIENT_ID;
-    if (envId && envId.startsWith('client_019f6f69')) return envId;
-    return 'client_019f6f69-da4f-7069-b15b-bb947f5c117c';
+  get clientId(): string {
+    return (
+      process.env.CRAFTWORLD_OAUTH_CLIENT_ID ||
+      'client_019f6f6c-3dbc-754a-a0ab-2fcf87a72975'
+    );
   },
-  get clientSecret() {
-    const envSecret = process.env.CRAFTWORLD_OAUTH_CLIENT_SECRET;
-    if (envSecret && envSecret.startsWith('secret_019f6f69')) return envSecret;
-    return 'secret_019f6f69-da4f-7069-b15b-bb947f5c0c3e';
+  get clientSecret(): string {
+    return (
+      process.env.CRAFTWORLD_OAUTH_CLIENT_SECRET ||
+      'secret_019f6f6c-3dbd-7b33-9113-1838eee440ce'
+    );
   },
-  get redirectUri() {
-    const raw = process.env.CRAFTWORLD_OAUTH_REDIRECT_URI || '';
-    if (raw.includes('coquerokli-craft-world-calculator-favorite.hf.space') && raw.includes('/api/auth/callback')) {
-      return raw;
-    }
-    return 'https://coquerokli-craft-world-calculator-favorite.hf.space/api/auth/callback';
+  get redirectUri(): string {
+    return (
+      process.env.CRAFTWORLD_OAUTH_REDIRECT_URI ||
+      'http://localhost:5000/api/auth/callback'
+    );
   },
-  get scopes() {
+  get scopes(): string[] {
     return (
       process.env.CRAFTWORLD_OAUTH_SCOPES ||
       'craft:read exchange:read inventory:read onchain:read purchases:read'
@@ -65,11 +66,16 @@ export function generateState(): string {
   return randomBytes(24).toString('base64url');
 }
 
-export function buildAuthorizeUrl(params: { state: string; codeChallenge: string }): string {
+export function buildAuthorizeUrl(params: {
+  state: string;
+  codeChallenge: string;
+  redirectUri?: string;
+}): string {
+  const redirectUri = params.redirectUri || oauthConfig.redirectUri;
   const query = new URLSearchParams({
     response_type: 'code',
     client_id: oauthConfig.clientId,
-    redirect_uri: oauthConfig.redirectUri,
+    redirect_uri: redirectUri,
     scope: oauthConfig.scopes.join(' '),
     state: params.state,
     code_challenge: params.codeChallenge,
@@ -111,12 +117,14 @@ export class OAuthError extends Error {
 export async function exchangeAuthorizationCode(
   code: string,
   codeVerifier: string,
+  redirectUriOverride?: string,
 ): Promise<CraftworldTokenSet> {
   const { clientId, clientSecret } = requireCredentials();
+  const redirect_uri = redirectUriOverride || oauthConfig.redirectUri;
   const body = new URLSearchParams({
     grant_type: 'authorization_code',
     code,
-    redirect_uri: oauthConfig.redirectUri,
+    redirect_uri,
     client_id: clientId,
     code_verifier: codeVerifier,
   });

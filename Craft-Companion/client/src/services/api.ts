@@ -6,7 +6,9 @@ import {
 } from '../types';
 const API =
   import.meta.env.VITE_API_BASE_URL ||
-  (window.location.hostname === 'localhost' ? 'http://localhost:3001' : '');
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000'
+    : '');
 
 async function req(path: string, init: RequestInit = {}) {
   const res = await fetch(`${API}${path}`, {
@@ -14,7 +16,18 @@ async function req(path: string, init: RequestInit = {}) {
     credentials: 'include',
     headers: { 'Content-Type': 'application/json', ...(init.headers || {}) },
   });
-  if (!res.ok) throw new Error((await res.json()).message || 'Request failed');
+  if (!res.ok) {
+    let errorMsg = 'Request failed';
+    try {
+      const errJson = await res.json();
+      errorMsg = errJson.message || errJson.error || errorMsg;
+    } catch {
+      try {
+        errorMsg = await res.text();
+      } catch {}
+    }
+    throw new Error(errorMsg);
+  }
   return res.json();
 }
 

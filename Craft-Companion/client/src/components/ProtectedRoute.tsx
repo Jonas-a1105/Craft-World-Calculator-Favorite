@@ -10,20 +10,26 @@ function isCookieLogged() {
 }
 
 export default function ProtectedRoute({ children }: { children: any }) {
-  const [authenticated, setAuthenticated] = useState<boolean | null>(() => (isCookieLogged() ? true : null));
+  const [authenticated, setAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (authenticated === true) return;
+    let mounted = true;
     getMe()
       .then((me) => {
-        if (me && me.id) {
-          setAuthenticated(true);
-        } else {
-          setAuthenticated(false);
+        if (mounted) {
+          setAuthenticated(Boolean(me && me.id));
         }
       })
-      .catch(() => setAuthenticated(false));
-  }, [authenticated]);
+      .catch(() => {
+        if (mounted) {
+          setAuthenticated(false);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   if (authenticated === null) {
     return (

@@ -1,12 +1,13 @@
-import { randomBytes, createHash } from 'node:crypto';
-import { promises as fs } from 'node:fs';
-import path from 'node:path';
-
 const craftWorldBaseUrl = process.env.CRAFTWORLD_BASE_URL || 'https://craft-world.gg';
-const externalApiBase = `${craftWorldBaseUrl}/api/2/external`;
+const externalApiBase =
+  process.env.CRAFTWORLD_EXTERNAL_API_BASE || `${craftWorldBaseUrl}/api/2/external`;
 
 export type ExternalApiErrorCode =
-  'insufficient_scope' | 'invalid_token' | 'rate_limited' | 'server_error' | 'unknown';
+  | 'insufficient_scope'
+  | 'invalid_token'
+  | 'rate_limited'
+  | 'server_error'
+  | 'unknown';
 
 export class ExternalApiError extends Error {
   code: ExternalApiErrorCode;
@@ -175,7 +176,7 @@ async function readJson<T>(res: Response): Promise<T> {
       'External API request failed.';
     throw new ExternalApiError(message, code as ExternalApiErrorCode, res.status);
   }
-  return raw?.data as T;
+  return (raw?.data !== undefined ? raw.data : raw) as T;
 }
 
 function bearerHeaders(token: string): HeadersInit {
