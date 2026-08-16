@@ -121,6 +121,36 @@ export class OAuthError extends Error {
   }
 }
 
+async function postTokenEndpoint(
+  bodyParams: Record<string, string>,
+  authHeader?: string,
+): Promise<{ ok: boolean; status: number; data: any; errorText?: string }> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+  if (authHeader) {
+    headers['Authorization'] = authHeader;
+  }
+  const body = new URLSearchParams(bodyParams);
+  try {
+    const res = await fetch(tokenUrl, {
+      method: 'POST',
+      headers,
+      body,
+    });
+    const text = await res.text();
+    let data: any = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      data = { rawText: text };
+    }
+    return { ok: res.ok, status: res.status, data, errorText: text };
+  } catch (err: any) {
+    return { ok: false, status: 500, data: {}, errorText: err?.message };
+  }
+}
+
 export async function exchangeAuthorizationCode(
   code: string,
   codeVerifier: string,
@@ -130,48 +160,89 @@ export async function exchangeAuthorizationCode(
 ): Promise<CraftworldTokenSet> {
   const { clientId, clientSecret } = requireCredentials(clientIdOverride, clientSecretOverride);
   const redirect_uri = redirectUriOverride || oauthConfig.redirectUri;
-  const body = new URLSearchParams({
+
+  console.log(`[OAuth Exchange] Trying token exchange for client: ${clientId}`);
+  console.log(`[OAuth Exchange] Redirect URI: ${redirect_uri}`);
+
+  let res1: { ok: boolean; status: number; data: any; errorText?: string } | null = null;
+
+  // Estrategia 1: RFC 6749 Standard HTTP Basic Auth Header
+  if (clientId && clientSecret) {
+    const basicAuth = `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`;
+    res1 = await postTokenEndpoint(
+      {
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri,
+        code_verifier: codeVerifier,
+      },
+      basicAuth,
+    );
+    if (res1.ok && res1.data.access_token) {
+      console.log('[OAuth Exchange] Success via Basic Auth Header');
+      return {
+        accessToken: res1.data.access_token,
+        tokenType: res1.data.token_type || 'Bearer',
+        expiresIn: res1.data.expires_in || 3600,
+        refreshToken: res1.data.refresh_token,
+        scope: res1.data.scope,
+      };
+    }
+    console.warn('[OAuth Exchange] Strategy 1 (Basic Auth) failed:', res1.status, res1.data);
+  }
+
+  // Estrategia 2: Form Body urlencoded (según guide.txt de Craft World)
+  const bodyParams: Record<string, string> = {
+    grant_type: 'authorization_code',
+    code,
+    redirect_uri,
+    client_id: clientId,
+    code_verifier: codeVerifier,
+  };
+  if (clientSecret) bodyParams.client_secret = clientSecret;
+
+  const res2 = await postTokenEndpoint(bodyParams);
+  if (res2.ok && res2.data.access_token) {
+    console.log('[OAuth Exchange] Success via Body credentials');
+    return {
+      accessToken: res2.data.access_token,
+      tokenType: res2.data.token_type || 'Bearer',
+      expiresIn: res2.data.expires_in || 3600,
+      refreshToken: res2.data.refresh_token,
+      scope: res2.data.scope,
+    };
+  }
+  console.warn('[OAuth Exchange] Strategy 2 (Body credentials) failed:', res2.status, res2.data);
+
+  // Estrategia 3: PKCE Público (sin client_secret)
+  const res3 = await postTokenEndpoint({
     grant_type: 'authorization_code',
     code,
     redirect_uri,
     client_id: clientId,
     code_verifier: codeVerifier,
   });
-  if (clientSecret) body.set('client_secret', clientSecret);
-
-  let res = await fetch(tokenUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body,
-  });
-
-  if (!res.ok && res.status === 401 && clientSecret) {
-    // Si falla por credenciales de cliente confidencial, reintentar como cliente público PKCE
-    const publicBody = new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri,
-      client_id: clientId,
-      code_verifier: codeVerifier,
-    });
-    const retryRes = await fetch(tokenUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: publicBody,
-    });
-    if (retryRes.ok) {
-      res = retryRes;
-    }
+  if (res3.ok && res3.data.access_token) {
+    console.log('[OAuth Exchange] Success via Public PKCE');
+    return {
+      accessToken: res3.data.access_token,
+      tokenType: res3.data.token_type || 'Bearer',
+      expiresIn: res3.data.expires_in || 3600,
+      refreshToken: res3.data.refresh_token,
+      scope: res3.data.scope,
+    };
   }
+  console.warn('[OAuth Exchange] Strategy 3 (Public PKCE) failed:', res3.status, res3.data);
 
-  const data = await readJson<CraftworldTokenResponse>(res);
-  return {
-    accessToken: data.access_token,
-    tokenType: data.token_type,
-    expiresIn: data.expires_in,
-    refreshToken: data.refresh_token,
-    scope: data.scope,
-  };
+  // Si todas fallan, extraer el mensaje de error más descriptivo
+  const lastError =
+    res2.data?.error_description ||
+    res1?.data?.error_description ||
+    res2.data?.message ||
+    res2.data?.error ||
+    'Token exchange failed with Craft World';
+
+  throw new OAuthError(lastError, res2.data?.error);
 }
 
 export async function refreshCraftworldToken(
@@ -180,43 +251,66 @@ export async function refreshCraftworldToken(
   clientSecretOverride?: string,
 ): Promise<CraftworldTokenSet> {
   const { clientId, clientSecret } = requireCredentials(clientIdOverride, clientSecretOverride);
-  const body = new URLSearchParams({
+
+  // Estrategia 1: Basic Auth
+  if (clientId && clientSecret) {
+    const basicAuth = `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`;
+    const res1 = await postTokenEndpoint(
+      {
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+      },
+      basicAuth,
+    );
+    if (res1.ok && res1.data.access_token) {
+      return {
+        accessToken: res1.data.access_token,
+        tokenType: res1.data.token_type || 'Bearer',
+        expiresIn: res1.data.expires_in || 3600,
+        refreshToken: res1.data.refresh_token,
+        scope: res1.data.scope,
+      };
+    }
+  }
+
+  // Estrategia 2: Form Body
+  const bodyParams: Record<string, string> = {
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken,
+    client_id: clientId,
+  };
+  if (clientSecret) bodyParams.client_secret = clientSecret;
+
+  const res2 = await postTokenEndpoint(bodyParams);
+  if (res2.ok && res2.data.access_token) {
+    return {
+      accessToken: res2.data.access_token,
+      tokenType: res2.data.token_type || 'Bearer',
+      expiresIn: res2.data.expires_in || 3600,
+      refreshToken: res2.data.refresh_token,
+      scope: res2.data.scope,
+    };
+  }
+
+  // Estrategia 3: Public PKCE refresh
+  const res3 = await postTokenEndpoint({
     grant_type: 'refresh_token',
     refresh_token: refreshToken,
     client_id: clientId,
   });
-  if (clientSecret) body.set('client_secret', clientSecret);
-
-  let res = await fetch(tokenUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body,
-  });
-
-  if (!res.ok && res.status === 401 && clientSecret) {
-    const publicBody = new URLSearchParams({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-      client_id: clientId,
-    });
-    const retryRes = await fetch(tokenUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: publicBody,
-    });
-    if (retryRes.ok) {
-      res = retryRes;
-    }
+  if (res3.ok && res3.data.access_token) {
+    return {
+      accessToken: res3.data.access_token,
+      tokenType: res3.data.token_type || 'Bearer',
+      expiresIn: res3.data.expires_in || 3600,
+      refreshToken: res3.data.refresh_token,
+      scope: res3.data.scope,
+    };
   }
 
-  const data = await readJson<CraftworldTokenResponse>(res);
-  return {
-    accessToken: data.access_token,
-    tokenType: data.token_type,
-    expiresIn: data.expires_in,
-    refreshToken: data.refresh_token,
-    scope: data.scope,
-  };
+  const lastError =
+    res2.data?.error_description || res2.data?.message || 'Token refresh failed with Craft World';
+  throw new OAuthError(lastError, res2.data?.error);
 }
 
 export async function revokeCraftworldToken(token: string): Promise<void> {
