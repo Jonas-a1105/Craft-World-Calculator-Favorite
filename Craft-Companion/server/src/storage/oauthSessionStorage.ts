@@ -6,6 +6,8 @@ type OAuthSession = {
   codeVerifier: string;
   clientOrigin?: string;
   redirectUri?: string;
+  clientId?: string;
+  clientSecret?: string;
   createdAt: string;
   expiresAt: string;
 };
@@ -48,6 +50,8 @@ export async function createOauthSession(data: {
   codeVerifier: string;
   clientOrigin?: string;
   redirectUri?: string;
+  clientId?: string;
+  clientSecret?: string;
 }): Promise<void> {
   const now = new Date();
   const session: OAuthSession = {
@@ -55,6 +59,8 @@ export async function createOauthSession(data: {
     codeVerifier: data.codeVerifier,
     clientOrigin: data.clientOrigin,
     redirectUri: data.redirectUri,
+    clientId: data.clientId,
+    clientSecret: data.clientSecret,
     createdAt: now.toISOString(),
     expiresAt: new Date(now.getTime() + SESSION_TTL_MS).toISOString(),
   };

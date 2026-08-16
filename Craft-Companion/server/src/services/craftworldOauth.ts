@@ -70,11 +70,13 @@ export function buildAuthorizeUrl(params: {
   state: string;
   codeChallenge: string;
   redirectUri?: string;
+  clientId?: string;
 }): string {
+  const clientId = params.clientId || oauthConfig.clientId;
   const redirectUri = params.redirectUri || oauthConfig.redirectUri;
   const query = new URLSearchParams({
     response_type: 'code',
-    client_id: oauthConfig.clientId,
+    client_id: clientId,
     redirect_uri: redirectUri,
     scope: oauthConfig.scopes.join(' '),
     state: params.state,
@@ -84,9 +86,14 @@ export function buildAuthorizeUrl(params: {
   return `${authorizeUrl}?${query.toString()}`;
 }
 
-function requireCredentials(): { clientId: string; clientSecret: string } {
-  if (!oauthConfig.clientId) throw new Error('CRAFTWORLD_OAUTH_CLIENT_ID is not configured.');
-  return { clientId: oauthConfig.clientId, clientSecret: oauthConfig.clientSecret };
+function requireCredentials(
+  clientIdOverride?: string,
+  clientSecretOverride?: string,
+): { clientId: string; clientSecret: string } {
+  const clientId = clientIdOverride || oauthConfig.clientId;
+  const clientSecret = clientSecretOverride || oauthConfig.clientSecret;
+  if (!clientId) throw new Error('CRAFTWORLD_OAUTH_CLIENT_ID is not configured.');
+  return { clientId, clientSecret };
 }
 
 async function readJson<T>(res: Response): Promise<T> {
@@ -118,8 +125,10 @@ export async function exchangeAuthorizationCode(
   code: string,
   codeVerifier: string,
   redirectUriOverride?: string,
+  clientIdOverride?: string,
+  clientSecretOverride?: string,
 ): Promise<CraftworldTokenSet> {
-  const { clientId, clientSecret } = requireCredentials();
+  const { clientId, clientSecret } = requireCredentials(clientIdOverride, clientSecretOverride);
   const redirect_uri = redirectUriOverride || oauthConfig.redirectUri;
   const body = new URLSearchParams({
     grant_type: 'authorization_code',
@@ -153,8 +162,12 @@ export async function exchangeAuthorizationCode(
   };
 }
 
-export async function refreshCraftworldToken(refreshToken: string): Promise<CraftworldTokenSet> {
-  const { clientId, clientSecret } = requireCredentials();
+export async function refreshCraftworldToken(
+  refreshToken: string,
+  clientIdOverride?: string,
+  clientSecretOverride?: string,
+): Promise<CraftworldTokenSet> {
+  const { clientId, clientSecret } = requireCredentials(clientIdOverride, clientSecretOverride);
   const body = new URLSearchParams({
     grant_type: 'refresh_token',
     refresh_token: refreshToken,

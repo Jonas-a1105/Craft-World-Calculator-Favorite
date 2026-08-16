@@ -35,16 +35,41 @@ function getRequestOrigin(req: Request): string {
   return process.env.CLIENT_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:5173';
 }
 
-function getRedirectUri(req: Request): string {
-  if (process.env.CRAFTWORLD_OAUTH_REDIRECT_URI) {
-    return process.env.CRAFTWORLD_OAUTH_REDIRECT_URI;
-  }
-  const host = req.headers.host;
-  if (host && !host.includes('localhost') && !host.includes('127.0.0.1')) {
+function getOAuthCredentials(req: Request): {
+  clientId: string;
+  clientSecret: string;
+  redirectUri: string;
+} {
+  const host = req.headers.host || '';
+  const isWeb = host && !host.includes('localhost') && !host.includes('127.0.0.1');
+
+  if (isWeb) {
     const proto = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
-    return `${proto}://${host}/api/auth/callback`;
+    const redirectUri =
+      process.env.CRAFTWORLD_OAUTH_REDIRECT_URI ||
+      `${proto}://${host}/api/auth/callback`;
+    return {
+      clientId:
+        process.env.CRAFTWORLD_OAUTH_CLIENT_ID ||
+        'client_019f6f69-da4f-7069-b15b-bb947f5c117c',
+      clientSecret:
+        process.env.CRAFTWORLD_OAUTH_CLIENT_SECRET ||
+        'secret_019f6f69-da4f-7069-b15b-bb947f5c0c3e',
+      redirectUri,
+    };
   }
-  return 'http://localhost:5000/api/auth/callback';
+
+  return {
+    clientId:
+      process.env.CRAFTWORLD_OAUTH_CLIENT_ID ||
+      'client_019f6f6c-3dbc-754a-a0ab-2fcf87a72975',
+    clientSecret:
+      process.env.CRAFTWORLD_OAUTH_CLIENT_SECRET ||
+      'secret_019f6f6c-3dbd-7b33-9113-1838eee440ce',
+    redirectUri:
+      process.env.CRAFTWORLD_OAUTH_REDIRECT_URI ||
+      'http://localhost:5000/api/auth/callback',
+  };
 }
 
 export const oauthRouter = Router();
@@ -68,14 +93,27 @@ oauthRouter.get('/authorize', async (req, res) => {
     clientOrigin = req.query.origin;
   }
 
+  const creds = getOAuthCredentials(req);
   const pkce = generatePkcePair();
   const state = generateState();
-  const redirectUri = getRedirectUri(req);
-  await createOauthSession({ state, codeVerifier: pkce.codeVerifier, clientOrigin, redirectUri });
-  console.log('OAuth config redirectUri:', redirectUri);
+  await createOauthSession({
+    state,
+    codeVerifier: pkce.codeVerifier,
+    clientOrigin,
+    redirectUri: creds.redirectUri,
+    clientId: creds.clientId,
+    clientSecret: creds.clientSecret,
+  });
+  console.log('OAuth config clientId:', creds.clientId);
+  console.log('OAuth config redirectUri:', creds.redirectUri);
   console.log('OAuth config scopes:', oauthConfig.scopes);
   console.log('OAuth clientOrigin:', clientOrigin);
-  const url = buildAuthorizeUrl({ state, codeChallenge: pkce.codeChallenge, redirectUri });
+  const url = buildAuthorizeUrl({
+    state,
+    codeChallenge: pkce.codeChallenge,
+    redirectUri: creds.redirectUri,
+    clientId: creds.clientId,
+  });
   console.log('Generated authorize URL:', url);
   res.redirect(url);
 });
@@ -118,7 +156,13 @@ oauthRouter.get('/callback', async (req, res) => {
 
   let tokens;
   try {
-    tokens = await exchangeAuthorizationCode(code, session.codeVerifier, session.redirectUri);
+    tokens = await exchangeAuthorizationCode(
+      code,
+      session.codeVerifier,
+      session.redirectUri,
+      session.clientId,
+      session.clientSecret,
+    );
   } catch (err: any) {
     console.error('OAuth token exchange failed', err?.message);
     return res.redirect(
@@ -158,6 +202,8 @@ oauthRouter.get('/callback', async (req, res) => {
   user.craftWorldRefreshToken = tokens.refreshToken;
   user.craftWorldTokenExpiresAt = tokenExpiresAt;
   user.craftWorldScopes = tokens.scope;
+  user.craftWorldClientId = session.clientId;
+  user.craftWorldClientSecret = session.clientSecret;
   user.lastLoginAt = now;
   await saveUsers(users);
 

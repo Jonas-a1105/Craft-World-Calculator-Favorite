@@ -8,6 +8,8 @@ export type UserAccount = {
   craftWorldRefreshToken?: string;
   craftWorldTokenExpiresAt?: string;
   craftWorldScopes?: string;
+  craftWorldClientId?: string;
+  craftWorldClientSecret?: string;
   createdAt: string;
   lastLoginAt?: string;
 };

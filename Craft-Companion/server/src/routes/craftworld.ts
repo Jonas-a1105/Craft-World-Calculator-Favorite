@@ -24,7 +24,11 @@ async function getFreshAccessToken(user: any): Promise<string> {
   ) {
     return user.craftWorldAccessToken || '';
   }
-  const refreshed = await refreshCraftworldToken(user.craftWorldRefreshToken);
+  const refreshed = await refreshCraftworldToken(
+    user.craftWorldRefreshToken,
+    user.craftWorldClientId,
+    user.craftWorldClientSecret,
+  );
   user.craftWorldAccessToken = refreshed.accessToken;
   user.craftWorldRefreshToken = refreshed.refreshToken;
   user.craftWorldTokenExpiresAt = new Date(Date.now() + refreshed.expiresIn * 1000).toISOString();
