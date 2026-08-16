@@ -139,19 +139,31 @@ export async function exchangeAuthorizationCode(
   });
   if (clientSecret) body.set('client_secret', clientSecret);
 
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/x-www-form-urlencoded',
-  };
-  if (clientId && clientSecret) {
-    const encoded = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-    headers['Authorization'] = `Basic ${encoded}`;
-  }
-
-  const res = await fetch(tokenUrl, {
+  let res = await fetch(tokenUrl, {
     method: 'POST',
-    headers,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body,
   });
+
+  if (!res.ok && res.status === 401 && clientSecret) {
+    // Si falla por credenciales de cliente confidencial, reintentar como cliente público PKCE
+    const publicBody = new URLSearchParams({
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri,
+      client_id: clientId,
+      code_verifier: codeVerifier,
+    });
+    const retryRes = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: publicBody,
+    });
+    if (retryRes.ok) {
+      res = retryRes;
+    }
+  }
+
   const data = await readJson<CraftworldTokenResponse>(res);
   return {
     accessToken: data.access_token,
@@ -175,19 +187,28 @@ export async function refreshCraftworldToken(
   });
   if (clientSecret) body.set('client_secret', clientSecret);
 
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/x-www-form-urlencoded',
-  };
-  if (clientId && clientSecret) {
-    const encoded = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-    headers['Authorization'] = `Basic ${encoded}`;
-  }
-
-  const res = await fetch(tokenUrl, {
+  let res = await fetch(tokenUrl, {
     method: 'POST',
-    headers,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body,
   });
+
+  if (!res.ok && res.status === 401 && clientSecret) {
+    const publicBody = new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+      client_id: clientId,
+    });
+    const retryRes = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: publicBody,
+    });
+    if (retryRes.ok) {
+      res = retryRes;
+    }
+  }
+
   const data = await readJson<CraftworldTokenResponse>(res);
   return {
     accessToken: data.access_token,
