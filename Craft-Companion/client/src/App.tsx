@@ -17,11 +17,12 @@ import SignIn from './pages/SignIn';
 import UpgradeAdvisor from './pages/UpgradeAdvisor';
 import ValueChainMap from './pages/ValueChainMap';
 import Prices from './pages/Prices';
+import ResourceDetail from './pages/ResourceDetail';
 
 export default function App() {
   useEffect(() => {
     const isSolid = localStorage.getItem('craftworld.solidBackground') === 'true';
-    const solidColor = localStorage.getItem('craftworld.solidBackgroundColor') || '#000000';
+    const solidColor = localStorage.getItem('craftworld.solidBackgroundColor') || '#141415';
     if (isSolid) {
       document.body.classList.add('solid-bg');
     } else {
@@ -137,6 +138,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Prices />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resource/:symbol"
+            element={
+              <ProtectedRoute>
+                <ResourceDetail />
               </ProtectedRoute>
             }
           />

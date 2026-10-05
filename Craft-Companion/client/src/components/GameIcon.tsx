@@ -23,15 +23,43 @@ export function ResourceIcon({
   size?: number;
   className?: string;
 }) {
+  const [error, setError] = React.useState(false);
+
+  React.useEffect(() => {
+    setError(false);
+  }, [symbol]);
+
+  if (error) {
+    const letters = (symbol || '?').slice(0, 2).toUpperCase();
+    return (
+      <div
+        className={`inline-flex items-center justify-center shrink-0 rounded bg-amber-500/15 text-amber-400 font-mono font-bold select-none ${className}`}
+        style={{
+          width: `${size}px`,
+          height: `${size}px`,
+          minWidth: `${size}px`,
+          minHeight: `${size}px`,
+          fontSize: `${Math.max(9, Math.floor(size * 0.4))}px`,
+        }}
+        title={symbol}
+      >
+        {letters}
+      </div>
+    );
+  }
+
   return (
     <img
       src={getResourceIconUrl(symbol)}
       alt={symbol}
-      className={`inline-block object-contain ${className}`}
-      style={{ width: `${size}px`, height: `${size}px` }}
-      onError={(e) => {
-        (e.currentTarget as HTMLElement).style.opacity = '0.3';
+      className={`inline-block object-contain shrink-0 ${className}`}
+      style={{
+        width: `${size}px`,
+        height: `${size}px`,
+        minWidth: `${size}px`,
+        minHeight: `${size}px`,
       }}
+      onError={() => setError(true)}
     />
   );
 }

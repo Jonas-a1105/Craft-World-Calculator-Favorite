@@ -7,12 +7,10 @@ import { loadFactoryData, FactoryDataRow } from '../services/factoryData';
 import { calculateFactoryCycle, FactoryCycleResult } from '../services/craftworldCalculations';
 import { getCraftworldHome } from '../services/api';
 import { ResourceIcon, FactoryIcon } from '../components/GameIcon';
+import Select from '../components/ui/Select';
 
-function formatNumber(value: unknown, digits = 2) {
-  return typeof value === 'number' && Number.isFinite(value)
-    ? value.toLocaleString(undefined, { maximumFractionDigits: digits })
-    : '0';
-}
+import { extractPriceMap } from '../services/priceService';
+import { formatNumber } from '../utils/formatters';
 
 export default function Calculator() {
   const { language } = useTranslation();
@@ -27,21 +25,7 @@ export default function Calculator() {
       .then(([factoryRows, home]) => {
         setRows(factoryRows);
         if (factoryRows.length > 0) setSelectedToken(factoryRows[0].token);
-        // Base raw material market price fallback: 0.00394 COIN per EARTH/WATER/FIRE (matching in-game Exchange rate)
-        const map: Record<string, number> = {
-          COIN: 1,
-          EARTH: 0.00394,
-          WATER: 0.00394,
-          FIRE: 0.00394,
-        };
-        if (home?.priceList?.prices) {
-          home.priceList.prices.forEach((p: any) => {
-            if (typeof p.amount === 'number' && p.amount > 0) {
-              map[p.referenceSymbol?.toUpperCase()] = p.amount;
-            }
-          });
-        }
-        setPrices(map);
+        setPrices(extractPriceMap(home));
       })
       .finally(() => setLoading(false));
   }, []);
@@ -90,43 +74,33 @@ export default function Calculator() {
           title={language === 'es' ? '⚙️ Seleccionar Fábrica y Nivel' : '⚙️ Select Factory & Level'}
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs text-slate-400 font-bold block mb-1">
-                {language === 'es' ? 'Recurso / Fábrica:' : 'Resource / Factory:'}
-              </label>
-              <select
-                value={selectedToken}
-                onChange={(e) => {
-                  setSelectedToken(e.target.value);
-                  const firstLvl = rows.find((r) => r.token === e.target.value)?.level || 1;
-                  setSelectedLevel(firstLvl);
-                }}
-                className="w-full"
-              >
-                {uniqueTokens.map((token) => (
-                  <option key={token} value={token}>
-                    {token}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Select
+              label={language === 'es' ? 'Recurso / Fábrica:' : 'Resource / Factory:'}
+              value={selectedToken}
+              onChange={(e) => {
+                setSelectedToken(e.target.value);
+                const firstLvl = rows.find((r) => r.token === e.target.value)?.level || 1;
+                setSelectedLevel(firstLvl);
+              }}
+            >
+              {uniqueTokens.map((token) => (
+                <option key={token} value={token}>
+                  {token}
+                </option>
+              ))}
+            </Select>
 
-            <div>
-              <label className="text-xs text-slate-400 font-bold block mb-1">
-                {language === 'es' ? 'Nivel de Fábrica:' : 'Factory Level:'}
-              </label>
-              <select
-                value={selectedLevel}
-                onChange={(e) => setSelectedLevel(Number(e.target.value))}
-                className="w-full"
-              >
-                {availableLevels.map((lvl) => (
-                  <option key={lvl} value={lvl}>
-                    Nivel {lvl}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Select
+              label={language === 'es' ? 'Nivel de Fábrica:' : 'Factory Level:'}
+              value={selectedLevel}
+              onChange={(e) => setSelectedLevel(Number(e.target.value))}
+            >
+              {availableLevels.map((lvl) => (
+                <option key={lvl} value={lvl}>
+                  Nivel {lvl}
+                </option>
+              ))}
+            </Select>
           </div>
         </Card>
 
@@ -193,7 +167,7 @@ export default function Calculator() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-center pt-2 border-t border-slate-800">
+                <div className="grid grid-cols-2 gap-2 text-center pt-2 border-none">
                   <div className="resource-item-badge p-2.5">
                     <span className="text-[10px] text-slate-400 block font-bold">
                       {language === 'es' ? 'Ganancia / Hora' : 'Profit / Hour'}

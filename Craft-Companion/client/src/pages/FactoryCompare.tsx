@@ -6,13 +6,10 @@ import { useTranslation } from '../utils/i18n';
 import { loadFactoryData, FactoryDataRow } from '../services/factoryData';
 import { calculateFactoryCycle, FactoryCycleResult } from '../services/craftworldCalculations';
 import { getCraftworldHome } from '../services/api';
+import { extractPriceMap } from '../services/priceService';
 import { ResourceIcon, FactoryIcon } from '../components/GameIcon';
-
-function formatNumber(value: unknown, digits = 2) {
-  return typeof value === 'number' && Number.isFinite(value)
-    ? value.toLocaleString(undefined, { maximumFractionDigits: digits })
-    : '0';
-}
+import { Select } from '../components/ui';
+import { formatNumber } from '../utils/formatters';
 
 export default function FactoryCompare() {
   const { language } = useTranslation();
@@ -32,21 +29,7 @@ export default function FactoryCompare() {
           setToken1(factoryRows[0].token);
           setToken2(factoryRows[1].token);
         }
-        // Base raw material market price fallback: 0.00394 COIN per EARTH/WATER/FIRE (matching in-game Exchange rate)
-        const map: Record<string, number> = {
-          COIN: 1,
-          EARTH: 0.00394,
-          WATER: 0.00394,
-          FIRE: 0.00394,
-        };
-        if (home?.priceList?.prices) {
-          home.priceList.prices.forEach((p: any) => {
-            if (typeof p.amount === 'number' && p.amount > 0) {
-              map[p.referenceSymbol?.toUpperCase()] = p.amount;
-            }
-          });
-        }
-        setPrices(map);
+        setPrices(extractPriceMap(home));
       })
       .finally(() => setLoading(false));
   }, []);
@@ -74,7 +57,7 @@ export default function FactoryCompare() {
       <div className="w-full max-w-[1100px] mx-auto space-y-6">
         <div className="text-center mt-4 mb-2">
           <h1
-            className="text-3xl font-extrabold text-white tracking-wider"
+            className="text-3xl font-extrabold text-white tracking-wider font-main"
             style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9)' }}
           >
             {language === 'es' ? 'Comparar Fábricas' : 'Compare Factories'}
@@ -91,86 +74,68 @@ export default function FactoryCompare() {
           {/* Factory 1 Selector */}
           <Card title={language === 'es' ? '🏭 Fábrica A' : '🏭 Factory A'}>
             <div className="space-y-3">
-              <div>
-                <label className="text-xs text-slate-400 font-bold block mb-1">
-                  {language === 'es' ? 'Recurso / Fábrica:' : 'Resource / Factory:'}
-                </label>
-                <select
-                  value={token1}
-                  onChange={(e) => {
-                    setToken1(e.target.value);
-                    setLevel1(1);
-                  }}
-                  className="w-full"
-                >
-                  {uniqueTokens.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
+              <Select
+                label={language === 'es' ? 'Recurso / Fábrica:' : 'Resource / Factory:'}
+                value={token1}
+                onChange={(e) => {
+                  setToken1(e.target.value);
+                  setLevel1(1);
+                }}
+              >
+                {uniqueTokens.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </Select>
+
+              <Select
+                label={language === 'es' ? 'Nivel:' : 'Level:'}
+                value={level1}
+                onChange={(e) => setLevel1(Number(e.target.value))}
+              >
+                {rows
+                  .filter((r) => r.token === token1)
+                  .map((r) => (
+                    <option key={r.level} value={r.level}>
+                      Nivel {r.level}
                     </option>
                   ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-xs text-slate-400 font-bold block mb-1">
-                  {language === 'es' ? 'Nivel:' : 'Level:'}
-                </label>
-                <select
-                  value={level1}
-                  onChange={(e) => setLevel1(Number(e.target.value))}
-                  className="w-full"
-                >
-                  {rows
-                    .filter((r) => r.token === token1)
-                    .map((r) => (
-                      <option key={r.level} value={r.level}>
-                        Nivel {r.level}
-                      </option>
-                    ))}
-                </select>
-              </div>
+              </Select>
             </div>
           </Card>
 
           {/* Factory 2 Selector */}
           <Card title={language === 'es' ? '🏭 Fábrica B' : '🏭 Factory B'}>
             <div className="space-y-3">
-              <div>
-                <label className="text-xs text-slate-400 font-bold block mb-1">
-                  {language === 'es' ? 'Recurso / Fábrica:' : 'Resource / Factory:'}
-                </label>
-                <select
-                  value={token2}
-                  onChange={(e) => {
-                    setToken2(e.target.value);
-                    setLevel2(1);
-                  }}
-                  className="w-full"
-                >
-                  {uniqueTokens.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
+              <Select
+                label={language === 'es' ? 'Recurso / Fábrica:' : 'Resource / Factory:'}
+                value={token2}
+                onChange={(e) => {
+                  setToken2(e.target.value);
+                  setLevel2(1);
+                }}
+              >
+                {uniqueTokens.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </Select>
+
+              <Select
+                label={language === 'es' ? 'Nivel:' : 'Level:'}
+                value={level2}
+                onChange={(e) => setLevel2(Number(e.target.value))}
+              >
+                {rows
+                  .filter((r) => r.token === token2)
+                  .map((r) => (
+                    <option key={r.level} value={r.level}>
+                      Nivel {r.level}
                     </option>
                   ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-xs text-slate-400 font-bold block mb-1">
-                  {language === 'es' ? 'Nivel:' : 'Level:'}
-                </label>
-                <select
-                  value={level2}
-                  onChange={(e) => setLevel2(Number(e.target.value))}
-                  className="w-full"
-                >
-                  {rows
-                    .filter((r) => r.token === token2)
-                    .map((r) => (
-                      <option key={r.level} value={r.level}>
-                        Nivel {r.level}
-                      </option>
-                    ))}
-                </select>
-              </div>
+              </Select>
             </div>
           </Card>
         </div>
@@ -180,9 +145,9 @@ export default function FactoryCompare() {
           <Card
             title={language === 'es' ? '⚖️ Resultados de Comparación' : '⚖️ Comparison Results'}
           >
-            <div className="grid grid-cols-2 gap-4 text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
               {/* Column 1 */}
-              <div className="resource-item-badge p-4 space-y-3">
+              <div className="p-4 rounded-2xl bg-[#151518] border-none space-y-3">
                 <div className="flex items-center gap-3">
                   <FactoryIcon symbol={cycle1.row.token} size={36} />
                   <div>
@@ -192,21 +157,21 @@ export default function FactoryCompare() {
                     </span>
                   </div>
                 </div>
-                <div className="space-y-1.5 pt-2 border-t border-slate-800">
+                <div className="space-y-2 pt-2 border-none font-main">
                   <p className="flex justify-between text-slate-400">
                     <span>{language === 'es' ? 'Tiempo Ciclo' : 'Cycle Time'}:</span>
                     <strong className="text-white">{cycle1.runtimeMinutes} min</strong>
                   </p>
                   <p className="flex justify-between text-slate-400">
                     <span>{language === 'es' ? 'Output / Día' : 'Output / Day'}:</span>
-                    <strong className="text-amber-300 flex items-center gap-1">
+                    <strong className="text-amber-300 flex items-center gap-1 font-mono">
                       <ResourceIcon symbol={cycle1.row.output_token} size={14} />
                       {formatNumber(cycle1.outputPerDay)}
                     </strong>
                   </p>
                   <p className="flex justify-between text-slate-400">
                     <span>{language === 'es' ? 'Ganancia / Día' : 'Profit / Day'}:</span>
-                    <strong className="text-emerald-400 font-black">
+                    <strong className="text-emerald-400 font-black font-mono">
                       {formatNumber(cycle1.profitPerDay)} COIN
                     </strong>
                   </p>
@@ -214,7 +179,7 @@ export default function FactoryCompare() {
               </div>
 
               {/* Column 2 */}
-              <div className="resource-item-badge p-4 space-y-3">
+              <div className="p-4 rounded-2xl bg-[#151518] border-none space-y-3">
                 <div className="flex items-center gap-3">
                   <FactoryIcon symbol={cycle2.row.token} size={36} />
                   <div>
@@ -224,21 +189,21 @@ export default function FactoryCompare() {
                     </span>
                   </div>
                 </div>
-                <div className="space-y-1.5 pt-2 border-t border-slate-800">
+                <div className="space-y-2 pt-2 border-none font-main">
                   <p className="flex justify-between text-slate-400">
                     <span>{language === 'es' ? 'Tiempo Ciclo' : 'Cycle Time'}:</span>
                     <strong className="text-white">{cycle2.runtimeMinutes} min</strong>
                   </p>
                   <p className="flex justify-between text-slate-400">
                     <span>{language === 'es' ? 'Output / Día' : 'Output / Day'}:</span>
-                    <strong className="text-amber-300 flex items-center gap-1">
+                    <strong className="text-amber-300 flex items-center gap-1 font-mono">
                       <ResourceIcon symbol={cycle2.row.output_token} size={14} />
                       {formatNumber(cycle2.outputPerDay)}
                     </strong>
                   </p>
                   <p className="flex justify-between text-slate-400">
                     <span>{language === 'es' ? 'Ganancia / Día' : 'Profit / Day'}:</span>
-                    <strong className="text-emerald-400 font-black">
+                    <strong className="text-emerald-400 font-black font-mono">
                       {formatNumber(cycle2.profitPerDay)} COIN
                     </strong>
                   </p>

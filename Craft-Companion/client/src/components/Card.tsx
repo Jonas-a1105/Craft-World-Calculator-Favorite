@@ -1,22 +1,29 @@
+import React from 'react';
 import { useTranslation } from '../utils/i18n';
-import styles from './Card.module.css';
+import { Card as UICard, CardProps } from './ui/Card';
+
+export interface LegacyCardProps extends Omit<CardProps, 'title'> {
+  title?: string;
+}
 
 export default function Card({
   title,
   children,
   style,
-  className,
-}: {
-  title?: string;
-  children: any;
-  style?: React.CSSProperties;
-  className?: string;
-}) {
+  className = '',
+  ...props
+}: LegacyCardProps) {
   const { t } = useTranslation();
+  const translatedTitle = title ? t(title) : undefined;
+
   return (
-    <div className={`${styles.bentoCard} ${className || ''}`} style={style}>
-      {title && <h3 className={styles.cardTitle}>{t(title)}</h3>}
+    <UICard
+      title={translatedTitle}
+      className={className}
+      style={style}
+      {...props}
+    >
       {children}
-    </div>
+    </UICard>
   );
 }

@@ -9,13 +9,10 @@ import {
   UpgradeRecommendation,
 } from '../services/craftworldCalculations';
 import { getCraftworldHome } from '../services/api';
+import { extractPriceMap } from '../services/priceService';
 import { ResourceIcon, FactoryIcon } from '../components/GameIcon';
-
-function formatNumber(value: unknown, digits = 2) {
-  return typeof value === 'number' && Number.isFinite(value)
-    ? value.toLocaleString(undefined, { maximumFractionDigits: digits })
-    : '0';
-}
+import { Badge } from '../components/ui';
+import { formatNumber } from '../utils/formatters';
 
 export default function UpgradeAdvisor() {
   const { language } = useTranslation();
@@ -27,21 +24,7 @@ export default function UpgradeAdvisor() {
     Promise.all([loadFactoryData(), getCraftworldHome().catch(() => null)])
       .then(([factoryRows, home]) => {
         setRows(factoryRows);
-        // Base raw material market price fallback: 0.00394 COIN per EARTH/WATER/FIRE (matching in-game Exchange rate)
-        const map: Record<string, number> = {
-          COIN: 1,
-          EARTH: 0.00394,
-          WATER: 0.00394,
-          FIRE: 0.00394,
-        };
-        if (home?.priceList?.prices) {
-          home.priceList.prices.forEach((p: any) => {
-            if (typeof p.amount === 'number' && p.amount > 0) {
-              map[p.referenceSymbol?.toUpperCase()] = p.amount;
-            }
-          });
-        }
-        setPrices(map);
+        setPrices(extractPriceMap(home));
       })
       .finally(() => setLoading(false));
   }, []);
@@ -60,7 +43,7 @@ export default function UpgradeAdvisor() {
       <div className="w-full max-w-[1200px] mx-auto space-y-6">
         <div className="text-center mt-4 mb-2">
           <h1
-            className="text-3xl font-extrabold text-white tracking-wider"
+            className="text-3xl font-extrabold text-white tracking-wider font-main"
             style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9)' }}
           >
             {language === 'es' ? 'Asesor de Mejoras' : 'Upgrade Advisor'}
@@ -83,41 +66,43 @@ export default function UpgradeAdvisor() {
             {recommendations.slice(0, 30).map((rec, i) => (
               <div
                 key={i}
-                className="resource-item-badge p-4 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="p-4 rounded-2xl bg-[#151518] border-none transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
               >
                 <div className="flex items-center gap-3">
                   <FactoryIcon symbol={rec.row.token} size={40} />
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <h4 className="font-extrabold text-white text-base">{rec.row.token}</h4>
-                      <span className="bg-emerald-950 text-emerald-300 text-xs px-2 py-0.5 rounded font-bold">
-                        Lv. {rec.row.level} ➔ Lv. {rec.row.level + 1}
-                      </span>
+                      <Badge variant="basic" size="sm">
+                        Nv. {rec.row.level} ➔ Nv. {rec.row.level + 1}
+                      </Badge>
                       {rec.paybackDays !== null && (
-                        <span className="bg-amber-950 text-amber-300 text-[10px] px-2 py-0.5 rounded font-bold uppercase">
-                          Retorno en {formatNumber(rec.paybackDays, 1)} días
-                        </span>
+                        <Badge variant="warning" size="sm">
+                          {language === 'es'
+                            ? `Retorno en ${formatNumber(rec.paybackDays, 1)} días`
+                            : `ROI in ${formatNumber(rec.paybackDays, 1)} days`}
+                        </Badge>
                       )}
                     </div>
-                    <p className="text-xs text-slate-300 mt-1">{rec.reason}</p>
+                    <p className="text-xs text-slate-300 mt-1 font-main">{rec.reason}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 text-right">
+                <div className="flex items-center gap-6 text-right font-main">
                   <div>
-                    <span className="text-[10px] text-slate-400 block uppercase font-bold">
+                    <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">
                       {language === 'es' ? 'Ganancia extra / día' : 'Extra profit / day'}
                     </span>
-                    <span className="text-sm font-black text-emerald-400">
+                    <span className="text-sm font-black text-emerald-400 font-mono">
                       +{formatNumber(rec.addedProfitPerDay)} COIN
                     </span>
                   </div>
                   {rec.upgradeCost !== null && (
                     <div>
-                      <span className="text-[10px] text-slate-400 block uppercase font-bold">
+                      <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">
                         {language === 'es' ? 'Costo mejora' : 'Upgrade cost'}
                       </span>
-                      <span className="text-xs font-bold text-amber-300 flex items-center justify-end gap-1">
+                      <span className="text-xs font-bold text-amber-300 flex items-center justify-end gap-1 font-mono">
                         <ResourceIcon symbol={rec.nextRow?.upgrade_token || 'Coin'} size={14} />
                         {formatNumber(rec.upgradeCost)}
                       </span>

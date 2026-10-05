@@ -21,103 +21,8 @@ function getResourceImage(symbol?: string) {
   return `/assets/resources/${formattedSymbol}.png`;
 }
 
-function formatFactoryName(symbol: string, lang: string): string {
-  const normalized = String(symbol || '')
-    .trim()
-    .toUpperCase();
-  if (lang === 'es') {
-    switch (normalized) {
-      case 'STEEL':
-        return 'Acero';
-      case 'WOOD':
-        return 'Madera';
-      case 'WATER':
-        return 'Agua';
-      case 'ALGAE':
-        return 'Alga';
-      case 'BOLTS':
-        return 'Pernos';
-      case 'BONESOUP':
-        return 'Sopa de Huesos';
-      case 'CEMENT':
-        return 'Cemento';
-      case 'CERAMICKEY':
-        return 'Llave Cerámica';
-      case 'CERAMICS':
-        return 'Cerámicas';
-      case 'CLAY':
-        return 'Arcilla';
-      case 'COPPER':
-        return 'Cobre';
-      case 'DYNAMITE':
-        return 'Dinamita';
-      case 'EARTH':
-        return 'Tierra';
-      case 'EXPLOSIVES':
-        return 'Explosivos';
-      case 'FERTILIZER':
-        return 'Fertilizante';
-      case 'FIRE':
-        return 'Fuego';
-      case 'FISH':
-        return 'Pescado';
-      case 'GLASS':
-        return 'Vidrio';
-      case 'GOLD':
-        return 'Oro';
-      case 'GRAIN':
-        return 'Grano';
-      case 'IRON':
-        return 'Hierro';
-      case 'LEATHER':
-        return 'Cuero';
-      case 'LIMESTONE':
-        return 'Caliza';
-      case 'MUD':
-        return 'Lodo';
-      case 'OXYGEN':
-        return 'Oxígeno';
-      case 'PAPER':
-        return 'Papel';
-      case 'PLASTIC':
-        return 'Plástico';
-      case 'SAND':
-        return 'Arena';
-      case 'SCREWS':
-        return 'Tornillos';
-      case 'SILICA':
-        return 'Sílice';
-      case 'STONE':
-        return 'Piedra';
-      case 'SULFUR':
-        return 'Azufre';
-      case 'TEXTILE':
-        return 'Textil';
-      case 'VEGETABLES':
-        return 'Vegetales';
-      case 'GAS':
-        return 'Gas';
-      case 'OIL':
-        return 'Petróleo';
-      case 'HEAT':
-        return 'Calor';
-      case 'ACID':
-        return 'Ácido';
-      case 'SEAWATER':
-        return 'Agua de Mar';
-      case 'FUEL':
-        return 'Combustible';
-      case 'COAL':
-        return 'Carbón';
-      case 'AIR':
-        return 'Aire';
-      default:
-        return symbol.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
-    }
-  } else {
-    return symbol.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
-  }
-}
+import { formatFactoryName } from '../utils/formatters';
+import { Button, Input } from '../components/ui';
 
 export default function Settings() {
   const { t, language, setLanguage } = useTranslation();
@@ -249,7 +154,7 @@ export default function Settings() {
                 />
               </div>
 
-              <hr className="border-slate-800 my-4" />
+              <div className="h-px bg-white/5 my-4" />
 
               <div className="block space-y-1">
                 <span className="text-xs text-slate-300 font-bold">{t('settings.language')}</span>
@@ -267,12 +172,12 @@ export default function Settings() {
         {/* Preferences Card */}
         <Card title={language === 'es' ? 'Preferencias' : 'Preferences'}>
           <div className="space-y-4 text-sm">
-            <label className="flex items-center gap-2 cursor-pointer pb-2 border-b border-slate-800/40">
+            <label className="flex items-center gap-2 cursor-pointer pb-2 border-none">
               <input
                 type="checkbox"
                 checked={solidBg}
                 onChange={(event) => handleSolidBgToggle(event.target.checked)}
-                className="h-4 w-4 rounded border-slate-800 bg-slate-950 accent-emerald-500 cursor-pointer"
+                className="h-4 w-4 rounded border-none bg-[#151518] accent-emerald-500 cursor-pointer"
               />
               <span className="font-bold text-white">
                 {language === 'es' ? 'Usar fondo de color sólido' : 'Use solid background color'}
@@ -280,7 +185,7 @@ export default function Settings() {
             </label>
 
             {solidBg && (
-              <label className="block space-y-1 pb-2 border-b border-slate-800/40">
+              <label className="block space-y-1 pb-2 border-none">
                 <span className="text-xs text-slate-300 font-bold">
                   {language === 'es' ? 'Color de Fondo Sólido' : 'Solid Background Color'}
                 </span>
@@ -289,21 +194,22 @@ export default function Settings() {
                     type="color"
                     value={solidColor}
                     onChange={(event) => handleSolidColorChange(event.target.value)}
-                    className="h-8 w-12 rounded border border-slate-750 bg-slate-950 p-1 cursor-pointer focus:outline-none"
+                    className="h-8 w-12 rounded-xl border-none bg-[#151518] p-1 cursor-pointer focus:outline-none"
                   />
                   <input
                     type="text"
                     value={solidColor}
                     onChange={(event) => handleSolidColorChange(event.target.value)}
-                    className="w-32 rounded border border-slate-750 bg-slate-950 px-3 py-1.5 text-sm text-white focus:outline-none focus:border-slate-500 font-mono"
+                    className="w-32 rounded-xl border-none bg-[#151518] px-3 py-1.5 text-sm text-white focus:outline-none font-mono"
                     placeholder="#000000"
                   />
-                  <button
+                  <Button
+                    variant="secondary"
+                    size="xs"
                     onClick={() => handleSolidColorChange('#000000')}
-                    className="rounded-[8px] bg-slate-850 border border-slate-750 px-3 py-1.5 text-xs text-white hover:bg-slate-800 transition-colors"
                   >
                     {language === 'es' ? 'Restablecer Negro' : 'Reset Black'}
-                  </button>
+                  </Button>
                 </div>
               </label>
             )}
@@ -315,7 +221,7 @@ export default function Settings() {
                   type="checkbox"
                   checked={notificationsEnabled}
                   onChange={(event) => handleNotificationsToggle(event.target.checked)}
-                  className="h-4 w-4 rounded border-slate-800 bg-slate-950 accent-emerald-500 cursor-pointer"
+                  className="h-4 w-4 rounded border-none bg-[#151518] accent-emerald-500 cursor-pointer"
                 />
                 <span className="font-bold text-white">
                   {language === 'es'
@@ -329,14 +235,15 @@ export default function Settings() {
                   : 'Alerts you instantly with a system notification when a factory finishes its cycle, even if you are in another tab or playing.'}
               </p>
               {notificationPermissionState === 'default' && notificationsEnabled && (
-                <button
+                <Button
+                  variant="primary"
+                  size="xs"
                   onClick={requestNotificationPermission}
-                  className="mt-1 rounded-[8px] bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 text-xs text-white font-bold transition-colors cursor-pointer"
                 >
                   {language === 'es'
                     ? 'Permitir notificaciones en navegador'
                     : 'Grant browser permission'}
-                </button>
+                </Button>
               )}
               {notificationPermissionState === 'denied' && (
                 <p className="text-xs text-red-400 font-semibold">
@@ -358,12 +265,12 @@ export default function Settings() {
               style={{ overflow: 'visible' }}
             >
               <div className="grid gap-3 text-sm md:grid-cols-3">
-                <label className="flex items-center gap-2 md:col-span-3 pb-2 border-b border-slate-800/40 cursor-pointer">
+                <label className="flex items-center gap-2 md:col-span-3 pb-2 border-none cursor-pointer">
                   <input
                     type="checkbox"
                     checked={selected.enabled}
                     onChange={(event) => updateSelected({ enabled: event.target.checked })}
-                    className="h-4 w-4 rounded border-slate-800 bg-slate-950 accent-emerald-500 cursor-pointer"
+                    className="h-4 w-4 rounded border-none bg-[#151518] accent-emerald-500 cursor-pointer"
                   />
                   <span className="font-bold text-white">{t('settings.ownedEnabled')}</span>
                 </label>
@@ -377,7 +284,7 @@ export default function Settings() {
                     onChange={(event) =>
                       updateSelected({ factoryCount: Number(event.target.value) })
                     }
-                    className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:outline-none focus:border-slate-500"
+                    className="w-full rounded-xl border-none bg-[#151518] px-3 py-2 text-sm text-white focus:outline-none"
                   />
                 </label>
 
@@ -390,7 +297,7 @@ export default function Settings() {
                     onChange={(event) =>
                       updateSelected({ factoryLevel: Number(event.target.value) })
                     }
-                    className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:outline-none focus:border-slate-500"
+                    className="w-full rounded-xl border-none bg-[#151518] px-3 py-2 text-sm text-white focus:outline-none"
                   />
                 </label>
 
@@ -415,7 +322,7 @@ export default function Settings() {
                     onChange={(event) =>
                       updateSelected({ workersPercent: Number(event.target.value) })
                     }
-                    className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:outline-none focus:border-slate-500"
+                    className="w-full rounded-xl border-none bg-[#151518] px-3 py-2 text-sm text-white focus:outline-none"
                   />
                 </label>
 
@@ -428,7 +335,7 @@ export default function Settings() {
                     onChange={(event) =>
                       updateSelected({ workshopPercent: Number(event.target.value) })
                     }
-                    className="w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:outline-none focus:border-slate-500"
+                    className="w-full rounded-xl border-none bg-[#151518] px-3 py-2 text-sm text-white focus:outline-none"
                   />
                 </label>
 
@@ -439,7 +346,7 @@ export default function Settings() {
                   <textarea
                     value={selected.notes}
                     onChange={(event) => updateSelected({ notes: event.target.value })}
-                    className="min-h-24 w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:outline-none focus:border-slate-500"
+                    className="min-h-24 w-full rounded-xl border-none bg-[#151518] px-3 py-2 text-sm text-white focus:outline-none"
                   />
                 </label>
               </div>
@@ -450,13 +357,16 @@ export default function Settings() {
         <Card title={t('settings.importExport')}>
           <div className="space-y-3 text-sm">
             <div className="flex flex-wrap gap-2">
-              <button
+              <Button
+                variant="primary"
+                size="sm"
                 onClick={() => setJson(exportPlayerConfig(config))}
-                className="rounded-[8px] bg-blue-600 px-4 py-2 font-bold text-xs cursor-pointer hover:bg-blue-500 transition-colors"
               >
                 {t('settings.exportJson')}
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => {
                   try {
                     const imported = importPlayerConfig(json);
@@ -466,25 +376,25 @@ export default function Settings() {
                     setStatus(t('settings.status.failed'));
                   }
                 }}
-                className="rounded-[8px] bg-slate-700 px-4 py-2 font-bold text-xs cursor-pointer hover:bg-slate-650 transition-colors"
               >
                 {t('settings.importJson')}
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
                 onClick={() => {
                   setConfig(resetPlayerConfig());
                   setJson('');
                   setStatus(t('settings.status.reset'));
                 }}
-                className="rounded-[8px] bg-red-700 px-4 py-2 font-bold text-xs cursor-pointer hover:bg-red-650 transition-colors"
               >
                 {t('settings.resetAll')}
-              </button>
+              </Button>
             </div>
             <textarea
               value={json}
               onChange={(event) => setJson(event.target.value)}
-              className="min-h-48 w-full rounded border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-xs text-white focus:outline-none focus:border-slate-500"
+              className="min-h-48 w-full rounded-2xl border-none bg-[#151518] px-3 py-2 font-mono text-xs text-white focus:outline-none"
               placeholder={
                 language === 'es'
                   ? 'Pega el código de configuración aquí...'

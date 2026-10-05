@@ -7,12 +7,8 @@ import { loadFactoryData, FactoryDataRow } from '../services/factoryData';
 import { buildRecipeTree, flattenRecipeToBaseResources } from '../services/craftworldCalculations';
 import { getCraftworldHome } from '../services/api';
 import { ResourceIcon } from '../components/GameIcon';
-
-function formatNumber(value: unknown, digits = 2) {
-  return typeof value === 'number' && Number.isFinite(value)
-    ? value.toLocaleString(undefined, { maximumFractionDigits: digits })
-    : '0';
-}
+import { Select, Input, Badge } from '../components/ui';
+import { formatNumber } from '../utils/formatters';
 
 export default function ResourcePlanner() {
   const { language } = useTranslation();
@@ -58,7 +54,7 @@ export default function ResourcePlanner() {
       <div className="w-full max-w-[1000px] mx-auto space-y-6">
         <div className="text-center mt-4 mb-2">
           <h1
-            className="text-3xl font-extrabold text-white tracking-wider"
+            className="text-3xl font-extrabold text-white tracking-wider font-main"
             style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9)' }}
           >
             {language === 'es' ? 'Planificador de Recursos' : 'Resource Planner'}
@@ -73,35 +69,25 @@ export default function ResourcePlanner() {
         {/* Target Selection Card */}
         <Card title={language === 'es' ? '🎯 Meta de Producción' : '🎯 Production Goal'}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs text-slate-400 font-bold block mb-1">
-                {language === 'es' ? 'Recurso Objetivo:' : 'Target Resource:'}
-              </label>
-              <select
-                value={targetToken}
-                onChange={(e) => setTargetToken(e.target.value)}
-                className="w-full"
-              >
-                {uniqueTokens.map((tok) => (
-                  <option key={tok} value={tok}>
-                    {tok}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Select
+              label={language === 'es' ? 'Recurso Objetivo:' : 'Target Resource:'}
+              value={targetToken}
+              onChange={(e) => setTargetToken(e.target.value)}
+            >
+              {uniqueTokens.map((tok) => (
+                <option key={tok} value={tok}>
+                  {tok}
+                </option>
+              ))}
+            </Select>
 
-            <div>
-              <label className="text-xs text-slate-400 font-bold block mb-1">
-                {language === 'es' ? 'Cantidad Deseada:' : 'Desired Amount:'}
-              </label>
-              <input
-                type="number"
-                min={1}
-                value={targetAmount}
-                onChange={(e) => setTargetAmount(Math.max(1, Number(e.target.value)))}
-                className="w-full"
-              />
-            </div>
+            <Input
+              label={language === 'es' ? 'Cantidad Deseada:' : 'Desired Amount:'}
+              type="number"
+              min={1}
+              value={targetAmount}
+              onChange={(e) => setTargetAmount(Math.max(1, Number(e.target.value)))}
+            />
           </div>
         </Card>
 
@@ -119,15 +105,16 @@ export default function ResourcePlanner() {
               const missing = Math.max(0, requiredQty - currentStock);
 
               return (
-                <div key={symbol} className="resource-item-badge p-3 space-y-2">
+                <div
+                  key={symbol}
+                  className="p-3.5 rounded-2xl bg-[#151518] border-none space-y-2 transition-all"
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <ResourceIcon symbol={symbol} size={28} />
                       <span className="font-extrabold text-white text-sm">{symbol}</span>
                     </div>
-                    <span
-                      className={`text-[10px] px-2 py-0.5 rounded font-extrabold ${missing === 0 ? 'bg-emerald-950 text-emerald-300' : 'bg-rose-950 text-rose-300'}`}
-                    >
+                    <Badge variant={missing === 0 ? 'success' : 'danger'} size="sm">
                       {missing === 0
                         ? language === 'es'
                           ? 'Suficiente'
@@ -135,17 +122,17 @@ export default function ResourcePlanner() {
                         : language === 'es'
                           ? `Faltan ${formatNumber(missing)}`
                           : `Need ${formatNumber(missing)}`}
-                    </span>
+                    </Badge>
                   </div>
 
-                  <div className="text-xs space-y-1 pt-1 border-t border-slate-800/60">
+                  <div className="space-y-1 text-xs pt-1 border-none font-main">
                     <div className="flex justify-between text-slate-400">
-                      <span>{language === 'es' ? 'Requerido' : 'Required'}:</span>
-                      <strong className="text-amber-300">{formatNumber(requiredQty)}</strong>
+                      <span>{language === 'es' ? 'Requerido:' : 'Required:'}</span>
+                      <strong className="text-white font-mono">{formatNumber(requiredQty)}</strong>
                     </div>
                     <div className="flex justify-between text-slate-400">
-                      <span>{language === 'es' ? 'En Inventario' : 'In Stock'}:</span>
-                      <strong className="text-slate-200">{formatNumber(currentStock)}</strong>
+                      <span>{language === 'es' ? 'En Inventario:' : 'In Stock:'}</span>
+                      <strong className="text-slate-300 font-mono">{formatNumber(currentStock)}</strong>
                     </div>
                   </div>
                 </div>

@@ -17,12 +17,8 @@ import {
   applyMasteryInputReduction,
   getMasteryInputReductionPercent,
 } from '../services/masteryModifiers';
-
-function formatNumber(value: unknown, digits = 2) {
-  return typeof value === 'number' && Number.isFinite(value)
-    ? value.toLocaleString(undefined, { maximumFractionDigits: digits })
-    : '0';
-}
+import { extractPriceMap } from '../services/priceService';
+import { formatNumber } from '../utils/formatters';
 
 export default function Profitability() {
   const { language } = useTranslation();
@@ -51,22 +47,7 @@ export default function Profitability() {
       .then(([factoryRows, home]) => {
         setRows(factoryRows);
         setHomeData(home);
-
-        // Base raw material market price fallback: 0.00394 COIN per EARTH/WATER/FIRE (matching in-game Exchange rate)
-        const map: Record<string, number> = {
-          COIN: 1,
-          EARTH: 0.00394,
-          WATER: 0.00394,
-          FIRE: 0.00394,
-        };
-        if (home?.priceList?.prices) {
-          home.priceList.prices.forEach((p: any) => {
-            if (typeof p.amount === 'number' && p.amount > 0) {
-              map[p.referenceSymbol?.toUpperCase()] = p.amount;
-            }
-          });
-        }
-        setPrices(map);
+        setPrices(extractPriceMap(home));
       })
       .finally(() => setLoading(false));
   }, []);
@@ -252,7 +233,7 @@ export default function Profitability() {
         >
           <div className="space-y-4">
             {/* Input Supply Mode Switcher */}
-            <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-950/80 rounded-xl border border-slate-800">
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-[#151518] rounded-xl border-none">
               <span className="font-extrabold text-white text-xs">
                 {language === 'es'
                   ? '📦 Origen de Insumos para el Cálculo:'
@@ -264,7 +245,7 @@ export default function Profitability() {
                   className={`px-3 py-1.5 rounded-lg text-xs font-black transition ${
                     inputSupplyMode === 'market'
                       ? 'bg-cyan-500 text-slate-950 shadow'
-                      : 'bg-slate-900 text-slate-400 border border-slate-800'
+                      : 'bg-[#202024] text-slate-400 border-none'
                   }`}
                 >
                   🛒 {language === 'es' ? 'Comprados en Mercado (Bolsa)' : 'Bought on Market'}
@@ -275,7 +256,7 @@ export default function Profitability() {
                   className={`px-3 py-1.5 rounded-lg text-xs font-black transition ${
                     inputSupplyMode === 'self_crafted'
                       ? 'bg-emerald-500 text-slate-950 shadow'
-                      : 'bg-slate-900 text-slate-400 border border-slate-800'
+                      : 'bg-[#202024] text-slate-400 border-none'
                   }`}
                 >
                   ⛏️{' '}
@@ -289,7 +270,7 @@ export default function Profitability() {
             {/* Account Modifiers */}
             <div className="flex flex-wrap items-center justify-between gap-4 text-xs">
               <div className="flex flex-wrap items-center gap-4">
-                <label className="flex items-center gap-2 cursor-pointer bg-slate-900/80 px-3.5 py-2 rounded-xl border border-slate-800 hover:border-emerald-500/50 transition">
+                <label className="flex items-center gap-2 cursor-pointer bg-[#202024] hover:bg-[#29292f] px-3.5 py-2 rounded-xl border-none transition">
                   <input
                     type="checkbox"
                     checked={useWorkshop}
@@ -301,7 +282,7 @@ export default function Profitability() {
                   </span>
                 </label>
 
-                <label className="flex items-center gap-2 cursor-pointer bg-slate-900/80 px-3.5 py-2 rounded-xl border border-slate-800 hover:border-emerald-500/50 transition">
+                <label className="flex items-center gap-2 cursor-pointer bg-[#202024] hover:bg-[#29292f] px-3.5 py-2 rounded-xl border-none transition">
                   <input
                     type="checkbox"
                     checked={useMastery}
@@ -313,7 +294,7 @@ export default function Profitability() {
                   </span>
                 </label>
 
-                <label className="flex items-center gap-2 cursor-pointer bg-slate-900/80 px-3.5 py-2 rounded-xl border border-slate-800 hover:border-emerald-500/50 transition">
+                <label className="flex items-center gap-2 cursor-pointer bg-[#202024] hover:bg-[#29292f] px-3.5 py-2 rounded-xl border-none transition">
                   <input
                     type="checkbox"
                     checked={useBoosters}
@@ -376,7 +357,7 @@ export default function Profitability() {
                   className={`px-3.5 py-2 rounded-xl text-xs font-extrabold transition ${
                     filterMode === t.id
                       ? 'bg-emerald-500 text-slate-950 shadow'
-                      : 'bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-800'
+                      : 'bg-[#202024] text-slate-400 hover:bg-[#29292f] hover:text-white border-none'
                   }`}
                 >
                   {t.label}
@@ -389,7 +370,7 @@ export default function Profitability() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="bg-slate-900 text-slate-200 text-xs font-bold px-3 py-2 rounded-xl border border-slate-800 cursor-pointer"
+                className="bg-[#202024] text-slate-200 text-xs font-bold px-3 py-2 rounded-xl border-none cursor-pointer"
               >
                 <option value="profit_hour">
                   💰 {language === 'es' ? 'Ordenar: Ganancia / Hora' : 'Sort: Profit / Hour'}
@@ -453,11 +434,11 @@ export default function Profitability() {
                       </div>
 
                       {isOwned ? (
-                        <span className="bg-emerald-950 text-emerald-300 text-[10px] px-2.5 py-1 rounded-full font-black border border-emerald-700/60">
+                        <span className="bg-emerald-950/80 text-emerald-300 text-[10px] px-2.5 py-1 rounded-full font-black border-none">
                           ✓ {language === 'es' ? 'EN PROPIEDAD' : 'OWNED'}
                         </span>
                       ) : (
-                        <span className="bg-slate-900 text-slate-400 text-[10px] px-2.5 py-1 rounded-full font-bold border border-slate-800">
+                        <span className="bg-[#202024] text-slate-400 text-[10px] px-2.5 py-1 rounded-full font-bold border-none">
                           Nv. 1
                         </span>
                       )}
@@ -466,7 +447,7 @@ export default function Profitability() {
                     {/* Financial Stats Grid */}
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div
-                        className={`p-2.5 rounded-xl border text-center transition ${isLoss ? 'bg-rose-950/70 border-rose-700/80 text-rose-300 shadow-[0_0_10px_rgba(244,63,94,0.2)]' : 'bg-emerald-950/70 border-emerald-700/80 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.2)]'}`}
+                        className={`p-2.5 rounded-2xl border-none text-center transition ${isLoss ? 'bg-rose-950/60 text-rose-300' : 'bg-emerald-950/60 text-emerald-300'}`}
                       >
                         <span className="text-[10px] uppercase font-black block opacity-80">
                           {language === 'es' ? 'Ganancia / Hora' : 'Profit / Hour'}
@@ -478,7 +459,7 @@ export default function Profitability() {
                       </div>
 
                       <div
-                        className={`p-2.5 rounded-xl border text-center transition ${isLoss ? 'bg-rose-950/70 border-rose-700/80 text-rose-300 shadow-[0_0_10px_rgba(244,63,94,0.2)]' : 'bg-emerald-950/70 border-emerald-700/80 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.2)]'}`}
+                        className={`p-2.5 rounded-2xl border-none text-center transition ${isLoss ? 'bg-rose-950/60 text-rose-300' : 'bg-emerald-950/60 text-emerald-300'}`}
                       >
                         <span className="text-[10px] uppercase font-black block opacity-80">
                           {language === 'es' ? 'Ganancia / Día' : 'Profit / Day'}
@@ -491,7 +472,7 @@ export default function Profitability() {
                     </div>
 
                     {/* Additional Metrics (XP & Battery) */}
-                    <div className="flex items-center justify-between text-[11px] px-1 text-slate-300 font-bold border-t border-slate-800/80 pt-2">
+                    <div className="flex items-center justify-between text-[11px] px-1 text-slate-300 font-bold border-none pt-2">
                       <span className="flex items-center gap-1 text-amber-300">
                         ⭐ {formatNumber(s.cycle.xpPerHour, 0)} XP/h
                       </span>
@@ -520,16 +501,16 @@ export default function Profitability() {
         {modalSummary &&
           createPortal(
             <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
-              <div className="w-full max-w-5xl bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl p-6 space-y-6 max-h-[90vh] overflow-y-auto my-auto">
+              <div className="w-full max-w-5xl bg-[#1c1c20] rounded-3xl border-none shadow-2xl p-6 space-y-6 max-h-[90vh] overflow-y-auto my-auto">
                 {/* Modal Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-none pb-4">
                   <div className="flex items-center gap-4">
                     <FactoryIcon symbol={modalSummary.token} size={48} />
                     <div>
                       <h2 className="text-2xl font-black text-white flex items-center gap-2">
                         {modalSummary.token}
                         {modalSummary.ownedLevel && (
-                          <span className="bg-emerald-950 text-emerald-300 text-xs px-2.5 py-0.5 rounded-full font-extrabold border border-emerald-700/60">
+                          <span className="bg-emerald-950/80 text-emerald-300 text-xs px-2.5 py-0.5 rounded-full font-extrabold border-none">
                             {language === 'es'
                               ? `Posees Nivel ${modalSummary.ownedLevel}`
                               : `Owned Level ${modalSummary.ownedLevel}`}
@@ -553,7 +534,7 @@ export default function Profitability() {
                 </div>
 
                 {/* Input Mode Indicator in Modal */}
-                <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+                <div className="bg-[#151518] p-3 rounded-xl border-none flex items-center justify-between text-xs">
                   <span className="text-slate-300 font-bold">
                     {inputSupplyMode === 'self_crafted'
                       ? language === 'es'
@@ -570,9 +551,9 @@ export default function Profitability() {
                 </div>
 
                 {/* Modal Level Table */}
-                <div className="overflow-x-auto rounded-xl border border-slate-800">
+                <div className="overflow-x-auto rounded-2xl border-none bg-[#151518]">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-950 text-slate-400 font-black uppercase text-[10px] tracking-wider">
+                    <thead className="bg-[#151518] text-slate-400 font-black uppercase text-[10px] tracking-wider border-none">
                       <tr>
                         <th className="p-2.5">{language === 'es' ? 'Nivel' : 'Level'}</th>
                         <th className="p-2.5">{language === 'es' ? 'Estado' : 'Status'}</th>
@@ -592,7 +573,7 @@ export default function Profitability() {
                         <th className="p-2.5">XP / h</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60 font-medium">
+                    <tbody className="divide-y divide-white/5 font-medium">
                       {modalCycleResults.map((c) => {
                         const isOwnedLevel = modalSummary.ownedLevel === c.row.level;
                         const isLoss = c.effectiveProfitPerDay < 0;
@@ -602,7 +583,7 @@ export default function Profitability() {
                             key={c.row.level}
                             className={`transition ${
                               isOwnedLevel
-                                ? 'bg-emerald-950/50 font-bold border-l-4 border-l-emerald-400'
+                                ? 'bg-emerald-950/50 font-bold'
                                 : isLoss
                                   ? 'bg-rose-950/20 hover:bg-rose-900/30'
                                   : 'bg-emerald-950/10 hover:bg-emerald-900/20'
@@ -619,11 +600,11 @@ export default function Profitability() {
 
                             <td className="p-2.5 whitespace-nowrap">
                               {isLoss ? (
-                                <span className="bg-rose-950/60 text-rose-400 text-[10px] px-2 py-0.5 rounded font-extrabold border border-rose-800/60">
+                                <span className="bg-rose-950/60 text-rose-400 text-[10px] px-2 py-0.5 rounded-full font-extrabold border-none">
                                   ⚠️ {language === 'es' ? 'PÉRDIDA' : 'LOSS'}
                                 </span>
                               ) : (
-                                <span className="bg-emerald-950/60 text-emerald-400 text-[10px] px-2 py-0.5 rounded font-extrabold border border-emerald-800/60">
+                                <span className="bg-emerald-950/60 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-extrabold border-none">
                                   ✓ {language === 'es' ? 'GANANCIA' : 'PROFIT'}
                                 </span>
                               )}

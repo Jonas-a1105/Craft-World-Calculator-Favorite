@@ -97,7 +97,7 @@ export default function EmpireDashboard() {
               {landPlots.map((plot: any, idx: number) => (
                 <div
                   key={plot.id || idx}
-                  className="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-2"
+                  className="bg-[#151518] p-4 rounded-2xl border-none space-y-2"
                 >
                   <div className="flex justify-between items-center">
                     <h4 className="font-extrabold text-emerald-400 text-base">
@@ -150,7 +150,7 @@ export default function EmpireDashboard() {
                 {mines.map((mine: any, idx: number) => (
                   <div
                     key={mine.id || idx}
-                    className="bg-slate-900/60 p-3 rounded-lg border border-slate-800 flex justify-between items-center text-xs"
+                    className="bg-[#151518] p-3 rounded-xl border-none flex justify-between items-center text-xs"
                   >
                     <div>
                       <span className="font-bold text-slate-200 block">
@@ -161,7 +161,7 @@ export default function EmpireDashboard() {
                         {mine.unclaimedUnitsBeforeCurrentRun || 0}
                       </span>
                     </div>
-                    <span className="bg-amber-950 text-amber-300 font-bold px-2 py-1 rounded text-xs">
+                    <span className="bg-amber-950/80 text-amber-300 font-bold px-2 py-1 rounded-full text-xs border-none">
                       Lv. {mine.level > 20 ? mine.level : (mine.level ?? 0) + 1}
                     </span>
                   </div>
@@ -181,13 +181,13 @@ export default function EmpireDashboard() {
                 {workers.map((worker: any, idx: number) => (
                   <div
                     key={worker.id || idx}
-                    className="bg-slate-900/60 p-3 rounded-lg border border-slate-800 flex justify-between items-center text-xs"
+                    className="bg-[#151518] p-3 rounded-xl border-none flex justify-between items-center text-xs"
                   >
                     <div>
                       <div className="flex items-center gap-1.5">
                         <span className="font-bold text-slate-200">{worker.name}</span>
                         {worker.isAreaLead && (
-                          <span className="bg-purple-950 text-purple-300 text-[9px] px-1.5 py-0.5 rounded font-black">
+                          <span className="bg-purple-950/80 text-purple-300 text-[9px] px-1.5 py-0.5 rounded-full font-black border-none">
                             LEAD
                           </span>
                         )}
@@ -217,7 +217,7 @@ export default function EmpireDashboard() {
               {playerBase.map((b: any, idx: number) => (
                 <div
                   key={b.id || idx}
-                  className="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 text-xs"
+                  className="bg-[#151518] p-2.5 rounded-xl border-none text-xs"
                 >
                   <span className="font-bold text-slate-200 block truncate">{b.type}</span>
                   <span className="text-amber-400 font-bold text-[11px]">Lv. {b.level}</span>

@@ -6,7 +6,7 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center px-4 relative z-10">
-      <div className="bg-slate-900/65 backdrop-blur-lg border border-slate-800/80 rounded-[24px] shadow-2xl p-8 md:p-10 max-w-lg w-full text-center space-y-6 transform hover:scale-[1.01] transition-transform duration-300">
+      <div className="bg-[#1c1c20] rounded-3xl border-none shadow-2xl p-8 md:p-10 max-w-lg w-full text-center space-y-6 transform hover:scale-[1.01] transition-transform duration-300">
         {/* Logo / App Name */}
         <div className="space-y-2">
           <div className="mx-auto w-16 h-16 bg-gradient-to-tr from-emerald-500 to-teal-500 rounded-[18px] flex items-center justify-center shadow-lg shadow-emerald-500/20">
@@ -25,7 +25,7 @@ export default function Landing() {
           </p>
         </div>
 
-        <hr className="border-slate-800/60 my-2" />
+        <div className="h-px bg-white/5 my-2" />
 
         {/* Call to Actions */}
         <div className="flex flex-col gap-3 pt-2">

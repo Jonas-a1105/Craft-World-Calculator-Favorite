@@ -30,3 +30,20 @@ export async function fetchLiveTokenPrices(symbols: string[]) {
     return acc;
   }, {});
 }
+
+export function extractPriceMap(home: any): Record<string, number> {
+  const map: Record<string, number> = {
+    COIN: 1,
+    EARTH: 0.00394,
+    WATER: 0.00394,
+    FIRE: 0.00394,
+  };
+  if (home?.priceList?.prices && Array.isArray(home.priceList.prices)) {
+    home.priceList.prices.forEach((p: any) => {
+      if (typeof p.amount === 'number' && p.amount > 0 && p.referenceSymbol) {
+        map[p.referenceSymbol.toUpperCase()] = p.amount;
+      }
+    });
+  }
+  return map;
+}

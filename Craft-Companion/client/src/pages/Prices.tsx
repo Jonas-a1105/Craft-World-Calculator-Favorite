@@ -5,12 +5,8 @@ import { SkeletonDashboardPage } from '../components/Skeleton';
 import { useTranslation } from '../utils/i18n';
 import { getCraftworldHome } from '../services/api';
 import { ResourceIcon } from '../components/GameIcon';
-
-function formatNumber(value: unknown, digits = 2) {
-  return typeof value === 'number' && Number.isFinite(value)
-    ? value.toLocaleString(undefined, { maximumFractionDigits: digits })
-    : '0';
-}
+import { Input, Badge } from '../components/ui';
+import { formatNumber } from '../utils/formatters';
 
 export default function Prices() {
   const { language } = useTranslation();
@@ -44,7 +40,7 @@ export default function Prices() {
       <div className="w-full max-w-[1100px] mx-auto space-y-6">
         <div className="text-center mt-4 mb-2">
           <h1
-            className="text-3xl font-extrabold text-white tracking-wider"
+            className="text-3xl font-extrabold text-white tracking-wider font-main"
             style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9)' }}
           >
             {language === 'es' ? 'Precios del Mercado' : 'Market Prices'}
@@ -58,15 +54,26 @@ export default function Prices() {
 
         {/* Search */}
         <Card>
-          <div className="flex items-center justify-between gap-4">
-            <input
-              type="text"
-              placeholder={language === 'es' ? 'Buscar recurso...' : 'Search resource...'}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full sm:w-72"
-            />
-            <div className="text-xs text-slate-400 font-bold hidden sm:block">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="w-full sm:w-80">
+              <Input
+                type="text"
+                placeholder={language === 'es' ? 'Buscar recurso...' : 'Search resource...'}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                leftIcon={
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 1114 0z"
+                    />
+                  </svg>
+                }
+              />
+            </div>
+            <div className="text-xs text-slate-400 font-bold self-end sm:self-center">
               {language === 'es' ? 'Moneda base:' : 'Base currency:'}{' '}
               <strong className="text-amber-400">{priceData?.baseSymbol || 'COIN'}</strong>
             </div>
@@ -85,40 +92,34 @@ export default function Prices() {
             <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
               {filtered.map((item, idx) => {
                 const rec = (item.recommendation || '').toUpperCase();
-                const badgeColor =
-                  rec === 'BUY'
-                    ? 'bg-emerald-950 text-emerald-300 border-emerald-700/60'
-                    : rec === 'SELL'
-                      ? 'bg-rose-950 text-rose-300 border-rose-700/60'
-                      : 'bg-slate-900 text-slate-400 border-slate-700/60';
+                const badgeVariant =
+                  rec === 'BUY' ? 'success' : rec === 'SELL' ? 'danger' : 'neutral';
 
                 return (
                   <div
                     key={item.referenceSymbol || idx}
-                    className="resource-item-badge p-3 flex items-center justify-between"
+                    className="p-3.5 flex items-center justify-between rounded-2xl bg-[#151518] border-none transition-all duration-150"
                   >
                     <div className="flex items-center gap-3">
-                      <ResourceIcon symbol={item.referenceSymbol} size={32} />
+                      <ResourceIcon symbol={item.referenceSymbol} size={34} />
                       <div>
                         <span className="font-extrabold text-white text-sm block">
                           {item.referenceSymbol}
                         </span>
-                        <span className="text-[10px] text-slate-400 uppercase font-bold">
+                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
                           Ref. Price
                         </span>
                       </div>
                     </div>
 
                     <div className="text-right">
-                      <span className="text-amber-400 font-black text-sm block">
+                      <span className="text-amber-400 font-black text-sm block font-mono">
                         {formatNumber(item.amount)} COIN
                       </span>
                       {rec && (
-                        <span
-                          className={`text-[9px] px-2 py-0.5 rounded font-extrabold border inline-block mt-0.5 ${badgeColor}`}
-                        >
+                        <Badge variant={badgeVariant} size="sm" className="mt-1">
                           {rec}
-                        </span>
+                        </Badge>
                       )}
                     </div>
                   </div>

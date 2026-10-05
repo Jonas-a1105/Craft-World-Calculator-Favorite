@@ -1,5 +1,5 @@
 @import './variables.css';
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@300;400;700&family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;600;700&display=swap');
 
 @font-face {
   font-family: 'TheImpostor';
@@ -16,13 +16,9 @@
 }
 
 body {
-  background-color: var(--bg-body);
-  background-image: url('/assets/fondo.jpeg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  color: #d1d5db;
+  background-color: var(--canvas-bg, #141415);
+  background-image: none;
+  color: #ffffff;
   font-family: var(--font-main);
   min-height: 100vh;
   line-height: 1.7;
@@ -30,9 +26,17 @@ body {
   padding: 0 0 40px;
 }
 
+body.with-wallpaper {
+  background-image: url('/assets/fondo.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
 body.solid-bg {
   background-image: none !important;
-  background-color: var(--bg-solid-override, #000000) !important;
+  background-color: var(--bg-solid-override, #141415) !important;
 }
 
 ::-webkit-scrollbar {
@@ -51,6 +55,14 @@ body.solid-bg {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.35);
+}
+
+.font-pixel {
+  font-family: 'Pixelify Sans', 'Silkscreen', monospace !important;
+}
+
+.font-retro-craft {
+  font-family: 'VT323', monospace !important;
 }
 
 .badgeBasic {
@@ -199,7 +211,7 @@ body.solid-bg {
   padding: 30px 0;
   color: #9ca3af;
   font-size: 0.9rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: none;
   margin-top: 20px;
 }
 
@@ -456,18 +468,18 @@ body.solid-bg {
   color: #ffffff !important;
 }
 
-/* Global element styling - OLED Flat */
+/* Global element styling - OLED Flat (base defaults) */
 input,
 select,
 textarea {
-  background-color: rgba(20, 20, 20, 0.8) !important;
-  border: none !important;
-  color: #ffffff !important;
-  border-radius: var(--radius) !important;
-  padding: 8px 12px !important;
-  font-family: var(--font-main) !important;
-  outline: none !important;
-  transition: background-color 0.12s ease !important;
+  background-color: rgba(20, 20, 20, 0.8);
+  border: none;
+  color: #ffffff;
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-family: var(--font-main);
+  outline: none;
+  transition: background-color 0.12s ease;
 }
 
 input:focus,
@@ -476,26 +488,31 @@ textarea:focus,
 input:hover,
 select:hover,
 textarea:hover {
-  background-color: rgba(30, 30, 30, 0.9) !important;
+  background-color: rgba(30, 30, 30, 0.9);
 }
 
 button {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  border: none !important;
-  color: #d1d5db !important;
-  font-family: var(--font-main) !important;
-  font-weight: 600 !important;
-  padding: 8px 18px !important;
-  border-radius: var(--radius) !important;
-  cursor: pointer !important;
-  transition: background-color 0.12s ease !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.3px !important;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: #d1d5db;
+  font-family: var(--font-main);
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 button:hover {
-  background-color: rgba(255, 255, 255, 0.15) !important;
-  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+button[class*="rounded-full"],
+button[class*="p-0"] {
+  padding: 0;
 }
 
 /* Tables - OLED Flat */
@@ -515,13 +532,13 @@ th {
   letter-spacing: 0.3px !important;
   text-transform: uppercase !important;
   padding: 12px 16px !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-bottom: none !important;
   font-weight: 700;
 }
 
 td {
   padding: 12px 16px !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+  border-bottom: none !important;
   color: #d1d5db !important;
   font-family: var(--font-main) !important;
 }
@@ -533,14 +550,14 @@ tr:hover td {
 /* Card sub-items flat styling */
 .bg-slate-950\/30,
 .bg-slate-950\/40 {
-  background-color: rgba(30, 30, 30, 0.45) !important;
-  border: none !important;
-  transition: background-color 0.08s ease !important;
+  background-color: rgba(30, 30, 30, 0.45);
+  border: none;
+  transition: background-color 0.08s ease;
 }
 
 .bg-slate-950\/30:hover,
 .bg-slate-950\/40:hover {
-  background-color: rgba(45, 45, 45, 0.65) !important;
+  background-color: rgba(45, 45, 45, 0.65);
   cursor: pointer;
 }
 

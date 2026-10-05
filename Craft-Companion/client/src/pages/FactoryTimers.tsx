@@ -7,12 +7,8 @@ import { getCraftworldHome } from '../services/api';
 import { calculateCycleTimerStatus } from '../services/craftworldCalculations';
 import { loadFactoryData, FactoryDataRow } from '../services/factoryData';
 import { FactoryIcon, ResourceIcon } from '../components/GameIcon';
-
-function formatNumber(value: unknown, digits = 1) {
-  return typeof value === 'number' && Number.isFinite(value)
-    ? value.toLocaleString(undefined, { maximumFractionDigits: digits })
-    : '0';
-}
+import { Button, Badge } from '../components/ui';
+import { formatNumber } from '../utils/formatters';
 
 export default function FactoryTimers() {
   const { language } = useTranslation();
@@ -88,10 +84,8 @@ export default function FactoryTimers() {
                 ? fac.level
                 : 0;
 
-          // Display level in Craft World UI is 1-indexed (rawLevel 9 = Nv. 10 / ⭐ 10)
           const displayLevel = rawLevel + 1;
 
-          // Find exact millisecondsPerCompletion from API level definition array (index = rawLevel)
           const levelData =
             definition.levels?.[rawLevel] ||
             definition.levels?.[rawLevel - 1] ||
@@ -101,7 +95,7 @@ export default function FactoryTimers() {
             : (factoryRows.find((r) => r.token === tokenId && r.level === displayLevel)
                 ?.duration_min || 60) * 60000;
 
-          // 1. Gather ONLY CURRENTLY ACTIVE Speed Boosters (checking startTime <= now && endTime >= now)
+          // 1. Gather ONLY CURRENTLY ACTIVE Speed Boosters
           const allBoosters: any[] = [
             ...(plot.booster ? [plot.booster] : []),
             ...(area.booster ? [area.booster] : []),
@@ -194,7 +188,6 @@ export default function FactoryTimers() {
     }
   });
 
-  // Calculate server time offset to eliminate local OS clock/timezone disparity
   const serverTimeMs = homeData?.serverTime
     ? new Date(homeData.serverTime).getTime()
     : homeData?.lastSyncedAt
@@ -207,7 +200,7 @@ export default function FactoryTimers() {
       <div className="w-full max-w-[1000px] mx-auto space-y-6">
         <div className="text-center mt-4 mb-2">
           <h1
-            className="text-3xl font-extrabold text-white tracking-wider"
+            className="text-3xl font-extrabold text-white tracking-wider font-main"
             style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9)' }}
           >
             {language === 'es' ? 'Temporizadores de Fábricas' : 'Factory Timers'}
@@ -225,12 +218,12 @@ export default function FactoryTimers() {
             <div className="flex items-center gap-3">
               <span className="text-2xl">🔔</span>
               <div>
-                <h4 className="font-extrabold text-white text-sm">
+                <h4 className="font-extrabold text-white text-sm font-main">
                   {language === 'es'
                     ? 'Notificaciones y Datos en Vivo'
                     : 'Live Desktop Alerts & Data'}
                 </h4>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-400 font-main">
                   {language === 'es'
                     ? 'Sincronizado con el servidor de Craft World.'
                     : 'Synced with Craft World server.'}
@@ -239,21 +232,22 @@ export default function FactoryTimers() {
             </div>
 
             <div className="flex items-center gap-2">
-              <button
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => setShowRawInspector(!showRawInspector)}
-                className="retroBtn text-xs"
               >
-                🔍 {showRawInspector ? 'Ocultar JSON API' : 'Inspeccionar API JSON'}
-              </button>
+                🔍 {showRawInspector ? 'Ocultar JSON' : 'Inspeccionar JSON'}
+              </Button>
 
               {notifPermission === 'granted' ? (
-                <span className="bg-emerald-950 text-emerald-300 text-xs px-3 py-1.5 rounded font-extrabold">
+                <Badge variant="success" size="md">
                   ✓ {language === 'es' ? 'Alertas Activas' : 'Alerts Active'}
-                </span>
+                </Badge>
               ) : (
-                <button onClick={requestNotif} className="retroBtn text-xs">
+                <Button variant="primary" size="sm" onClick={requestNotif}>
                   ⚡ {language === 'es' ? 'Activar Alertas' : 'Enable Alerts'}
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -264,22 +258,23 @@ export default function FactoryTimers() {
           <Card title="🔍 Inspección Directa de Datos API Craft World (/me/craft-world)">
             <div className="space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <p className="text-slate-300">
+                <p className="text-slate-300 font-main">
                   A continuación se muestra el JSON exacto recibido directamente desde los
                   servidores de Craft World para tus parcelas y fábricas:
                 </p>
-                <button
+                <Button
+                  variant="secondary"
+                  size="xs"
                   onClick={() => {
                     navigator.clipboard.writeText(JSON.stringify(landPlots, null, 2));
                     setCopied(true);
                     setTimeout(() => setCopied(false), 2000);
                   }}
-                  className="retroBtn text-xs px-3 py-1.5 shrink-0"
                 >
                   {copied ? '✓ ¡Copiado!' : '📋 Copiar JSON'}
-                </button>
+                </Button>
               </div>
-              <pre className="bg-slate-950 p-3 rounded-xl border border-slate-800 overflow-x-auto text-[11px] text-emerald-400 font-mono max-h-96">
+              <pre className="bg-[#151518] p-3 rounded-xl border-none overflow-x-auto text-[11px] text-emerald-400 font-mono max-h-96">
                 {JSON.stringify(landPlots, null, 2)}
               </pre>
             </div>
@@ -313,43 +308,47 @@ export default function FactoryTimers() {
                 const isFinished = status.remainingSeconds <= 0;
 
                 return (
-                  <div key={idx} className="resource-item-badge p-4 space-y-3">
+                  <div key={idx} className="p-4 rounded-2xl bg-[#151518] border-none space-y-3 transition-all">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <FactoryIcon symbol={run.token} size={36} />
                         <div>
-                          <h4 className="font-extrabold text-white text-sm">{run.title}</h4>
-                          <span className="text-xs text-slate-400">
+                          <h4 className="font-extrabold text-white text-sm font-main">{run.title}</h4>
+                          <span className="text-xs text-slate-400 font-main">
                             {run.token} • Nv. {run.level}
                           </span>
                         </div>
                       </div>
 
-                      <span
-                        className={`text-xs font-black px-2.5 py-1 rounded ${isFinished ? 'bg-emerald-950 text-emerald-300 border border-emerald-700/60' : 'bg-cyan-950 text-cyan-300 border border-cyan-700/60'}`}
-                      >
+                      <Badge variant={isFinished ? 'success' : 'info'} size="md">
                         {isFinished
                           ? language === 'es'
                             ? '¡LISTO PARA RECLAMAR!'
                             : 'READY TO CLAIM!'
                           : formattedTime}
-                      </span>
+                      </Badge>
                     </div>
 
                     {/* Progress Bar */}
                     <div>
-                      <div className="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
+                      <div className="w-full bg-[#1c1c20] rounded-full h-2.5 overflow-hidden border-none">
                         <div
-                          className={`h-2 rounded-full transition-all duration-1000 ${isFinished ? 'bg-emerald-400' : 'bg-gradient-to-r from-emerald-500 to-teal-400'}`}
+                          className={`h-2.5 rounded-full transition-all duration-1000 ${
+                            isFinished
+                              ? 'bg-emerald-400'
+                              : 'bg-gradient-to-r from-emerald-500 to-sky-400'
+                          }`}
                           style={{
                             width: `${Math.min(100, Math.max(0, status.progressPercent))}%`,
                           }}
                         />
                       </div>
-                      <div className="flex justify-between text-[10px] text-slate-400 mt-1 font-bold">
+                      <div className="flex justify-between text-[11px] text-slate-400 mt-1.5 font-bold font-main">
                         <span>
                           {language === 'es' ? 'Progreso' : 'Progress'}:{' '}
-                          {formatNumber(status.progressPercent, 1)}%
+                          <span className="font-mono text-slate-200">
+                            {formatNumber(status.progressPercent, 1)}%
+                          </span>
                         </span>
                         <span>
                           {isFinished
@@ -369,12 +368,12 @@ export default function FactoryTimers() {
           ) : (
             <div className="text-center py-8">
               <ResourceIcon symbol="Hammer" size={48} className="mx-auto mb-3 opacity-60" />
-              <p className="text-sm font-bold text-slate-300">
+              <p className="text-sm font-bold text-slate-300 font-main">
                 {language === 'es'
                   ? 'No hay producciones activas en este momento.'
                   : 'No active production runs right now.'}
               </p>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 mt-1 font-main">
                 {language === 'es'
                   ? 'Inicia producciones en el juego para ver los temporizadores en vivo.'
                   : 'Start factory runs in game to see live timers here.'}
