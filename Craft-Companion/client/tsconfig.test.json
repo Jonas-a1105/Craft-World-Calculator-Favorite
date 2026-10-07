@@ -23,7 +23,8 @@
     "src/modules/matrix/services/**/*.ts",
     "src/modules/settings/services/**/*.ts",
     "src/modules/compare/services/**/*.ts",
-    "src/modules/resources/services/**/*.ts"
+    "src/modules/resources/services/**/*.ts",
+    "src/modules/timers/services/**/*.ts"
   ],
   "exclude": ["src/**/*.tsx"]
 }
