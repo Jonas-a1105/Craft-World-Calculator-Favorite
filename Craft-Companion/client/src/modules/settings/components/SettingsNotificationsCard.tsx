@@ -1,5 +1,5 @@
 import React from 'react';
-import { BellBingBold, ShieldCheckBold, VolumeLoudBold } from 'solar-icon-set';
+import { BellBingBold, ShieldCheckBold, VolumeLoudBold, CheckCircleBold } from 'solar-icon-set';
 
 export interface SettingsNotificationsCardProps {
   notificationsEnabled: boolean;
@@ -89,7 +89,7 @@ export const SettingsNotificationsCard: React.FC<SettingsNotificationsCardProps>
 
           {notificationPermissionState === 'granted' ? (
             <span className="px-3.5 py-1.5 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-semibold flex items-center gap-1.5 flex-shrink-0">
-              <span>✓</span>
+              <CheckCircleBold className="w-4 h-4 shrink-0" />
               <span>{language === 'es' ? 'Activo' : 'Active'}</span>
             </span>
           ) : (

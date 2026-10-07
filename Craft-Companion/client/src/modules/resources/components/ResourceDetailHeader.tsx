@@ -1,5 +1,6 @@
 import React from 'react';
 import { ResourceIcon } from '../../../components/GameIcon';
+import { CloseCircleLinear } from 'solar-icon-set';
 
 interface ResourceDetailHeaderProps {
   symbol: string;
@@ -33,10 +34,9 @@ export const ResourceDetailHeader: React.FC<ResourceDetailHeaderProps> = ({
         type="button"
         onClick={onBack}
         title={language === 'es' ? 'Volver' : 'Back'}
-        style={{ padding: 0 }}
-        className="w-10 h-10 rounded-full bg-[#202024] hover:bg-rose-500/20 active:scale-95 text-slate-300 hover:text-rose-400 flex items-center justify-center font-bold text-sm transition-all border-none shadow-md !p-0 shrink-0"
+        className="w-10 h-10 rounded-full bg-[#202024] hover:bg-rose-500/20 active:scale-95 text-slate-300 hover:text-rose-400 flex items-center justify-center transition-all border-none shadow-md cursor-pointer shrink-0"
       >
-        ✕
+        <CloseCircleLinear className="w-5 h-5" />
       </button>
     </div>
   );

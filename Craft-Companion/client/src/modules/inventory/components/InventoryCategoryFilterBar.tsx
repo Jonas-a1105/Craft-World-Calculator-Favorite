@@ -1,4 +1,5 @@
 import React from 'react';
+import { CheckCircleBold, CloseCircleLinear } from 'solar-icon-set';
 import { ResourceIcon } from '../../../components/GameIcon';
 import { CATEGORY_FILTERS } from '../services/inventoryService';
 
@@ -154,8 +155,8 @@ export const InventoryCategoryFilterBar: React.FC<InventoryCategoryFilterBarProp
 
               {/* Active Green Checkmark Badge on Selected */}
               {isSelected && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 text-black rounded-full flex items-center justify-center text-[10px] font-black shadow-md">
-                  ✓
+                <span className="absolute -top-1 -right-1 text-emerald-400 bg-black/80 rounded-full flex items-center justify-center shadow-md shrink-0">
+                  <CheckCircleBold className="w-4 h-4 text-emerald-400 shrink-0" />
                 </span>
               )}
             </button>
@@ -168,10 +169,9 @@ export const InventoryCategoryFilterBar: React.FC<InventoryCategoryFilterBarProp
             type="button"
             onClick={() => onSelectCategory(null)}
             title={language === 'es' ? 'Quitar filtro' : 'Clear filter'}
-            style={{ padding: 0 }}
-            className="w-10 h-10 min-w-[40px] min-h-[40px] !p-0 rounded-full bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 flex items-center justify-center text-sm font-black transition-all ml-1 shrink-0"
+            className="w-10 h-10 min-w-[40px] min-h-[40px] p-0 rounded-full bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 flex items-center justify-center transition-all ml-1 shrink-0 cursor-pointer"
           >
-            ✕
+            <CloseCircleLinear className="w-5 h-5 shrink-0" />
           </button>
         )}
       </div>

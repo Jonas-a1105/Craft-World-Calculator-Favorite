@@ -1,4 +1,5 @@
 import React from 'react';
+import { CloseCircleLinear } from 'solar-icon-set';
 import { useTranslation } from '../../../utils/i18n';
 
 interface Props {
@@ -42,10 +43,12 @@ export const EncyclopediaHeader: React.FC<Props> = ({ search, onSearchChange }) 
         />
         {search && (
           <button
+            type="button"
             onClick={() => onSearchChange('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs rounded-full border-none"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors cursor-pointer flex items-center justify-center p-0.5 rounded-full border-none shrink-0"
+            aria-label="Clear search"
           >
-            ✕
+            <CloseCircleLinear className="w-4 h-4 shrink-0" />
           </button>
         )}
       </div>

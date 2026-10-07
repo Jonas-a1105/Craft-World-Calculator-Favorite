@@ -1,4 +1,5 @@
 import React from 'react';
+import { ListBold, BoltBold } from 'solar-icon-set';
 import type { ModalViewTab } from '../../types';
 import { useTranslation } from '../../../../utils/i18n';
 
@@ -24,19 +25,7 @@ export const ModalTabsNav: React.FC<ModalTabsNavProps> = ({
             : 'bg-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/10'
         }`}
       >
-        <svg
-          className="w-3.5 h-3.5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-        </svg>
+        <ListBold className="w-3.5 h-3.5 shrink-0" />
         <span>
           {language === 'es'
             ? 'Desglose de Niveles (1 al 40)'
@@ -53,19 +42,7 @@ export const ModalTabsNav: React.FC<ModalTabsNavProps> = ({
             : 'bg-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/10'
         }`}
       >
-        <svg
-          className="w-3.5 h-3.5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M13 10V3L4 14h7v7l9-11h-7z"
-          />
-        </svg>
+        <BoltBold className="w-3.5 h-3.5 shrink-0" />
         <span>
           {language === 'es' ? 'Cadena Paso a Paso' : 'Step-by-Step Chain'}
         </span>

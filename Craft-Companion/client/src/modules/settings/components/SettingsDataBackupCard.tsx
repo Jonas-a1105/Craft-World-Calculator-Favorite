@@ -1,5 +1,5 @@
 import React from 'react';
-import { CopyBold, ImportBold, TrashBinTrashBold } from 'solar-icon-set';
+import { CopyBold, ImportBold, TrashBinTrashBold, CheckCircleBold } from 'solar-icon-set';
 
 export interface SettingsDataBackupCardProps {
   copied: boolean;
@@ -60,13 +60,16 @@ export const SettingsDataBackupCard: React.FC<SettingsDataBackupCardProps> = ({
                 : 'bg-[#27272e] hover:bg-[#32323a] text-zinc-100 hover:text-white'
             }`}
           >
-            {copied
-              ? language === 'es'
-                ? '✓ Copiado'
-                : '✓ Copied'
-              : language === 'es'
-                ? 'Copiar'
-                : 'Copy'}
+            {copied ? (
+              <span className="flex items-center gap-1.5">
+                <CheckCircleBold className="w-3.5 h-3.5 shrink-0" />
+                <span>{language === 'es' ? 'Copiado' : 'Copied'}</span>
+              </span>
+            ) : language === 'es' ? (
+              'Copiar'
+            ) : (
+              'Copy'
+            )}
           </button>
         </div>
 

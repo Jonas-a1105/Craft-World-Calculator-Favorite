@@ -1,4 +1,5 @@
 import React from 'react';
+import { CheckCircleBold, BoxBold } from 'solar-icon-set';
 import { FactoryIcon, ResourceIcon } from '../../../components/GameIcon';
 import type { ActiveRun } from '../types';
 import { calculateRunTimerMetrics } from '../services/factoryTimersService';
@@ -72,7 +73,7 @@ export const FactoryTimerCard: React.FC<FactoryTimerCardProps> = ({
         <div className="flex items-center gap-1.5">
           {/* Main capsule button */}
           <div
-            className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all flex items-center gap-1 select-none ${
+            className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all flex items-center gap-1.5 select-none ${
               isFinished
                 ? 'bg-[#a3e635] text-black shadow-lg shadow-[#a3e635]/20 cursor-pointer hover:bg-[#bef264]'
                 : 'bg-[#222226] text-zinc-300'
@@ -80,7 +81,7 @@ export const FactoryTimerCard: React.FC<FactoryTimerCardProps> = ({
           >
             {isFinished ? (
               <>
-                <span>✓</span>
+                <CheckCircleBold className="w-3.5 h-3.5 shrink-0 text-black" />
                 <span>{language === 'es' ? 'Listo' : 'Ready'}</span>
               </>
             ) : (
@@ -90,10 +91,10 @@ export const FactoryTimerCard: React.FC<FactoryTimerCardProps> = ({
 
           {/* Circular icon button */}
           <div
-            className="w-7 h-7 rounded-full bg-[#222226] hover:bg-[#28282e] text-zinc-300 flex items-center justify-center text-[10px] font-bold transition-colors cursor-pointer shrink-0"
+            className="w-7 h-7 rounded-full bg-[#222226] hover:bg-[#28282e] text-zinc-300 flex items-center justify-center transition-colors cursor-pointer shrink-0"
             title={`Produciendo ${run.outputAmount} ${run.outputToken}`}
           >
-            <span className="font-mono">%</span>
+            <BoxBold className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
           </div>
         </div>
 

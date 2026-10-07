@@ -6,6 +6,7 @@ import {
   Logout3Linear,
   MoonBold,
   UserPlusLinear,
+  CheckCircleBold,
 } from 'solar-icon-set';
 import type { UserProfile, WalletItem } from '../types';
 import {
@@ -119,9 +120,7 @@ export const NavbarUserDropdown = ({
                         {user?.displayName || 'Player'}
                       </span>
                       {/* Blue verified checkmark */}
-                      <span className="w-3.5 h-3.5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] font-bold flex-shrink-0">
-                        ✓
-                      </span>
+                      <CheckCircleBold className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
                     </div>
                     <p className="text-[10px] text-zinc-400 truncate">
                       {user?.level !== undefined
@@ -132,8 +131,8 @@ export const NavbarUserDropdown = ({
                 </div>
 
                 {/* Green active tick badge */}
-                <div className="w-5 h-5 rounded-full bg-[#10b981]/20 flex items-center justify-center text-[#10b981] flex-shrink-0 text-xs font-bold ml-1">
-                  ✓
+                <div className="w-5 h-5 rounded-full bg-[#10b981]/20 flex items-center justify-center text-[#10b981] flex-shrink-0 ml-1">
+                  <CheckCircleBold className="w-3.5 h-3.5" />
                 </div>
               </Link>
 
@@ -216,8 +215,8 @@ export const NavbarUserDropdown = ({
                             </p>
                           </div>
                         </div>
-                        <span className="text-[10px] text-zinc-400 group-hover:text-emerald-400 font-mono shrink-0 pl-1">
-                          {isCopied ? '✓' : ''}
+                        <span className="text-[10px] text-zinc-400 group-hover:text-emerald-400 font-mono shrink-0 pl-1 flex items-center">
+                          {isCopied ? <CheckCircleBold className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> : null}
                         </span>
                       </div>
                     );

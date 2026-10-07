@@ -522,14 +522,18 @@ textarea:hover {
 }
 
 button {
-  background-color: rgba(255, 255, 255, 0.08);
   border: none;
-  color: #d1d5db;
   font-family: var(--font-main);
+  cursor: pointer;
+  outline: none;
+}
+
+button:not([class]) {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #d1d5db;
   font-weight: 600;
   padding: 8px 18px;
   border-radius: var(--radius);
-  cursor: pointer;
   transition: background-color 0.12s ease;
 }
 
@@ -538,8 +542,9 @@ button:not([class]):hover {
   color: #ffffff;
 }
 
-button[class*="p-0"] {
-  padding: 0;
+/* Ensure SVG icons inside buttons don't crush or shrink */
+button svg {
+  flex-shrink: 0;
 }
 
 /* Tables - OLED Flat */

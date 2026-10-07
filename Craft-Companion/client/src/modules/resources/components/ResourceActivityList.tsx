@@ -1,4 +1,5 @@
 import React from 'react';
+import { AltArrowRightLinear, TagPriceBold, CheckCircleBold } from 'solar-icon-set';
 import { ResourceIcon } from '../../../components/GameIcon';
 import type { ActivityTrade } from '../types';
 
@@ -31,7 +32,7 @@ export const ResourceActivityList: React.FC<ResourceActivityListProps> = ({ trad
                 </span>
 
                 {/* Directional Arrow */}
-                <span className="text-slate-500 font-bold text-sm shrink-0">➔</span>
+                <AltArrowRightLinear className="w-4 h-4 text-slate-500 shrink-0" />
 
                 {/* Output Token Icon & Amount */}
                 <div className="flex items-center gap-1.5 shrink-0">
@@ -45,14 +46,14 @@ export const ResourceActivityList: React.FC<ResourceActivityListProps> = ({ trad
 
             {/* Right: Price Tag and Green Checkmark */}
             <div className="flex items-center gap-3 sm:gap-4 shrink-0 ml-2">
-              <div className="flex items-center gap-1 text-slate-400 font-mono text-xs">
-                <span className="text-[11px] opacity-75">🏷️</span>
+              <div className="flex items-center gap-1.5 text-slate-400 font-mono text-xs">
+                <TagPriceBold className="w-3.5 h-3.5 text-amber-400/80 shrink-0" />
                 <span>{t.unitPrice}</span>
               </div>
 
               {/* Green Checkmark */}
-              <div className="w-5 h-5 rounded-full flex items-center justify-center text-[rgb(34,197,94)] font-black text-sm">
-                ✓
+              <div className="w-5 h-5 rounded-full flex items-center justify-center text-emerald-400 shrink-0">
+                <CheckCircleBold className="w-4 h-4 shrink-0" />
               </div>
             </div>
           </div>

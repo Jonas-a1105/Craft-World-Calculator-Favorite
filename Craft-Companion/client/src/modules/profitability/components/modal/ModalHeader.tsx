@@ -2,6 +2,7 @@ import React from 'react';
 import type { FactorySummary } from '../../types';
 import { useTranslation } from '../../../../utils/i18n';
 import { FactoryIcon } from '../../../../components/GameIcon';
+import { CloseCircleLinear } from 'solar-icon-set';
 
 export interface ModalHeaderProps {
   summary: FactorySummary;
@@ -50,17 +51,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({ summary, onClose }) =>
         className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-zinc-300 hover:text-white flex items-center justify-center transition-all cursor-pointer flex-shrink-0"
         title={language === 'es' ? 'Cerrar' : 'Close'}
       >
-        <svg
-          className="w-4 h-4 stroke-current"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
+        <CloseCircleLinear className="w-5 h-5" />
       </button>
     </div>
   );

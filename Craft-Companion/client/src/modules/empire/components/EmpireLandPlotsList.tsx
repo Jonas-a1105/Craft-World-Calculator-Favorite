@@ -1,5 +1,10 @@
 import React from 'react';
-import { MapPointBoldDuotone, DocumentTextBoldDuotone } from 'solar-icon-set';
+import {
+  MapPointBoldDuotone,
+  DocumentTextBoldDuotone,
+  CheckCircleBold,
+  StarBold,
+} from 'solar-icon-set';
 import { FactoryIcon } from '../../../components/GameIcon';
 import { formatFactoryName } from '../../../utils/formatters';
 import { formatPlotName, extractPlotFactorySummary } from '../services/empireService';
@@ -48,8 +53,9 @@ export const EmpireLandPlotsList: React.FC<EmpireLandPlotsListProps> = ({
                       {plot.name} • {areas.length} {language === 'es' ? 'áreas' : 'areas'}
                     </p>
                   </div>
-                  <span className="text-[10px] px-2.5 py-1 rounded-full font-bold bg-emerald-500/15 text-emerald-400 shrink-0">
-                    {language === 'es' ? '✓ Desbloqueada' : '✓ Unlocked'}
+                  <span className="text-[10px] px-2.5 py-1 rounded-full font-bold bg-emerald-500/15 text-emerald-400 shrink-0 flex items-center gap-1">
+                    <CheckCircleBold className="w-3.5 h-3.5 shrink-0" />
+                    <span>{language === 'es' ? 'Desbloqueada' : 'Unlocked'}</span>
                   </span>
                 </div>
 
@@ -60,9 +66,12 @@ export const EmpireLandPlotsList: React.FC<EmpireLandPlotsListProps> = ({
                       <DocumentTextBoldDuotone size={14} className="text-amber-400" />
                       <span>{language === 'es' ? 'Plano aplicado:' : 'Blueprint:'}</span>
                     </span>
-                    <span className="font-mono font-bold text-amber-400 text-[11px]">
-                      {plot.appliedBlueprint.definitionId?.replace('_BLUEPRINT', '')} (
-                      {plot.appliedBlueprint.starLevel}⭐)
+                    <span className="font-mono font-bold text-amber-400 text-[11px] flex items-center gap-1">
+                      <span>{plot.appliedBlueprint.definitionId?.replace('_BLUEPRINT', '')}</span>
+                      <span className="flex items-center text-amber-400">
+                        ({plot.appliedBlueprint.starLevel}
+                        <StarBold className="w-3 h-3 text-amber-400 shrink-0 ml-0.5" />)
+                      </span>
                     </span>
                   </div>
                 )}

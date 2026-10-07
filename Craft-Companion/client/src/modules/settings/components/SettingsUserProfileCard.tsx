@@ -1,4 +1,5 @@
 import React from 'react';
+import { RefreshLinear, CheckCircleBold } from 'solar-icon-set';
 import type { UserProfile } from '../types';
 import { oauthAuthorize } from '../../../services/api';
 
@@ -37,9 +38,7 @@ export const SettingsUserProfileCard: React.FC<SettingsUserProfileCardProps> = (
             <span className="text-sm font-bold text-white truncate">
               {user?.displayName || 'Player'}
             </span>
-            <span className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] font-bold flex-shrink-0">
-              ✓
-            </span>
+            <CheckCircleBold className="w-4 h-4 text-blue-400 shrink-0" />
           </div>
           <p className="text-xs text-zinc-400 truncate mt-0.5">
             {user?.level !== undefined
@@ -60,19 +59,9 @@ export const SettingsUserProfileCard: React.FC<SettingsUserProfileCardProps> = (
         type="button"
         onClick={oauthAuthorize}
         title={language === 'es' ? 'Revincular Cuenta' : 'Re-link Account'}
-        className="w-10 h-10 rounded-full bg-[#24242a] hover:bg-[#2e2e36] text-zinc-200 hover:text-white flex items-center justify-center transition-all shadow-md cursor-pointer flex-shrink-0 group"
+        className="w-10 h-10 rounded-full bg-[#24242a] hover:bg-[#2e2e36] text-zinc-200 hover:text-white flex items-center justify-center transition-all shadow-md cursor-pointer shrink-0 group border-none p-0"
       >
-        <svg
-          className="w-4 h-4 transition-transform duration-500 group-hover:rotate-180 text-zinc-300 group-hover:text-white"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          viewBox="0 0 24 24"
-        >
-          <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
+        <RefreshLinear className="w-5 h-5 transition-transform duration-500 group-hover:rotate-180 text-zinc-300 group-hover:text-white shrink-0" />
       </button>
     </div>
   );

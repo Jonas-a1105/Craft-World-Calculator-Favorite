@@ -1,5 +1,5 @@
 import React from 'react';
-import { StopwatchBoldDuotone, BellBold } from 'solar-icon-set';
+import { StopwatchBoldDuotone, BellBold, CheckCircleBold, CloseCircleBold } from 'solar-icon-set';
 
 interface FactoryTimersHeaderProps {
   language: string;
@@ -69,15 +69,15 @@ export const FactoryTimersHeader: React.FC<FactoryTimersHeaderProps> = ({
                   : 'Enable notifications'
             }
           >
-            <BellBold className="w-5 h-5" />
+            <BellBold className="w-5 h-5 shrink-0" />
 
             {notifPermission === 'granted' ? (
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#10b981] text-black flex items-center justify-center text-[10px] font-black shadow-sm">
-                ✓
+              <span className="absolute -top-1 -right-1 flex items-center justify-center text-emerald-400 bg-[#18181b] rounded-full shadow-sm">
+                <CheckCircleBold className="w-4 h-4 shrink-0" />
               </span>
             ) : (
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-500/90 text-white flex items-center justify-center text-[9px] font-black shadow-sm">
-                ✕
+              <span className="absolute -top-1 -right-1 flex items-center justify-center text-rose-400 bg-[#18181b] rounded-full shadow-sm">
+                <CloseCircleBold className="w-4 h-4 shrink-0" />
               </span>
             )}
           </button>

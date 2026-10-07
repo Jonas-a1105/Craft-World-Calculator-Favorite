@@ -4,6 +4,7 @@ import { useTranslation } from '../../../utils/i18n';
 import { formatNumber } from '../../../utils/formatters';
 import { formatUid } from '../utils/formatters';
 import { ResourceIcon } from '../../../components/GameIcon';
+import { RefreshLinear, BoltBoldDuotone, CheckCircleBold } from 'solar-icon-set';
 
 export interface UserProfileCardProps {
   me: Me;
@@ -56,16 +57,9 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
               type="button"
               onClick={onReauthorize}
               title={language === 'es' ? 'Revincular Cuenta' : 'Re-link Account'}
-              className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-black/60 backdrop-blur-md hover:bg-black/80 text-slate-200 hover:text-white flex items-center justify-center transition-all border border-white/10 cursor-pointer shadow-md"
+              className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md hover:bg-black/80 text-slate-200 hover:text-white flex items-center justify-center transition-all border border-white/10 cursor-pointer shadow-md shrink-0"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
+              <RefreshLinear className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -92,9 +86,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
             <h2 className="text-base sm:text-lg font-black text-white tracking-wide">
               {profile?.displayName || me.craftWorldDisplayName || me.id}
             </h2>
-            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500 text-slate-950 text-[10px] font-black shadow-sm">
-              ✓
-            </span>
+            <CheckCircleBold className="w-4 h-4 text-emerald-400 shrink-0" />
           </div>
 
           {/* Subtitle */}
@@ -120,9 +112,10 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
             <button
               type="button"
               onClick={onReauthorize}
-              className="mt-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3.5 py-1 rounded-full transition-all cursor-pointer"
+              className="mt-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-1.5 rounded-full transition-all cursor-pointer inline-flex items-center gap-1.5 shrink-0"
             >
-              ⚡ {language === 'es' ? 'Re-vincular' : 'Re-link'}
+              <BoltBoldDuotone className="w-3.5 h-3.5" />
+              <span>{language === 'es' ? 'Re-vincular' : 'Re-link'}</span>
             </button>
           )}
         </div>
