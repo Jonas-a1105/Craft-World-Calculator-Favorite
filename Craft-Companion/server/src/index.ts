@@ -3,6 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { initPrisma } from './db/prisma.js';
+import { migrateLegacyJson } from './db/migrateLegacyJson.js';
 import { oauthRouter } from './routes/oauth.js';
 import { meRouter } from './routes/me.js';
 import { craftworldRouter } from './routes/craftworld.js';
@@ -41,4 +43,14 @@ app.get('*', (_req, res) => {
 });
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => console.log(`Server running on port ${port}`));
+
+async function bootstrap() {
+  await initPrisma();
+  await migrateLegacyJson();
+  app.listen(port, () => console.log(`Server running on port ${port} with SQLite Prisma`));
+}
+
+bootstrap().catch((err) => {
+  console.error('Fatal server bootstrap error:', err);
+  process.exit(1);
+});

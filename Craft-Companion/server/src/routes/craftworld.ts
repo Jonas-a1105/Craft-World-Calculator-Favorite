@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import { getUsers, saveUsers } from '../storage/userStorage.js';
+import { Router, type Response } from 'express';
+import { getUserById, updateUserTokens, updateUserHomeCache } from '../storage/userStorage.js';
 import { refreshCraftworldToken } from '../services/craftworldOauth.js';
 import {
   getExternalProfile,
@@ -47,6 +47,13 @@ async function getFreshAccessToken(user: any, force = false): Promise<string> {
     user.craftWorldClientId = clientId;
     user.craftWorldClientSecret = clientSecret;
     user.craftWorldTokenExpiresAt = new Date(Date.now() + (refreshed.expiresIn || 3600) * 1000).toISOString();
+    await updateUserTokens(user.id, {
+      accessToken: user.craftWorldAccessToken,
+      refreshToken: user.craftWorldRefreshToken,
+      tokenExpiresAt: user.craftWorldTokenExpiresAt,
+      clientId,
+      clientSecret,
+    });
     console.log(`[Token Refresh] Successfully refreshed token for user ${user.id}`);
     return refreshed.accessToken;
   } catch (err: any) {
@@ -56,15 +63,13 @@ async function getFreshAccessToken(user: any, force = false): Promise<string> {
 }
 
 async function getUserAndToken(req: any) {
-  const users = await getUsers();
-  const user = users.find((u) => u.id === req.user?.id);
+  const user = await getUserById(req.user?.id);
   if (!user) throw new Error('User not found');
   const accessToken = await getFreshAccessToken(user);
-  await saveUsers(users);
   return { user, accessToken };
 }
 
-craftworldRouter.get('/profile', async (req: any, res) => {
+craftworldRouter.get('/profile', async (req: any, res: Response) => {
   try {
     const { user, accessToken } = await getUserAndToken(req);
     if (!accessToken) {
@@ -82,7 +87,7 @@ craftworldRouter.get('/profile', async (req: any, res) => {
   }
 });
 
-craftworldRouter.get('/craft-world', async (req: any, res) => {
+craftworldRouter.get('/craft-world', async (req: any, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalCraftWorld(accessToken);
@@ -92,7 +97,7 @@ craftworldRouter.get('/craft-world', async (req: any, res) => {
   }
 });
 
-craftworldRouter.get('/masterpieces', async (req: any, res) => {
+craftworldRouter.get('/masterpieces', async (req: any, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalMasterpieces(accessToken);
@@ -105,7 +110,7 @@ craftworldRouter.get('/masterpieces', async (req: any, res) => {
   }
 });
 
-craftworldRouter.get('/craft', async (req: any, res) => {
+craftworldRouter.get('/craft', async (req: any, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalCraft(accessToken);
@@ -118,7 +123,7 @@ craftworldRouter.get('/craft', async (req: any, res) => {
   }
 });
 
-craftworldRouter.get('/exchange', async (req: any, res) => {
+craftworldRouter.get('/exchange', async (req: any, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalExchange(accessToken);
@@ -131,7 +136,7 @@ craftworldRouter.get('/exchange', async (req: any, res) => {
   }
 });
 
-craftworldRouter.get('/onchain', async (req: any, res) => {
+craftworldRouter.get('/onchain', async (req: any, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalOnchain(accessToken);
@@ -144,7 +149,7 @@ craftworldRouter.get('/onchain', async (req: any, res) => {
   }
 });
 
-craftworldRouter.get('/inventory', async (req: any, res) => {
+craftworldRouter.get('/inventory', async (req: any, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalInventory(accessToken);
@@ -157,7 +162,7 @@ craftworldRouter.get('/inventory', async (req: any, res) => {
   }
 });
 
-craftworldRouter.get('/purchases', async (req: any, res) => {
+craftworldRouter.get('/purchases', async (req: any, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalPurchases(accessToken);
@@ -170,7 +175,7 @@ craftworldRouter.get('/purchases', async (req: any, res) => {
   }
 });
 
-craftworldRouter.get('/price-list', async (req: any, res) => {
+craftworldRouter.get('/price-list', async (req: any, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalPriceList(accessToken);
@@ -180,7 +185,7 @@ craftworldRouter.get('/price-list', async (req: any, res) => {
   }
 });
 
-craftworldRouter.get('/dyno-cycle', async (req: any, res) => {
+craftworldRouter.get('/dyno-cycle', async (req: any, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalDynoProductionCycle(accessToken);
@@ -190,7 +195,7 @@ craftworldRouter.get('/dyno-cycle', async (req: any, res) => {
   }
 });
 
-craftworldRouter.get('/home', async (req: any, res) => {
+craftworldRouter.get('/home', async (req: any, res: Response) => {
   try {
     const { user, accessToken } = await getUserAndToken(req);
     const [
@@ -260,19 +265,15 @@ craftworldRouter.get('/home', async (req: any, res) => {
 
     if (hasAnySuccess) {
       user.lastCachedHome = homePayload;
-      const users = await getUsers();
-      const uIndex = users.findIndex((u) => u.id === user.id);
-      if (uIndex >= 0) {
-        users[uIndex] = user;
-        await saveUsers(users);
-      }
+      await updateUserHomeCache(user.id, homePayload).catch((e: any) =>
+        console.warn('Failed updating home cache in db:', e?.message),
+      );
     }
 
     res.json(homePayload);
   } catch (err: any) {
     console.error('Error in /api/craftworld/home:', err?.message);
-    const users = await getUsers();
-    const fallbackUser = users.find((u) => u.id === req.user?.id);
+    const fallbackUser = await getUserById(req.user?.id);
     if (fallbackUser?.lastCachedHome) {
       console.log('Serving cached home snapshot to prevent disconnect screen');
       return res.json(fallbackUser.lastCachedHome);

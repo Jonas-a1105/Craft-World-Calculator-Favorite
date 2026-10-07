@@ -10,7 +10,8 @@ import {
 } from '../services/craftworldOauth.js';
 import { consumeOauthSession, createOauthSession } from '../storage/oauthSessionStorage.js';
 import { getExternalProfile } from '../services/craftworldExternalApi.js';
-import { getUsers, saveUsers } from '../storage/userStorage.js';
+import { getUserByCraftWorldUid, getUserById, upsertUser } from '../storage/userStorage.js';
+import type { UserAccount } from '../types.js';
 import {
   signSession,
   sessionCookieOptions,
@@ -185,35 +186,35 @@ oauthRouter.get('/callback', async (req, res) => {
     console.warn('OAuth profile fetch skipped or failed, using token fallback:', err?.message);
   }
 
-  const users = await getUsers();
   const jwtUid = extractJwtUid(tokens.accessToken);
   const uid = String(profile?.uid || jwtUid || 'cw_user').trim();
   if (!uid) {
     return res.redirect(`${redirectBase}?oauth_error=${encodeURIComponent('No UID returned')}`);
   }
 
-  let user = users.find((u) => u.craftWorldUid === uid);
+  const existingUser = await getUserByCraftWorldUid(uid);
   const now = new Date().toISOString();
   const expiresInMs = Number(tokens.expiresIn || 3600) * 1000;
   const tokenExpiresAt = new Date(Date.now() + expiresInMs).toISOString();
 
-  if (!user) {
-    user = { id: uid, craftWorldUid: uid, createdAt: now };
-    users.push(user);
-  }
+  const userToSave: UserAccount = {
+    id: existingUser?.id || uid,
+    craftWorldUid: uid,
+    craftWorldDisplayName: profile.displayName || existingUser?.craftWorldDisplayName,
+    craftWorldAvatarUrl: profile.avatarUrl || existingUser?.craftWorldAvatarUrl,
+    craftWorldLevel: profile.level || existingUser?.craftWorldLevel,
+    craftWorldAccessToken: tokens.accessToken,
+    craftWorldRefreshToken: tokens.refreshToken,
+    craftWorldTokenExpiresAt: tokenExpiresAt,
+    craftWorldScopes: tokens.scope,
+    craftWorldClientId: session.clientId,
+    craftWorldClientSecret: session.clientSecret,
+    lastCachedHome: existingUser?.lastCachedHome,
+    createdAt: existingUser?.createdAt || now,
+    lastLoginAt: now,
+  };
 
-  user.craftWorldUid = uid;
-  user.craftWorldDisplayName = profile.displayName || user.craftWorldDisplayName;
-  user.craftWorldAvatarUrl = profile.avatarUrl || user.craftWorldAvatarUrl;
-  user.craftWorldLevel = profile.level || user.craftWorldLevel;
-  user.craftWorldAccessToken = tokens.accessToken;
-  user.craftWorldRefreshToken = tokens.refreshToken;
-  user.craftWorldTokenExpiresAt = tokenExpiresAt;
-  user.craftWorldScopes = tokens.scope;
-  user.craftWorldClientId = session.clientId;
-  user.craftWorldClientSecret = session.clientSecret;
-  user.lastLoginAt = now;
-  await saveUsers(users);
+  const user = await upsertUser(userToSave);
 
   const signedToken = signSession(user.id);
   const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
@@ -229,26 +230,24 @@ oauthRouter.post('/quick-login', async (req, res) => {
   const cleanUid = String(uid || 'craft_player').trim();
   const cleanName = String(displayName || cleanUid).trim();
 
-  const users = await getUsers();
-  let user = users.find((u) => u.craftWorldUid === cleanUid || u.id === cleanUid);
+  const existingUser = await getUserByCraftWorldUid(cleanUid);
   const now = new Date().toISOString();
 
-  if (!user) {
-    user = {
-      id: cleanUid,
-      craftWorldUid: cleanUid,
-      craftWorldDisplayName: cleanName,
-      craftWorldLevel: 10,
-      createdAt: now,
-      lastLoginAt: now,
-    };
-    users.push(user);
-  } else {
-    user.lastLoginAt = now;
-    if (displayName) user.craftWorldDisplayName = cleanName;
-  }
+  const userToSave: UserAccount = {
+    id: existingUser?.id || cleanUid,
+    craftWorldUid: cleanUid,
+    craftWorldDisplayName: cleanName,
+    craftWorldLevel: existingUser?.craftWorldLevel || 10,
+    craftWorldAvatarUrl: existingUser?.craftWorldAvatarUrl,
+    craftWorldAccessToken: existingUser?.craftWorldAccessToken,
+    craftWorldRefreshToken: existingUser?.craftWorldRefreshToken,
+    craftWorldTokenExpiresAt: existingUser?.craftWorldTokenExpiresAt,
+    lastCachedHome: existingUser?.lastCachedHome,
+    createdAt: existingUser?.createdAt || now,
+    lastLoginAt: now,
+  };
 
-  await saveUsers(users);
+  const user = await upsertUser(userToSave);
 
   const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
   res.setHeader('Set-Cookie', [
@@ -266,8 +265,7 @@ oauthRouter.post('/logout', async (req, res) => {
 
   if (token) {
     const payload = Buffer.from(token.split('.')[0], 'base64url').toString('utf-8');
-    const users = await getUsers();
-    const user = users.find((u) => u.id === payload);
+    const user = await getUserById(payload);
     if (user?.craftWorldRefreshToken) {
       await revokeCraftworldToken(user.craftWorldRefreshToken);
     }
@@ -275,7 +273,7 @@ oauthRouter.post('/logout', async (req, res) => {
       user.craftWorldAccessToken = undefined;
       user.craftWorldRefreshToken = undefined;
       user.craftWorldTokenExpiresAt = undefined;
-      await saveUsers(users);
+      await upsertUser(user);
     }
   }
   res.setHeader('Set-Cookie', [

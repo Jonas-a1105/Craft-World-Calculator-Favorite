@@ -1,0 +1,52 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                       String   @id
+  craftWorldUid            String?  @unique
+  craftWorldDisplayName    String?
+  craftWorldAvatarUrl      String?
+  craftWorldLevel          Int?
+  craftWorldAccessToken    String?
+  craftWorldRefreshToken   String?
+  craftWorldTokenExpiresAt String?
+  craftWorldScopes         String?
+  craftWorldClientId       String?
+  craftWorldClientSecret   String?
+  lastCachedHome           String?
+  createdAt                String
+  lastLoginAt              String?
+  updatedAt                DateTime @updatedAt
+
+  @@index([craftWorldUid])
+}
+
+model OAuthSession {
+  state        String  @id
+  codeVerifier String
+  clientOrigin String?
+  redirectUri  String?
+  clientId     String?
+  clientSecret String?
+  createdAt    String
+  expiresAt    String
+
+  @@index([expiresAt])
+}
+
+model MatrixCache {
+  id            String  @id @default("default")
+  selectedGroup String?
+  scanStatus    String  @default("idle")
+  scanColumn    String?
+  scanStartedAt String?
+  nextScanAt    String?
+  cells         String
+  updatedAt     String
+}

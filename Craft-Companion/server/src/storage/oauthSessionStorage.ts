@@ -1,7 +1,6 @@
-import { promises as fs } from 'node:fs';
-import path from 'node:path';
+import { prisma } from '../db/prisma.js';
 
-type OAuthSession = {
+export type OAuthSession = {
   state: string;
   codeVerifier: string;
   clientOrigin?: string;
@@ -12,38 +11,7 @@ type OAuthSession = {
   expiresAt: string;
 };
 
-const dataDir = process.env.DATA_DIR || './data';
-const sessionsFile = path.join(dataDir, 'oauth-sessions.json');
 const SESSION_TTL_MS = 10 * 60 * 1000;
-
-async function ensureFile() {
-  await fs.mkdir(dataDir, { recursive: true });
-  try {
-    await fs.access(sessionsFile);
-  } catch {
-    await fs.writeFile(sessionsFile, '[]', 'utf-8');
-  }
-}
-
-async function readSessions(): Promise<OAuthSession[]> {
-  await ensureFile();
-  const raw = await fs.readFile(sessionsFile, 'utf-8');
-  try {
-    return JSON.parse(raw) as OAuthSession[];
-  } catch {
-    return [];
-  }
-}
-
-async function writeSessions(sessions: OAuthSession[]) {
-  await ensureFile();
-  await fs.writeFile(sessionsFile, JSON.stringify(sessions, null, 2), 'utf-8');
-}
-
-function pruneExpired(sessions: OAuthSession[]): OAuthSession[] {
-  const now = Date.now();
-  return sessions.filter((s) => new Date(s.expiresAt).getTime() > now);
-}
 
 export async function createOauthSession(data: {
   state: string;
@@ -54,27 +22,70 @@ export async function createOauthSession(data: {
   clientSecret?: string;
 }): Promise<void> {
   const now = new Date();
-  const session: OAuthSession = {
-    state: data.state,
-    codeVerifier: data.codeVerifier,
-    clientOrigin: data.clientOrigin,
-    redirectUri: data.redirectUri,
-    clientId: data.clientId,
-    clientSecret: data.clientSecret,
-    createdAt: now.toISOString(),
-    expiresAt: new Date(now.getTime() + SESSION_TTL_MS).toISOString(),
-  };
-  const sessions = pruneExpired(await readSessions());
-  sessions.push(session);
-  await writeSessions(sessions);
+  const expiresAt = new Date(now.getTime() + SESSION_TTL_MS).toISOString();
+
+  // Prune expired sessions in the background
+  prisma.oAuthSession
+    .deleteMany({
+      where: {
+        expiresAt: { lt: now.toISOString() },
+      },
+    })
+    .catch(() => {});
+
+  await prisma.oAuthSession.upsert({
+    where: { state: data.state },
+    create: {
+      state: data.state,
+      codeVerifier: data.codeVerifier,
+      clientOrigin: data.clientOrigin || null,
+      redirectUri: data.redirectUri || null,
+      clientId: data.clientId || null,
+      clientSecret: data.clientSecret || null,
+      createdAt: now.toISOString(),
+      expiresAt,
+    },
+    update: {
+      codeVerifier: data.codeVerifier,
+      clientOrigin: data.clientOrigin || null,
+      redirectUri: data.redirectUri || null,
+      clientId: data.clientId || null,
+      clientSecret: data.clientSecret || null,
+      expiresAt,
+    },
+  });
 }
 
 export async function consumeOauthSession(state: string): Promise<OAuthSession | null> {
-  const sessions = pruneExpired(await readSessions());
-  const idx = sessions.findIndex((s) => s.state === state);
-  if (idx === -1) return null;
-  const [session] = sessions.splice(idx, 1);
-  await writeSessions(sessions);
-  if (new Date(session.expiresAt).getTime() < Date.now()) return null;
-  return session;
+  if (!state) return null;
+
+  try {
+    const record = await prisma.oAuthSession.findUnique({
+      where: { state },
+    });
+
+    if (!record) return null;
+
+    // Atomic one-time consume
+    await prisma.oAuthSession.delete({
+      where: { state },
+    }).catch(() => {});
+
+    if (new Date(record.expiresAt).getTime() < Date.now()) {
+      return null;
+    }
+
+    return {
+      state: record.state,
+      codeVerifier: record.codeVerifier,
+      clientOrigin: record.clientOrigin ?? undefined,
+      redirectUri: record.redirectUri ?? undefined,
+      clientId: record.clientId ?? undefined,
+      clientSecret: record.clientSecret ?? undefined,
+      createdAt: record.createdAt,
+      expiresAt: record.expiresAt,
+    };
+  } catch {
+    return null;
+  }
 }

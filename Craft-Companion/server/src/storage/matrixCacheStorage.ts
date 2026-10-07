@@ -1,9 +1,4 @@
-import { promises as fs } from 'node:fs';
-import path from 'node:path';
-import { randomUUID } from 'node:crypto';
-
-const dataDir = process.env.DATA_DIR || './data';
-const matrixCacheFile = path.join(dataDir, 'matrix-cache.json');
+import { prisma } from '../db/prisma.js';
 
 export type MatrixCachePayload = {
   updatedAt: string;
@@ -15,40 +10,38 @@ export type MatrixCachePayload = {
   cells: Record<string, unknown>;
 };
 
-async function ensureCacheFile() {
-  await fs.mkdir(dataDir, { recursive: true });
-  try {
-    await fs.access(matrixCacheFile);
-  } catch {
-    await fs.writeFile(
-      matrixCacheFile,
-      JSON.stringify({ updatedAt: '', scanStatus: 'idle', cells: {} }, null, 2),
-      'utf-8',
-    );
-  }
-}
-
 export async function getMatrixCache(): Promise<MatrixCachePayload> {
-  await ensureCacheFile();
   try {
-    const raw = await fs.readFile(matrixCacheFile, 'utf-8');
-    const parsed = JSON.parse(raw || '{}');
+    const record = await prisma.matrixCache.findUnique({
+      where: { id: 'default' },
+    });
+
+    if (!record) {
+      return { updatedAt: '', scanStatus: 'idle', cells: {} };
+    }
+
+    let parsedCells: Record<string, unknown> = {};
+    try {
+      parsedCells = JSON.parse(record.cells || '{}');
+    } catch {
+      parsedCells = {};
+    }
+
     return {
-      updatedAt: typeof parsed.updatedAt === 'string' ? parsed.updatedAt : '',
-      selectedGroup: typeof parsed.selectedGroup === 'string' ? parsed.selectedGroup : undefined,
-      scanStatus: parsed.scanStatus === 'scanning' ? 'scanning' : 'idle',
-      scanColumn: typeof parsed.scanColumn === 'string' ? parsed.scanColumn : '',
-      scanStartedAt: typeof parsed.scanStartedAt === 'string' ? parsed.scanStartedAt : '',
-      nextScanAt: typeof parsed.nextScanAt === 'string' ? parsed.nextScanAt : '',
-      cells: parsed.cells && typeof parsed.cells === 'object' ? parsed.cells : {},
+      updatedAt: record.updatedAt,
+      selectedGroup: record.selectedGroup ?? undefined,
+      scanStatus: record.scanStatus === 'scanning' ? 'scanning' : 'idle',
+      scanColumn: record.scanColumn ?? undefined,
+      scanStartedAt: record.scanStartedAt ?? undefined,
+      nextScanAt: record.nextScanAt ?? undefined,
+      cells: parsedCells,
     };
   } catch {
     return { updatedAt: '', scanStatus: 'idle', cells: {} };
   }
 }
 
-export async function saveMatrixCache(payload: MatrixCachePayload) {
-  await ensureCacheFile();
+export async function saveMatrixCache(payload: MatrixCachePayload): Promise<MatrixCachePayload> {
   const safePayload: MatrixCachePayload = {
     updatedAt: payload.updatedAt || new Date().toISOString(),
     selectedGroup: payload.selectedGroup,
@@ -58,8 +51,29 @@ export async function saveMatrixCache(payload: MatrixCachePayload) {
     nextScanAt: payload.nextScanAt || '',
     cells: payload.cells || {},
   };
-  const tempFile = `${matrixCacheFile}.${process.pid}.${Date.now()}.${randomUUID()}.tmp`;
-  await fs.writeFile(tempFile, JSON.stringify(safePayload, null, 2), 'utf-8');
-  await fs.rename(tempFile, matrixCacheFile);
+
+  await prisma.matrixCache.upsert({
+    where: { id: 'default' },
+    create: {
+      id: 'default',
+      selectedGroup: safePayload.selectedGroup || null,
+      scanStatus: safePayload.scanStatus || 'idle',
+      scanColumn: safePayload.scanColumn || null,
+      scanStartedAt: safePayload.scanStartedAt || null,
+      nextScanAt: safePayload.nextScanAt || null,
+      cells: JSON.stringify(safePayload.cells || {}),
+      updatedAt: safePayload.updatedAt,
+    },
+    update: {
+      selectedGroup: safePayload.selectedGroup || null,
+      scanStatus: safePayload.scanStatus || 'idle',
+      scanColumn: safePayload.scanColumn || null,
+      scanStartedAt: safePayload.scanStartedAt || null,
+      nextScanAt: safePayload.nextScanAt || null,
+      cells: JSON.stringify(safePayload.cells || {}),
+      updatedAt: safePayload.updatedAt,
+    },
+  });
+
   return safePayload;
 }
