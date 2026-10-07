@@ -93,7 +93,7 @@ export const NavbarUserDropdown = ({
               <Link
                 to="/home"
                 onClick={closeDropdown}
-                className="flex-1 min-w-0 flex items-center justify-between bg-[#222226] hover:bg-[#28282e] p-2 pr-3 rounded-[20px] transition-colors"
+                className="flex-1 min-w-0 flex items-center bg-[#222226] hover:bg-[#28282e] p-2 rounded-[20px] transition-colors"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-black/60 flex items-center justify-center flex-shrink-0">
@@ -128,11 +128,6 @@ export const NavbarUserDropdown = ({
                         : '@craftworld'}
                     </p>
                   </div>
-                </div>
-
-                {/* Green active tick badge */}
-                <div className="w-5 h-5 rounded-full bg-[#10b981]/20 flex items-center justify-center text-[#10b981] flex-shrink-0 ml-1">
-                  <CheckCircleBold className="w-3.5 h-3.5" />
                 </div>
               </Link>
 
