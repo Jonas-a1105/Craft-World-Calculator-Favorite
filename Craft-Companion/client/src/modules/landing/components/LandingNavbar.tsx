@@ -24,22 +24,14 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({
 
   return (
     <header className="w-full max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 relative z-30">
-      <nav className="bg-[#141416]/95 backdrop-blur-md border border-white/[0.08] rounded-2xl px-5 sm:px-6 py-3.5 flex items-center justify-between shadow-2xl">
+      <nav className="bg-[#1c1c20]/95 backdrop-blur-md rounded-2xl px-5 sm:px-6 py-3.5 flex items-center justify-between shadow-2xl border-0">
         {/* Brand Logo & Name */}
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white transition-transform group-hover:scale-105">
-            <svg
-              className="w-5 h-5 text-white"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-            </svg>
-          </div>
+          <img
+            src="/assets/logo.png"
+            alt="Craft World Logo"
+            className="h-8 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105"
+          />
           <span className="font-bold text-base sm:text-lg text-white tracking-tight">
             {content.brandName}
           </span>
@@ -64,18 +56,18 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({
           <button
             type="button"
             onClick={() => onToggleLanguage(language === 'es' ? 'en' : 'es')}
-            className="flex items-center text-xs font-semibold px-2.5 py-1.5 rounded-xl bg-[#202024] hover:bg-[#28282e] border border-white/10 text-zinc-300 hover:text-white transition-all cursor-pointer shadow-sm"
+            className="flex items-center text-xs font-semibold px-2.5 py-1.5 rounded-xl bg-[#24252e] hover:bg-[#2e303a] text-zinc-300 hover:text-white transition-all cursor-pointer shadow-sm border-0 outline-none"
             title={language === 'es' ? 'Switch to English' : 'Cambiar a Español'}
           >
-            <span className={language === 'es' ? 'text-white font-bold' : 'text-zinc-500'}>ES</span>
+            <span className={language === 'es' ? 'text-amber-400 font-bold' : 'text-zinc-500'}>ES</span>
             <span className="mx-1 text-zinc-600">/</span>
-            <span className={language === 'en' ? 'text-white font-bold' : 'text-zinc-500'}>EN</span>
+            <span className={language === 'en' ? 'text-amber-400 font-bold' : 'text-zinc-500'}>EN</span>
           </button>
 
           {/* Schedule a Demo Button */}
           <Link
             to="/signin"
-            className="bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl transition-all shadow-sm active:scale-95"
+            className="bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl transition-all shadow-sm active:scale-95 border-0 outline-none"
           >
             {content.nav.scheduleDemo}
           </Link>
@@ -84,7 +76,7 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+            className="md:hidden p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-colors border-0 outline-none"
             aria-label="Toggle Menu"
           >
             <svg
@@ -105,7 +97,7 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden mt-2 bg-[#141416]/95 backdrop-blur-md border border-white/[0.08] rounded-2xl p-4 shadow-2xl flex flex-col gap-3">
+        <div className="md:hidden mt-2 bg-[#1c1c20]/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl flex flex-col gap-3 border-0">
           {navLinks.map((link) => (
             <a
               key={link.label}

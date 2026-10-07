@@ -24,7 +24,7 @@ export const LandingDashboard: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen w-full bg-[#0e0e10] text-white flex flex-col selection:bg-white/20 selection:text-white relative overflow-x-hidden">
+    <div className="min-h-screen w-full bg-[#141415] text-white flex flex-col font-main selection:bg-amber-400/20 selection:text-amber-300 relative overflow-x-hidden">
       {/* Top Floating Navbar */}
       <LandingNavbar
         content={content}
@@ -61,7 +61,8 @@ export const LandingDashboard: React.FC = () => {
         type="button"
         aria-label="Privacy and Cookie Preferences"
         onClick={() => setIsCookieModalOpen(true)}
-        className="fixed bottom-5 left-5 z-40 bg-[#16161a]/90 hover:bg-[#202026] text-zinc-300 hover:text-white border border-white/10 px-3.5 py-2 rounded-full shadow-lg backdrop-blur-md text-xs font-medium flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer group"
+        className="fixed bottom-5 left-5 z-40 bg-[#1c1c20] hover:bg-[#24252e] text-zinc-300 hover:text-white border-0 outline-none px-3.5 py-2 rounded-full shadow-lg backdrop-blur-md text-xs font-medium flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer group"
+        style={{ border: 'none', outline: 'none' }}
       >
         <svg
           className="w-4 h-4 text-zinc-400 group-hover:text-white transition-colors"

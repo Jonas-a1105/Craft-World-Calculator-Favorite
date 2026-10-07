@@ -118,7 +118,7 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, speed = 28, direction = 
         {repeatedItems.map((item, idx) => (
           <div
             key={`${item.id}-${idx}`}
-            className="w-[320px] sm:w-[350px] bg-[#141416]/95 border border-white/[0.08] hover:border-white/20 rounded-3xl p-6 flex flex-col justify-between shadow-xl flex-shrink-0 transition-colors pointer-events-none"
+            className="w-[320px] sm:w-[350px] bg-[#1c1c20] hover:bg-[#222227] rounded-3xl p-6 flex flex-col justify-between shadow-xl flex-shrink-0 transition-colors pointer-events-none border-0"
           >
             <div>
               {/* Card Header: Avatar & Info */}
@@ -126,7 +126,7 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, speed = 28, direction = 
                 <img
                   src={item.avatar}
                   alt={item.name}
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-white/10 flex-shrink-0"
+                  className="w-10 h-10 rounded-full object-cover ring-2 ring-[#141415] flex-shrink-0"
                   loading="lazy"
                 />
                 <div className="min-w-0">
@@ -163,7 +163,7 @@ export const LandingImpact: React.FC<LandingImpactProps> = ({ impact }) => {
     <section id="impact" className="w-full pt-10 pb-32 text-center relative z-20 overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Top Pill Badge */}
-        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#18181b]/80 border border-white/10 text-xs font-medium text-zinc-300 mb-5 backdrop-blur-sm shadow-inner transition-transform hover:scale-105">
+        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#1c1c20] text-xs font-medium text-zinc-300 mb-5 backdrop-blur-sm shadow-inner transition-transform hover:scale-105 border-0">
           <span>{impact.badge}</span>
         </div>
 
@@ -177,11 +177,11 @@ export const LandingImpact: React.FC<LandingImpactProps> = ({ impact }) => {
           {impact.subtitle}
         </p>
 
-        {/* Review Badge Rating Widget (Image 2) */}
-        <div className="inline-flex items-center gap-3 bg-[#141416]/90 border border-white/[0.08] rounded-2xl px-4 py-2.5 mb-10 shadow-lg">
-          <div className="w-8 h-8 rounded-xl bg-[#202024] border border-white/10 flex items-center justify-center text-zinc-300 flex-shrink-0">
+        {/* Review Badge Rating Widget */}
+        <div className="inline-flex items-center gap-3 bg-[#1c1c20] rounded-2xl px-4 py-2.5 mb-10 shadow-lg border-0">
+          <div className="w-8 h-8 rounded-xl bg-[#151518] flex items-center justify-center text-amber-400 flex-shrink-0 border-0">
             <svg
-              className="w-4 h-4 text-zinc-300"
+              className="w-4 h-4 text-amber-400"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -194,14 +194,14 @@ export const LandingImpact: React.FC<LandingImpactProps> = ({ impact }) => {
           </div>
           <div className="flex flex-col items-start text-left">
             <div className="flex items-center gap-1.5">
-              <div className="flex items-center text-amber-500 text-xs sm:text-sm">
+              <div className="flex items-center text-amber-400 text-xs sm:text-sm">
                 <span>★</span>
                 <span>★</span>
                 <span>★</span>
                 <span>★</span>
                 <span>★</span>
               </div>
-              <span className="text-sm font-bold text-white">{impact.ratingBadge.score}</span>
+              <span className="text-sm font-bold text-white font-mono">{impact.ratingBadge.score}</span>
             </div>
             <span className="text-[11px] text-zinc-400 font-medium">
               {impact.ratingBadge.basedOn}
@@ -210,30 +210,28 @@ export const LandingImpact: React.FC<LandingImpactProps> = ({ impact }) => {
         </div>
 
         {/* Top Metrics Card (4 KPIs Grid) */}
-        <div className="bg-[#141416]/95 border border-white/[0.08] rounded-3xl p-6 sm:p-8 mb-14 shadow-2xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 divide-y md:divide-y-0 md:divide-x divide-white/[0.06]">
+        <div className="bg-[#1c1c20] rounded-3xl p-6 sm:p-8 mb-14 shadow-2xl border-0">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
             {impact.metrics.map((metric, idx) => (
               <div
                 key={idx}
-                className={`flex flex-col items-center text-center ${
-                  idx > 1 ? 'pt-6 md:pt-0' : idx === 1 ? 'pt-0' : ''
-                } md:px-4`}
+                className="flex flex-col items-center text-center md:px-4"
               >
                 {/* Metric Icon */}
-                <div className="w-8 h-8 mb-3 flex items-center justify-center text-zinc-400">
+                <div className="w-8 h-8 mb-3 flex items-center justify-center text-amber-400">
                   {metric.icon === 'bolt' && (
-                    <svg className="w-5 h-5 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <svg className="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
                     </svg>
                   )}
                   {metric.icon === 'trend' && (
-                    <svg className="w-5 h-5 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <svg className="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                       <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
                       <polyline points="17 6 23 6 23 12" />
                     </svg>
                   )}
                   {metric.icon === 'users' && (
-                    <svg className="w-5 h-5 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <svg className="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                       <circle cx="9" cy="7" r="4" />
                       <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -241,14 +239,14 @@ export const LandingImpact: React.FC<LandingImpactProps> = ({ impact }) => {
                     </svg>
                   )}
                   {metric.icon === 'star' && (
-                    <svg className="w-5 h-5 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <svg className="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                     </svg>
                   )}
                 </div>
 
                 {/* Big Value */}
-                <span className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight block">
+                <span className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight block font-mono">
                   {metric.value}
                 </span>
 
@@ -271,8 +269,8 @@ export const LandingImpact: React.FC<LandingImpactProps> = ({ impact }) => {
         <MarqueeRow items={impact.testimonialsRow2} speed={22} direction="right" />
 
         {/* Gradient edge masks for sleek fade out at viewport borders */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0e0e10] to-transparent z-10" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0e0e10] to-transparent z-10" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#141415] to-transparent z-10" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#141415] to-transparent z-10" />
       </div>
     </section>
   );

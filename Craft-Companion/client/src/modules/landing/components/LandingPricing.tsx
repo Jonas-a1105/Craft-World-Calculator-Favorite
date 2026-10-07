@@ -19,7 +19,7 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
   return (
     <section id="pricing" className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-32 text-center relative z-20">
       {/* Top Pill Badge */}
-      <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#18181b]/80 border border-white/10 text-xs font-medium text-zinc-300 mb-5 backdrop-blur-sm shadow-inner transition-transform hover:scale-105">
+      <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#1c1c20] text-xs font-medium text-zinc-300 mb-5 backdrop-blur-sm shadow-inner transition-transform hover:scale-105 border-0">
         <span>{pricing.badge}</span>
       </div>
 
@@ -36,17 +36,17 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
       {/* Billing Switcher (Annually / Monthly with floating discount badge) */}
       <div className="inline-flex items-center relative mb-16">
         {/* Floating -20% Badge */}
-        <div className="absolute -top-3.5 -left-3.5 -rotate-12 bg-white text-zinc-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-md border border-zinc-200 z-10 pointer-events-none">
+        <div className="absolute -top-3.5 -left-3.5 -rotate-12 bg-amber-400 text-zinc-950 text-[10px] font-black px-2 py-0.5 rounded-full shadow-md border-0 z-10 pointer-events-none">
           {pricing.billing.discount}
         </div>
 
-        <div className="bg-[#18181b] border border-white/10 rounded-full p-1.5 flex items-center gap-1 shadow-inner">
+        <div className="bg-[#1c1c20] rounded-full p-1.5 flex items-center gap-1 shadow-inner border-0">
           <button
             type="button"
             onClick={() => setBillingCycle('annually')}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border-0 outline-none ${
               isAnnual
-                ? 'bg-[#27272e] text-white shadow-sm'
+                ? 'bg-[#24252e] text-amber-400 font-bold shadow-sm'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
@@ -55,9 +55,9 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
           <button
             type="button"
             onClick={() => setBillingCycle('monthly')}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border-0 outline-none ${
               !isAnnual
-                ? 'bg-[#27272e] text-white shadow-sm'
+                ? 'bg-[#24252e] text-amber-400 font-bold shadow-sm'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
@@ -69,7 +69,7 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
       {/* 3 Pricing Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left items-stretch">
         {/* CARD 1: Hobby */}
-        <div className="bg-[#141416]/95 border border-white/[0.08] rounded-3xl p-7 flex flex-col justify-between hover:border-white/20 transition-all duration-300 shadow-xl group">
+        <div className="bg-[#1c1c20] rounded-3xl p-7 flex flex-col justify-between hover:bg-[#222227] transition-all duration-300 shadow-xl group border-0">
           <div>
             {/* Header: Title, Description & Price */}
             <div className="flex items-start justify-between gap-4 mb-4">
@@ -82,21 +82,21 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
                 </p>
               </div>
               <div className="text-right flex-shrink-0">
-                <span className="text-3xl font-extrabold text-white tracking-tight">
+                <span className="text-3xl font-extrabold text-white tracking-tight font-mono">
                   {plans.hobby.price}
                 </span>
               </div>
             </div>
 
             {/* Core Features List */}
-            <div className="mt-8 pt-4 border-t border-white/[0.06]">
+            <div className="mt-8 pt-4">
               <span className="text-xs font-semibold text-zinc-300 block mb-3.5">
                 {plans.hobby.featuresTitle}
               </span>
               <ul className="space-y-2.5">
                 {plans.hobby.features.map((feat, idx) => (
                   <li key={idx} className="text-xs sm:text-[13px] text-zinc-300 flex items-start gap-2">
-                    <span className="text-zinc-500 font-bold select-none">•</span>
+                    <span className="text-amber-400 font-bold select-none">•</span>
                     <span>{feat}</span>
                   </li>
                 ))}
@@ -107,7 +107,7 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
           {/* CTA Button */}
           <Link
             to="/signin"
-            className="w-full mt-8 bg-[#18181b] hover:bg-[#222228] text-white border border-white/10 rounded-xl py-3 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
+            className="w-full mt-8 bg-[#24252e] hover:bg-[#2e303a] text-white rounded-xl py-3 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 border-0 outline-none"
           >
             <svg className="w-3.5 h-3.5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
@@ -117,9 +117,9 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
         </div>
 
         {/* CARD 2: Growth (Most Popular) */}
-        <div className="bg-[#141416]/95 border border-white/20 rounded-3xl p-7 flex flex-col justify-between relative hover:border-white/40 transition-all duration-300 shadow-2xl group">
+        <div className="bg-[#1c1c20] rounded-3xl p-7 flex flex-col justify-between relative hover:bg-[#222227] transition-all duration-300 shadow-2xl group border-0">
           {/* Most Popular Floating Badge */}
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#1c1c20] border border-white/20 px-3.5 py-0.5 rounded-full text-[11px] font-semibold text-zinc-200 shadow-md">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400/20 px-3.5 py-0.5 rounded-full text-[11px] font-bold text-amber-300 shadow-md border-0">
             {plans.growth.badge}
           </div>
 
@@ -135,7 +135,7 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
                 </p>
               </div>
               <div className="text-right flex-shrink-0">
-                <span className="text-3xl font-extrabold text-white tracking-tight">
+                <span className="text-3xl font-extrabold text-white tracking-tight font-mono">
                   {growthPrice}
                 </span>
                 <span className="text-[11px] text-zinc-500 font-medium block mt-0.5">
@@ -145,14 +145,14 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
             </div>
 
             {/* Included Features List */}
-            <div className="mt-8 pt-4 border-t border-white/[0.06]">
+            <div className="mt-8 pt-4">
               <span className="text-xs font-semibold text-zinc-300 block mb-3.5">
                 {plans.growth.featuresTitle}
               </span>
               <ul className="space-y-2.5">
                 {plans.growth.features.map((feat, idx) => (
                   <li key={idx} className="text-xs sm:text-[13px] text-zinc-300 flex items-start gap-2">
-                    <span className="text-zinc-500 font-bold select-none">•</span>
+                    <span className="text-amber-400 font-bold select-none">•</span>
                     <span>{feat}</span>
                   </li>
                 ))}
@@ -160,10 +160,10 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
             </div>
           </div>
 
-          {/* CTA Button (White Primary) */}
+          {/* CTA Button (Amber Primary) */}
           <Link
             to="/signin"
-            className="w-full mt-8 bg-white hover:bg-zinc-200 text-zinc-950 font-semibold rounded-xl py-3 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
+            className="w-full mt-8 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold rounded-xl py-3 px-4 text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 border-0 outline-none"
           >
             <svg className="w-3.5 h-3.5 text-zinc-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
@@ -173,7 +173,7 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
         </div>
 
         {/* CARD 3: Scale */}
-        <div className="bg-[#141416]/95 border border-white/[0.08] rounded-3xl p-7 flex flex-col justify-between hover:border-white/20 transition-all duration-300 shadow-xl group">
+        <div className="bg-[#1c1c20] rounded-3xl p-7 flex flex-col justify-between hover:bg-[#222227] transition-all duration-300 shadow-xl group border-0">
           <div>
             {/* Header: Title, Description & Price */}
             <div className="flex items-start justify-between gap-4 mb-4">
@@ -186,7 +186,7 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
                 </p>
               </div>
               <div className="text-right flex-shrink-0">
-                <span className="text-3xl font-extrabold text-white tracking-tight">
+                <span className="text-3xl font-extrabold text-white tracking-tight font-mono">
                   {scalePrice}
                 </span>
                 <span className="text-[11px] text-zinc-500 font-medium block mt-0.5">
@@ -196,14 +196,14 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
             </div>
 
             {/* Included Features List */}
-            <div className="mt-8 pt-4 border-t border-white/[0.06]">
+            <div className="mt-8 pt-4">
               <span className="text-xs font-semibold text-zinc-300 block mb-3.5">
                 {plans.scale.featuresTitle}
               </span>
               <ul className="space-y-2.5">
                 {plans.scale.features.map((feat, idx) => (
                   <li key={idx} className="text-xs sm:text-[13px] text-zinc-300 flex items-start gap-2">
-                    <span className="text-zinc-500 font-bold select-none">•</span>
+                    <span className="text-amber-400 font-bold select-none">•</span>
                     <span>{feat}</span>
                   </li>
                 ))}
@@ -214,7 +214,7 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
           {/* CTA Button */}
           <Link
             to="/signin"
-            className="w-full mt-8 bg-[#18181b] hover:bg-[#222228] text-white border border-white/10 rounded-xl py-3 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
+            className="w-full mt-8 bg-[#24252e] hover:bg-[#2e303a] text-white rounded-xl py-3 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 border-0 outline-none"
           >
             <svg className="w-3.5 h-3.5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="4" width="18" height="16" rx="2" />

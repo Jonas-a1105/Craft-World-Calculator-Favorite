@@ -16,7 +16,8 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ content }) => {
   return (
     <section className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-20 sm:pt-28 pb-24 text-center relative z-20">
       {/* Top Pill Badge */}
-      <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#18181b]/80 border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 mb-8 backdrop-blur-sm shadow-inner transition-transform hover:scale-105">
+      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1c1c20] text-xs sm:text-sm font-medium text-zinc-300 mb-8 backdrop-blur-sm shadow-inner transition-transform hover:scale-105 border-0">
+        <img src="/assets/resources/Coin.png" alt="Coin" className="w-4 h-4 object-contain" />
         <span>{content.hero.badge}</span>
       </div>
 
@@ -37,10 +38,10 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ content }) => {
 
       {/* Call To Action Buttons */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-14">
-        {/* Primary White Button */}
+        {/* Primary Amber Button */}
         <Link
           to="/signin"
-          className="w-full sm:w-auto bg-white hover:bg-zinc-200 text-zinc-950 font-semibold px-6 py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-95 text-sm sm:text-base group"
+          className="w-full sm:w-auto bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold px-6 py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-95 text-sm sm:text-base group border-0 outline-none"
         >
           <span>{content.hero.primaryCta}</span>
           <svg
@@ -60,7 +61,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ content }) => {
         {/* Secondary Dark Button */}
         <Link
           to="/signin"
-          className="w-full sm:w-auto bg-[#18181b] hover:bg-[#232328] text-white border border-white/10 font-medium px-6 py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center active:scale-95 text-sm sm:text-base"
+          className="w-full sm:w-auto bg-[#1c1c20] hover:bg-[#25252c] text-zinc-200 font-semibold px-6 py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center active:scale-95 text-sm sm:text-base border-0 outline-none"
         >
           {content.hero.secondaryCta}
         </Link>
@@ -75,7 +76,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ content }) => {
               key={idx}
               src={src}
               alt={`Client ${idx + 1}`}
-              className="inline-block h-8 w-8 rounded-full ring-2 ring-[#0e0e10] object-cover"
+              className="inline-block h-8 w-8 rounded-full ring-2 ring-[#141415] object-cover"
               loading="lazy"
             />
           ))}

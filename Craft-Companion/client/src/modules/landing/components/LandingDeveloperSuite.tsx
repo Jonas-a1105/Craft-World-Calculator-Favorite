@@ -11,9 +11,9 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
   return (
     <section id="features" className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-28 text-center relative z-20">
       {/* Top Pill Badge */}
-      <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#18181b]/80 border border-white/10 text-xs font-medium text-zinc-300 mb-6 backdrop-blur-sm shadow-inner transition-transform hover:scale-105">
+      <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#1c1c20] text-xs font-medium text-zinc-300 mb-6 backdrop-blur-sm shadow-inner transition-transform hover:scale-105 border-0">
         <svg
-          className="w-3.5 h-3.5 text-zinc-400"
+          className="w-3.5 h-3.5 text-amber-400"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -50,10 +50,10 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
               key={tab}
               type="button"
               onClick={() => setActiveTab(idx)}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer border-0 outline-none ${
                 isActive
-                  ? 'bg-white text-zinc-950 shadow-md scale-[1.02]'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#24252e] text-amber-400 font-bold shadow-md scale-[1.02]'
+                  : 'text-zinc-400 hover:text-white hover:bg-[#202024]'
               }`}
             >
               {tab}
@@ -65,10 +65,10 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
       {/* 3-Column Feature Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
         {/* CARD 1: Edge Deployments */}
-        <div className="bg-[#141416]/95 border border-white/[0.08] rounded-3xl p-6 flex flex-col justify-between hover:border-white/20 transition-all duration-300 shadow-xl group">
+        <div className="bg-[#1c1c20] rounded-3xl p-6 flex flex-col justify-between hover:bg-[#222227] transition-all duration-300 shadow-xl group border-0">
           <div>
             <div className="flex items-center gap-2.5 mb-2">
-              <span className="w-6 h-6 rounded-lg bg-zinc-800/90 text-zinc-400 text-xs font-semibold flex items-center justify-center flex-shrink-0">
+              <span className="w-6 h-6 rounded-lg bg-[#24252e] text-amber-400 text-xs font-bold flex items-center justify-center flex-shrink-0">
                 {suite.card1.num}
               </span>
               <h3 className="text-base font-bold text-white tracking-tight">
@@ -83,9 +83,9 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
           {/* Interactive Widget 1 */}
           <div className="space-y-3 pt-2">
             {/* Status Item 1 */}
-            <div className="bg-[#1c1c20] border border-white/[0.06] rounded-2xl p-4 flex items-center justify-between transition-colors group-hover:border-white/10">
+            <div className="bg-[#151518] rounded-2xl p-4 flex items-center justify-between transition-colors border-0">
               <div className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs flex-shrink-0">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs flex-shrink-0">
                   <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
@@ -107,9 +107,9 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
             </div>
 
             {/* Status Item 2 */}
-            <div className="bg-[#1c1c20] border border-white/[0.06] rounded-2xl p-4 flex items-center justify-between transition-colors group-hover:border-white/10">
+            <div className="bg-[#151518] rounded-2xl p-4 flex items-center justify-between transition-colors border-0">
               <div className="flex items-center gap-3">
-                <span className="text-xs font-mono font-bold text-zinc-400 w-5 text-center flex-shrink-0">
+                <span className="text-xs font-mono font-bold text-amber-400 w-5 text-center flex-shrink-0">
                   {'>_'}
                 </span>
                 <div>
@@ -126,10 +126,10 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
         </div>
 
         {/* CARD 2: Serverless Database */}
-        <div className="bg-[#141416]/95 border border-white/[0.08] rounded-3xl p-6 flex flex-col justify-between hover:border-white/20 transition-all duration-300 shadow-xl group">
+        <div className="bg-[#1c1c20] rounded-3xl p-6 flex flex-col justify-between hover:bg-[#222227] transition-all duration-300 shadow-xl group border-0">
           <div>
             <div className="flex items-center gap-2.5 mb-2">
-              <span className="w-6 h-6 rounded-lg bg-zinc-800/90 text-zinc-400 text-xs font-semibold flex items-center justify-center flex-shrink-0">
+              <span className="w-6 h-6 rounded-lg bg-[#24252e] text-amber-400 text-xs font-bold flex items-center justify-center flex-shrink-0">
                 {suite.card2.num}
               </span>
               <h3 className="text-base font-bold text-white tracking-tight">
@@ -144,10 +144,10 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
           {/* Interactive Widget 2 */}
           <div className="space-y-3 pt-2">
             {/* Stats Box */}
-            <div className="bg-[#1c1c20] border border-white/[0.06] rounded-2xl p-4 space-y-2 transition-colors group-hover:border-white/10">
+            <div className="bg-[#151518] rounded-2xl p-4 space-y-2 transition-colors border-0">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-zinc-400">{suite.card2.stat1Label}</span>
-                <span className="text-xs font-mono font-bold text-white">{suite.card2.stat1Value}</span>
+                <span className="text-xs font-mono font-bold text-amber-400">{suite.card2.stat1Value}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-zinc-400">{suite.card2.stat2Label}</span>
@@ -156,7 +156,7 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
             </div>
 
             {/* Table Verified Box */}
-            <div className="bg-[#1c1c20] border border-white/[0.06] rounded-2xl p-4 flex items-center justify-between transition-colors group-hover:border-white/10">
+            <div className="bg-[#151518] rounded-2xl p-4 flex items-center justify-between transition-colors border-0">
               <div className="flex items-center gap-2.5">
                 <svg className="w-4 h-4 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <ellipse cx="12" cy="5" rx="9" ry="3" />
@@ -175,10 +175,10 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
         </div>
 
         {/* CARD 3: Realtime Monitor */}
-        <div className="bg-[#141416]/95 border border-white/[0.08] rounded-3xl p-6 flex flex-col justify-between hover:border-white/20 transition-all duration-300 shadow-xl group">
+        <div className="bg-[#1c1c20] rounded-3xl p-6 flex flex-col justify-between hover:bg-[#222227] transition-all duration-300 shadow-xl group border-0">
           <div>
             <div className="flex items-center gap-2.5 mb-2">
-              <span className="w-6 h-6 rounded-lg bg-zinc-800/90 text-zinc-400 text-xs font-semibold flex items-center justify-center flex-shrink-0">
+              <span className="w-6 h-6 rounded-lg bg-[#24252e] text-amber-400 text-xs font-bold flex items-center justify-center flex-shrink-0">
                 {suite.card3.num}
               </span>
               <h3 className="text-base font-bold text-white tracking-tight">
@@ -194,13 +194,13 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
           <div className="space-y-3 pt-2">
             {/* Filter Dropdowns Row */}
             <div className="flex items-center gap-2">
-              <div className="flex-1 bg-[#1c1c20] border border-white/[0.08] text-xs text-zinc-300 py-1.5 px-3 rounded-xl flex items-center justify-between">
+              <div className="flex-1 bg-[#151518] text-xs text-zinc-300 py-1.5 px-3 rounded-xl flex items-center justify-between border-0">
                 <span>{suite.card3.filterRegion}</span>
                 <svg className="w-3.5 h-3.5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
               </div>
-              <div className="w-20 bg-[#1c1c20] border border-white/[0.08] text-xs text-zinc-300 py-1.5 px-3 rounded-xl flex items-center justify-between">
+              <div className="w-20 bg-[#151518] text-xs text-zinc-300 py-1.5 px-3 rounded-xl flex items-center justify-between border-0">
                 <span>{suite.card3.filterTime}</span>
                 <svg className="w-3.5 h-3.5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="6 9 12 15 18 9" />
@@ -209,7 +209,7 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
             </div>
 
             {/* Realtime Wave Chart */}
-            <div className="bg-[#1c1c20] border border-white/[0.06] rounded-2xl p-3 relative overflow-hidden h-24 flex items-end">
+            <div className="bg-[#151518] rounded-2xl p-3 relative overflow-hidden h-24 flex items-end border-0">
               <svg
                 className="w-full h-full overflow-visible"
                 viewBox="0 0 300 80"
@@ -217,8 +217,8 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
               >
                 <defs>
                   <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.3" />
-                    <stop offset="100%" stopColor="#60a5fa" stopOpacity="0.0" />
+                    <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.3" />
+                    <stop offset="100%" stopColor="#fbbf24" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
                 {/* Area under curve */}
@@ -230,7 +230,7 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
                 <path
                   d="M0,60 C40,58 70,55 110,50 C150,45 180,62 220,52 C260,42 280,25 300,10"
                   fill="none"
-                  stroke="#93c5fd"
+                  stroke="#fbbf24"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                 />
@@ -240,7 +240,7 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
             {/* Export Logs Button */}
             <button
               type="button"
-              className="w-full py-2.5 bg-zinc-200 hover:bg-white text-zinc-950 font-semibold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer"
+              className="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer border-0 outline-none"
             >
               <svg className="w-3.5 h-3.5 text-zinc-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />

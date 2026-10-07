@@ -9,13 +9,15 @@ interface LandingFooterProps {
 
 export const LandingFooter: React.FC<LandingFooterProps> = ({ footer, onOpenCookieModal }) => {
   return (
-    <footer className="w-full pt-16 pb-12 text-center relative z-20 border-t border-white/[0.06] bg-[#0c0c0e]">
+    <footer className="w-full pt-16 pb-12 text-center relative z-20 bg-[#141415] border-0">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col items-center">
         {/* Brand Badge */}
         <div className="inline-flex items-center gap-2.5 mb-8">
-          <div className="w-7 h-7 rounded-lg bg-zinc-200 text-zinc-950 font-bold text-sm flex items-center justify-center shadow-sm">
-            {footer.brandInitial}
-          </div>
+          <img
+            src="/assets/logo.png"
+            alt="Craft World Logo"
+            className="h-8 sm:h-9 w-auto object-contain"
+          />
           <span className="text-base font-bold text-white tracking-tight">
             {footer.brandName}
           </span>
@@ -29,7 +31,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ footer, onOpenCook
         {/* CTA Button */}
         <Link
           to="/signin"
-          className="bg-white hover:bg-zinc-200 text-zinc-950 font-semibold px-6 py-3 rounded-full text-xs sm:text-sm inline-flex items-center gap-2 transition-all shadow-lg active:scale-95 mb-14 cursor-pointer group"
+          className="bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold px-6 py-3 rounded-full text-xs sm:text-sm inline-flex items-center gap-2 transition-all shadow-lg active:scale-95 mb-14 cursor-pointer group border-0 outline-none"
         >
           <span>{footer.ctaButton}</span>
           <svg
@@ -58,7 +60,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ footer, onOpenCook
               <Link
                 key={idx}
                 to={href}
-                className="hover:text-white transition-colors"
+                className="hover:text-amber-400 transition-colors"
               >
                 {label}
               </Link>
@@ -66,7 +68,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ footer, onOpenCook
               <a
                 key={idx}
                 href={href}
-                className="hover:text-white transition-colors"
+                className="hover:text-amber-400 transition-colors"
               >
                 {label}
               </a>
@@ -121,13 +123,13 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ footer, onOpenCook
         </div>
 
         {/* Divider & Copyright */}
-        <div className="w-full pt-8 border-t border-white/[0.06] text-xs text-zinc-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="w-full pt-8 text-xs text-zinc-500 flex flex-col sm:flex-row items-center justify-between gap-4 border-0">
           <span>{footer.copyright}</span>
           {onOpenCookieModal && (
             <button
               type="button"
               onClick={onOpenCookieModal}
-              className="text-zinc-400 hover:text-white transition-colors cursor-pointer text-xs flex items-center gap-1.5"
+              className="text-zinc-400 hover:text-amber-400 transition-colors cursor-pointer text-xs flex items-center gap-1.5 border-0 outline-none"
             >
               <svg className="w-3.5 h-3.5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />

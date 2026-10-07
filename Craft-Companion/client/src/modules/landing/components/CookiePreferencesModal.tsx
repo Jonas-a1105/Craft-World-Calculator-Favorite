@@ -111,7 +111,7 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-[620px] bg-[#141416] border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-2xl text-left overflow-hidden">
+      <div className="relative w-full max-w-[620px] bg-[#1c1c20] rounded-3xl p-6 sm:p-8 shadow-2xl text-left overflow-hidden border-0">
         {/* Header Section */}
         <div className="flex items-start justify-between gap-4 mb-2">
           <h2
@@ -124,7 +124,7 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
             type="button"
             aria-label="Close"
             onClick={onClose}
-            className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
+            className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors cursor-pointer border-0 outline-none"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" />
@@ -145,10 +145,10 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab('strictly_necessary')}
-              className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all text-left cursor-pointer ${
+              className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm transition-all text-left cursor-pointer border-0 outline-none ${
                 activeTab === 'strictly_necessary'
-                  ? 'bg-white text-zinc-950 shadow-sm'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#24252e] text-amber-400 font-bold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-[#202024] font-medium'
               }`}
             >
               <svg
@@ -169,10 +169,10 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab('performance')}
-              className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all text-left cursor-pointer ${
+              className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm transition-all text-left cursor-pointer border-0 outline-none ${
                 activeTab === 'performance'
-                  ? 'bg-white text-zinc-950 shadow-sm'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#24252e] text-amber-400 font-bold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-[#202024] font-medium'
               }`}
             >
               <svg
@@ -195,10 +195,10 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab('targeting')}
-              className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all text-left cursor-pointer ${
+              className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm transition-all text-left cursor-pointer border-0 outline-none ${
                 activeTab === 'targeting'
-                  ? 'bg-white text-zinc-950 shadow-sm'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#24252e] text-amber-400 font-bold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-[#202024] font-medium'
               }`}
             >
               <svg
@@ -217,7 +217,7 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
           </div>
 
           {/* Right Detail Card */}
-          <div className="sm:col-span-7 bg-[#0f0f12] border border-white/[0.06] rounded-2xl p-4 sm:p-5 flex flex-col justify-between min-h-[160px]">
+          <div className="sm:col-span-7 bg-[#151518] rounded-2xl p-4 sm:p-5 flex flex-col justify-between min-h-[160px] border-0">
             <div>
               {/* Category Header Row */}
               <div className="flex items-center justify-between gap-2 mb-3">
@@ -226,7 +226,7 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
                     {activeCategory.title}
                   </span>
                   {activeCategory.badge && (
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-white/10 text-zinc-200">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#24252e] text-amber-400 border-0">
                       {activeCategory.badge}
                     </span>
                   )}
@@ -236,7 +236,7 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
                 {activeTab === 'strictly_necessary' ? (
                   <div
                     aria-label="Always active"
-                    className="w-10 h-5 bg-[#2a2a2e] rounded-full p-0.5 flex items-center justify-end opacity-85 cursor-not-allowed"
+                    className="w-10 h-5 bg-[#2a2a2e] rounded-full p-0.5 flex items-center justify-end opacity-85 cursor-not-allowed border-0"
                   >
                     <div className="w-4 h-4 rounded-full bg-zinc-400" />
                   </div>
@@ -246,8 +246,8 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
                     role="switch"
                     aria-checked={isCurrentEnabled}
                     onClick={toggleCurrent}
-                    className={`w-10 h-5 rounded-full p-0.5 flex items-center transition-colors duration-200 cursor-pointer ${
-                      isCurrentEnabled ? 'bg-white justify-end' : 'bg-zinc-800 justify-start'
+                    className={`w-10 h-5 rounded-full p-0.5 flex items-center transition-colors duration-200 cursor-pointer border-0 outline-none ${
+                      isCurrentEnabled ? 'bg-amber-400 justify-end' : 'bg-zinc-800 justify-start'
                     }`}
                   >
                     <div
@@ -268,11 +268,11 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
         </div>
 
         {/* Footer Actions Row */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-white/[0.06]">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-0">
           <Link
             to="/privacy"
             onClick={onClose}
-            className="text-xs text-zinc-400 hover:text-white transition-colors underline-offset-4 hover:underline order-2 sm:order-1"
+            className="text-xs text-zinc-400 hover:text-amber-400 transition-colors underline-offset-4 hover:underline order-2 sm:order-1"
           >
             {activeTab === 'strictly_necessary' ? 'Política de Privacidad completa' : 'Full Privacy Policy'}
           </Link>
@@ -280,14 +280,14 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
             <button
               type="button"
               onClick={handleSavePreferences}
-              className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium text-white bg-[#1e1e24] hover:bg-[#282830] active:scale-95 border border-white/10 transition-all cursor-pointer"
+              className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-[#24252e] hover:bg-[#2e303a] active:scale-95 transition-all cursor-pointer border-0 outline-none"
             >
               {cookies.savePreferences}
             </button>
             <button
               type="button"
               onClick={handleAcceptAll}
-              className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-zinc-950 bg-white hover:bg-zinc-200 active:scale-95 transition-all shadow-md cursor-pointer"
+              className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-zinc-950 bg-amber-400 hover:bg-amber-300 active:scale-95 transition-all shadow-md cursor-pointer border-0 outline-none"
             >
               {cookies.acceptAll}
             </button>

@@ -22,7 +22,7 @@ export const LandingFaq: React.FC<LandingFaqProps> = ({ faq }) => {
         {/* Left Column: Title, Subtitle, Contact Information */}
         <div className="lg:col-span-5 text-left">
           {/* Top Pill Badge */}
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#18181b]/80 border border-white/10 text-xs font-medium text-zinc-300 mb-6 backdrop-blur-sm shadow-inner transition-transform hover:scale-105">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#1c1c20] text-xs font-medium text-zinc-300 mb-6 backdrop-blur-sm shadow-inner transition-transform hover:scale-105 border-0">
             <span>{faq.badge}</span>
           </div>
 
@@ -40,7 +40,7 @@ export const LandingFaq: React.FC<LandingFaqProps> = ({ faq }) => {
           <div className="space-y-4 pt-2">
             {/* Location */}
             <div className="flex items-center gap-3 text-xs sm:text-sm text-zinc-300 font-medium">
-              <svg className="w-4 h-4 text-zinc-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="w-4 h-4 text-amber-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                 <circle cx="12" cy="10" r="3" />
               </svg>
@@ -49,7 +49,7 @@ export const LandingFaq: React.FC<LandingFaqProps> = ({ faq }) => {
 
             {/* Community Channel */}
             <div className="flex items-center gap-3 text-xs sm:text-sm text-zinc-300 font-medium">
-              <svg className="w-4 h-4 text-zinc-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="w-4 h-4 text-amber-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
               <span>{faq.contact.phone}</span>
@@ -57,13 +57,13 @@ export const LandingFaq: React.FC<LandingFaqProps> = ({ faq }) => {
 
             {/* Email */}
             <div className="flex items-center gap-3 text-xs sm:text-sm text-zinc-300 font-medium">
-              <svg className="w-4 h-4 text-zinc-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="w-4 h-4 text-amber-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                 <polyline points="22,6 12,13 2,6" />
               </svg>
               <a
                 href={`mailto:${faq.contact.email}`}
-                className="hover:text-white transition-colors underline-offset-4 hover:underline"
+                className="hover:text-amber-400 transition-colors underline-offset-4 hover:underline"
               >
                 {faq.contact.email}
               </a>
@@ -72,23 +72,26 @@ export const LandingFaq: React.FC<LandingFaqProps> = ({ faq }) => {
         </div>
 
         {/* Right Column: FAQ Accordion */}
-        <div className="lg:col-span-7 divide-y divide-white/[0.08] text-left">
+        <div className="lg:col-span-7 space-y-3 text-left">
           {faq.questions.map((item) => {
             const isOpen = !!openIds[item.id];
             return (
-              <div key={item.id} className="transition-colors">
+              <div
+                key={item.id}
+                className="bg-[#1c1c20] hover:bg-[#222227] rounded-2xl p-4 sm:p-5 transition-colors border-0"
+              >
                 <button
                   type="button"
                   onClick={() => toggleItem(item.id)}
-                  className="w-full py-5 flex items-center justify-between text-left transition-colors cursor-pointer group"
+                  className="w-full flex items-center justify-between text-left transition-colors cursor-pointer group border-0 outline-none"
                   aria-expanded={isOpen}
                 >
-                  <span className="text-sm sm:text-base font-semibold text-white group-hover:text-zinc-200 pr-4">
+                  <span className={`text-sm sm:text-base font-semibold pr-4 transition-colors ${isOpen ? 'text-amber-400' : 'text-white group-hover:text-amber-300'}`}>
                     {item.question}
                   </span>
                   <svg
-                    className={`w-4 h-4 text-zinc-400 transform transition-transform duration-200 flex-shrink-0 ${
-                      isOpen ? 'rotate-180 text-white' : ''
+                    className={`w-4 h-4 transform transition-transform duration-200 flex-shrink-0 ${
+                      isOpen ? 'rotate-180 text-amber-400' : 'text-zinc-400 group-hover:text-white'
                     }`}
                     viewBox="0 0 24 24"
                     fill="none"
@@ -102,7 +105,7 @@ export const LandingFaq: React.FC<LandingFaqProps> = ({ faq }) => {
                 </button>
 
                 {isOpen && (
-                  <div className="text-xs sm:text-sm text-zinc-400 leading-relaxed pb-5 pr-6 animate-fadeIn">
+                  <div className="text-xs sm:text-sm text-zinc-400 leading-relaxed pt-3 pr-4 animate-fadeIn">
                     {item.answer}
                   </div>
                 )}
