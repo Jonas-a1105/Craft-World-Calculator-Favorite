@@ -2,9 +2,16 @@ import type { FactoryDataRow } from '../../../services/factoryData';
 import { applyWorkshopSpeedToDuration } from '../../../services/workshopModifiers';
 import { formatFactoryName } from '../../../utils/formatters';
 import type { ActiveRun, RunTimerMetrics } from '../types';
+import type {
+  CraftworldHomePayload,
+  CraftworldLandPlot,
+  CraftworldLandArea,
+  CraftworldFactoryInstance,
+  CraftworldFactoryBooster,
+} from '../../../types';
 
 export function calculateBoosterMultiplier(
-  boosters: any[],
+  boosters: CraftworldFactoryBooster[],
   isNoAdsActive = false,
   nowMs = Date.now(),
 ): number {
@@ -33,7 +40,7 @@ export function calculateBoosterMultiplier(
 
 export function calculateWorkerReductionFactor(
   craftingReduction?: number | null,
-  workerBoostIntervals?: any[] | null,
+  workerBoostIntervals?: Array<{ boostValue?: number }> | null,
 ): number {
   if (
     typeof craftingReduction === 'number' &&
@@ -45,7 +52,7 @@ export function calculateWorkerReductionFactor(
 
   if (Array.isArray(workerBoostIntervals) && workerBoostIntervals.length > 0) {
     const totalWorkerBoost = workerBoostIntervals.reduce(
-      (sum: number, w: any) => sum + (w?.boostValue || 0),
+      (sum: number, w: { boostValue?: number }) => sum + (w?.boostValue || 0),
       0,
     );
     if (totalWorkerBoost > 0 && totalWorkerBoost < 1) {
@@ -106,7 +113,7 @@ export function calculateRunTimerMetrics(
 }
 
 export function extractActiveRuns(
-  homeData: any,
+  homeData: CraftworldHomePayload | null | undefined,
   factoryRows: FactoryDataRow[],
   language: string,
   nowMs = Date.now(),
@@ -114,9 +121,9 @@ export function extractActiveRuns(
   const landPlots = homeData?.craftWorld?.landPlots || [];
   const activeRuns: ActiveRun[] = [];
 
-  landPlots.forEach((plot: any) => {
-    (plot.areas || []).forEach((area: any) => {
-      (area.factories || []).forEach((facObj: any) => {
+  landPlots.forEach((plot: CraftworldLandPlot) => {
+    (plot.areas || []).forEach((area: CraftworldLandArea) => {
+      (area.factories || []).forEach((facObj: CraftworldFactoryInstance) => {
         const fac = facObj?.factory || facObj;
         const crafting = facObj?.crafting || fac?.crafting;
         const startedAt = crafting?.startedAt || fac?.startedAt;
@@ -142,7 +149,7 @@ export function extractActiveRuns(
             : (factoryRows.find((r) => r.token === tokenId && r.level === displayLevel)
                 ?.duration_min || 60) * 60000;
 
-          const allBoosters: any[] = [
+          const allBoosters: CraftworldFactoryBooster[] = [
             ...(plot.booster ? [plot.booster] : []),
             ...(area.booster ? [area.booster] : []),
             ...(facObj.boosters || []),

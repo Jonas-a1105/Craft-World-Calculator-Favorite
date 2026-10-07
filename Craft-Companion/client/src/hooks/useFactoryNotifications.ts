@@ -5,6 +5,13 @@ import { formatFactoryName } from '../utils/formatters';
 import { sendFactoryNotification } from '../utils/notifications';
 import { useCraftworldHomeQuery, useFactoryDataQuery } from '../services/queries/useCraftworldQueries';
 
+import type {
+  CraftworldHomePayload,
+  CraftworldLandPlot,
+  CraftworldLandArea,
+  CraftworldFactoryInstance,
+} from '../types';
+
 interface ExtractableFactoryRun {
   key: string;
   token: string;
@@ -16,15 +23,18 @@ interface ExtractableFactoryRun {
   runtimeMinutes: number;
 }
 
-export function extractActiveRuns(home: any, factoryRows: FactoryDataRow[], nowMs = Date.now()): ExtractableFactoryRun[] {
+export function extractActiveRuns(
+  home: CraftworldHomePayload | null | undefined,
+  factoryRows: FactoryDataRow[],
+  nowMs = Date.now(),
+): ExtractableFactoryRun[] {
   if (!home?.craftWorld) return [];
   const runs: ExtractableFactoryRun[] = [];
   const landPlots = home.craftWorld.landPlots || [];
-  const mines = home.craftWorld.mines || [];
 
-  landPlots.forEach((plot: any, plotIdx: number) => {
-    (plot.areas || []).forEach((area: any, areaIdx: number) => {
-      (area.factories || []).forEach((facObj: any, facIdx: number) => {
+  landPlots.forEach((plot: CraftworldLandPlot, plotIdx: number) => {
+    (plot.areas || []).forEach((area: CraftworldLandArea, areaIdx: number) => {
+      (area.factories || []).forEach((facObj: CraftworldFactoryInstance, facIdx: number) => {
         const fac = facObj?.factory || facObj;
         const crafting = facObj?.crafting || fac?.crafting;
         const startedAt = crafting?.startedAt || fac?.startedAt;
@@ -51,7 +61,7 @@ export function extractActiveRuns(home: any, factoryRows: FactoryDataRow[], nowM
                 ?.duration_min || 60) * 60000;
 
           // 1. Gather ONLY CURRENTLY ACTIVE Speed Boosters
-          const allBoosters: any[] = [
+          const allBoosters: Array<{ boostValue?: number; startTime?: string; endTime?: string }> = [
             ...(plot.booster ? [plot.booster] : []),
             ...(area.booster ? [area.booster] : []),
             ...(facObj.boosters || []),
@@ -60,7 +70,7 @@ export function extractActiveRuns(home: any, factoryRows: FactoryDataRow[], nowM
           ];
 
           let boostMultiplier = 1.0;
-          allBoosters.forEach((b: any) => {
+          allBoosters.forEach((b) => {
             const startOk = !b.startTime || new Date(b.startTime).getTime() <= nowMs;
             const endOk = !b.endTime || new Date(b.endTime).getTime() >= nowMs;
             if (
@@ -87,7 +97,7 @@ export function extractActiveRuns(home: any, factoryRows: FactoryDataRow[], nowM
             facObj.workerBoostIntervals.length > 0
           ) {
             const totalWorkerBoost = facObj.workerBoostIntervals.reduce(
-              (sum: number, w: any) => sum + (w.boostValue || 0),
+              (sum: number, w: { boostValue?: number }) => sum + (w.boostValue || 0),
               0,
             );
             if (totalWorkerBoost > 0 && totalWorkerBoost < 1) {

@@ -1,4 +1,8 @@
+import type { CraftworldTradeExecution } from '../../types';
+
 export type Timeframe = '1H' | '4H' | '1D' | '1W' | '1M' | 'MAX';
+
+export type RawExecutionTrade = CraftworldTradeExecution;
 
 export interface ActivityTrade {
   id: string;

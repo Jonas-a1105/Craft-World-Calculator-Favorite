@@ -47,7 +47,10 @@ export function useInventoryValue() {
   );
 
   const rawInventory = useMemo(() => {
-    return homeData?.inventory?.balances || homeData?.inventory || [];
+    if (Array.isArray(homeData?.inventory)) {
+      return homeData.inventory;
+    }
+    return homeData?.inventory?.balances || [];
   }, [homeData]);
 
   const recommendations = useMemo(() => {

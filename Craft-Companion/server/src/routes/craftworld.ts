@@ -1,6 +1,8 @@
 import { Router, type Response } from 'express';
 import { getUserById, updateUserTokens, updateUserHomeCache } from '../storage/userStorage.js';
 import { refreshCraftworldToken } from '../services/craftworldOauth.js';
+import type { AuthenticatedRequest, UserAccount } from '../types.js';
+import { getErrorMessage } from '../types.js';
 import {
   getExternalProfile,
   getExternalCraftWorld,
@@ -16,7 +18,7 @@ import {
 
 export const craftworldRouter = Router();
 
-async function getFreshAccessToken(user: any, force = false): Promise<string> {
+async function getFreshAccessToken(user: UserAccount, force = false): Promise<string> {
   const clientId = user.craftWorldClientId || process.env.CRAFTWORLD_OAUTH_CLIENT_ID || 'client_019f6f6c-3dbc-754a-a0ab-2fcf87a72975';
   const clientSecret = user.craftWorldClientSecret || process.env.CRAFTWORLD_OAUTH_CLIENT_SECRET || 'secret_019f6f6c-3dbd-7b33-9113-1838eee440ce';
 
@@ -56,20 +58,21 @@ async function getFreshAccessToken(user: any, force = false): Promise<string> {
     });
     console.log(`[Token Refresh] Successfully refreshed token for user ${user.id}`);
     return refreshed.accessToken;
-  } catch (err: any) {
-    console.warn(`[Token Refresh] Failed to refresh token for user ${user.id}:`, err?.message);
+  } catch (err: unknown) {
+    console.warn(`[Token Refresh] Failed to refresh token for user ${user.id}:`, getErrorMessage(err));
     return user.craftWorldAccessToken || '';
   }
 }
 
-async function getUserAndToken(req: any) {
-  const user = await getUserById(req.user?.id);
+async function getUserAndToken(req: AuthenticatedRequest) {
+  const userId = req.sessionUser?.id || (req as unknown as { user?: { id: string } }).user?.id || '';
+  const user = await getUserById(userId);
   if (!user) throw new Error('User not found');
   const accessToken = await getFreshAccessToken(user);
   return { user, accessToken };
 }
 
-craftworldRouter.get('/profile', async (req: any, res: Response) => {
+craftworldRouter.get('/profile', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { user, accessToken } = await getUserAndToken(req);
     if (!accessToken) {
@@ -82,120 +85,126 @@ craftworldRouter.get('/profile', async (req: any, res: Response) => {
     }
     const profile = await getExternalProfile(accessToken);
     res.json(profile);
-  } catch (err: any) {
-    res.status(502).json({ message: err.message || 'Unable to load profile.' });
+  } catch (err: unknown) {
+    res.status(502).json({ message: getErrorMessage(err) || 'Unable to load profile.' });
   }
 });
 
-craftworldRouter.get('/craft-world', async (req: any, res: Response) => {
+craftworldRouter.get('/craft-world', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalCraftWorld(accessToken);
     res.json(data);
-  } catch (err: any) {
-    res.status(502).json({ message: err.message || 'Unable to load craft world data.' });
+  } catch (err: unknown) {
+    res.status(502).json({ message: getErrorMessage(err) || 'Unable to load craft world data.' });
   }
 });
 
-craftworldRouter.get('/masterpieces', async (req: any, res: Response) => {
+craftworldRouter.get('/masterpieces', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalMasterpieces(accessToken);
     res.json(data);
-  } catch (err: any) {
-    const status = err.status === 403 ? 403 : 502;
+  } catch (err: unknown) {
+    const error = err as { status?: number; code?: string; message?: string };
+    const status = error.status === 403 ? 403 : 502;
     res
       .status(status)
-      .json({ message: err.message || 'Unable to load masterpieces.', code: err.code });
+      .json({ message: error.message || getErrorMessage(err) || 'Unable to load masterpieces.', code: error.code });
   }
 });
 
-craftworldRouter.get('/craft', async (req: any, res: Response) => {
+craftworldRouter.get('/craft', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalCraft(accessToken);
     res.json(data);
-  } catch (err: any) {
-    const status = err.status === 403 ? 403 : 502;
+  } catch (err: unknown) {
+    const error = err as { status?: number; code?: string; message?: string };
+    const status = error.status === 403 ? 403 : 502;
     res
       .status(status)
-      .json({ message: err.message || 'Unable to load craft data.', code: err.code });
+      .json({ message: error.message || getErrorMessage(err) || 'Unable to load craft data.', code: error.code });
   }
 });
 
-craftworldRouter.get('/exchange', async (req: any, res: Response) => {
+craftworldRouter.get('/exchange', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalExchange(accessToken);
     res.json(data);
-  } catch (err: any) {
-    const status = err.status === 403 ? 403 : 502;
+  } catch (err: unknown) {
+    const error = err as { status?: number; code?: string; message?: string };
+    const status = error.status === 403 ? 403 : 502;
     res
       .status(status)
-      .json({ message: err.message || 'Unable to load exchange data.', code: err.code });
+      .json({ message: error.message || getErrorMessage(err) || 'Unable to load exchange data.', code: error.code });
   }
 });
 
-craftworldRouter.get('/onchain', async (req: any, res: Response) => {
+craftworldRouter.get('/onchain', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalOnchain(accessToken);
     res.json(data);
-  } catch (err: any) {
-    const status = err.status === 403 ? 403 : 502;
+  } catch (err: unknown) {
+    const error = err as { status?: number; code?: string; message?: string };
+    const status = error.status === 403 ? 403 : 502;
     res
       .status(status)
-      .json({ message: err.message || 'Unable to load onchain data.', code: err.code });
+      .json({ message: error.message || getErrorMessage(err) || 'Unable to load onchain data.', code: error.code });
   }
 });
 
-craftworldRouter.get('/inventory', async (req: any, res: Response) => {
+craftworldRouter.get('/inventory', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalInventory(accessToken);
     res.json(data);
-  } catch (err: any) {
-    const status = err.status === 403 ? 403 : 502;
+  } catch (err: unknown) {
+    const error = err as { status?: number; code?: string; message?: string };
+    const status = error.status === 403 ? 403 : 502;
     res
       .status(status)
-      .json({ message: err.message || 'Unable to load inventory data.', code: err.code });
+      .json({ message: error.message || getErrorMessage(err) || 'Unable to load inventory data.', code: error.code });
   }
 });
 
-craftworldRouter.get('/purchases', async (req: any, res: Response) => {
+craftworldRouter.get('/purchases', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalPurchases(accessToken);
     res.json(data);
-  } catch (err: any) {
-    const status = err.status === 403 ? 403 : 502;
+  } catch (err: unknown) {
+    const error = err as { status?: number; code?: string; message?: string };
+    const status = error.status === 403 ? 403 : 502;
     res
       .status(status)
-      .json({ message: err.message || 'Unable to load purchases data.', code: err.code });
+      .json({ message: error.message || getErrorMessage(err) || 'Unable to load purchases data.', code: error.code });
   }
 });
 
-craftworldRouter.get('/price-list', async (req: any, res: Response) => {
+craftworldRouter.get('/price-list', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalPriceList(accessToken);
     res.json(data);
-  } catch (err: any) {
-    res.status(502).json({ message: err.message || 'Unable to load price list.' });
+  } catch (err: unknown) {
+    res.status(502).json({ message: getErrorMessage(err) || 'Unable to load price list.' });
   }
 });
 
-craftworldRouter.get('/dyno-cycle', async (req: any, res: Response) => {
+craftworldRouter.get('/dyno-cycle', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { accessToken } = await getUserAndToken(req);
     const data = await getExternalDynoProductionCycle(accessToken);
     res.json(data);
-  } catch (err: any) {
-    res.status(502).json({ message: err.message || 'Unable to load dyno production cycle.' });
+  } catch (err: unknown) {
+    res.status(502).json({ message: getErrorMessage(err) || 'Unable to load dyno production cycle.' });
   }
 });
 
-craftworldRouter.get('/home', async (req: any, res: Response) => {
+craftworldRouter.get('/home', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { user, accessToken } = await getUserAndToken(req);
     const [
@@ -211,76 +220,79 @@ craftworldRouter.get('/home', async (req: any, res: Response) => {
       dynoCycle,
     ] = await Promise.all([
       getExternalProfile(accessToken).catch(
-        (err) => (console.warn('Failed profile:', err.message), null),
+        (err) => (console.warn('Failed profile:', err instanceof Error ? err.message : String(err)), null),
       ),
       getExternalCraftWorld(accessToken).catch(
-        (err) => (console.warn('Failed craft-world:', err.message), null),
+        (err) => (console.warn('Failed craft-world:', err instanceof Error ? err.message : String(err)), null),
       ),
       getExternalMasterpieces(accessToken).catch(
-        (err) => (console.warn('Failed masterpieces:', err.message), null),
+        (err) => (console.warn('Failed masterpieces:', err instanceof Error ? err.message : String(err)), null),
       ),
       getExternalCraft(accessToken).catch(
-        (err) => (console.warn('Failed craft:', err.message), null),
+        (err) => (console.warn('Failed craft:', err instanceof Error ? err.message : String(err)), null),
       ),
       getExternalExchange(accessToken).catch(
-        (err) => (console.warn('Failed exchange:', err.message), null),
+        (err) => (console.warn('Failed exchange:', err instanceof Error ? err.message : String(err)), null),
       ),
       getExternalOnchain(accessToken).catch(
-        (err) => (console.warn('Failed onchain:', err.message), null),
+        (err) => (console.warn('Failed onchain:', err instanceof Error ? err.message : String(err)), null),
       ),
       getExternalInventory(accessToken).catch(
-        (err) => (console.warn('Failed inventory:', err.message), null),
+        (err) => (console.warn('Failed inventory:', err instanceof Error ? err.message : String(err)), null),
       ),
       getExternalPurchases(accessToken).catch(
-        (err) => (console.warn('Failed purchases:', err.message), null),
+        (err) => (console.warn('Failed purchases:', err instanceof Error ? err.message : String(err)), null),
       ),
       getExternalPriceList(accessToken).catch(
-        (err) => (console.warn('Failed price-list:', err.message), null),
+        (err) => (console.warn('Failed price-list:', err instanceof Error ? err.message : String(err)), null),
       ),
       getExternalDynoProductionCycle(accessToken).catch(
-        (err) => (console.warn('Failed dyno-cycle:', err.message), null),
+        (err) => (console.warn('Failed dyno-cycle:', err instanceof Error ? err.message : String(err)), null),
       ),
     ]);
 
     const hasAnySuccess = Boolean(profile || craftWorld || inventory || craft);
-    const homePayload = {
-      profile: profile || user.lastCachedHome?.profile || {
+    const cachedHome = (user.lastCachedHome || {}) as Record<string, unknown>;
+    const homePayload: Record<string, unknown> = {
+      profile: profile || cachedHome.profile || {
         uid: user.craftWorldUid || user.id,
         displayName: user.craftWorldDisplayName || 'Craft Master',
         level: user.craftWorldLevel || 10,
         avatarUrl: user.craftWorldAvatarUrl,
       },
-      craftWorld: craftWorld || user.lastCachedHome?.craftWorld,
-      masterpieces: masterpieces || user.lastCachedHome?.masterpieces,
-      craft: craft || user.lastCachedHome?.craft,
-      exchange: exchange || user.lastCachedHome?.exchange,
-      onchain: onchain || user.lastCachedHome?.onchain,
-      inventory: inventory || user.lastCachedHome?.inventory,
-      purchases: purchases || user.lastCachedHome?.purchases,
-      priceList: priceList || user.lastCachedHome?.priceList,
-      dynoCycle: dynoCycle || user.lastCachedHome?.dynoCycle,
+      craftWorld: craftWorld || cachedHome.craftWorld,
+      masterpieces: masterpieces || cachedHome.masterpieces,
+      craft: craft || cachedHome.craft,
+      exchange: exchange || cachedHome.exchange,
+      onchain: onchain || cachedHome.onchain,
+      inventory: inventory || cachedHome.inventory,
+      purchases: purchases || cachedHome.purchases,
+      priceList: priceList || cachedHome.priceList,
+      dynoCycle: dynoCycle || cachedHome.dynoCycle,
       serverTime: new Date().toISOString(),
       lastSyncedAt: new Date().toISOString(),
     };
 
     if (hasAnySuccess) {
       user.lastCachedHome = homePayload;
-      await updateUserHomeCache(user.id, homePayload).catch((e: any) =>
-        console.warn('Failed updating home cache in db:', e?.message),
+      await updateUserHomeCache(user.id, homePayload).catch((e: unknown) =>
+        console.warn('Failed updating home cache in db:', getErrorMessage(e)),
       );
     }
 
     res.json(homePayload);
-  } catch (err: any) {
-    console.error('Error in /api/craftworld/home:', err?.message);
-    const fallbackUser = await getUserById(req.user?.id);
+  } catch (err: unknown) {
+    console.error('Error in /api/craftworld/home:', getErrorMessage(err));
+    const userId = req.sessionUser?.id || (req as unknown as { user?: { id: string } }).user?.id || '';
+    const fallbackUser = await getUserById(userId);
     if (fallbackUser?.lastCachedHome) {
       console.log('Serving cached home snapshot to prevent disconnect screen');
       return res.json(fallbackUser.lastCachedHome);
     }
-    const status = err.status === 401 || String(err.message || '').includes('token') ? 401 : 502;
+    const error = err as { status?: number; code?: string; message?: string };
+    const status = error.status === 401 || String(error.message || '').includes('token') ? 401 : 502;
     res
       .status(status)
-      .json({ message: err.message || 'Unable to load home data.', code: err.code });
+      .json({ message: error.message || getErrorMessage(err) || 'Unable to load home data.', code: error.code });
   }
 });

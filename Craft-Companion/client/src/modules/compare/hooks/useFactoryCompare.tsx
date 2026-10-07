@@ -7,6 +7,7 @@ import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/q
 import { useAppStore } from '../../../store/useAppStore';
 import type { UseFactoryCompareReturn } from '../types';
 import { calculateComparisonVerdict } from '../services/compareService';
+import type { CraftworldFactoryInstance } from '../../../types';
 
 export function useFactoryCompare(): UseFactoryCompareReturn {
   const { data: home, isLoading: isHomeLoading } = useCraftworldHomeQuery();
@@ -42,7 +43,7 @@ export function useFactoryCompare(): UseFactoryCompareReturn {
   const userFactories = useMemo(() => {
     const ownedMap: Record<string, number> = {};
     if (home?.craftWorld?.factories && Array.isArray(home.craftWorld.factories)) {
-      home.craftWorld.factories.forEach((f: any) => {
+      home.craftWorld.factories.forEach((f: CraftworldFactoryInstance) => {
         if (f.symbol) ownedMap[f.symbol.toUpperCase()] = f.level || 1;
       });
     }

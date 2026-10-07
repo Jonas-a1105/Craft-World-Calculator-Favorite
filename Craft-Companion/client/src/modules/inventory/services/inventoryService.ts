@@ -7,6 +7,11 @@ import type {
   ValuedInventoryItem,
   ValuedInventoryResult,
 } from '../types';
+import type {
+  CraftworldHomePayload,
+  CraftworldPriceItem,
+  CraftworldResourceBalance,
+} from '../../../types';
 
 export const CATEGORY_FILTERS: CategoryFilterConfig[] = [
   {
@@ -74,10 +79,12 @@ export const CATEGORY_FILTERS: CategoryFilterConfig[] = [
   },
 ];
 
-export function extractRecommendations(homeData: any): Record<string, string> {
+export function extractRecommendations(
+  homeData?: CraftworldHomePayload | null,
+): Record<string, string> {
   const recMap: Record<string, string> = {};
   if (homeData?.priceList?.prices && Array.isArray(homeData.priceList.prices)) {
-    homeData.priceList.prices.forEach((p: any) => {
+    homeData.priceList.prices.forEach((p: CraftworldPriceItem) => {
       if (p.referenceSymbol && p.recommendation) {
         recMap[p.referenceSymbol.toUpperCase()] = p.recommendation;
       }
@@ -86,14 +93,17 @@ export function extractRecommendations(homeData: any): Record<string, string> {
   return recMap;
 }
 
-export function createPriceSnapshots(homeData: any, nowIso = new Date().toISOString()): PriceSnapshot[] {
+export function createPriceSnapshots(
+  homeData?: CraftworldHomePayload | null,
+  nowIso = new Date().toISOString(),
+): PriceSnapshot[] {
   if (!homeData?.priceList?.prices || !Array.isArray(homeData.priceList.prices)) {
     return [];
   }
-  return homeData.priceList.prices.map((p: any) => ({
+  return homeData.priceList.prices.map((p: CraftworldPriceItem) => ({
     symbol: String(p.referenceSymbol || '').toUpperCase(),
-    sellPriceCoin: p.amount,
-    buyPriceCoin: p.amount,
+    sellPriceCoin: p.amount ?? 0,
+    buyPriceCoin: p.amount ?? 0,
     timestamp: nowIso,
     source: 'game',
     stale: false,
@@ -101,13 +111,13 @@ export function createPriceSnapshots(homeData: any, nowIso = new Date().toISOStr
 }
 
 export function calculateValuedInventory(
-  resources: any[],
+  resources: CraftworldResourceBalance[] | undefined,
   prices: Record<string, number>,
   recMap: Record<string, string> = {},
   history: PriceSnapshot[] = [],
 ): ValuedInventoryResult {
   let totalValue = 0;
-  const valuedItems: ValuedInventoryItem[] = (resources || []).map((r: any) => {
+  const valuedItems: ValuedInventoryItem[] = (resources || []).map((r: CraftworldResourceBalance) => {
     const sym = (r?.symbol || '').toUpperCase();
     const unitPrice = prices[sym] || 0;
     const amount = typeof r?.amount === 'number' ? r.amount : 0;

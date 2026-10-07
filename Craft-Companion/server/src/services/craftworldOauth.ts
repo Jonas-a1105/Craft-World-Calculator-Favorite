@@ -98,18 +98,21 @@ function requireCredentials(
 
 async function readJson<T>(res: Response): Promise<T> {
   const text = await res.text();
-  let raw: any;
+  let raw: Record<string, unknown> | null = null;
   try {
-    raw = text ? JSON.parse(text) : {};
+    raw = text ? (JSON.parse(text) as Record<string, unknown>) : {};
   } catch {
     throw new Error(`Expected JSON from ${res.url}, received: ${text.slice(0, 120)}`);
   }
   if (!res.ok) {
     const message =
-      raw?.error_description || raw?.error || raw?.message || 'Craft World OAuth request failed.';
-    throw new OAuthError(message, raw?.error);
+      (raw?.error_description as string) ||
+      (raw?.error as string) ||
+      (raw?.message as string) ||
+      'Craft World OAuth request failed.';
+    throw new OAuthError(message, raw?.error as string | undefined);
   }
-  return raw as T;
+  return (raw as unknown) as T;
 }
 
 export class OAuthError extends Error {

@@ -46,7 +46,7 @@ export function useResourcePlanner(): UseResourcePlannerReturn {
   const userResources = useMemo(() => {
     const resMap: Record<string, number> = {};
     if (home?.craftWorld?.resources) {
-      home.craftWorld.resources.forEach((r: any) => {
+      home.craftWorld.resources.forEach((r) => {
         resMap[(r.symbol || '').toUpperCase()] = r.amount || 0;
       });
     }

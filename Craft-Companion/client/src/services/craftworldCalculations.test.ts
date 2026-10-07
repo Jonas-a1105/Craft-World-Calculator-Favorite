@@ -19,6 +19,7 @@ import {
   importPlayerConfig,
   loadPlayerConfig,
   savePlayerConfig,
+  DEFAULT_FACTORY_CONFIG,
 } from './playerConfig';
 
 const baseRow: FactoryDataRow = {
@@ -187,7 +188,7 @@ test('localStorage config survives export/import and malformed storage', () => {
   storage.setItem('craftworld.playerConfig.v1', '{bad json');
   assert.deepEqual(loadPlayerConfig(storage).factories, {});
   const saved = savePlayerConfig(
-    { version: 1, updatedAt: '', factories: { MUD: { enabled: true, factoryCount: 2 } as any } },
+    { version: 1, updatedAt: '', factories: { MUD: { ...DEFAULT_FACTORY_CONFIG, enabled: true, factoryCount: 2 } } },
     storage,
   );
   const imported = importPlayerConfig(exportPlayerConfig(saved), storage);

@@ -1,5 +1,5 @@
 import React from 'react';
-import type { InventoryData } from '../../types';
+import type { InventoryData, CraftWorldResource } from '../../types';
 import Card from '../../../../components/Card';
 import { useTranslation } from '../../../../utils/i18n';
 import { formatEggName, formatBoosterName } from '../../utils/formatters';
@@ -8,14 +8,14 @@ import { EmptyState } from '../EmptyState';
 import { ScopeUnauthorizedCard } from '../ScopeUnauthorizedCard';
 
 export interface InventoryTabProps {
-  inventory?: InventoryData;
+  inventory?: InventoryData | CraftWorldResource[];
   onReauthorize: () => void;
 }
 
 export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReauthorize }) => {
   const { language } = useTranslation();
 
-  if (!inventory) {
+  if (!inventory || Array.isArray(inventory)) {
     return <ScopeUnauthorizedCard scope="inventory:read" onReauthorize={onReauthorize} />;
   }
 
@@ -55,7 +55,7 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReautho
                       <div className="flex items-center gap-2 min-w-0">
                         <span className="text-sm">🥚</span>
                         <span className="font-bold text-slate-200 text-xs truncate">
-                          {formatEggName(e.definitionId)}
+                          {formatEggName(e.definitionId || '')}
                         </span>
                       </div>
                       <span className="font-mono font-black text-emerald-400 text-xs shrink-0">

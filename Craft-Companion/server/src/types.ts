@@ -1,3 +1,5 @@
+import type { Request } from 'express';
+
 export type UserAccount = {
   id: string;
   craftWorldUid?: string;
@@ -12,8 +14,22 @@ export type UserAccount = {
   craftWorldClientSecret?: string;
   createdAt: string;
   lastLoginAt?: string;
-  lastCachedHome?: any;
+  lastCachedHome?: Record<string, unknown>;
 };
+
+export interface AuthenticatedRequest extends Request {
+  sessionUser?: UserAccount;
+}
+
+export function getErrorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (typeof err === 'string') return err;
+  try {
+    return JSON.stringify(err);
+  } catch {
+    return String(err);
+  }
+}
 
 export type ResourceAmount = { symbol: string; amount: number };
 

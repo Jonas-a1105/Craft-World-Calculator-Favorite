@@ -1,7 +1,8 @@
 import React from 'react';
+import type { CraftworldWorker } from '../../../types';
 
 interface EmpireWorkersRosterProps {
-  workers: any[];
+  workers: CraftworldWorker[];
   language: string;
 }
 
@@ -23,7 +24,7 @@ export const EmpireWorkersRoster: React.FC<EmpireWorkersRosterProps> = ({
 
       {workers.length ? (
         <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 max-h-[360px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
-          {workers.map((worker: any, idx: number) => {
+          {workers.map((worker: CraftworldWorker, idx: number) => {
             const boostPercent = Math.round((worker.areaBoostValue || 0) * 100);
             const isAssigned = Boolean(worker.areaUuid);
             return (

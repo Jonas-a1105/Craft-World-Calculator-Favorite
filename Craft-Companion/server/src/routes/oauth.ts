@@ -11,7 +11,8 @@ import {
 import { consumeOauthSession, createOauthSession } from '../storage/oauthSessionStorage.js';
 import { getExternalProfile } from '../services/craftworldExternalApi.js';
 import { getUserByCraftWorldUid, getUserById, upsertUser } from '../storage/userStorage.js';
-import type { UserAccount } from '../types.js';
+import type { UserAccount, CraftworldExternalProfile } from '../types.js';
+import { getErrorMessage } from '../types.js';
 import {
   signSession,
   sessionCookieOptions,
@@ -172,18 +173,19 @@ oauthRouter.get('/callback', async (req, res) => {
       session.clientId,
       session.clientSecret,
     );
-  } catch (err: any) {
-    console.error('OAuth token exchange failed', err?.message);
+  } catch (err: unknown) {
+    const errorMsg = getErrorMessage(err);
+    console.error('OAuth token exchange failed', errorMsg);
     return res.redirect(
-      `${redirectBase}?oauth_error=${encodeURIComponent(err?.message || 'Token exchange failed')}`,
+      `${redirectBase}?oauth_error=${encodeURIComponent(errorMsg || 'Token exchange failed')}`,
     );
   }
 
-  let profile: any = {};
+  let profile: Partial<CraftworldExternalProfile> = {};
   try {
     profile = await getExternalProfile(tokens.accessToken);
-  } catch (err: any) {
-    console.warn('OAuth profile fetch skipped or failed, using token fallback:', err?.message);
+  } catch (err: unknown) {
+    console.warn('OAuth profile fetch skipped or failed, using token fallback:', getErrorMessage(err));
   }
 
   const jwtUid = extractJwtUid(tokens.accessToken);

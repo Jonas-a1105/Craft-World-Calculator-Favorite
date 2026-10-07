@@ -1,7 +1,8 @@
 import { prisma } from '../db/prisma.js';
+import type { User as PrismaUser } from '@prisma/client';
 import type { UserAccount } from '../types.js';
 
-function mapPrismaToUserAccount(record: any): UserAccount {
+function mapPrismaToUserAccount(record: PrismaUser): UserAccount {
   return {
     id: record.id,
     craftWorldUid: record.craftWorldUid ?? undefined,
@@ -75,7 +76,10 @@ export async function upsertUser(user: UserAccount): Promise<UserAccount> {
   return mapPrismaToUserAccount(record);
 }
 
-export async function updateUserHomeCache(id: string, homePayload: any): Promise<void> {
+export async function updateUserHomeCache(
+  id: string,
+  homePayload: Record<string, unknown> | null,
+): Promise<void> {
   await prisma.user.update({
     where: { id },
     data: {

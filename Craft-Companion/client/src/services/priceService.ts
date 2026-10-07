@@ -1,3 +1,5 @@
+import type { CraftworldHomePayload, CraftworldPriceItem } from '../types';
+
 export type LivePriceResult = {
   symbol: string;
   buyPriceCoin?: number;
@@ -70,12 +72,12 @@ export const DEFAULT_MARKET_PRICES: Record<string, number> = {
   DYNOKEY: 4486,
 };
 
-export function extractPriceMap(home: any): Record<string, number> {
+export function extractPriceMap(home?: CraftworldHomePayload | null): Record<string, number> {
   const map: Record<string, number> = {
     ...DEFAULT_MARKET_PRICES,
   };
   if (home?.priceList?.prices && Array.isArray(home.priceList.prices)) {
-    home.priceList.prices.forEach((p: any) => {
+    home.priceList.prices.forEach((p: CraftworldPriceItem) => {
       if (typeof p.amount === 'number' && p.amount > 0 && p.referenceSymbol) {
         map[p.referenceSymbol.toUpperCase()] = p.amount;
       }

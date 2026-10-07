@@ -22,7 +22,7 @@ export interface HomeTabConfig {
 }
 
 export interface CraftworldProfile {
-  uid: string;
+  uid?: string;
   displayName?: string;
   avatarUrl?: string;
   level?: number;
@@ -63,20 +63,21 @@ export interface CraftWorkshopItem {
 }
 
 export interface CraftData {
-  power: number;
-  powerUsed: number;
+  power?: number;
+  powerUsed?: number;
   skillPoints?: number;
   vaults?: CraftVault[];
   workshop?: CraftWorkshopItem[];
+  proficiencies?: Array<{ symbol: string; level?: number }>;
 }
 
 export interface EggItem {
-  definitionId: string;
+  definitionId?: string;
   amount: number;
 }
 
 export interface ChestItem {
-  definitionId: string;
+  definitionId?: string;
   count: number;
 }
 
@@ -92,6 +93,7 @@ export interface BoosterItem {
 }
 
 export interface InventoryData {
+  balances?: CraftWorldResource[];
   eggs?: EggItem[];
   chests?: ChestItem[];
   factoryInventory?: StashedFactory[];
@@ -106,8 +108,8 @@ export interface TradeAccount {
 }
 
 export interface TradeQuoteEndpoint {
-  symbol: string;
-  amount: number | string;
+  symbol?: string;
+  amount?: number | string;
 }
 
 export interface TradeQuote {
@@ -174,7 +176,7 @@ export interface HomePayload {
   craft?: CraftData;
   exchange?: ExchangeData;
   onchain?: OnchainData;
-  inventory?: InventoryData;
+  inventory?: InventoryData | CraftWorldResource[];
   purchases?: PurchasesData;
   serverTime?: string;
   lastSyncedAt?: string;

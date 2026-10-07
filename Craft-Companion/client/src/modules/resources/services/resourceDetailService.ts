@@ -2,6 +2,7 @@ import { formatNumber } from '../../../utils/formatters';
 import type {
   Timeframe,
   ActivityTrade,
+  RawExecutionTrade,
   ChartPoint,
   ChartSeriesData,
 } from '../types';
@@ -119,13 +120,13 @@ export function generateChartSeries(
 }
 
 export function extractActivityTrades(
-  rawExecutions: any[] | undefined,
+  rawExecutions: RawExecutionTrade[] | undefined,
   symbol: string,
   currentPrice: number,
 ): ActivityTrade[] {
   if (Array.isArray(rawExecutions) && rawExecutions.length > 0) {
     const relevant = rawExecutions.filter(
-      (e: any) =>
+      (e: RawExecutionTrade) =>
         e.trade?.input?.symbol === symbol ||
         e.trade?.output?.symbol === symbol ||
         e.quote?.input?.symbol === symbol ||
@@ -133,7 +134,7 @@ export function extractActivityTrades(
     );
 
     if (relevant.length > 0) {
-      return relevant.map((e: any, idx: number) => {
+      return relevant.map((e: RawExecutionTrade, idx: number) => {
         const inSym = e.trade?.input?.symbol || e.quote?.input?.symbol || 'COIN';
         const inAmt = e.trade?.input?.amount || e.quote?.input?.amount || 0;
         const outSym = e.trade?.output?.symbol || e.quote?.output?.symbol || symbol;

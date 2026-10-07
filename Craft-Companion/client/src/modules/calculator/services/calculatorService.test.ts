@@ -7,12 +7,28 @@ import {
 } from './calculatorService';
 import type { FactoryDataRow } from '../types';
 
+function mockFactoryRow(token: string, level: number): FactoryDataRow {
+  return {
+    token,
+    level,
+    duration_min: 10,
+    output_token: token,
+    output_amount: 1,
+    input_token_1: '',
+    input_amount_1: 0,
+    input_token_2: '',
+    input_amount_2: 0,
+    upgrade_token: '',
+    upgrade_amount: 0,
+  };
+}
+
 const mockRows: FactoryDataRow[] = [
-  { token: 'STEEL', level: 1 } as any,
-  { token: 'STEEL', level: 2 } as any,
-  { token: 'STEEL', level: 5 } as any,
-  { token: 'COPPER', level: 1 } as any,
-  { token: 'COPPER', level: 3 } as any,
+  mockFactoryRow('STEEL', 1),
+  mockFactoryRow('STEEL', 2),
+  mockFactoryRow('STEEL', 5),
+  mockFactoryRow('COPPER', 1),
+  mockFactoryRow('COPPER', 3),
 ];
 
 test('extractUniqueTokens returns deduplicated factory tokens', () => {

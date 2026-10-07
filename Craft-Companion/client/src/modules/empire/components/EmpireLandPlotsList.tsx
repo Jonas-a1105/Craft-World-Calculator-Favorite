@@ -2,9 +2,10 @@ import React from 'react';
 import { FactoryIcon } from '../../../components/GameIcon';
 import { formatFactoryName } from '../../../utils/formatters';
 import { formatPlotName, extractPlotFactorySummary } from '../services/empireService';
+import type { CraftworldLandPlot } from '../../../types';
 
 interface EmpireLandPlotsListProps {
-  landPlots: any[];
+  landPlots: CraftworldLandPlot[];
   language: string;
 }
 
@@ -26,7 +27,7 @@ export const EmpireLandPlotsList: React.FC<EmpireLandPlotsListProps> = ({
 
       {landPlots.length ? (
         <div className="grid gap-3.5 sm:gap-4 md:grid-cols-2">
-          {landPlots.map((plot: any, idx: number) => {
+          {landPlots.map((plot: CraftworldLandPlot, idx: number) => {
             const areas = plot?.areas || [];
             const { factories: allPlotFactories, counts: factoryCounts } =
               extractPlotFactorySummary(plot);
@@ -40,7 +41,7 @@ export const EmpireLandPlotsList: React.FC<EmpireLandPlotsListProps> = ({
                 <div className="flex justify-between items-start gap-2">
                   <div className="min-w-0">
                     <h4 className="font-bold text-white text-sm sm:text-base truncate flex items-center gap-2">
-                      <span>{formatPlotName(plot.name, language)}</span>
+                      <span>{formatPlotName(plot.name || '', language)}</span>
                     </h4>
                     <p className="text-[11px] text-zinc-400 font-mono mt-0.5">
                       {plot.name} • {areas.length} {language === 'es' ? 'áreas' : 'areas'}

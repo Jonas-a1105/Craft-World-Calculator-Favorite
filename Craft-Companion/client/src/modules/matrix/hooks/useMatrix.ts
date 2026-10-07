@@ -54,7 +54,7 @@ export function useMatrix(): UseMatrixReturn {
 
       const newMasteryMap: Record<string, number> = {};
       if (home?.craftWorld?.proficiencies && Array.isArray(home.craftWorld.proficiencies)) {
-        home.craftWorld.proficiencies.forEach((p: any) => {
+        home.craftWorld.proficiencies.forEach((p) => {
           const sym = (p.symbol || p.token || '').toUpperCase();
           if (sym) {
             newMasteryMap[sym] = Math.min(10, Math.max(0, p.level || p.claimedLevel || 0));

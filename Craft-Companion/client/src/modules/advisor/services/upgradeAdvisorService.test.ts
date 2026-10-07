@@ -3,10 +3,28 @@ import * as assert from 'node:assert/strict';
 import { filterAndSortRecommendations } from './upgradeAdvisorService';
 import type { UpgradeRecommendation } from '../types';
 
+import type { FactoryDataRow } from '../../../services/craftworldCalculations';
+
+function mockFactoryRow(token: string, level = 1, upgrade_token = ''): FactoryDataRow {
+  return {
+    token,
+    level,
+    duration_min: 10,
+    output_token: token,
+    output_amount: 1,
+    input_token_1: '',
+    input_amount_1: 0,
+    input_token_2: '',
+    input_amount_2: 0,
+    upgrade_token,
+    upgrade_amount: 10,
+  };
+}
+
 const mockRecs: UpgradeRecommendation[] = [
   {
-    row: { token: 'STEEL', level: 1 } as any,
-    nextRow: { upgrade_token: 'COIN' } as any,
+    row: mockFactoryRow('STEEL', 1),
+    nextRow: mockFactoryRow('STEEL', 2, 'COIN'),
     upgradeCost: 100,
     addedProfitPerDay: 50,
     addedProductionPerDay: 10,
@@ -16,8 +34,8 @@ const mockRecs: UpgradeRecommendation[] = [
     label: 'Best ROI',
   },
   {
-    row: { token: 'COPPER', level: 2 } as any,
-    nextRow: { upgrade_token: 'WIRE' } as any,
+    row: mockFactoryRow('COPPER', 2),
+    nextRow: mockFactoryRow('COPPER', 3, 'WIRE'),
     upgradeCost: 500,
     addedProfitPerDay: 500,
     addedProductionPerDay: 100,
@@ -27,8 +45,8 @@ const mockRecs: UpgradeRecommendation[] = [
     label: 'Best profit gain',
   },
   {
-    row: { token: 'GLASS', level: 3 } as any,
-    nextRow: { upgrade_token: 'SAND' } as any,
+    row: mockFactoryRow('GLASS', 3),
+    nextRow: mockFactoryRow('GLASS', 4, 'SAND'),
     upgradeCost: 1000,
     addedProfitPerDay: 100,
     addedProductionPerDay: 20,

@@ -1,3 +1,5 @@
+import type { Me } from '../../../types';
+
 export function parseOAuthError(
   search: string,
   deniedMessage: string = 'Access denied',
@@ -14,6 +16,6 @@ export function parseOAuthError(
   return decodeURIComponent(err);
 }
 
-export function isUserAuthenticated(me: any): boolean {
+export function isUserAuthenticated(me: Partial<Me> | null | undefined): boolean {
   return Boolean(me && (me.id || me.craftWorldUid));
 }

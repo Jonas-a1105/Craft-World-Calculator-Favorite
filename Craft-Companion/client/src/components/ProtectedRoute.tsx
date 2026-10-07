@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { getMe } from '../services/api';
 
@@ -9,7 +9,7 @@ function isCookieLogged() {
   });
 }
 
-export default function ProtectedRoute({ children }: { children: any }) {
+export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {

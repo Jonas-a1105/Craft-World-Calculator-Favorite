@@ -2,6 +2,7 @@ import {
   CraftworldExternalProfile,
   CraftworldExternalCraftWorld,
   CraftworldExternalMasterpieces,
+  CraftworldHomePayload,
   Me,
 } from '../types';
 const API =
@@ -77,7 +78,7 @@ export const getCraftworldInventory = () => req('/api/craftworld/inventory');
 export const getCraftworldPurchases = () => req('/api/craftworld/purchases');
 export const getCraftworldPriceList = () => req('/api/craftworld/price-list');
 export const getCraftworldDynoCycle = () => req('/api/craftworld/dyno-cycle');
-export const getCraftworldHome = () => req('/api/craftworld/home') as Promise<any>;
+export const getCraftworldHome = () => req('/api/craftworld/home') as Promise<CraftworldHomePayload>;
 export const quickLogin = (uid?: string, displayName?: string) =>
   req('/api/auth/quick-login', {
     method: 'POST',

@@ -31,9 +31,12 @@ export interface FactorySummary {
   allRows: FactoryDataRow[];
 }
 
+import type { WorkshopItem } from '../../services/workshopModifiers';
+import type { ProficiencyItem } from '../../services/masteryModifiers';
+
 export interface ProfitabilityContext {
-  workshop: any[];
-  proficiencies: any[];
+  workshop: WorkshopItem[];
+  proficiencies: ProficiencyItem[];
   activeBoosts: Array<{ boostValue: number }>;
 }
 

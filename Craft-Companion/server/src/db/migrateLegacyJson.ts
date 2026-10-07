@@ -45,9 +45,10 @@ export async function migrateLegacyJson(): Promise<void> {
       await fs.copyFile(usersFile, backupFile);
       console.log(`[DB Migration] Legacy users backed up to ${backupFile}`);
     }
-  } catch (err: any) {
-    if (err?.code !== 'ENOENT') {
-      console.warn('[DB Migration] Notice during users.json migration:', err?.message);
+  } catch (err: unknown) {
+    const error = err as { code?: string; message?: string };
+    if (error?.code !== 'ENOENT') {
+      console.warn('[DB Migration] Notice during users.json migration:', error?.message ?? String(err));
     }
   }
 
@@ -56,28 +57,29 @@ export async function migrateLegacyJson(): Promise<void> {
   try {
     await fs.access(matrixFile);
     const rawMatrix = await fs.readFile(matrixFile, 'utf-8');
-    const matrixData = JSON.parse(rawMatrix || '{}');
+    const matrixData = JSON.parse(rawMatrix || '{}') as Record<string, unknown>;
     if (matrixData && typeof matrixData === 'object') {
       const existing = await prisma.matrixCache.findUnique({ where: { id: 'default' } });
       if (!existing) {
         await prisma.matrixCache.create({
           data: {
             id: 'default',
-            selectedGroup: matrixData.selectedGroup || null,
-            scanStatus: matrixData.scanStatus || 'idle',
-            scanColumn: matrixData.scanColumn || null,
-            scanStartedAt: matrixData.scanStartedAt || null,
-            nextScanAt: matrixData.nextScanAt || null,
+            selectedGroup: typeof matrixData.selectedGroup === 'string' ? matrixData.selectedGroup : null,
+            scanStatus: typeof matrixData.scanStatus === 'string' ? matrixData.scanStatus : 'idle',
+            scanColumn: typeof matrixData.scanColumn === 'string' ? matrixData.scanColumn : null,
+            scanStartedAt: typeof matrixData.scanStartedAt === 'string' ? matrixData.scanStartedAt : null,
+            nextScanAt: typeof matrixData.nextScanAt === 'string' ? matrixData.nextScanAt : null,
             cells: JSON.stringify(matrixData.cells || {}),
-            updatedAt: matrixData.updatedAt || new Date().toISOString(),
+            updatedAt: typeof matrixData.updatedAt === 'string' ? matrixData.updatedAt : new Date().toISOString(),
           },
         });
         console.log('[DB Migration] Migrated legacy matrix-cache.json to SQLite');
       }
     }
-  } catch (err: any) {
-    if (err?.code !== 'ENOENT') {
-      console.warn('[DB Migration] Notice during matrix cache migration:', err?.message);
+  } catch (err: unknown) {
+    const error = err as { code?: string; message?: string };
+    if (error?.code !== 'ENOENT') {
+      console.warn('[DB Migration] Notice during matrix cache migration:', error?.message ?? String(err));
     }
   }
 

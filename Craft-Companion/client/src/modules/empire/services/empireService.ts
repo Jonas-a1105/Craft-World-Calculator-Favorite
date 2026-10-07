@@ -3,8 +3,16 @@ import type {
   PlotFactorySummary,
   EmpireOverviewStats,
 } from '../types';
+import type {
+  CraftworldHomePayload,
+  CraftworldLandPlot,
+  CraftworldLandArea,
+  CraftworldFactoryInstance,
+  CraftworldBuilding,
+  CraftworldEgg,
+} from '../../../types';
 
-export function formatPlotName(name: string, lang = 'es'): string {
+export function formatPlotName(name?: string, lang = 'es'): string {
   if (!name) return lang === 'es' ? 'Parcela' : 'Plot';
   const clean = name.replace(/_/g, ' ');
   if (lang === 'es') {
@@ -38,20 +46,22 @@ export function formatBuildingType(type: string, lang = 'es'): string {
   return type.replace(/_/g, ' ');
 }
 
-export function calculateEmpireOverviewStats(data: any): EmpireOverviewStats {
+export function calculateEmpireOverviewStats(
+  data: CraftworldHomePayload | null | undefined,
+): EmpireOverviewStats {
   const craftWorld = data?.craftWorld || {};
   const landPlots = craftWorld.landPlots || [];
   const dynos = craftWorld.dynos || [];
   const workers = craftWorld.workers || [];
-  const inventory = data?.inventory || {};
-  const eggs = inventory.eggs || [];
-  const totalEggs = eggs.reduce((acc: number, e: any) => acc + (Number(e?.amount) || 0), 0);
+  const inventory = Array.isArray(data?.inventory) ? { eggs: [] } : (data?.inventory || {});
+  const eggs: CraftworldEgg[] = inventory.eggs || [];
+  const totalEggs = eggs.reduce((acc: number, e: CraftworldEgg) => acc + (Number(e?.amount) || 0), 0);
 
   const totalFactories = landPlots.reduce(
-    (sum: number, p: any) =>
+    (sum: number, p: CraftworldLandPlot) =>
       sum +
       (p.areas || []).reduce(
-        (aSum: number, a: any) => aSum + (a.factories?.length || 0),
+        (aSum: number, a: CraftworldLandArea) => aSum + (a.factories?.length || 0),
         0,
       ),
     0,
@@ -67,9 +77,11 @@ export function calculateEmpireOverviewStats(data: any): EmpireOverviewStats {
   };
 }
 
-export function summarizeBuildings(playerBase: any[]): Record<string, BuildingSummaryItem> {
+export function summarizeBuildings(
+  playerBase?: CraftworldBuilding[] | null,
+): Record<string, BuildingSummaryItem> {
   const buildingSummary: Record<string, BuildingSummaryItem> = {};
-  (playerBase || []).forEach((b: any) => {
+  (playerBase || []).forEach((b: CraftworldBuilding) => {
     if (!b?.type) return;
     if (!buildingSummary[b.type]) {
       buildingSummary[b.type] = { count: 0, maxLevel: 0, levels: [] };
@@ -84,12 +96,14 @@ export function summarizeBuildings(playerBase: any[]): Record<string, BuildingSu
   return buildingSummary;
 }
 
-export function extractPlotFactorySummary(plot: any): PlotFactorySummary {
+export function extractPlotFactorySummary(
+  plot?: CraftworldLandPlot | null,
+): PlotFactorySummary {
   const areas = plot?.areas || [];
   const allPlotFactories: string[] = [];
-  areas.forEach((a: any) => {
-    (a.factories || []).forEach((f: any) => {
-      const token = f?.factory?.definition?.id || f?.id || 'FACTORY';
+  areas.forEach((a: CraftworldLandArea) => {
+    (a.factories || []).forEach((f: CraftworldFactoryInstance) => {
+      const token = f?.factory?.definition?.id || f?.id || f?.symbol || 'FACTORY';
       allPlotFactories.push(token);
     });
   });

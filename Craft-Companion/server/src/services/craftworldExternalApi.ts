@@ -35,13 +35,13 @@ export type ExternalCraftWorld = {
   experiencePoints?: number;
   level?: number;
   resources?: Array<{ symbol: string; amount: number }>;
-  playerBase?: any[];
+  playerBase?: Record<string, unknown>[];
   ownedSpaceIds?: number[];
   globalCoordinate?: { x: number; y: number };
-  landPlots?: any[];
-  mines?: any[];
-  dynos?: any[];
-  workers?: any[];
+  landPlots?: Record<string, unknown>[];
+  mines?: Record<string, unknown>[];
+  dynos?: Record<string, unknown>[];
+  workers?: Record<string, unknown>[];
   lastSyncedAt: string;
 };
 
@@ -49,7 +49,7 @@ export type ExternalMasterpieces = {
   claimedMasterpieceIds?: (number | string)[];
   activeBattlePasses?: (number | string)[];
   seasonPasses?: (number | string)[];
-  activeSeason?: any;
+  activeSeason?: Record<string, unknown>;
   lastSyncedAt: string;
 };
 
@@ -142,7 +142,7 @@ export type ExternalPurchases = {
     isClaimable: boolean;
   };
   shopItemPurchases: Array<{ shopItemId: string; purchasedAt: string }>;
-  offers: Array<any>;
+  offers: Array<Record<string, unknown>>;
   adWatchCounts: Array<{ adPlacement: string; count: number; resetsAt: string }>;
   lastSyncedAt: string;
 };
@@ -161,22 +161,23 @@ export type ExternalDynoProductionCycle = {
 
 async function readJson<T>(res: Response): Promise<T> {
   const text = await res.text();
-  let raw: any;
+  let raw: Record<string, unknown> | null = null;
   try {
-    raw = text ? JSON.parse(text) : {};
+    raw = text ? (JSON.parse(text) as Record<string, unknown>) : {};
   } catch {
     throw new ExternalApiError('Invalid JSON response', 'unknown', res.status);
   }
   if (!res.ok) {
-    const code = raw?.error?.code || raw?.code || 'server_error';
+    const errorObj = raw?.error as { code?: string; description?: string; message?: string } | undefined;
+    const code = errorObj?.code || (raw?.code as string) || 'server_error';
     const message =
-      raw?.error?.description ||
-      raw?.message ||
-      raw?.error?.message ||
+      errorObj?.description ||
+      (raw?.message as string) ||
+      errorObj?.message ||
       'External API request failed.';
     throw new ExternalApiError(message, code as ExternalApiErrorCode, res.status);
   }
-  return (raw?.data !== undefined ? raw.data : raw) as T;
+  return ((raw?.data !== undefined ? raw.data : raw) as unknown) as T;
 }
 
 function bearerHeaders(token: string): HeadersInit {

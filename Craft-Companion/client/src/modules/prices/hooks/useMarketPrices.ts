@@ -9,19 +9,19 @@ export function useMarketPrices() {
   const { data: home, isLoading: loading } = useCraftworldHomeQuery();
   const [search, setSearch] = useState('');
 
-  const priceData: PriceListData | null = useMemo(() => {
-    return home?.priceList || null;
-  }, [home]);
-
   const prices: MarketPriceItem[] = useMemo(() => {
-    return priceData?.prices || [];
-  }, [priceData]);
+    return (home?.priceList?.prices || []).map((p) => ({
+      referenceSymbol: p.referenceSymbol || '',
+      amount: p.amount ?? 0,
+      recommendation: p.recommendation || '',
+    }));
+  }, [home]);
 
   const filteredPrices: MarketPriceItem[] = useMemo(() => {
     return filterMarketPrices(prices, search);
   }, [prices, search]);
 
-  const baseSymbol = priceData?.baseSymbol || 'COIN';
+  const baseSymbol = home?.priceList?.baseSymbol || 'COIN';
 
   return {
     language,

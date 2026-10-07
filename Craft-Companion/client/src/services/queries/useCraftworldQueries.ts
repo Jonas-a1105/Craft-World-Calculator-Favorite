@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { getCraftworldHome, getMe } from '../api';
 import { loadFactoryData, type FactoryDataRow } from '../factoryData';
+import type { CraftworldHomePayload, Me } from '../../types';
 
 export const CRAFTWORLD_QUERY_KEYS = {
   home: ['craftworld', 'home'] as const,
@@ -14,7 +15,7 @@ export const CRAFTWORLD_QUERY_KEYS = {
  * Provides instantaneous 0ms tab switching with background stale-while-revalidate.
  */
 export function useCraftworldHomeQuery() {
-  return useQuery({
+  return useQuery<CraftworldHomePayload | null>({
     queryKey: CRAFTWORLD_QUERY_KEYS.home,
     queryFn: async () => {
       try {
@@ -45,11 +46,11 @@ export function useFactoryDataQuery() {
  * Global query for authenticated user session.
  */
 export function useMeQuery() {
-  return useQuery({
+  return useQuery<Me | null>({
     queryKey: CRAFTWORLD_QUERY_KEYS.me,
     queryFn: async () => {
       try {
-        return await getMe();
+        return (await getMe()) as Me | null;
       } catch {
         return null;
       }

@@ -3,6 +3,8 @@ import {
   computeValueChain,
   type ValueChainAnalysis,
 } from '../../../services/valueChainCalculator';
+import type { ProficiencyItem } from '../../../services/masteryModifiers';
+import type { CraftworldHomePayload, CraftworldPriceItem } from '../../../types';
 import type { FeaturedTarget, ValueChainMode } from '../types';
 
 export const FEATURED_TARGETS: FeaturedTarget[] = [
@@ -25,10 +27,10 @@ export const DEFAULT_BASE_PRICES: Record<string, number> = {
   FIRE: 0.00394,
 };
 
-export function extractValueChainPrices(home: any): Record<string, number> {
+export function extractValueChainPrices(home?: CraftworldHomePayload | null): Record<string, number> {
   const map: Record<string, number> = { ...DEFAULT_BASE_PRICES };
   if (home?.priceList?.prices && Array.isArray(home.priceList.prices)) {
-    home.priceList.prices.forEach((p: any) => {
+    home.priceList.prices.forEach((p: CraftworldPriceItem) => {
       if (typeof p?.amount === 'number' && p.amount > 0 && p.referenceSymbol) {
         map[p.referenceSymbol.toUpperCase()] = p.amount;
       }
@@ -42,7 +44,7 @@ export function computeValueChainAnalysis(
   level: number,
   rows: FactoryDataRow[],
   prices: Record<string, number>,
-  proficiencies: any[] = [],
+  proficiencies: ProficiencyItem[] = [],
   mode: ValueChainMode = 'self_crafted',
 ): ValueChainAnalysis | null {
   if (!rows || rows.length === 0) return null;

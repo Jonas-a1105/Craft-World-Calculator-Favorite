@@ -52,7 +52,7 @@ test('calculateValuedInventory computes item values, sorts descending and calcul
     STEEL: 5.0,  // 50 * 5.0 = 250
   };
   const recMap = { STEEL: 'SELL' };
-  const mockHistory: any[] = [];
+  const mockHistory: import('../../../services/priceHistory').PriceSnapshot[] = [];
 
   const result = calculateValuedInventory(resources, prices, recMap, mockHistory);
   assert.equal(result.totalValue, 300);
@@ -66,10 +66,11 @@ test('calculateValuedInventory computes item values, sorts descending and calcul
 });
 
 test('filterValuedItems filters correctly based on category token lists', () => {
+  const defaultDelta = { percentStr: '0%', isUp: false };
   const items: ValuedInventoryItem[] = [
-    { symbol: 'EARTH', amount: 100, unitPrice: 1, totalValue: 100, recommendation: '', delta: {} as any },
-    { symbol: 'WATER', amount: 100, unitPrice: 1, totalValue: 100, recommendation: '', delta: {} as any },
-    { symbol: 'FIRE', amount: 100, unitPrice: 1, totalValue: 100, recommendation: '', delta: {} as any },
+    { symbol: 'EARTH', amount: 100, unitPrice: 1, totalValue: 100, recommendation: '', delta: defaultDelta },
+    { symbol: 'WATER', amount: 100, unitPrice: 1, totalValue: 100, recommendation: '', delta: defaultDelta },
+    { symbol: 'FIRE', amount: 100, unitPrice: 1, totalValue: 100, recommendation: '', delta: defaultDelta },
   ];
 
   // No filter

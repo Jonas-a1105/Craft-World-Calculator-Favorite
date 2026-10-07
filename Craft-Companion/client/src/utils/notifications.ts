@@ -1,7 +1,12 @@
+type WindowWithAudio = Window & typeof globalThis & {
+  webkitAudioContext?: typeof AudioContext;
+};
+
 // Audio notification chime using Web Audio API (cross-browser, works without external mp3 files)
 export function playNotificationSound() {
   try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    const audioWin = window as WindowWithAudio;
+    const AudioCtx = window.AudioContext || audioWin.webkitAudioContext;
     if (!AudioCtx) return;
     const ctx = new AudioCtx();
 

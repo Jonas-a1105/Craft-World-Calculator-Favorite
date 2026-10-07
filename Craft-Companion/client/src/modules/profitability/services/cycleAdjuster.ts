@@ -18,16 +18,23 @@ import type {
   SortByOption,
 } from '../types';
 
-export function extractOwnedMap(homeData: any): Map<string, number> {
+import type {
+  CraftworldHomePayload,
+  CraftworldLandPlot,
+  CraftworldLandArea,
+  CraftworldFactoryInstance,
+} from '../../../types';
+
+export function extractOwnedMap(homeData?: CraftworldHomePayload | null): Map<string, number> {
   const ownedMap = new Map<string, number>();
   const landPlots = homeData?.craftWorld?.landPlots || [];
 
-  landPlots.forEach((plot: any) => {
-    (plot.areas || []).forEach((area: any) => {
-      (area.factories || []).forEach((facObj: any) => {
-        const symbol = (facObj?.factory?.definition?.id || '').toUpperCase();
+  landPlots.forEach((plot: CraftworldLandPlot) => {
+    (plot.areas || []).forEach((area: CraftworldLandArea) => {
+      (area.factories || []).forEach((facObj: CraftworldFactoryInstance) => {
+        const symbol = (facObj?.factory?.definition?.id || facObj?.symbol || '').toUpperCase();
         const rawLevel =
-          typeof facObj?.factory?.level === 'number' ? facObj.factory.level : 0;
+          typeof facObj?.factory?.level === 'number' ? facObj.factory.level : (facObj?.level ?? 0);
         const displayLevel = rawLevel + 1;
         if (symbol) {
           const current = ownedMap.get(symbol) || 0;
