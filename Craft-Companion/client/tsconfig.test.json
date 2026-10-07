@@ -16,7 +16,9 @@
     "src/services/playerConfig.ts",
     "src/services/priceHistory.ts",
     "src/services/workshopModifiers.ts",
-    "src/modules/encyclopedia/**/*.ts"
+    "src/modules/encyclopedia/**/*.ts",
+    "src/modules/home/utils/**/*.ts",
+    "src/modules/profitability/services/**/*.ts"
   ],
   "exclude": ["src/**/*.tsx"]
 }
