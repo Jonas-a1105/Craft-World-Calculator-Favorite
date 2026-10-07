@@ -1,13 +1,13 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { env } from '../config/env.js';
 
 const SESSION_COOKIE_NAME = 'cc_session';
-const secret = () => process.env.SESSION_SECRET || process.env.JWT_SECRET || 'replace_me';
 
 export const SESSION_COOKIE = SESSION_COOKIE_NAME;
 
 export function signSession(userId: string): string {
   const payload = Buffer.from(userId, 'utf-8').toString('base64url');
-  const sig = createHmac('sha256', secret()).update(payload).digest('base64url');
+  const sig = createHmac('sha256', env.SESSION_SECRET).update(payload).digest('base64url');
   return `${payload}.${sig}`;
 }
 
@@ -17,7 +17,7 @@ export function verifySession(cookieValue: string | undefined): string | null {
   if (dot <= 0) return null;
   const payload = cookieValue.slice(0, dot);
   const sig = cookieValue.slice(dot + 1);
-  const expectedSig = createHmac('sha256', secret()).update(payload).digest('base64url');
+  const expectedSig = createHmac('sha256', env.SESSION_SECRET).update(payload).digest('base64url');
   try {
     const a = Buffer.from(sig, 'base64url');
     const b = Buffer.from(expectedSig, 'base64url');
@@ -48,24 +48,22 @@ export function parseCookies(header: string | undefined): Record<string, string>
 
 export function sessionCookieOptions(isSecure = false): string {
   const flags = ['Path=/', 'HttpOnly'];
-  if (isSecure || process.env.NODE_ENV === 'production') {
+  if (isSecure || env.NODE_ENV === 'production') {
     flags.push('SameSite=None', 'Secure');
   } else {
     flags.push('SameSite=Lax');
   }
-  const maxAgeSeconds = Number(process.env.SESSION_MAX_AGE_SECONDS || 7 * 24 * 60 * 60);
-  flags.push(`Max-Age=${maxAgeSeconds}`);
+  flags.push(`Max-Age=${env.SESSION_MAX_AGE_SECONDS}`);
   return flags.join('; ');
 }
 
 export function loggedInCookieOptions(isSecure = false): string {
   const flags = ['Path=/'];
-  if (isSecure || process.env.NODE_ENV === 'production') {
+  if (isSecure || env.NODE_ENV === 'production') {
     flags.push('SameSite=None', 'Secure');
   } else {
     flags.push('SameSite=Lax');
   }
-  const maxAgeSeconds = Number(process.env.SESSION_MAX_AGE_SECONDS || 7 * 24 * 60 * 60);
-  flags.push(`Max-Age=${maxAgeSeconds}`);
+  flags.push(`Max-Age=${env.SESSION_MAX_AGE_SECONDS}`);
   return flags.join('; ');
 }

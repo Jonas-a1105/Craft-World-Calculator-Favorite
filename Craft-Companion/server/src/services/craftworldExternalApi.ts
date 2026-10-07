@@ -1,6 +1,6 @@
-const craftWorldBaseUrl = process.env.CRAFTWORLD_BASE_URL || 'https://craft-world.gg';
-const externalApiBase =
-  process.env.CRAFTWORLD_EXTERNAL_API_BASE || `${craftWorldBaseUrl}/api/2/external`;
+import { env } from '../config/env.js';
+
+const externalApiBase = env.CRAFTWORLD_EXTERNAL_API_BASE;
 
 export type ExternalApiErrorCode =
   | 'insufficient_scope'

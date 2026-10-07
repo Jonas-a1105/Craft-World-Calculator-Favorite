@@ -1,6 +1,7 @@
 import { getUserById } from '../storage/userStorage.js';
 import type { Request, Response, NextFunction } from 'express';
 import { SESSION_COOKIE, verifySession } from './session.js';
+import type { AuthenticatedRequest } from '../types.js';
 
 declare global {
   namespace Express {
@@ -27,6 +28,7 @@ export async function requireSession(req: Request, res: Response, next: NextFunc
   const user = await getUserById(userId);
   if (!user) return res.status(401).json({ message: 'User not found' });
 
+  (req as AuthenticatedRequest).sessionUser = user;
   req.user = { id: user.id, craftWorldUid: user.craftWorldUid };
   next();
 }

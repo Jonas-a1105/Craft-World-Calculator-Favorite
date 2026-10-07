@@ -1,36 +1,22 @@
 import { randomBytes, createHash } from 'node:crypto';
+import { env } from '../config/env.js';
 
-const craftWorldBaseUrl = process.env.CRAFTWORLD_BASE_URL || 'https://craft-world.gg';
-const authorizeUrl = `${craftWorldBaseUrl}/oauth/authorize`;
-const tokenUrl = `${craftWorldBaseUrl}/oauth/token`;
-const revokeUrl = `${craftWorldBaseUrl}/oauth/revoke`;
+const authorizeUrl = `${env.CRAFTWORLD_BASE_URL}/oauth/authorize`;
+const tokenUrl = `${env.CRAFTWORLD_BASE_URL}/oauth/token`;
+const revokeUrl = `${env.CRAFTWORLD_BASE_URL}/oauth/revoke`;
 
 export const oauthConfig = {
   get clientId(): string {
-    return (
-      process.env.CRAFTWORLD_OAUTH_CLIENT_ID ||
-      'client_019f6f6c-3dbc-754a-a0ab-2fcf87a72975'
-    );
+    return env.CRAFTWORLD_OAUTH_CLIENT_ID;
   },
   get clientSecret(): string {
-    return (
-      process.env.CRAFTWORLD_OAUTH_CLIENT_SECRET ||
-      'secret_019f6f6c-3dbd-7b33-9113-1838eee440ce'
-    );
+    return env.CRAFTWORLD_OAUTH_CLIENT_SECRET;
   },
   get redirectUri(): string {
-    return (
-      process.env.CRAFTWORLD_OAUTH_REDIRECT_URI ||
-      'http://localhost:5000/api/auth/callback'
-    );
+    return env.CRAFTWORLD_OAUTH_REDIRECT_URI || `http://localhost:${env.PORT}/api/auth/callback`;
   },
   get scopes(): string[] {
-    return (
-      process.env.CRAFTWORLD_OAUTH_SCOPES ||
-      'craft:read exchange:read inventory:read onchain:read purchases:read'
-    )
-      .split(/\s+/)
-      .filter(Boolean);
+    return env.CRAFTWORLD_OAUTH_SCOPES;
   },
 };
 
