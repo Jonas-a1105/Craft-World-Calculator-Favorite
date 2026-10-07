@@ -10,27 +10,27 @@ export const TermsOfService: React.FC = () => {
   useDocumentTitle(isEs ? 'Términos y Condiciones' : 'Terms of Service');
 
   return (
-    <div className="min-h-screen bg-[#0e0e10] text-zinc-300 font-main py-12 px-4 sm:px-6 lg:px-8 selection:bg-white/20 selection:text-white">
+    <div className="min-h-screen bg-[#141415] text-zinc-300 font-main py-12 px-4 sm:px-6 lg:px-8 selection:bg-amber-400/20 selection:text-amber-300">
       <div className="max-w-4xl mx-auto">
         {/* Top Navigation */}
-        <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/[0.08]">
+        <div className="bg-[#1c1c20] rounded-2xl px-5 py-3.5 flex items-center justify-between mb-8 shadow-md border-0">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-amber-400 transition-colors"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             <span>{isEs ? 'Volver al Inicio' : 'Back to Home'}</span>
           </Link>
-          <span className="text-xs font-mono text-zinc-500">
+          <span className="text-xs font-mono text-zinc-400">
             {isEs ? 'Última actualización: Octubre 2026' : 'Last updated: October 2026'}
           </span>
         </div>
 
         {/* Header */}
-        <div className="mb-10">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-mono font-semibold uppercase mb-4">
+        <div className="mb-10 text-left">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#1c1c20] text-amber-400 text-xs font-mono font-semibold uppercase mb-4 border-0">
             {isEs ? 'Legal & Cumplimiento' : 'Legal & Compliance'}
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
@@ -44,10 +44,11 @@ export const TermsOfService: React.FC = () => {
         </div>
 
         {/* Content Body */}
-        <div className="space-y-8 text-sm sm:text-base leading-relaxed text-zinc-300">
-          <section className="bg-[#141416] border border-white/[0.08] rounded-2xl p-6 sm:p-8">
-            <h2 className="text-lg sm:text-xl font-bold text-white mb-3">
-              {isEs ? '1. Naturaleza del Servicio y Aviso de Descargo' : '1. Nature of Service and Disclaimer'}
+        <div className="space-y-6 text-sm sm:text-base leading-relaxed text-zinc-300 text-left">
+          <section className="bg-[#1c1c20] rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2">
+              <span className="text-amber-400 font-mono text-base">01.</span>
+              <span>{isEs ? 'Naturaleza del Servicio y Aviso de Descargo' : 'Nature of Service and Disclaimer'}</span>
             </h2>
             <p className="mb-3">
               {isEs
@@ -61,9 +62,10 @@ export const TermsOfService: React.FC = () => {
             </p>
           </section>
 
-          <section className="bg-[#141416] border border-white/[0.08] rounded-2xl p-6 sm:p-8">
-            <h2 className="text-lg sm:text-xl font-bold text-white mb-3">
-              {isEs ? '2. Estimaciones Económicas y Exención Financiera' : '2. Economic Estimates & No Financial Advice'}
+          <section className="bg-[#1c1c20] rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2">
+              <span className="text-amber-400 font-mono text-base">02.</span>
+              <span>{isEs ? 'Estimaciones Económicas y Exención Financiera' : 'Economic Estimates & No Financial Advice'}</span>
             </h2>
             <p className="mb-3 text-sm text-zinc-400">
               {isEs
@@ -77,9 +79,10 @@ export const TermsOfService: React.FC = () => {
             </p>
           </section>
 
-          <section className="bg-[#141416] border border-white/[0.08] rounded-2xl p-6 sm:p-8">
-            <h2 className="text-lg sm:text-xl font-bold text-white mb-3">
-              {isEs ? '3. Uso Aceptable del Servicio' : '3. Acceptable Use'}
+          <section className="bg-[#1c1c20] rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2">
+              <span className="text-amber-400 font-mono text-base">03.</span>
+              <span>{isEs ? 'Uso Aceptable del Servicio' : 'Acceptable Use'}</span>
             </h2>
             <p className="mb-3 text-sm text-zinc-400">
               {isEs
@@ -88,16 +91,17 @@ export const TermsOfService: React.FC = () => {
             </p>
           </section>
 
-          <section className="bg-[#141416] border border-white/[0.08] rounded-2xl p-6 sm:p-8">
-            <h2 className="text-lg sm:text-xl font-bold text-white mb-3">
-              {isEs ? '4. Modificaciones y Contacto' : '4. Modifications & Contact'}
+          <section className="bg-[#1c1c20] rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2">
+              <span className="text-amber-400 font-mono text-base">04.</span>
+              <span>{isEs ? 'Modificaciones y Contacto' : 'Modifications & Contact'}</span>
             </h2>
             <p className="text-sm text-zinc-400 mb-3">
               {isEs
                 ? 'Nos reservamos el derecho de actualizar o mejorar las herramientas, fórmulas y estos términos para adaptarnos a las actualizaciones y parches de balance del juego.'
                 : 'We reserve the right to update tools, formulas, and these terms to reflect game balance updates and balance patches.'}
             </p>
-            <p className="text-xs text-zinc-500 font-mono">
+            <p className="text-xs text-amber-400/80 font-mono">
               {isEs
                 ? 'Soporte y contacto: support@craftcompanion.app'
                 : 'Support and contact: support@craftcompanion.app'}
@@ -108,7 +112,7 @@ export const TermsOfService: React.FC = () => {
         {/* Footer Link */}
         <div className="mt-12 text-center text-xs text-zinc-500">
           Craft Companion © {new Date().getFullYear()} —{' '}
-          <Link to="/privacy" className="text-zinc-400 hover:text-white underline">
+          <Link to="/privacy" className="text-zinc-400 hover:text-amber-400 underline underline-offset-4 transition-colors">
             {isEs ? 'Ver Política de Privacidad' : 'View Privacy Policy'}
           </Link>
         </div>

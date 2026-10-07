@@ -10,27 +10,27 @@ export const PrivacyPolicy: React.FC = () => {
   useDocumentTitle(isEs ? 'Política de Privacidad' : 'Privacy Policy');
 
   return (
-    <div className="min-h-screen bg-[#0e0e10] text-zinc-300 font-main py-12 px-4 sm:px-6 lg:px-8 selection:bg-white/20 selection:text-white">
+    <div className="min-h-screen bg-[#141415] text-zinc-300 font-main py-12 px-4 sm:px-6 lg:px-8 selection:bg-amber-400/20 selection:text-amber-300">
       <div className="max-w-4xl mx-auto">
         {/* Top Navigation */}
-        <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/[0.08]">
+        <div className="bg-[#1c1c20] rounded-2xl px-5 py-3.5 flex items-center justify-between mb-8 shadow-md border-0">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-amber-400 transition-colors"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             <span>{isEs ? 'Volver al Inicio' : 'Back to Home'}</span>
           </Link>
-          <span className="text-xs font-mono text-zinc-500">
+          <span className="text-xs font-mono text-zinc-400">
             {isEs ? 'Última actualización: Octubre 2026' : 'Last updated: October 2026'}
           </span>
         </div>
 
         {/* Header */}
-        <div className="mb-10">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-semibold uppercase mb-4">
+        <div className="mb-10 text-left">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#1c1c20] text-amber-400 text-xs font-mono font-semibold uppercase mb-4 border-0">
             {isEs ? 'Legal & Cumplimiento' : 'Legal & Compliance'}
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
@@ -44,10 +44,11 @@ export const PrivacyPolicy: React.FC = () => {
         </div>
 
         {/* Content Body */}
-        <div className="space-y-8 text-sm sm:text-base leading-relaxed text-zinc-300">
-          <section className="bg-[#141416] border border-white/[0.08] rounded-2xl p-6 sm:p-8">
-            <h2 className="text-lg sm:text-xl font-bold text-white mb-3">
-              {isEs ? '1. Información que recopilamos' : '1. Information We Collect'}
+        <div className="space-y-6 text-sm sm:text-base leading-relaxed text-zinc-300 text-left">
+          <section className="bg-[#1c1c20] rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2">
+              <span className="text-amber-400 font-mono text-base">01.</span>
+              <span>{isEs ? 'Información que recopilamos' : 'Information We Collect'}</span>
             </h2>
             <p className="mb-3">
               {isEs
@@ -76,9 +77,10 @@ export const PrivacyPolicy: React.FC = () => {
             </ul>
           </section>
 
-          <section className="bg-[#141416] border border-white/[0.08] rounded-2xl p-6 sm:p-8">
-            <h2 className="text-lg sm:text-xl font-bold text-white mb-3">
-              {isEs ? '2. Uso de Cookies y Tecnologías Similares' : '2. Cookies and Storage Technologies'}
+          <section className="bg-[#1c1c20] rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2">
+              <span className="text-amber-400 font-mono text-base">02.</span>
+              <span>{isEs ? 'Uso de Cookies y Tecnologías Similares' : 'Cookies and Storage Technologies'}</span>
             </h2>
             <p className="mb-3">
               {isEs
@@ -92,9 +94,10 @@ export const PrivacyPolicy: React.FC = () => {
             </p>
           </section>
 
-          <section className="bg-[#141416] border border-white/[0.08] rounded-2xl p-6 sm:p-8">
-            <h2 className="text-lg sm:text-xl font-bold text-white mb-3">
-              {isEs ? '3. Seguridad de tus Credenciales' : '3. Security of Your Credentials'}
+          <section className="bg-[#1c1c20] rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2">
+              <span className="text-amber-400 font-mono text-base">03.</span>
+              <span>{isEs ? 'Seguridad de tus Credenciales' : 'Security of Your Credentials'}</span>
             </h2>
             <p className="text-sm text-zinc-400">
               {isEs
@@ -103,16 +106,17 @@ export const PrivacyPolicy: React.FC = () => {
             </p>
           </section>
 
-          <section className="bg-[#141416] border border-white/[0.08] rounded-2xl p-6 sm:p-8">
-            <h2 className="text-lg sm:text-xl font-bold text-white mb-3">
-              {isEs ? '4. Derechos del Usuario' : '4. User Rights'}
+          <section className="bg-[#1c1c20] rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2">
+              <span className="text-amber-400 font-mono text-base">04.</span>
+              <span>{isEs ? 'Derechos del Usuario' : 'User Rights'}</span>
             </h2>
             <p className="text-sm text-zinc-400 mb-3">
               {isEs
                 ? 'De acuerdo con las normativas internacionales de protección de datos (como el RGPD), tienes derecho a solicitar la eliminación de cualquier dato de sesión almacenado y revocar el acceso de tu cuenta de CraftWorld en cualquier momento.'
                 : 'In accordance with international data regulations (such as GDPR), you have the right to request deletion of stored session data and revoke CraftWorld account access at any time.'}
             </p>
-            <p className="text-xs text-zinc-500 font-mono">
+            <p className="text-xs text-amber-400/80 font-mono">
               {isEs
                 ? 'Para solicitudes relacionadas con privacidad: support@craftcompanion.app'
                 : 'For privacy requests contact: support@craftcompanion.app'}
@@ -123,7 +127,7 @@ export const PrivacyPolicy: React.FC = () => {
         {/* Footer Link */}
         <div className="mt-12 text-center text-xs text-zinc-500">
           Craft Companion © {new Date().getFullYear()} —{' '}
-          <Link to="/terms" className="text-zinc-400 hover:text-white underline">
+          <Link to="/terms" className="text-zinc-400 hover:text-amber-400 underline underline-offset-4 transition-colors">
             {isEs ? 'Ver Términos y Condiciones' : 'View Terms of Service'}
           </Link>
         </div>
