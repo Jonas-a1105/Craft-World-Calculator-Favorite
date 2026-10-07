@@ -16,10 +16,10 @@ test('formatPlotName localizes recognized plot names', () => {
   assert.equal(formatPlotName('', 'es'), 'Parcela');
 });
 
-test('formatBuildingType formats icons and bilingual names', () => {
-  assert.equal(formatBuildingType('POWER_PLANT', 'es'), '⚡ Planta de Poder');
-  assert.equal(formatBuildingType('POWER_PLANT', 'en'), '⚡ Power Plant');
-  assert.equal(formatBuildingType('WORKSHOP', 'es'), '🛠️ Taller');
+test('formatBuildingType formats bilingual names', () => {
+  assert.equal(formatBuildingType('POWER_PLANT', 'es'), 'Planta de Poder');
+  assert.equal(formatBuildingType('POWER_PLANT', 'en'), 'Power Plant');
+  assert.equal(formatBuildingType('WORKSHOP', 'es'), 'Taller');
   assert.equal(formatBuildingType('UNKNOWN_BUILDING', 'en'), 'UNKNOWN BUILDING');
   assert.equal(formatBuildingType('', 'es'), '');
 });

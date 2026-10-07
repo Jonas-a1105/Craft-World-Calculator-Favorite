@@ -27,22 +27,22 @@ export function formatPlotName(name?: string, lang = 'es'): string {
 
 export function formatBuildingType(type: string, lang = 'es'): string {
   if (!type) return '';
-  const map: Record<string, { es: string; en: string; icon: string }> = {
-    POWER_PLANT: { es: 'Planta de Poder', en: 'Power Plant', icon: '⚡' },
-    BATTERY: { es: 'Batería', en: 'Battery', icon: '🔋' },
-    VAULT: { es: 'Bóveda', en: 'Vault', icon: '🏦' },
-    TOWN_HALL: { es: 'Ayuntamiento', en: 'Town Hall', icon: '🏛️' },
-    RESEARCH_CENTER: { es: 'Centro de Investigación', en: 'Research Center', icon: '🔬' },
-    WORKSHOP: { es: 'Taller', en: 'Workshop', icon: '🛠️' },
-    PROFICIENCY: { es: 'Maestría', en: 'Proficiency', icon: '⭐' },
-    HATCHERY: { es: 'Criadero (Hatchery)', en: 'Hatchery', icon: '🥚' },
-    HOUSE: { es: 'Casa', en: 'House', icon: '🏡' },
-    EXCHANGE: { es: 'Mercado (Exchange)', en: 'Exchange', icon: '⚖️' },
-    EDUCATIONAL: { es: 'Academia', en: 'Academy', icon: '🎓' },
-    COSMETIC: { es: 'Decoración', en: 'Cosmetic', icon: '🌳' },
+  const map: Record<string, { es: string; en: string }> = {
+    POWER_PLANT: { es: 'Planta de Poder', en: 'Power Plant' },
+    BATTERY: { es: 'Batería', en: 'Battery' },
+    VAULT: { es: 'Bóveda', en: 'Vault' },
+    TOWN_HALL: { es: 'Ayuntamiento', en: 'Town Hall' },
+    RESEARCH_CENTER: { es: 'Centro de Investigación', en: 'Research Center' },
+    WORKSHOP: { es: 'Taller', en: 'Workshop' },
+    PROFICIENCY: { es: 'Maestría', en: 'Proficiency' },
+    HATCHERY: { es: 'Criadero (Hatchery)', en: 'Hatchery' },
+    HOUSE: { es: 'Casa', en: 'House' },
+    EXCHANGE: { es: 'Mercado (Exchange)', en: 'Exchange' },
+    EDUCATIONAL: { es: 'Academia', en: 'Academy' },
+    COSMETIC: { es: 'Decoración', en: 'Cosmetic' },
   };
   const entry = map[type];
-  if (entry) return `${entry.icon} ${lang === 'es' ? entry.es : entry.en}`;
+  if (entry) return lang === 'es' ? entry.es : entry.en;
   return type.replace(/_/g, ' ');
 }
 
