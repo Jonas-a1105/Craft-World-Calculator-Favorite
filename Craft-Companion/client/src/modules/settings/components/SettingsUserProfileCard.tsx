@@ -1,7 +1,8 @@
-import React from 'react';
-import { RefreshLinear, CheckCircleBold } from 'solar-icon-set';
+import React, { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { RefreshLinear, CheckCircleBold, Logout3Linear } from 'solar-icon-set';
 import type { UserProfile } from '../types';
-import { oauthAuthorize } from '../../../services/api';
+import { oauthAuthorize, logout } from '../../../services/api';
 
 export interface SettingsUserProfileCardProps {
   user: UserProfile | null;
@@ -12,6 +13,13 @@ export const SettingsUserProfileCard: React.FC<SettingsUserProfileCardProps> = (
   user,
   language,
 }) => {
+  const navigate = useNavigate();
+
+  const handleLogout = useCallback(async () => {
+    await logout();
+    navigate('/', { replace: true });
+  }, [navigate]);
+
   return (
     <div className="bg-[#18181b] rounded-[32px] p-5 shadow-xl flex items-center justify-between gap-3 relative overflow-hidden">
       <div className="flex items-center gap-4 min-w-0">
@@ -54,15 +62,27 @@ export const SettingsUserProfileCard: React.FC<SettingsUserProfileCardProps> = (
         </div>
       </div>
 
-      {/* Quick Re-link Button */}
-      <button
-        type="button"
-        onClick={oauthAuthorize}
-        title={language === 'es' ? 'Revincular Cuenta' : 'Re-link Account'}
-        className="w-10 h-10 rounded-full bg-[#24242a] hover:bg-[#2e2e36] text-zinc-200 hover:text-white flex items-center justify-center transition-all shadow-md cursor-pointer shrink-0 group border-none p-0"
-      >
-        <RefreshLinear className="w-5 h-5 transition-transform duration-500 group-hover:rotate-180 text-zinc-300 group-hover:text-white shrink-0" />
-      </button>
+      <div className="flex items-center gap-2 shrink-0">
+        {/* Quick Re-link Button */}
+        <button
+          type="button"
+          onClick={oauthAuthorize}
+          title={language === 'es' ? 'Revincular Cuenta' : 'Re-link Account'}
+          className="w-10 h-10 rounded-full bg-[#24242a] hover:bg-[#2e2e36] text-zinc-200 hover:text-white flex items-center justify-center transition-all shadow-md cursor-pointer shrink-0 group border-none p-0"
+        >
+          <RefreshLinear className="w-5 h-5 transition-transform duration-500 group-hover:rotate-180 text-zinc-300 group-hover:text-white shrink-0" />
+        </button>
+
+        {/* Sign Out Button */}
+        <button
+          type="button"
+          onClick={handleLogout}
+          title={language === 'es' ? 'Cerrar Sesión' : 'Sign Out'}
+          className="w-10 h-10 rounded-full bg-[#24242a] hover:bg-rose-500/20 text-zinc-300 hover:text-rose-400 flex items-center justify-center transition-all shadow-md cursor-pointer shrink-0 border-none p-0"
+        >
+          <Logout3Linear className="w-5 h-5 shrink-0" />
+        </button>
+      </div>
     </div>
   );
 };

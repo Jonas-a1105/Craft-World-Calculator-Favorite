@@ -4,10 +4,21 @@ interface SignInFooterProps {
 
 export const SignInFooter = ({ language }: SignInFooterProps) => {
   return (
-    <p className="text-xs text-center text-slate-400">
-      {language === 'es'
-        ? '¿No tienes cuenta? Se creará automáticamente al conectar.'
-        : "Don't have an account? One will be created when you connect."}
-    </p>
+    <div className="space-y-2 pt-2 border-t border-white/[0.06] text-center">
+      <p className="text-xs text-slate-400">
+        {language === 'es'
+          ? '¿Aún no tienes una cuenta de juego en Craft World?'
+          : "Don't have a Craft World game account yet?"}
+      </p>
+      <a
+        href="https://craftworld.game"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
+      >
+        <span>{language === 'es' ? 'Regístrate y juega en craftworld.game' : 'Register and play on craftworld.game'}</span>
+        <span>↗</span>
+      </a>
+    </div>
   );
 };

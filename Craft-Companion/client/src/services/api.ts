@@ -5,6 +5,7 @@ import {
   CraftworldHomePayload,
   Me,
 } from '../types';
+import { queryClient } from './queryClient';
 const API =
   import.meta.env.VITE_API_BASE_URL ||
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -85,4 +86,18 @@ export const quickLogin = (uid?: string, displayName?: string) =>
     body: JSON.stringify({ uid, displayName }),
   });
 
-export const logout = () => oauthLogout();
+export const logout = async (): Promise<void> => {
+  try {
+    await oauthLogout();
+  } catch (err) {
+    console.warn('OAuth logout remote call error (proceeding with local cleanup):', err);
+  } finally {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('cc_token');
+    }
+    if (typeof document !== 'undefined') {
+      document.cookie = 'cc_logged_in=; Path=/; Max-Age=0; SameSite=Lax';
+    }
+    queryClient.clear();
+  }
+};

@@ -84,10 +84,10 @@ export function useNavbar() {
     setTimeout(() => setCopiedWallet(null), 1500);
   }, []);
 
-  const handleSignOut = useCallback(() => {
+  const handleSignOut = useCallback(async () => {
     setUserDropdownOpen(false);
-    logout();
-    navigate('/signin');
+    await logout();
+    navigate('/', { replace: true });
   }, [navigate]);
 
   const handleRelink = useCallback(() => {
