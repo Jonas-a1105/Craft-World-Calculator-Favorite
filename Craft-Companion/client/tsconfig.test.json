@@ -18,7 +18,8 @@
     "src/services/workshopModifiers.ts",
     "src/modules/encyclopedia/**/*.ts",
     "src/modules/home/utils/**/*.ts",
-    "src/modules/profitability/services/**/*.ts"
+    "src/modules/profitability/services/**/*.ts",
+    "src/modules/planner/services/**/*.ts"
   ],
   "exclude": ["src/**/*.tsx"]
 }
