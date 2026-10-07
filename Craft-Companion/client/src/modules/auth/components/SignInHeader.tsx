@@ -1,34 +1,44 @@
 import { Link } from 'react-router-dom';
+import { AltArrowLeftLinear } from 'solar-icon-set';
 
 interface SignInHeaderProps {
   language: string;
-  title: string;
 }
 
-export const SignInHeader = ({ language, title }: SignInHeaderProps) => {
+export const SignInHeader = ({ language }: SignInHeaderProps) => {
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
+    <>
+      {/* Enlace sutil para volver a la Landing */}
+      <div className="w-full flex items-center justify-start mb-6">
         <Link
           to="/"
-          className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors"
         >
-          ← {language === 'es' ? 'Volver al Inicio' : 'Back to Home'}
+          <AltArrowLeftLinear className="w-4 h-4 shrink-0" />
+          <span>{language === 'es' ? 'Volver al Inicio' : 'Back to Home'}</span>
         </Link>
-        <img
-          src="/assets/logo.png"
-          className="h-8 w-auto object-contain"
-          alt="Craft World Logo"
-        />
       </div>
-      <div>
-        <h1 className="text-2xl font-black text-white">{title}</h1>
-        <p className="text-xs text-slate-400 mt-1">
-          {language === 'es'
-            ? 'Conéctate con tu cuenta de Craft World usando OAuth.'
-            : 'Connect with your Craft World account using OAuth.'}
-        </p>
+
+      {/* Logo y Nombre: Craft World Companion */}
+      <div className="flex items-center gap-2.5 mb-7">
+        <div className="w-7 h-7 bg-white radius-logo flex items-center justify-center flex-shrink-0 p-1 shadow-sm">
+          <img
+            src="/assets/logo.png"
+            className="w-full h-full object-contain"
+            alt="Craft World"
+          />
+        </div>
+        <span className="text-base font-bold text-white tracking-tight">
+          Craft World Companion
+        </span>
       </div>
-    </div>
+
+      {/* Título de la pantalla */}
+      <h1 className="text-2xl sm:text-[27px] font-bold text-white tracking-tight text-center mb-6">
+        {language === 'es'
+          ? 'Inicia sesión en tu cuenta'
+          : 'Sign in to your account'}
+      </h1>
+    </>
   );
 };
