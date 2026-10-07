@@ -28,7 +28,8 @@
     "src/modules/timers/services/**/*.ts",
     "src/modules/inventory/services/**/*.ts",
     "src/modules/valuechain/services/**/*.ts",
-    "src/modules/empire/services/**/*.ts"
+    "src/modules/empire/services/**/*.ts",
+    "src/modules/advisor/services/**/*.ts"
   ],
   "exclude": ["src/**/*.tsx"]
 }
