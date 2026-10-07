@@ -118,7 +118,11 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({
           }}
         >
           <div
-            className="w-full max-w-[340px] bg-[#1c1c20] rounded-[28px] p-6 shadow-2xl flex flex-col items-center relative border-0 outline-none animate-in fade-in slide-in-from-top-4 duration-150 ease-out"
+            className="w-full max-w-[340px] bg-[#1c1c20] rounded-[28px] p-6 shadow-2xl flex flex-col items-center relative border-0 outline-none route-view"
+            style={{
+              animation: 'routeFadeSlide 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              willChange: 'opacity, transform',
+            }}
           >
             {/* Modal Header: Logo + Brand Name on left, Circular (X) close button on right */}
             <div className="w-full flex items-center justify-between mb-5">
