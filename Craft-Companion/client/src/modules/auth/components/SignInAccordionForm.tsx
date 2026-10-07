@@ -46,7 +46,7 @@ export const SignInAccordionForm = ({
                 : 'Enter your UID or username (e.g. player)'
             }
             autoComplete="username"
-            className="w-full h-11 px-4 bg-auth-surface radius-moderado text-sm text-white placeholder-zinc-500 font-normal border-none focus:bg-[#202025] transition-colors outline-none"
+            className="w-full h-11 px-4 bg-[#151518] radius-moderado text-sm text-white placeholder-zinc-500 font-normal border border-white/[0.08] focus:border-emerald-500/60 focus:bg-[#1a1a1f] focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
           />
         </div>
       </div>
@@ -60,7 +60,7 @@ export const SignInAccordionForm = ({
           type="button"
           onClick={onMainButtonClick}
           disabled={isLoading}
-          className="btn-main-auth w-full h-11 radius-moderado text-xs sm:text-[13px] font-bold tracking-tight flex items-center justify-center cursor-pointer select-none border-none"
+          className="btn-main-auth w-full h-11 radius-moderado text-xs sm:text-[13px] font-bold tracking-tight flex items-center justify-center cursor-pointer select-none border-none shadow-md"
         >
           <span>
             {isAccordionOpen
