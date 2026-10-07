@@ -19,7 +19,8 @@
     "src/modules/encyclopedia/**/*.ts",
     "src/modules/home/utils/**/*.ts",
     "src/modules/profitability/services/**/*.ts",
-    "src/modules/planner/services/**/*.ts"
+    "src/modules/planner/services/**/*.ts",
+    "src/modules/matrix/services/**/*.ts"
   ],
   "exclude": ["src/**/*.tsx"]
 }
