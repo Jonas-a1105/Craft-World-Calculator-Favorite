@@ -20,10 +20,10 @@ export const SignInHeader = ({ language }: SignInHeaderProps) => {
       </div>
 
       {/* Logo oficial de Craft World centrado directamente encima del título */}
-      <div className="flex items-center justify-center mb-5">
+      <div className="flex items-center justify-center mb-6">
         <img
           src="/assets/logo.png"
-          className="h-16 sm:h-20 w-auto object-contain"
+          className="h-24 sm:h-28 w-auto object-contain drop-shadow-md select-none"
           alt="Craft World"
         />
       </div>
