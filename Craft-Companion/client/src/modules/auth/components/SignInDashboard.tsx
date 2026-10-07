@@ -23,7 +23,7 @@ export const SignInDashboard = () => {
   } = useSignIn();
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 select-none bg-[#08080a] text-white relative">
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 select-none bg-[var(--canvas-bg,#141415)] text-[var(--text-primary,#ffffff)] relative">
       {/* Contenedor central simétrico y responsive (Directo sobre fondo plano, sin tarjeta envolvente) */}
       <main className="w-full max-w-[430px] mx-auto flex flex-col items-center">
         {/* Cabecera: Navegación, Logo de Craft World centrado arriba y Título */}
