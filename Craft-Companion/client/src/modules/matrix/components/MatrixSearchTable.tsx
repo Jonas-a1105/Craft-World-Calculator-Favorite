@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { FactoryDataRow } from '../../../services/factoryData';
 import { ResourceIcon, FactoryIcon } from '../../../components/GameIcon';
+import { useAppStore } from '../../../store/useAppStore';
 
 export interface MatrixSearchTableProps {
   rows: FactoryDataRow[];
@@ -15,11 +16,23 @@ export const MatrixSearchTable: React.FC<MatrixSearchTableProps> = ({
   setTableSearch,
   language,
 }) => {
-  const filteredRows = rows.filter(
-    (r) =>
-      r.token.toLowerCase().includes(tableSearch.toLowerCase()) ||
-      r.output_token.toLowerCase().includes(tableSearch.toLowerCase())
-  );
+  const favorites = useAppStore((state) => state.favorites);
+  const toggleFavorite = useAppStore((state) => state.toggleFavorite);
+
+  const filteredRows = useMemo(() => {
+    const list = rows.filter(
+      (r) =>
+        r.token.toLowerCase().includes(tableSearch.toLowerCase()) ||
+        r.output_token.toLowerCase().includes(tableSearch.toLowerCase()),
+    );
+    return list.sort((a, b) => {
+      const aFav = favorites.includes(a.token.toUpperCase());
+      const bFav = favorites.includes(b.token.toUpperCase());
+      if (aFav && !bFav) return -1;
+      if (!aFav && bFav) return 1;
+      return 0;
+    });
+  }, [rows, tableSearch, favorites]);
 
   return (
     <div className="bg-[#18181b] rounded-[28px] p-5 border-none space-y-4 shadow-xl">
@@ -65,12 +78,31 @@ export const MatrixSearchTable: React.FC<MatrixSearchTableProps> = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5 font-mono">
-            {filteredRows.map((r, i) => (
-              <tr key={i} className="hover:bg-white/5 transition-colors">
-                <td className="p-3 font-bold text-white flex items-center gap-2">
-                  <FactoryIcon symbol={r.token} size={20} />
-                  <span>{r.token}</span>
-                </td>
+            {filteredRows.map((r, i) => {
+              const isFav = favorites.includes(r.token.toUpperCase());
+              return (
+                <tr key={i} className={`hover:bg-white/5 transition-colors ${isFav ? 'bg-amber-500/5' : ''}`}>
+                  <td className="p-3 font-bold text-white flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => toggleFavorite(r.token)}
+                      className="p-1 rounded hover:bg-white/10 transition-colors focus:outline-none"
+                      title={isFav ? 'Quitar favorito' : 'Marcar favorito'}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill={isFav ? '#fbbf24' : 'none'}
+                        stroke={isFav ? '#fbbf24' : '#52525b'}
+                        strokeWidth="2"
+                        className="w-3.5 h-3.5"
+                      >
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    </button>
+                    <FactoryIcon symbol={r.token} size={20} />
+                    <span>{r.token}</span>
+                  </td>
                 <td className="p-3 text-zinc-300">Nv. {r.level}</td>
                 <td className="p-3 text-zinc-400">{r.duration_min} min</td>
                 <td className="p-3">
@@ -98,7 +130,7 @@ export const MatrixSearchTable: React.FC<MatrixSearchTableProps> = ({
                   {r.output_amount} {r.output_token}
                 </td>
               </tr>
-            ))}
+            ); })}
           </tbody>
         </table>
       </div>

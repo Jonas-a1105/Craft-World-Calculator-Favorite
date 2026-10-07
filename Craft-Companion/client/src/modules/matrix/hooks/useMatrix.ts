@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { FactoryDataRow } from '../../../services/factoryData';
-import { loadFactoryData } from '../../../services/factoryData';
-import { getCraftworldHome } from '../../../services/api';
 import { extractPriceMap } from '../../../services/priceService';
 import { useTranslation } from '../../../utils/i18n';
+import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/queries/useCraftworldQueries';
 import type {
   MatrixViewMode,
   FactoryBoostMode,
@@ -19,8 +18,10 @@ import {
 
 export function useMatrix(): UseMatrixReturn {
   const { language } = useTranslation();
-  const [rows, setRows] = useState<FactoryDataRow[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: home, isLoading: isHomeLoading } = useCraftworldHomeQuery();
+  const { data: rows = [], isLoading: isRowsLoading } = useFactoryDataQuery();
+  const loading = isHomeLoading || isRowsLoading;
+
   const [viewMode, setViewMode] = useState<MatrixViewMode>('matrix');
 
   // Ajustes en vivo (Settings bar)
@@ -44,42 +45,25 @@ export function useMatrix(): UseMatrixReturn {
   // Búsqueda para modo tabla
   const [tableSearch, setTableSearch] = useState('');
 
-  // Carga de datos de fábricas y precios
+  // Sincronizar precios base y maestrías cuando la query retorne datos
   useEffect(() => {
-    let mounted = true;
-    Promise.all([
-      loadFactoryData(),
-      getCraftworldHome().catch(() => null),
-    ])
-      .then(([factoryRows, home]) => {
-        if (!mounted) return;
-        setRows(factoryRows);
+    if (home) {
+      const extracted = extractPriceMap(home);
+      setBasePriceMap(extracted);
+      setPriceMap((prev) => (Object.keys(prev).length === 0 ? extracted : prev));
 
-        const extracted = extractPriceMap(home);
-        setPriceMap(extracted);
-        setBasePriceMap(extracted);
-
-        // Extraer maestrías si existen en el perfil
-        const newMasteryMap: Record<string, number> = {};
-        if (home?.craftWorld?.proficiencies && Array.isArray(home.craftWorld.proficiencies)) {
-          home.craftWorld.proficiencies.forEach((p: any) => {
-            const sym = (p.symbol || p.token || '').toUpperCase();
-            if (sym) {
-              newMasteryMap[sym] = Math.min(10, Math.max(0, p.level || p.claimedLevel || 0));
-            }
-          });
-        }
-        setMasteryMap(newMasteryMap);
-      })
-      .catch((err) => console.error(err))
-      .finally(() => {
-        if (mounted) setLoading(false);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+      const newMasteryMap: Record<string, number> = {};
+      if (home?.craftWorld?.proficiencies && Array.isArray(home.craftWorld.proficiencies)) {
+        home.craftWorld.proficiencies.forEach((p: any) => {
+          const sym = (p.symbol || p.token || '').toUpperCase();
+          if (sym) {
+            newMasteryMap[sym] = Math.min(10, Math.max(0, p.level || p.claimedLevel || 0));
+          }
+        });
+      }
+      setMasteryMap(newMasteryMap);
+    }
+  }, [home]);
 
   const speedMultiplier = useMemo(() => {
     return calculateSpeedMultiplier(adBoost2x, factoryBoost);

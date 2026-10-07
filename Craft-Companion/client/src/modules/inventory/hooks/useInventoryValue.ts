@@ -1,12 +1,10 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../../utils/i18n';
-import { getCraftworldHome } from '../../../services/api';
+import { useCraftworldHomeQuery } from '../../../services/queries/useCraftworldQueries';
 import { extractPriceMap } from '../../../services/priceService';
-import {
-  loadPriceHistory,
-  savePriceSnapshots,
-} from '../../../services/priceHistory';
+import { savePriceSnapshots } from '../../../services/priceHistory';
+import { useAppStore } from '../../../store/useAppStore';
 import {
   extractRecommendations,
   createPriceSnapshots,
@@ -18,33 +16,20 @@ import type { ValuedInventoryItem } from '../types';
 export function useInventoryValue() {
   const navigate = useNavigate();
   const { language } = useTranslation();
-  const [homeData, setHomeData] = useState<any>(null);
-  const [prices, setPrices] = useState<Record<string, number>>({});
+  const { data: homeData, isLoading: loading } = useCraftworldHomeQuery();
   const [expandedSymbol, setExpandedSymbol] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+
+  const prices = useMemo(() => extractPriceMap(homeData), [homeData]);
 
   useEffect(() => {
-    let mounted = true;
-    getCraftworldHome()
-      .then((home) => {
-        if (!mounted) return;
-        setHomeData(home);
-        setPrices(extractPriceMap(home));
-        const snapshots = createPriceSnapshots(home);
-        if (snapshots.length > 0) {
-          savePriceSnapshots(snapshots);
-        }
-      })
-      .catch((err) => console.error(err))
-      .finally(() => {
-        if (mounted) setLoading(false);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    if (homeData) {
+      const snapshots = createPriceSnapshots(homeData);
+      if (snapshots.length > 0) {
+        savePriceSnapshots(snapshots);
+      }
+    }
+  }, [homeData]);
 
   const toggleExpand = useCallback((symbol: string) => {
     setExpandedSymbol((prev) => (prev === symbol ? null : symbol));
@@ -61,27 +46,46 @@ export function useInventoryValue() {
     [navigate],
   );
 
+  const rawInventory = useMemo(() => {
+    return homeData?.inventory?.balances || homeData?.inventory || [];
+  }, [homeData]);
+
+  const recommendations = useMemo(() => {
+    return extractRecommendations(homeData);
+  }, [homeData]);
+
   const { valuedItems, totalValue } = useMemo(() => {
-    const resources = homeData?.craftWorld?.resources || [];
-    const recMap = extractRecommendations(homeData);
-    const history = loadPriceHistory();
-    return calculateValuedInventory(resources, prices, recMap, history);
-  }, [homeData, prices]);
+    return calculateValuedInventory(rawInventory, prices, recommendations);
+  }, [rawInventory, prices, recommendations]);
 
-  const filteredItems = useMemo<ValuedInventoryItem[]>(() => {
-    return filterValuedItems(valuedItems, activeCategory);
-  }, [valuedItems, activeCategory]);
+  const resourceCount = useMemo(() => {
+    return valuedItems.filter((i) => i.amount > 0).length;
+  }, [valuedItems]);
 
-  const resourceCount = homeData?.craftWorld?.resources?.length || 0;
+  const favorites = useAppStore((state) => state.favorites);
+
+  const filteredItems: ValuedInventoryItem[] = useMemo(() => {
+    const list = filterValuedItems(valuedItems, activeCategory);
+    return list.sort((a, b) => {
+      const aFav = favorites.includes(a.symbol.toUpperCase());
+      const bFav = favorites.includes(b.symbol.toUpperCase());
+      if (aFav && !bFav) return -1;
+      if (!aFav && bFav) return 1;
+      return 0;
+    });
+  }, [valuedItems, activeCategory, favorites]);
 
   return {
     language,
     loading,
     totalValue,
     resourceCount,
-    activeCategory,
-    expandedSymbol,
+    valuedItems,
     filteredItems,
+    prices,
+    recommendations,
+    expandedSymbol,
+    activeCategory,
     toggleExpand,
     selectCategory,
     handleNavigateToResource,

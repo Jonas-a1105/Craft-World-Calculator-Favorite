@@ -1,9 +1,9 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import type { FactoryDataRow } from '../../../services/factoryData';
-import { loadFactoryData } from '../../../services/factoryData';
-import { getCraftworldHome } from '../../../services/api';
 import { extractPriceMap } from '../../../services/priceService';
 import { computeValueChain } from '../../../services/valueChainCalculator';
+import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/queries/useCraftworldQueries';
+import { useAppStore } from '../../../store/useAppStore';
 import type {
   FilterMode,
   SortByOption,
@@ -20,10 +20,9 @@ import {
 } from '../services/cycleAdjuster';
 
 export function useProfitability(): UseProfitabilityReturn {
-  const [rows, setRows] = useState<FactoryDataRow[]>([]);
-  const [prices, setPrices] = useState<Record<string, number>>({});
-  const [homeData, setHomeData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: homeData, isLoading: isHomeLoading } = useCraftworldHomeQuery();
+  const { data: rows = [], isLoading: isRowsLoading } = useFactoryDataQuery();
+  const loading = isHomeLoading || isRowsLoading;
 
   const [search, setSearch] = useState('');
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
@@ -38,15 +37,7 @@ export function useProfitability(): UseProfitabilityReturn {
   const [useBoosters, setUseBoosters] = useState(true);
   const [inputSupplyMode, setInputSupplyMode] = useState<InputSupplyMode>('market');
 
-  useEffect(() => {
-    Promise.all([loadFactoryData(), getCraftworldHome().catch(() => null)])
-      .then(([factoryRows, home]) => {
-        setRows(factoryRows);
-        setHomeData(home);
-        setPrices(extractPriceMap(home));
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const prices = useMemo(() => extractPriceMap(homeData), [homeData]);
 
   const ownedMap = useMemo(() => extractOwnedMap(homeData), [homeData]);
 
@@ -72,15 +63,28 @@ export function useProfitability(): UseProfitabilityReturn {
     [rows, ownedMap, prices, context, inputSupplyMode, useMastery],
   );
 
+  const favorites = useAppStore((state) => state.favorites);
+
   const filteredSummaries = useMemo(
-    () =>
-      filterAndSortSummaries({
+    () => {
+      const base = filterAndSortSummaries({
         summaries: factorySummaries,
         search,
         filterMode,
         sortBy,
-      }),
-    [factorySummaries, search, filterMode, sortBy],
+      });
+      if (sortBy !== 'alphabetical') {
+        return [...base].sort((a, b) => {
+          const aFav = favorites.includes(a.token.toUpperCase());
+          const bFav = favorites.includes(b.token.toUpperCase());
+          if (aFav && !bFav) return -1;
+          if (!aFav && bFav) return 1;
+          return 0;
+        });
+      }
+      return base;
+    },
+    [factorySummaries, search, filterMode, sortBy, favorites],
   );
 
   const uniqueTokensCount = useMemo(

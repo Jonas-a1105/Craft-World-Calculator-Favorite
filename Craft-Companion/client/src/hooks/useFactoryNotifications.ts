@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { loadFactoryData, FactoryDataRow } from '../services/factoryData';
+import type { FactoryDataRow } from '../services/factoryData';
 import { applyWorkshopSpeedToDuration } from '../services/workshopModifiers';
-import { getCraftworldHome } from '../services/api';
 import { formatFactoryName } from '../utils/formatters';
 import { sendFactoryNotification } from '../utils/notifications';
+import { useCraftworldHomeQuery, useFactoryDataQuery } from '../services/queries/useCraftworldQueries';
 
 interface ExtractableFactoryRun {
   key: string;
@@ -128,32 +128,15 @@ export function extractActiveRuns(home: any, factoryRows: FactoryDataRow[], nowM
 }
 
 export function useFactoryNotifications(language: string) {
+  const { data: homeData } = useCraftworldHomeQuery();
+  const { data: factoryRows = [] } = useFactoryDataQuery();
+
   useEffect(() => {
     const isEnabled = localStorage.getItem('craftworld.notificationsEnabled') === 'true';
     if (!isEnabled || !('Notification' in window) || Notification.permission !== 'granted') {
       return;
     }
-
-    let active = true;
-    let factoryRows: FactoryDataRow[] = [];
-    let homeData: any = null;
-
-    const loadData = () => {
-      Promise.all([loadFactoryData().catch(() => []), getCraftworldHome().catch(() => null)]).then(
-        ([rows, home]) => {
-          if (!active) return;
-          factoryRows = rows;
-          homeData = home;
-        },
-      );
-    };
-
-    loadData();
-
-    // Re-fetch Craft World home data periodically in the background (every 30 seconds)
-    const syncInterval = setInterval(() => {
-      if (active) loadData();
-    }, 30000);
+    if (!homeData || factoryRows.length === 0) return;
 
     // Track already notified runs (runKey -> startedAt) to prevent duplicate alerts
     const notifiedMap: Record<string, string> = (() => {
@@ -208,11 +191,9 @@ export function useFactoryNotifications(language: string) {
     }, 2000);
 
     return () => {
-      active = false;
-      clearInterval(syncInterval);
       clearInterval(interval);
     };
-  }, [language]);
+  }, [homeData, factoryRows, language]);
 }
 
 export default useFactoryNotifications;

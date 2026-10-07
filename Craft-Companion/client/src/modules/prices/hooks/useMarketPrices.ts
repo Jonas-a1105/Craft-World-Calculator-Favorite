@@ -1,31 +1,17 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from '../../../utils/i18n';
-import { getCraftworldHome } from '../../../services/api';
+import { useCraftworldHomeQuery } from '../../../services/queries/useCraftworldQueries';
 import { filterMarketPrices } from '../services/pricesService';
 import type { PriceListData, MarketPriceItem } from '../types';
 
 export function useMarketPrices() {
   const { language } = useTranslation();
-  const [priceData, setPriceData] = useState<PriceListData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: home, isLoading: loading } = useCraftworldHomeQuery();
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    let mounted = true;
-    getCraftworldHome()
-      .then((home) => {
-        if (!mounted) return;
-        setPriceData(home?.priceList || null);
-      })
-      .catch((err) => console.error(err))
-      .finally(() => {
-        if (mounted) setLoading(false);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const priceData: PriceListData | null = useMemo(() => {
+    return home?.priceList || null;
+  }, [home]);
 
   const prices: MarketPriceItem[] = useMemo(() => {
     return priceData?.prices || [];

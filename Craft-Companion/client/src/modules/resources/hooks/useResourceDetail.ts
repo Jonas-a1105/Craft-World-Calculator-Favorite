@@ -1,7 +1,7 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../../utils/i18n';
-import { getCraftworldHome } from '../../../services/api';
+import { useCraftworldHomeQuery } from '../../../services/queries/useCraftworldQueries';
 import { extractPriceMap } from '../../../services/priceService';
 import type { Timeframe } from '../types';
 import {
@@ -17,9 +17,7 @@ export function useResourceDetail() {
 
   const symbol = (rawSymbol || 'EARTH').toUpperCase();
 
-  const [homeData, setHomeData] = useState<any>(null);
-  const [prices, setPrices] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(true);
+  const { data: homeData, isLoading: loading } = useCraftworldHomeQuery();
   const [activeTimeframe, setActiveTimeframe] = useState<Timeframe>('1D');
   const [isPressing, setIsPressing] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -29,22 +27,7 @@ export function useResourceDetail() {
     setHoveredIndex(null);
   }, [activeTimeframe]);
 
-  useEffect(() => {
-    let isMounted = true;
-    getCraftworldHome()
-      .then((home) => {
-        if (!isMounted) return;
-        setHomeData(home);
-        setPrices(extractPriceMap(home));
-      })
-      .catch((err) => console.error(err))
-      .finally(() => {
-        if (isMounted) setLoading(false);
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const prices = useMemo(() => extractPriceMap(homeData), [homeData]);
 
   const currentPrice = useMemo(() => {
     return prices[symbol] || 0.0045;

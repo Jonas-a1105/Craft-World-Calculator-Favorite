@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from '../../../utils/i18n';
 import {
   exportPlayerConfig,
@@ -11,13 +11,35 @@ import {
   playNotificationSound,
   sendFactoryNotification,
 } from '../../../utils/notifications';
-import { getCraftworldHome, getMe } from '../../../services/api';
+import { useCraftworldHomeQuery, useMeQuery } from '../../../services/queries/useCraftworldQueries';
 import type { UserProfile, UseSettingsReturn } from '../types';
 
 export function useSettings(): UseSettingsReturn {
   const { t, language, setLanguage } = useTranslation();
 
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const { data: home } = useCraftworldHomeQuery();
+  const { data: me } = useMeQuery();
+
+  const user = useMemo<UserProfile | null>(() => {
+    if (home?.profile) {
+      return {
+        displayName: home.profile.displayName || 'Player',
+        level: home.profile.level,
+        avatarUrl: home.profile.avatarUrl,
+        uid: home.profile.uid,
+      };
+    }
+    if (me) {
+      return {
+        displayName: me.craftWorldDisplayName || me.id || 'Player',
+        level: me.craftWorldLevel,
+        avatarUrl: me.craftWorldAvatarUrl,
+        uid: me.craftWorldUid,
+      };
+    }
+    return null;
+  }, [home, me]);
+
   const [config, setConfig] = useState<PlayerConfig>(() => loadPlayerConfig());
   const [importJson, setImportJson] = useState('');
   const [status, setStatus] = useState('');
@@ -31,48 +53,6 @@ export function useSettings(): UseSettingsReturn {
     const timer = setTimeout(() => setStatus(''), 3000);
     return () => clearTimeout(timer);
   }, [status]);
-
-  // Load user profile
-  useEffect(() => {
-    getCraftworldHome()
-      .then((home) => {
-        if (home?.profile) {
-          setUser({
-            displayName: home.profile.displayName || 'Player',
-            level: home.profile.level,
-            avatarUrl: home.profile.avatarUrl,
-            uid: home.profile.uid,
-          });
-        } else {
-          getMe()
-            .then((me) => {
-              if (me) {
-                setUser({
-                  displayName: me.craftWorldDisplayName || me.id || 'Player',
-                  level: me.craftWorldLevel,
-                  avatarUrl: me.craftWorldAvatarUrl,
-                  uid: me.craftWorldUid,
-                });
-              }
-            })
-            .catch(() => {});
-        }
-      })
-      .catch(() => {
-        getMe()
-          .then((me) => {
-            if (me) {
-              setUser({
-                displayName: me.craftWorldDisplayName || me.id || 'Player',
-                level: me.craftWorldLevel,
-                avatarUrl: me.craftWorldAvatarUrl,
-                uid: me.craftWorldUid,
-              });
-            }
-          })
-          .catch(() => {});
-      });
-  }, []);
 
   // Appearance - Dark Mode
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {

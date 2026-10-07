@@ -1,23 +1,21 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../../utils/i18n';
-import { oauthAuthorize, getMe } from '../../../services/api';
+import { oauthAuthorize } from '../../../services/api';
+import { useMeQuery } from '../../../services/queries/useCraftworldQueries';
 import { parseOAuthError, isUserAuthenticated } from '../services/authService';
 
 export function useSignIn() {
   const nav = useNavigate();
   const { t, language } = useTranslation();
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const { data: me } = useMeQuery();
 
   useEffect(() => {
-    getMe()
-      .then((me: any) => {
-        if (isUserAuthenticated(me)) {
-          nav('/home', { replace: true });
-        }
-      })
-      .catch(() => {});
-  }, [nav]);
+    if (isUserAuthenticated(me)) {
+      nav('/home', { replace: true });
+    }
+  }, [me, nav]);
 
   useEffect(() => {
     const errorParsed = parseOAuthError(window.location.search, t('signin.error.denied'));

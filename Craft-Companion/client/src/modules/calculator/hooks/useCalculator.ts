@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from '../../../utils/i18n';
-import { loadFactoryData, FactoryDataRow } from '../../../services/factoryData';
-import { calculateFactoryCycle, FactoryCycleResult } from '../../../services/craftworldCalculations';
-import { getCraftworldHome } from '../../../services/api';
+import type { FactoryDataRow } from '../../../services/factoryData';
+import { calculateFactoryCycle, type FactoryCycleResult } from '../../../services/craftworldCalculations';
 import { extractPriceMap } from '../../../services/priceService';
+import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/queries/useCraftworldQueries';
+import { useAppStore } from '../../../store/useAppStore';
 import {
   extractUniqueTokens,
   getAvailableLevels,
@@ -12,23 +13,26 @@ import {
 
 export function useCalculator() {
   const { language } = useTranslation();
-  const [rows, setRows] = useState<FactoryDataRow[]>([]);
+  const { data: home, isLoading: isHomeLoading } = useCraftworldHomeQuery();
+  const { data: rows = [], isLoading: isRowsLoading } = useFactoryDataQuery();
+  const loading = isHomeLoading || isRowsLoading;
+
+  const favorites = useAppStore((state) => state.favorites);
   const [selectedToken, setSelectedToken] = useState<string>('STEEL');
   const [selectedLevel, setSelectedLevel] = useState<number>(1);
-  const [prices, setPrices] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    Promise.all([loadFactoryData(), getCraftworldHome().catch(() => null)])
-      .then(([factoryRows, home]) => {
-        setRows(factoryRows);
-        if (factoryRows.length > 0) {
-          setSelectedToken(factoryRows[0].token);
-        }
-        setPrices(extractPriceMap(home));
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    if (rows.length > 0 && selectedToken === 'STEEL') {
+      const preferred = favorites.find((f) => rows.some((r) => r.token === f));
+      if (preferred) {
+        setSelectedToken(preferred);
+      } else if (!rows.some((r) => r.token === 'STEEL')) {
+        setSelectedToken(rows[0].token);
+      }
+    }
+  }, [rows, selectedToken, favorites]);
+
+  const prices = useMemo(() => extractPriceMap(home), [home]);
 
   const uniqueTokens = useMemo(() => extractUniqueTokens(rows), [rows]);
 

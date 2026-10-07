@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './services/queryClient';
 import { LanguageProvider } from './utils/i18n';
 import ProtectedRoute from './components/ProtectedRoute';
 import EmpireDashboard from './pages/EmpireDashboard';
@@ -46,8 +48,9 @@ export default function App() {
   }, []);
 
   return (
-    <LanguageProvider>
-      <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <LanguageProvider>
+        <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/signin" element={<SignIn />} />
@@ -168,5 +171,6 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </LanguageProvider>
+  </QueryClientProvider>
   );
 }

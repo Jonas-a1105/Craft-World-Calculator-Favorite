@@ -1,10 +1,10 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import type { FactoryDataRow } from '../../../services/factoryData';
-import { loadFactoryData } from '../../../services/factoryData';
-import { getCraftworldHome } from '../../../services/api';
 import { extractPriceMap } from '../../../services/priceService';
 import { buildRecipeTree, flattenRecipeToBaseResources } from '../../../services/craftworldCalculations';
 import { ResourceIcon } from '../../../components/GameIcon';
+import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/queries/useCraftworldQueries';
+import { useAppStore } from '../../../store/useAppStore';
 import type {
   PlannerViewTab,
   MaterialFilter,
@@ -18,39 +18,40 @@ import {
 } from '../services/plannerService';
 
 export function useResourcePlanner(): UseResourcePlannerReturn {
-  const [rows, setRows] = useState<FactoryDataRow[]>([]);
-  const [prices, setPrices] = useState<Record<string, number>>({});
+  const { data: home, isLoading: isHomeLoading } = useCraftworldHomeQuery();
+  const { data: rows = [], isLoading: isRowsLoading } = useFactoryDataQuery();
+  const loading = isHomeLoading || isRowsLoading;
+
+  const favorites = useAppStore((state) => state.favorites);
   const [targetToken, setTargetToken] = useState('STEEL');
   const [targetAmount, setTargetAmount] = useState(10);
-  const [userResources, setUserResources] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(true);
-
   const [viewTab, setViewTab] = useState<PlannerViewTab>('materials');
   const [materialFilter, setMaterialFilter] = useState<MaterialFilter>('all');
   const [copiedNotification, setCopiedNotification] = useState(false);
 
   useEffect(() => {
-    Promise.all([loadFactoryData(), getCraftworldHome().catch(() => null)])
-      .then(([factoryRows, home]) => {
-        setRows(factoryRows);
-        if (factoryRows.length > 0) {
-          const defaultTok = factoryRows[0].output_token || factoryRows[0].token;
-          setTargetToken(defaultTok);
-        }
+    if (rows.length > 0 && targetToken === 'STEEL') {
+      const preferred = favorites.find((f) => rows.some((r) => (r.output_token || r.token) === f));
+      if (preferred) {
+        setTargetToken(preferred);
+      } else if (!rows.some((r) => (r.output_token || r.token) === 'STEEL')) {
+        const defaultTok = rows[0].output_token || rows[0].token;
+        setTargetToken(defaultTok);
+      }
+    }
+  }, [rows, targetToken, favorites]);
 
-        const priceMap = extractPriceMap(home);
-        setPrices(priceMap);
+  const prices = useMemo(() => extractPriceMap(home), [home]);
 
-        const resMap: Record<string, number> = {};
-        if (home?.craftWorld?.resources) {
-          home.craftWorld.resources.forEach((r: any) => {
-            resMap[(r.symbol || '').toUpperCase()] = r.amount || 0;
-          });
-        }
-        setUserResources(resMap);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const userResources = useMemo(() => {
+    const resMap: Record<string, number> = {};
+    if (home?.craftWorld?.resources) {
+      home.craftWorld.resources.forEach((r: any) => {
+        resMap[(r.symbol || '').toUpperCase()] = r.amount || 0;
+      });
+    }
+    return resMap;
+  }, [home]);
 
   const uniqueTokens = useMemo(() => {
     return Array.from(

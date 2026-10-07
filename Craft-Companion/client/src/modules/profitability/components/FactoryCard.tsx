@@ -3,6 +3,7 @@ import type { FactorySummary } from '../types';
 import { useTranslation } from '../../../utils/i18n';
 import { formatCompactNumber } from '../../../utils/formatters';
 import { FactoryIcon } from '../../../components/GameIcon';
+import { useAppStore } from '../../../store/useAppStore';
 
 export interface FactoryCardProps {
   summary: FactorySummary;
@@ -14,10 +15,15 @@ export const FactoryCard: React.FC<FactoryCardProps> = ({ summary, onSelect }) =
   const isOwned = summary.ownedLevel !== null;
   const isLoss = summary.cycle.effectiveProfitPerDay < 0;
 
+  const isFav = useAppStore((state) => state.isFavorite(summary.token));
+  const toggleFavorite = useAppStore((state) => state.toggleFavorite);
+
   return (
     <div
       onClick={() => onSelect(summary.token)}
-      className="bg-[#18181b] hover:bg-[#1f1f25] rounded-[32px] p-6 shadow-xl flex flex-col justify-between gap-5 transition-colors duration-200 cursor-pointer group select-none"
+      className={`bg-[#18181b] hover:bg-[#1f1f25] rounded-[32px] p-6 shadow-xl flex flex-col justify-between gap-5 transition-all duration-200 cursor-pointer group select-none border ${
+        isFav ? 'border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.1)]' : 'border-zinc-800/60'
+      }`}
     >
       {/* Top Header: Avatar + Title/Subtitle + Bookmark Action */}
       <div className="flex items-center justify-between gap-3">
@@ -50,10 +56,22 @@ export const FactoryCard: React.FC<FactoryCardProps> = ({ summary, onSelect }) =
         </div>
 
         {/* Bookmark Action Pill Icon */}
-        <div className="w-10 h-10 rounded-full bg-white/5 group-hover:bg-white/10 flex items-center justify-center text-zinc-300 transition-colors flex-shrink-0">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFavorite(summary.token);
+          }}
+          className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors flex-shrink-0 ${
+            isFav
+              ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
+              : 'bg-white/5 group-hover:bg-white/10 text-zinc-400 hover:text-amber-400'
+          }`}
+          title={isFav ? 'Quitar de favoritos' : 'Añadir a favoritos'}
+        >
           <svg
-            className="w-4 h-4 text-zinc-400 group-hover:text-white transition-colors"
-            fill="none"
+            className={`w-4 h-4 transition-transform hover:scale-110 ${isFav ? 'fill-amber-400 text-amber-400' : 'text-zinc-400'}`}
+            fill={isFav ? 'currentColor' : 'none'}
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
@@ -62,7 +80,7 @@ export const FactoryCard: React.FC<FactoryCardProps> = ({ summary, onSelect }) =
           >
             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
           </svg>
-        </div>
+        </button>
       </div>
 
       {/* Description Paragraph */}

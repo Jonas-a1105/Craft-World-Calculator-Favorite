@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { logout, getCraftworldHome, getMe, oauthAuthorize } from '../../../../services/api';
+import { logout, oauthAuthorize } from '../../../../services/api';
 import { useTranslation } from '../../../../utils/i18n';
+import { useCraftworldHomeQuery, useMeQuery } from '../../../../services/queries/useCraftworldQueries';
 import type { UserProfile, WalletItem } from '../types';
 import { resolveUserDisplayName } from '../services/navbarService';
 
@@ -12,12 +13,37 @@ export function useNavbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [userDropdownOpen, setUserDropdownOpen] = useState<boolean>(false);
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [wallets, setWallets] = useState<WalletItem[]>([]);
   const [copiedWallet, setCopiedWallet] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     return localStorage.getItem('craftworld.theme') !== 'light';
   });
+
+  const { data: home } = useCraftworldHomeQuery();
+  const { data: me } = useMeQuery();
+
+  const wallets = useMemo<WalletItem[]>(() => {
+    return home?.onchain?.wallets || [];
+  }, [home]);
+
+  const user = useMemo<UserProfile | null>(() => {
+    if (home?.profile) {
+      return {
+        displayName: resolveUserDisplayName(home.profile.displayName),
+        level: home.profile.level,
+        avatarUrl: home.profile.avatarUrl,
+        uid: home.profile.uid,
+      };
+    }
+    if (me) {
+      return {
+        displayName: resolveUserDisplayName(me.craftWorldDisplayName, me.id),
+        level: me.craftWorldLevel,
+        avatarUrl: me.craftWorldAvatarUrl,
+        uid: me.craftWorldUid,
+      };
+    }
+    return null;
+  }, [home, me]);
 
   const toggleTheme = useCallback(() => {
     setIsDarkMode((prev: boolean) => {
@@ -39,54 +65,6 @@ export function useNavbar() {
       }
       return nextDark;
     });
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-    getCraftworldHome()
-      .then((home: any) => {
-        if (!mounted) return;
-        if (home?.onchain?.wallets) {
-          setWallets(home.onchain.wallets);
-        }
-        if (home?.profile) {
-          setUser({
-            displayName: resolveUserDisplayName(home.profile.displayName),
-            level: home.profile.level,
-            avatarUrl: home.profile.avatarUrl,
-            uid: home.profile.uid,
-          });
-        } else {
-          getMe()
-            .then((me: any) => {
-              if (!mounted || !me) return;
-              setUser({
-                displayName: resolveUserDisplayName(me.craftWorldDisplayName, me.id),
-                level: me.craftWorldLevel,
-                avatarUrl: me.craftWorldAvatarUrl,
-                uid: me.craftWorldUid,
-              });
-            })
-            .catch(() => {});
-        }
-      })
-      .catch(() => {
-        getMe()
-          .then((me: any) => {
-            if (!mounted || !me) return;
-            setUser({
-              displayName: resolveUserDisplayName(me.craftWorldDisplayName, me.id),
-              level: me.craftWorldLevel,
-              avatarUrl: me.craftWorldAvatarUrl,
-              uid: me.craftWorldUid,
-            });
-          })
-          .catch(() => {});
-      });
-
-    return () => {
-      mounted = false;
-    };
   }, []);
 
   useEffect(() => {

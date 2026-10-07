@@ -1,7 +1,6 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from '../../../utils/i18n';
-import { loadFactoryData, type FactoryDataRow } from '../../../services/factoryData';
-import { getCraftworldHome } from '../../../services/api';
+import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/queries/useCraftworldQueries';
 import {
   extractValueChainPrices,
   computeValueChainAnalysis,
@@ -10,33 +9,16 @@ import type { ValueChainMode, ValueChainAnalysis } from '../types';
 
 export function useValueChain() {
   const { language } = useTranslation();
-  const [rows, setRows] = useState<FactoryDataRow[]>([]);
-  const [prices, setPrices] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(true);
+  const { data: home, isLoading: isHomeLoading } = useCraftworldHomeQuery();
+  const { data: rows = [], isLoading: isRowsLoading } = useFactoryDataQuery();
+  const loading = isHomeLoading || isRowsLoading;
+
   const [selectedToken, setSelectedToken] = useState<string>('COPPER');
   const [selectedLevel, setSelectedLevel] = useState<number>(18);
   const [mode, setMode] = useState<ValueChainMode>('self_crafted');
-  const [proficiencies, setProficiencies] = useState<any[]>([]);
 
-  useEffect(() => {
-    let mounted = true;
-    Promise.all([loadFactoryData(), getCraftworldHome().catch(() => null)])
-      .then(([factoryRows, home]) => {
-        if (!mounted) return;
-        setRows(factoryRows);
-        setPrices(extractValueChainPrices(home));
-        if (home?.proficiencies) {
-          setProficiencies(home.proficiencies);
-        }
-      })
-      .finally(() => {
-        if (mounted) setLoading(false);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const prices = useMemo(() => extractValueChainPrices(home), [home]);
+  const proficiencies = useMemo(() => home?.proficiencies || [], [home]);
 
   const handleLevelChange = useCallback((newLevel: number) => {
     setSelectedLevel(Math.min(40, Math.max(1, newLevel)));

@@ -1,65 +1,38 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useTranslation } from '../../../utils/i18n';
-import { getCraftworldHome } from '../../../services/api';
-import { loadFactoryData, type FactoryDataRow } from '../../../services/factoryData';
+import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/queries/useCraftworldQueries';
 import { sendFactoryNotification } from '../../../utils/notifications';
 import { extractActiveRuns } from '../services/factoryTimersService';
 import type { ActiveRun } from '../types';
 
 export function useFactoryTimers() {
   const { language } = useTranslation();
-  const [homeData, setHomeData] = useState<any>(null);
-  const [factoryRows, setFactoryRows] = useState<FactoryDataRow[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: homeData, isLoading: isHomeLoading } = useCraftworldHomeQuery();
+  const { data: factoryRows = [], isLoading: isRowsLoading } = useFactoryDataQuery();
+  const loading = isHomeLoading || isRowsLoading;
+
   const [now, setNow] = useState(Date.now());
-  const [serverOffset, setServerOffset] = useState(0);
   const [notifPermission, setNotifPermission] = useState<string>(
     typeof window !== 'undefined' && 'Notification' in window ? Notification.permission : 'default',
   );
 
+  const serverOffset = useMemo(() => {
+    if (!homeData) return 0;
+    const serverTimeMs = homeData?.serverTime
+      ? new Date(homeData.serverTime).getTime()
+      : homeData?.lastSyncedAt
+        ? new Date(homeData.lastSyncedAt).getTime()
+        : Date.now();
+    return serverTimeMs - Date.now();
+  }, [homeData]);
+
   useEffect(() => {
-    let mounted = true;
-
-    const fetchData = () => {
-      Promise.all([
-        getCraftworldHome().catch(() => null),
-        loadFactoryData().catch(() => []),
-      ])
-        .then(([home, rows]) => {
-          if (!mounted) return;
-          if (home) {
-            setHomeData(home);
-            const serverTimeMs = home?.serverTime
-              ? new Date(home.serverTime).getTime()
-              : home?.lastSyncedAt
-                ? new Date(home.lastSyncedAt).getTime()
-                : Date.now();
-            setServerOffset(serverTimeMs - Date.now());
-          }
-          if (rows && rows.length > 0) setFactoryRows(rows);
-        })
-        .finally(() => {
-          if (mounted) setLoading(false);
-        });
-    };
-
-    fetchData();
-
-    // 1. Ticker every 1 second to update live timers, donut ring & percents
+    // 1-second ticker to update countdowns, donut rings and completion percentages
     const tickInterval = setInterval(() => {
       setNow(Date.now());
     }, 1000);
 
-    // 2. Polling every 30 seconds to synchronize fresh state with Craft World
-    const syncInterval = setInterval(() => {
-      fetchData();
-    }, 30000);
-
-    return () => {
-      mounted = false;
-      clearInterval(tickInterval);
-      clearInterval(syncInterval);
-    };
+    return () => clearInterval(tickInterval);
   }, []);
 
   const requestNotif = useCallback(() => {

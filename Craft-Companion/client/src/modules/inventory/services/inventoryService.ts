@@ -103,8 +103,8 @@ export function createPriceSnapshots(homeData: any, nowIso = new Date().toISOStr
 export function calculateValuedInventory(
   resources: any[],
   prices: Record<string, number>,
-  recMap: Record<string, string>,
-  history: PriceSnapshot[],
+  recMap: Record<string, string> = {},
+  history: PriceSnapshot[] = [],
 ): ValuedInventoryResult {
   let totalValue = 0;
   const valuedItems: ValuedInventoryItem[] = (resources || []).map((r: any) => {

@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from '../../../utils/i18n';
-import { getCraftworldHome } from '../../../services/api';
+import { useCraftworldHomeQuery } from '../../../services/queries/useCraftworldQueries';
 import {
   calculateEmpireOverviewStats,
   summarizeBuildings,
@@ -8,25 +8,7 @@ import {
 
 export function useEmpireDashboard() {
   const { language } = useTranslation();
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let mounted = true;
-    getCraftworldHome()
-      .then((res) => {
-        if (!mounted) return;
-        setData(res);
-      })
-      .catch((err) => console.error(err))
-      .finally(() => {
-        if (mounted) setLoading(false);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const { data, isLoading: loading } = useCraftworldHomeQuery();
 
   const stats = useMemo(() => {
     return calculateEmpireOverviewStats(data);

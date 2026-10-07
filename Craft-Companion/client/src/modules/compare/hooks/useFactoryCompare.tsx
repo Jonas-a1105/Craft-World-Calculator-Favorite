@@ -1,46 +1,53 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import type { FactoryDataRow } from '../../../services/factoryData';
-import { loadFactoryData } from '../../../services/factoryData';
 import { calculateFactoryCycle, type FactoryCycleResult } from '../../../services/craftworldCalculations';
-import { getCraftworldHome } from '../../../services/api';
 import { extractPriceMap } from '../../../services/priceService';
 import { FactoryIcon } from '../../../components/GameIcon';
+import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/queries/useCraftworldQueries';
+import { useAppStore } from '../../../store/useAppStore';
 import type { UseFactoryCompareReturn } from '../types';
 import { calculateComparisonVerdict } from '../services/compareService';
 
 export function useFactoryCompare(): UseFactoryCompareReturn {
-  const [rows, setRows] = useState<FactoryDataRow[]>([]);
+  const { data: home, isLoading: isHomeLoading } = useCraftworldHomeQuery();
+  const { data: rows = [], isLoading: isRowsLoading } = useFactoryDataQuery();
+  const loading = isHomeLoading || isRowsLoading;
+
+  const favorites = useAppStore((state) => state.favorites);
   const [token1, setToken1] = useState('STEEL');
   const [level1, setLevel1] = useState(1);
   const [token2, setToken2] = useState('STEEL');
   const [level2, setLevel2] = useState(2);
-  const [prices, setPrices] = useState<Record<string, number>>({});
-  const [userFactories, setUserFactories] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([loadFactoryData(), getCraftworldHome().catch(() => null)])
-      .then(([factoryRows, home]) => {
-        setRows(factoryRows);
-        if (factoryRows.length > 0) {
-          const first = factoryRows[0].token;
-          setToken1(first);
-          setToken2(first);
-          setLevel1(1);
-          setLevel2(2);
-        }
-        setPrices(extractPriceMap(home));
+    if (rows.length > 0 && token1 === 'STEEL') {
+      const preferred = favorites.find((f) => rows.some((r) => r.token === f));
+      if (preferred) {
+        setToken1(preferred);
+        setToken2(preferred);
+        setLevel1(1);
+        setLevel2(2);
+      } else if (!rows.some((r) => r.token === 'STEEL')) {
+        const first = rows[0].token;
+        setToken1(first);
+        setToken2(first);
+        setLevel1(1);
+        setLevel2(2);
+      }
+    }
+  }, [rows, token1, favorites]);
 
-        const ownedMap: Record<string, number> = {};
-        if (home?.craftWorld?.factories && Array.isArray(home.craftWorld.factories)) {
-          home.craftWorld.factories.forEach((f: any) => {
-            if (f.symbol) ownedMap[f.symbol.toUpperCase()] = f.level || 1;
-          });
-        }
-        setUserFactories(ownedMap);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const prices = useMemo(() => extractPriceMap(home), [home]);
+
+  const userFactories = useMemo(() => {
+    const ownedMap: Record<string, number> = {};
+    if (home?.craftWorld?.factories && Array.isArray(home.craftWorld.factories)) {
+      home.craftWorld.factories.forEach((f: any) => {
+        if (f.symbol) ownedMap[f.symbol.toUpperCase()] = f.level || 1;
+      });
+    }
+    return ownedMap;
+  }, [home]);
 
   const uniqueTokens = useMemo(() => {
     return Array.from(new Set(rows.map((r) => r.token))).filter(Boolean);
