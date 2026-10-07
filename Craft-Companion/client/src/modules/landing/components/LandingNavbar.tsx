@@ -15,19 +15,15 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Close on Escape key & lock scroll when menu is open
+  // Close on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setMobileMenuOpen(false);
     };
     if (mobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
       window.addEventListener('keydown', handleKeyDown);
-    } else {
-      document.body.style.overflow = '';
     }
     return () => {
-      document.body.style.overflow = '';
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [mobileMenuOpen]);
@@ -112,7 +108,7 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-start justify-center p-3 pt-3 sm:pt-4 transition-opacity duration-150 animate-in fade-in"
+          className="fixed inset-0 z-50 bg-black/60 flex items-start justify-center p-3 pt-3 sm:pt-4"
           onClick={(e) => {
             if (e.target === e.currentTarget) setMobileMenuOpen(false);
           }}
@@ -120,8 +116,11 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({
           <div
             className="w-full max-w-[340px] bg-[#1c1c20] rounded-[28px] p-6 shadow-2xl flex flex-col items-center relative border-0 outline-none route-view"
             style={{
-              animation: 'routeFadeSlide 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              animation: 'routeFadeSlide 180ms cubic-bezier(0.16, 1, 0.3, 1) both',
               willChange: 'opacity, transform',
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              transform: 'translate3d(0, 0, 0)',
             }}
           >
             {/* Modal Header: Logo + Brand Name on left, Circular (X) close button on right */}
