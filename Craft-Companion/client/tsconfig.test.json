@@ -31,7 +31,8 @@
     "src/modules/empire/services/**/*.ts",
     "src/modules/advisor/services/**/*.ts",
     "src/modules/prices/services/**/*.ts",
-    "src/modules/calculator/services/**/*.ts"
+    "src/modules/calculator/services/**/*.ts",
+    "src/components/layout/nav/services/**/*.ts"
   ],
   "exclude": ["src/**/*.tsx"]
 }
