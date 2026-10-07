@@ -1,4 +1,5 @@
 import React from 'react';
+import { CopyBold, ImportBold, TrashBinTrashBold } from 'solar-icon-set';
 
 export interface SettingsDataBackupCardProps {
   copied: boolean;
@@ -36,18 +37,7 @@ export const SettingsDataBackupCard: React.FC<SettingsDataBackupCardProps> = ({
         <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3.5 min-w-0">
             <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center flex-shrink-0">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                viewBox="0 0 24 24"
-              >
-                <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-              </svg>
+              <CopyBold className="w-5 h-5" />
             </div>
             <div className="min-w-0">
               <span className="text-xs font-bold text-white block truncate">
@@ -87,19 +77,7 @@ export const SettingsDataBackupCard: React.FC<SettingsDataBackupCardProps> = ({
         <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3.5 min-w-0">
             <div className="w-10 h-10 rounded-2xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center flex-shrink-0">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                viewBox="0 0 24 24"
-              >
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" y1="15" x2="12" y2="3" />
-              </svg>
+              <ImportBold className="w-5 h-5" />
             </div>
             <div className="min-w-0">
               <span className="text-xs font-bold text-white block truncate">
@@ -160,20 +138,7 @@ export const SettingsDataBackupCard: React.FC<SettingsDataBackupCardProps> = ({
         <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3.5 min-w-0">
             <div className="w-10 h-10 rounded-2xl bg-rose-500/15 text-rose-400 flex items-center justify-center flex-shrink-0">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                viewBox="0 0 24 24"
-              >
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                <line x1="10" y1="11" x2="10" y2="17" />
-                <line x1="14" y1="11" x2="14" y2="17" />
-              </svg>
+              <TrashBinTrashBold className="w-5 h-5" />
             </div>
             <div className="min-w-0">
               <span className="text-xs font-bold text-white block truncate">

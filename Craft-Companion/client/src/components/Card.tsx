@@ -3,7 +3,7 @@ import { useTranslation } from '../utils/i18n';
 import { Card as UICard, CardProps } from './ui/Card';
 
 export interface LegacyCardProps extends Omit<CardProps, 'title'> {
-  title?: string;
+  title?: React.ReactNode;
 }
 
 export default function Card({
@@ -14,7 +14,7 @@ export default function Card({
   ...props
 }: LegacyCardProps) {
   const { t } = useTranslation();
-  const translatedTitle = title ? t(title) : undefined;
+  const translatedTitle = typeof title === 'string' ? t(title) : title;
 
   return (
     <UICard

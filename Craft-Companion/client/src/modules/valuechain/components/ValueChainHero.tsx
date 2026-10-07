@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ValueChainMode } from '../types';
+import { BoltBoldDuotone, LeafBoldDuotone, CartLargeBoldDuotone } from 'solar-icon-set';
 
 interface ValueChainHeroProps {
   mode: ValueChainMode;
@@ -24,8 +25,9 @@ export const ValueChainHero: React.FC<ValueChainHeroProps> = ({
 
       <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 bg-emerald-950/60 border-none px-3 py-1 rounded-full w-fit mb-3">
-            <span>⚡ ANALIZADOR DE CADENA INDUSTRIAL</span>
+          <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 bg-emerald-950/60 border-none px-3 py-1 rounded-full w-fit mb-3">
+            <BoltBoldDuotone className="w-4 h-4 text-emerald-400" />
+            <span>ANALIZADOR DE CADENA INDUSTRIAL</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
             {language === 'es'
@@ -44,23 +46,25 @@ export const ValueChainHero: React.FC<ValueChainHeroProps> = ({
           <div className="flex items-center bg-[#202024] p-1 rounded-xl">
             <button
               onClick={() => onModeChange('self_crafted')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                 mode === 'self_crafted'
                   ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-900/40'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              {language === 'es' ? '🌱 Farmeo Propio ($0)' : '🌱 Self-farmed ($0)'}
+              <LeafBoldDuotone className="w-3.5 h-3.5" />
+              <span>{language === 'es' ? 'Farmeo Propio ($0)' : 'Self-farmed ($0)'}</span>
             </button>
             <button
               onClick={() => onModeChange('market_buy')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                 mode === 'market_buy'
                   ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-900/40'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              {language === 'es' ? '🛒 Mercado' : '🛒 Market Buy'}
+              <CartLargeBoldDuotone className="w-3.5 h-3.5" />
+              <span>{language === 'es' ? 'Mercado' : 'Market Buy'}</span>
             </button>
           </div>
 

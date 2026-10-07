@@ -1,4 +1,5 @@
 import React from 'react';
+import { WalletMoneyBoldDuotone } from 'solar-icon-set';
 import Card from '../../../components/Card';
 import { ResourceIcon } from '../../../components/GameIcon';
 import { formatNumber } from '../../../utils/formatters';
@@ -14,7 +15,14 @@ export const CalculatorFinancialCard: React.FC<CalculatorFinancialCardProps> = (
   cycle,
 }) => {
   return (
-    <Card title={language === 'es' ? '💰 Financiero & Insumos' : '💰 Financial & Inputs'}>
+    <Card
+      title={
+        <span className="flex items-center gap-2">
+          <WalletMoneyBoldDuotone size={18} className="text-emerald-400" />
+          {language === 'es' ? 'Financiero & Insumos' : 'Financial & Inputs'}
+        </span>
+      }
+    >
       <div className="space-y-3 text-xs">
         <div className="space-y-1">
           <span className="text-slate-400 font-bold block">

@@ -7,6 +7,14 @@ import { ResourceIcon } from '../../../../components/GameIcon';
 import { StatusBadge } from '../StatusBadge';
 import { EmptyState } from '../EmptyState';
 import { ScopeUnauthorizedCard } from '../ScopeUnauthorizedCard';
+import {
+  Bag2BoldDuotone,
+  TVBoldDuotone,
+  SlashCircleBoldDuotone,
+  RoundTransferHorizontalBoldDuotone,
+} from 'solar-icon-set';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Diamond02Icon } from '@hugeicons/core-free-icons';
 
 export interface PurchasesTabProps {
   purchases?: PurchasesData;
@@ -25,13 +33,18 @@ export const PurchasesTab: React.FC<PurchasesTabProps> = ({ purchases, onReautho
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-start">
         {/* Card 1: Beneficios & Pases */}
         <Card
-          title={language === 'es' ? '💎 Beneficios & Pases' : '💎 Perks & Pass'}
+          title={
+            <span className="flex items-center gap-2">
+              <HugeiconsIcon icon={Diamond02Icon} size={20} className="text-cyan-400" />
+              <span>{language === 'es' ? 'Beneficios & Pases' : 'Perks & Pass'}</span>
+            </span>
+          }
           className="rounded-[32px] bg-[#18181b] shadow-xl border-none"
         >
           <div className="space-y-2.5 text-xs">
             <div className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2.5 px-3.5 flex justify-between items-center transition-colors shadow-sm">
               <span className="text-slate-200 font-semibold flex items-center gap-2">
-                <span>🚫</span>
+                <SlashCircleBoldDuotone className="w-4 h-4 text-rose-400" />
                 <span>{language === 'es' ? 'Sin Anuncios' : 'No-Ads Active'}</span>
               </span>
               <StatusBadge
@@ -50,7 +63,7 @@ export const PurchasesTab: React.FC<PurchasesTabProps> = ({ purchases, onReautho
 
             <div className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2.5 px-3.5 flex justify-between items-center transition-colors shadow-sm">
               <span className="text-slate-200 font-semibold flex items-center gap-2">
-                <span>🔄</span>
+                <RoundTransferHorizontalBoldDuotone className="w-4 h-4 text-emerald-400" />
                 <span>{language === 'es' ? 'Transferencias' : 'Transfer Active'}</span>
               </span>
               <StatusBadge
@@ -103,7 +116,12 @@ export const PurchasesTab: React.FC<PurchasesTabProps> = ({ purchases, onReautho
 
         {/* Card 2: Historial de Tienda */}
         <Card
-          title={language === 'es' ? '🛍️ Historial de Tienda' : '🛍️ Shop Purchases'}
+          title={
+            <span className="flex items-center gap-2">
+              <Bag2BoldDuotone className="w-5 h-5 text-indigo-400" />
+              <span>{language === 'es' ? 'Historial de Tienda' : 'Shop Purchases'}</span>
+            </span>
+          }
           action={
             purchases.shopItemPurchases?.length ? (
               <span className="text-[10px] text-slate-400 font-mono bg-white/5 px-2.5 py-0.5 rounded-full">
@@ -138,7 +156,12 @@ export const PurchasesTab: React.FC<PurchasesTabProps> = ({ purchases, onReautho
 
         {/* Card 3: Anuncios Vistos */}
         <Card
-          title={language === 'es' ? '📺 Anuncios Vistos' : '📺 Ad Watch Counts'}
+          title={
+            <span className="flex items-center gap-2">
+              <TVBoldDuotone className="w-5 h-5 text-amber-400" />
+              <span>{language === 'es' ? 'Anuncios Vistos' : 'Ad Watch Counts'}</span>
+            </span>
+          }
           action={
             purchases.adWatchCounts?.length ? (
               <span className="text-[10px] text-cyan-400 font-mono bg-cyan-500/10 px-2.5 py-0.5 rounded-full">
@@ -160,7 +183,7 @@ export const PurchasesTab: React.FC<PurchasesTabProps> = ({ purchases, onReautho
                   className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2.5 px-3.5 flex justify-between items-center text-xs transition-colors shadow-sm"
                 >
                   <div className="flex items-center gap-2 min-w-0 pr-2">
-                    <span className="text-sm">📺</span>
+                    <TVBoldDuotone className="w-4 h-4 text-cyan-400 shrink-0" />
                     <span className="text-slate-200 font-bold truncate">
                       {formatAdPlacement(ad.adPlacement, language)}
                     </span>

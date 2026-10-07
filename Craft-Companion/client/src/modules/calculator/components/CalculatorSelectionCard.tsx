@@ -1,4 +1,5 @@
 import React from 'react';
+import { SettingsBoldDuotone } from 'solar-icon-set';
 import Card from '../../../components/Card';
 import Select from '../../../components/ui/Select';
 
@@ -23,7 +24,12 @@ export const CalculatorSelectionCard: React.FC<CalculatorSelectionCardProps> = (
 }) => {
   return (
     <Card
-      title={language === 'es' ? '⚙️ Seleccionar Fábrica y Nivel' : '⚙️ Select Factory & Level'}
+      title={
+        <span className="flex items-center gap-2">
+          <SettingsBoldDuotone size={18} className="text-amber-400" />
+          {language === 'es' ? 'Seleccionar Fábrica y Nivel' : 'Select Factory & Level'}
+        </span>
+      }
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Select

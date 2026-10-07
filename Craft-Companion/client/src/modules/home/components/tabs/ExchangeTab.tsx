@@ -7,6 +7,14 @@ import { displayNumber } from '../../utils/formatters';
 import { ResourceIcon } from '../../../../components/GameIcon';
 import { EmptyState } from '../EmptyState';
 import { ScopeUnauthorizedCard } from '../ScopeUnauthorizedCard';
+import {
+  Chart2BoldDuotone,
+  RefreshBoldDuotone,
+  BoltBoldDuotone,
+  ChartSquareBoldDuotone,
+  ArchiveBoldDuotone,
+  History2BoldDuotone,
+} from 'solar-icon-set';
 
 export interface ExchangeTabProps {
   exchange?: ExchangeData;
@@ -25,13 +33,18 @@ export const ExchangeTab: React.FC<ExchangeTabProps> = ({ exchange, onReauthoriz
       <div className="grid gap-4 md:grid-cols-2 items-start">
         {/* Card 1: Estadísticas del Mercado */}
         <Card
-          title={language === 'es' ? '📊 Estadísticas del Mercado' : '📊 Market Stats'}
+          title={
+            <span className="flex items-center gap-2">
+              <Chart2BoldDuotone className="w-5 h-5 text-emerald-400" />
+              <span>{language === 'es' ? 'Estadísticas del Mercado' : 'Market Stats'}</span>
+            </span>
+          }
           className="rounded-[32px] bg-[#18181b] shadow-xl border-none"
         >
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-[#202024] hover:bg-[#28282e] rounded-[24px] p-3.5 sm:p-4 flex flex-col justify-between transition-colors shadow-sm">
               <div className="flex items-center gap-1.5">
-                <span className="text-sm">🔄</span>
+                <RefreshBoldDuotone className="w-4 h-4 text-emerald-400" />
                 <span className="text-xs sm:text-sm text-slate-300 font-semibold truncate">
                   {language === 'es' ? 'Operaciones' : 'Trades'}
                 </span>
@@ -43,7 +56,7 @@ export const ExchangeTab: React.FC<ExchangeTabProps> = ({ exchange, onReauthoriz
 
             <div className="bg-[#202024] hover:bg-[#28282e] rounded-[24px] p-3.5 sm:p-4 flex flex-col justify-between transition-colors shadow-sm">
               <div className="flex items-center gap-1.5">
-                <span className="text-sm">⚡</span>
+                <BoltBoldDuotone className="w-4 h-4 text-amber-400" />
                 <span className="text-xs sm:text-sm text-slate-300 font-semibold truncate">
                   {language === 'es' ? 'Recarga Diaria' : 'Daily Refill'}
                 </span>
@@ -55,7 +68,7 @@ export const ExchangeTab: React.FC<ExchangeTabProps> = ({ exchange, onReauthoriz
 
             <div className="bg-[#202024] hover:bg-[#28282e] rounded-[24px] p-3.5 sm:p-4 flex flex-col justify-between transition-colors shadow-sm">
               <div className="flex items-center gap-1.5">
-                <span className="text-sm">📈</span>
+                <ChartSquareBoldDuotone className="w-4 h-4 text-cyan-400" />
                 <span className="text-xs sm:text-sm text-slate-300 font-semibold truncate">
                   {language === 'es' ? 'Volumen Total' : 'Total Volume'}
                 </span>
@@ -67,7 +80,7 @@ export const ExchangeTab: React.FC<ExchangeTabProps> = ({ exchange, onReauthoriz
 
             <div className="bg-[#202024] hover:bg-[#28282e] rounded-[24px] p-3.5 sm:p-4 flex flex-col justify-between transition-colors shadow-sm">
               <div className="flex items-center gap-1.5">
-                <span className="text-sm">📦</span>
+                <ArchiveBoldDuotone className="w-4 h-4 text-purple-400" />
                 <span className="text-xs sm:text-sm text-slate-300 font-semibold truncate">
                   {language === 'es' ? 'Capacidad' : 'Capacity'}
                 </span>
@@ -81,7 +94,12 @@ export const ExchangeTab: React.FC<ExchangeTabProps> = ({ exchange, onReauthoriz
 
         {/* Card 2: Historial de Ejecuciones */}
         <Card
-          title={language === 'es' ? '📜 Historial de Ejecuciones' : '📜 Trade History'}
+          title={
+            <span className="flex items-center gap-2">
+              <History2BoldDuotone className="w-5 h-5 text-indigo-400" />
+              <span>{language === 'es' ? 'Historial de Ejecuciones' : 'Trade History'}</span>
+            </span>
+          }
           action={
             exchange.tradeExecutions?.length ? (
               <span className="text-[10px] text-slate-400 font-mono bg-white/5 px-2.5 py-0.5 rounded-full">

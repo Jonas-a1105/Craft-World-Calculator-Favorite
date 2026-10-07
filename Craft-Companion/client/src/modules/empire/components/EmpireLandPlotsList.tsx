@@ -1,4 +1,5 @@
 import React from 'react';
+import { MapPointBoldDuotone, DocumentTextBoldDuotone } from 'solar-icon-set';
 import { FactoryIcon } from '../../../components/GameIcon';
 import { formatFactoryName } from '../../../utils/formatters';
 import { formatPlotName, extractPlotFactorySummary } from '../services/empireService';
@@ -17,7 +18,7 @@ export const EmpireLandPlotsList: React.FC<EmpireLandPlotsListProps> = ({
     <div className="bg-[#18181b] rounded-[32px] p-5 sm:p-6 shadow-xl border-none space-y-4">
       <div className="flex items-center justify-between pb-1">
         <h2 className="font-title text-xs sm:text-sm text-white tracking-wide uppercase flex items-center gap-2">
-          <span>🏔️</span>
+          <MapPointBoldDuotone size={18} className="text-emerald-400" />
           <span>{language === 'es' ? 'Parcelas de Tierra (Land Plots)' : 'Land Plots'}</span>
         </h2>
         <span className="text-xs font-mono text-zinc-400 bg-white/5 px-2.5 py-1 rounded-full">
@@ -56,7 +57,7 @@ export const EmpireLandPlotsList: React.FC<EmpireLandPlotsListProps> = ({
                 {plot.appliedBlueprint && (
                   <div className="bg-[#18181b] rounded-full px-3 py-1.5 flex items-center justify-between text-xs">
                     <span className="text-zinc-400 text-[11px] flex items-center gap-1.5">
-                      <span>📜</span>
+                      <DocumentTextBoldDuotone size={14} className="text-amber-400" />
                       <span>{language === 'es' ? 'Plano aplicado:' : 'Blueprint:'}</span>
                     </span>
                     <span className="font-mono font-bold text-amber-400 text-[11px]">

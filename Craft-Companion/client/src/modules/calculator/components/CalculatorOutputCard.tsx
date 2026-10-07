@@ -1,4 +1,5 @@
 import React from 'react';
+import { ArchiveBoldDuotone } from 'solar-icon-set';
 import Card from '../../../components/Card';
 import { ResourceIcon, FactoryIcon } from '../../../components/GameIcon';
 import { formatNumber } from '../../../utils/formatters';
@@ -14,7 +15,14 @@ export const CalculatorOutputCard: React.FC<CalculatorOutputCardProps> = ({
   cycle,
 }) => {
   return (
-    <Card title={language === 'es' ? '📦 Output de Producción' : '📦 Production Output'}>
+    <Card
+      title={
+        <span className="flex items-center gap-2">
+          <ArchiveBoldDuotone size={18} className="text-sky-400" />
+          {language === 'es' ? 'Output de Producción' : 'Production Output'}
+        </span>
+      }
+    >
       <div className="space-y-3">
         <div className="flex items-center gap-3 p-3 resource-item-badge">
           <FactoryIcon symbol={cycle.row.token} size={40} />

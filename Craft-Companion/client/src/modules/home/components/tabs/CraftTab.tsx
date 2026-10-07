@@ -7,6 +7,12 @@ import { displayNumber } from '../../utils/formatters';
 import { ResourceIcon, FactoryIcon } from '../../../../components/GameIcon';
 import { EmptyState } from '../EmptyState';
 import { ScopeUnauthorizedCard } from '../ScopeUnauthorizedCard';
+import {
+  BoltBoldDuotone,
+  DumbbellBoldDuotone,
+  SafeSquareBoldDuotone,
+  SledgehammerBoldDuotone,
+} from 'solar-icon-set';
 
 export interface CraftTabProps {
   craft?: CraftData;
@@ -35,7 +41,12 @@ export const CraftTab: React.FC<CraftTabProps> = ({ craft, onReauthorize }) => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-start">
         {/* Card 1: Energía y Puntos */}
         <Card
-          title={language === 'es' ? '⚡ Energía y Puntos' : '⚡ Power & Points'}
+          title={
+            <span className="flex items-center gap-2">
+              <BoltBoldDuotone className="w-5 h-5 text-cyan-400" />
+              <span>{language === 'es' ? 'Energía y Puntos' : 'Power & Points'}</span>
+            </span>
+          }
           action={
             <span className="text-[10px] text-cyan-400 font-mono bg-cyan-500/10 px-2 py-0.5 rounded-full">
               {powerPercent}% {language === 'es' ? 'disp.' : 'avail.'}
@@ -63,7 +74,7 @@ export const CraftTab: React.FC<CraftTabProps> = ({ craft, onReauthorize }) => {
 
             <div className="bg-[#202024] hover:bg-[#28282e] rounded-full p-3 px-4 flex justify-between items-center text-xs transition-colors shadow-sm">
               <span className="text-slate-300 font-semibold flex items-center gap-2">
-                <span>🏋️</span>
+                <DumbbellBoldDuotone className="w-4 h-4 text-purple-400" />
                 <span>{language === 'es' ? 'Puntos de Habilidad' : 'Skill Points'}</span>
               </span>
               <strong className="text-purple-400 font-mono font-black text-sm">
@@ -75,7 +86,12 @@ export const CraftTab: React.FC<CraftTabProps> = ({ craft, onReauthorize }) => {
 
         {/* Card 2: Bóvedas (Vaults) */}
         <Card
-          title={language === 'es' ? '🏛️ Bóvedas (Vaults)' : '🏛️ Vaults'}
+          title={
+            <span className="flex items-center gap-2">
+              <SafeSquareBoldDuotone className="w-5 h-5 text-emerald-400" />
+              <span>{language === 'es' ? 'Bóvedas (Vaults)' : 'Vaults'}</span>
+            </span>
+          }
           action={
             totalVaults ? (
               <span className="text-[10px] text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded-full">
@@ -129,7 +145,12 @@ export const CraftTab: React.FC<CraftTabProps> = ({ craft, onReauthorize }) => {
 
         {/* Card 3: Taller (Workshop) */}
         <Card
-          title={language === 'es' ? '🛠️ Taller (Workshop)' : '🛠️ Workshop'}
+          title={
+            <span className="flex items-center gap-2">
+              <SledgehammerBoldDuotone className="w-5 h-5 text-amber-400" />
+              <span>{language === 'es' ? 'Taller (Workshop)' : 'Workshop'}</span>
+            </span>
+          }
           action={
             craft.workshop?.length ? (
               <span className="text-[10px] text-amber-400 font-mono bg-amber-500/10 px-2 py-0.5 rounded-full">

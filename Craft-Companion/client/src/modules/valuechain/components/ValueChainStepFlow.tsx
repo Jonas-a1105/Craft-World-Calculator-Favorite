@@ -2,6 +2,7 @@ import React from 'react';
 import { ResourceIcon, FactoryIcon } from '../../../components/GameIcon';
 import { formatNumber } from '../../../utils/formatters';
 import type { ValueChainAnalysis } from '../types';
+import { LeafBoldDuotone } from 'solar-icon-set';
 
 interface ValueChainStepFlowProps {
   analysis: ValueChainAnalysis;
@@ -15,7 +16,7 @@ export const ValueChainStepFlow: React.FC<ValueChainStepFlowProps> = ({
   return (
     <div className="bg-[#1c1c20] p-6 rounded-3xl border-none shadow-2xl">
       <h2 className="text-lg font-extrabold text-white mb-6 flex items-center gap-2">
-        <span className="text-emerald-400">🌱</span>
+        <LeafBoldDuotone className="w-5 h-5 text-emerald-400" />
         <span>
           {language === 'es'
             ? 'Cadena de Producción Paso a Paso'

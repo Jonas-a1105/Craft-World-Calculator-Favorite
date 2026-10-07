@@ -1,5 +1,6 @@
 import React from 'react';
 import { COLOR_PRESETS } from '../services/settingsService';
+import { MoonBold, PaletteBold, GlobalBold } from 'solar-icon-set';
 
 export interface SettingsAppearanceCardProps {
   isDarkMode: boolean;
@@ -33,17 +34,7 @@ export const SettingsAppearanceCard: React.FC<SettingsAppearanceCardProps> = ({
         <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3.5 min-w-0">
             <div className="w-10 h-10 rounded-2xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center flex-shrink-0">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                viewBox="0 0 24 24"
-              >
-                <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.03 9.03 0 008.354-5.646z" />
-              </svg>
+              <MoonBold className="w-5 h-5" />
             </div>
             <div className="min-w-0">
               <span className="text-xs font-bold text-white block truncate">
@@ -80,21 +71,7 @@ export const SettingsAppearanceCard: React.FC<SettingsAppearanceCardProps> = ({
         <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3.5 min-w-0">
             <div className="w-10 h-10 rounded-2xl bg-purple-500/15 text-purple-400 flex items-center justify-center flex-shrink-0">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                viewBox="0 0 24 24"
-              >
-                <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
-                <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
-                <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
-                <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
-                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879a2.5 2.5 0 002.812-2.45v-.429c0-.69.56-1.25 1.25-1.25h1.5a6 6 0 006-6c0-5.523-4.477-9.75-10-9.75z" />
-              </svg>
+              <PaletteBold className="w-5 h-5" />
             </div>
             <div className="min-w-0">
               <span className="text-xs font-bold text-white block truncate">
@@ -173,19 +150,7 @@ export const SettingsAppearanceCard: React.FC<SettingsAppearanceCardProps> = ({
         <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3.5 min-w-0">
             <div className="w-10 h-10 rounded-2xl bg-blue-500/15 text-blue-400 flex items-center justify-center flex-shrink-0">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                viewBox="0 0 24 24"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="2" y1="12" x2="22" y2="12" />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-              </svg>
+              <GlobalBold className="w-5 h-5" />
             </div>
             <div className="min-w-0">
               <span className="text-xs font-bold text-white block truncate">

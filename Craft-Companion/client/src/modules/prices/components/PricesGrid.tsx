@@ -3,6 +3,7 @@ import Card from '../../../components/Card';
 import type { MarketPriceItem } from '../types';
 import { PricesItemRow } from './PricesItemRow';
 import { useAppStore } from '../../../store/useAppStore';
+import { Chart2BoldDuotone } from 'solar-icon-set';
 
 interface PricesGridProps {
   prices: MarketPriceItem[];
@@ -25,9 +26,14 @@ export const PricesGrid: React.FC<PricesGridProps> = ({ prices, language }) => {
   return (
     <Card
       title={
-        language === 'es'
-          ? `📊 Cotizaciones de Mercado (${prices.length})`
-          : `📊 Market Prices (${prices.length})`
+        <span className="flex items-center gap-2">
+          <Chart2BoldDuotone className="w-5 h-5 text-emerald-400" />
+          <span>
+            {language === 'es'
+              ? `Cotizaciones de Mercado (${prices.length})`
+              : `Market Prices (${prices.length})`}
+          </span>
+        </span>
       }
     >
       {sortedPrices.length ? (

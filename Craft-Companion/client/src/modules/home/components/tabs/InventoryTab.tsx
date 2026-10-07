@@ -6,6 +6,13 @@ import { formatEggName, formatBoosterName } from '../../utils/formatters';
 import { FactoryIcon } from '../../../../components/GameIcon';
 import { EmptyState } from '../EmptyState';
 import { ScopeUnauthorizedCard } from '../ScopeUnauthorizedCard';
+import {
+  BoxBoldDuotone,
+  GiftBoldDuotone,
+  Buildings2BoldDuotone,
+  Rocket2BoldDuotone,
+  BoltBoldDuotone,
+} from 'solar-icon-set';
 
 export interface InventoryTabProps {
   inventory?: InventoryData | CraftWorldResource[];
@@ -29,7 +36,12 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReautho
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-start">
         {/* Card 1: Huevos & Cofres */}
         <Card
-          title={language === 'es' ? '🥚 Huevos y Cofres' : '🥚 Eggs & Chests'}
+          title={
+            <span className="flex items-center gap-2">
+              <BoxBoldDuotone className="w-5 h-5 text-emerald-400" />
+              <span>{language === 'es' ? 'Huevos y Cofres' : 'Eggs & Chests'}</span>
+            </span>
+          }
           className="rounded-[32px] bg-[#18181b] shadow-xl border-none"
         >
           <div className="space-y-4 text-xs">
@@ -53,7 +65,7 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReautho
                       className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2 px-3 flex items-center justify-between transition-colors shadow-sm"
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-sm">🥚</span>
+                        <BoxBoldDuotone className="w-4 h-4 text-emerald-400 shrink-0" />
                         <span className="font-bold text-slate-200 text-xs truncate">
                           {formatEggName(e.definitionId || '')}
                         </span>
@@ -89,7 +101,7 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReautho
                       className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2 px-3 flex items-center justify-between transition-colors shadow-sm"
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-sm">🎁</span>
+                        <GiftBoldDuotone className="w-4 h-4 text-amber-400 shrink-0" />
                         <span className="font-bold text-slate-200 text-xs truncate">
                           {c.definitionId}
                         </span>
@@ -109,7 +121,12 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReautho
 
         {/* Card 2: Fábricas en Reserva */}
         <Card
-          title={language === 'es' ? '🏭 En Reserva' : '🏭 Stashed'}
+          title={
+            <span className="flex items-center gap-2">
+              <Buildings2BoldDuotone className="w-5 h-5 text-indigo-400" />
+              <span>{language === 'es' ? 'En Reserva' : 'Stashed'}</span>
+            </span>
+          }
           action={
             inventory.factoryInventory?.length ? (
               <span className="text-[10px] text-slate-400 font-mono bg-white/5 px-2 py-0.5 rounded-full">
@@ -147,7 +164,12 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReautho
 
         {/* Card 3: Boosters & Power Packs */}
         <Card
-          title={language === 'es' ? '🚀 Boosters & Packs' : '🚀 Boosters & Packs'}
+          title={
+            <span className="flex items-center gap-2">
+              <Rocket2BoldDuotone className="w-5 h-5 text-cyan-400" />
+              <span>{language === 'es' ? 'Boosters & Packs' : 'Boosters & Packs'}</span>
+            </span>
+          }
           action={
             inventory.availableBoosters?.length ? (
               <span className="text-[10px] text-cyan-400 font-mono bg-cyan-500/10 px-2 py-0.5 rounded-full">
@@ -165,7 +187,7 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReautho
                   className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2 px-3.5 flex justify-between items-center text-xs transition-colors shadow-sm"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-sm">⚡</span>
+                    <BoltBoldDuotone className="w-4 h-4 text-cyan-400 shrink-0" />
                     <span className="text-slate-200 font-bold truncate">
                       {formatBoosterName(b.id)}
                     </span>

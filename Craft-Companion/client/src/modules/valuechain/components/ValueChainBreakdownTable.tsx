@@ -2,6 +2,7 @@ import React from 'react';
 import { FactoryIcon } from '../../../components/GameIcon';
 import { formatNumber } from '../../../utils/formatters';
 import type { ChainStep } from '../types';
+import { ClipboardCheckBoldDuotone } from 'solar-icon-set';
 
 interface ValueChainBreakdownTableProps {
   steps: ChainStep[];
@@ -15,7 +16,7 @@ export const ValueChainBreakdownTable: React.FC<ValueChainBreakdownTableProps> =
   return (
     <div className="bg-[#1c1c20] p-6 rounded-3xl border-none shadow-2xl">
       <h2 className="text-base font-extrabold text-white mb-4 flex items-center gap-2">
-        <span>📋</span>
+        <ClipboardCheckBoldDuotone className="w-5 h-5 text-indigo-400" />
         <span>
           {language === 'es'
             ? 'Tabla de Desglose de Inversión por Fábrica'

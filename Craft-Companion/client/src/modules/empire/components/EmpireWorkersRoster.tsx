@@ -1,4 +1,5 @@
 import React from 'react';
+import { UserBoldDuotone } from 'solar-icon-set';
 import type { CraftworldWorker } from '../../../types';
 
 interface EmpireWorkersRosterProps {
@@ -14,7 +15,7 @@ export const EmpireWorkersRoster: React.FC<EmpireWorkersRosterProps> = ({
     <div className="bg-[#18181b] rounded-[32px] p-5 sm:p-6 shadow-xl border-none space-y-4">
       <div className="flex items-center justify-between pb-1">
         <h2 className="font-title text-xs sm:text-sm text-white tracking-wide uppercase flex items-center gap-2">
-          <span>👷</span>
+          <UserBoldDuotone size={18} className="text-amber-400" />
           <span>{language === 'es' ? 'Roster de Trabajadores' : 'Worker Roster'}</span>
         </h2>
         <span className="text-xs font-mono text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-full">
@@ -33,8 +34,8 @@ export const EmpireWorkersRoster: React.FC<EmpireWorkersRosterProps> = ({
                 className="bg-[#202024] hover:bg-[#25252a] p-3 px-3.5 rounded-[20px] shadow-sm flex items-center justify-between text-xs transition-colors"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-full bg-[#18181b] flex items-center justify-center text-sm shrink-0">
-                    👷
+                  <div className="w-8 h-8 rounded-full bg-[#18181b] flex items-center justify-center shrink-0">
+                    <UserBoldDuotone size={16} className="text-amber-300" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">

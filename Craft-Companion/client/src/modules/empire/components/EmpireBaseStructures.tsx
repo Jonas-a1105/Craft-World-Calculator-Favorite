@@ -1,4 +1,5 @@
 import React from 'react';
+import { Buildings2BoldDuotone } from 'solar-icon-set';
 import type { BuildingSummaryItem } from '../types';
 import { formatBuildingType } from '../services/empireService';
 
@@ -20,7 +21,7 @@ export const EmpireBaseStructures: React.FC<EmpireBaseStructuresProps> = ({
     <div className="bg-[#18181b] rounded-[32px] p-5 sm:p-6 shadow-xl border-none space-y-4">
       <div className="flex items-center justify-between pb-1">
         <h2 className="font-title text-xs sm:text-sm text-white tracking-wide uppercase flex items-center gap-2">
-          <span>🏰</span>
+          <Buildings2BoldDuotone size={18} className="text-purple-400" />
           <span>
             {language === 'es' ? 'Estructuras de la Base' : 'Base Structures'} (
             {totalStructures})
