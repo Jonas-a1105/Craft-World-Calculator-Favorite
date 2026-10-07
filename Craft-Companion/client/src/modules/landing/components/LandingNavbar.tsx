@@ -107,19 +107,21 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({
         </button>
       </div>
 
-      {/* Mobile Drawer/Modal Menu matching requested design */}
+      {/* Mobile Drawer/Modal Menu placed at top with minimal separation and fast smooth transition */}
       {mobileMenuOpen && (
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 transition-all animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-start justify-center p-3 pt-3 sm:pt-4 transition-opacity duration-150 animate-in fade-in"
           onClick={(e) => {
             if (e.target === e.currentTarget) setMobileMenuOpen(false);
           }}
         >
-          <div className="w-full max-w-[340px] bg-[#1c1c20] rounded-[32px] p-6 shadow-2xl flex flex-col items-center relative animate-in fade-in zoom-in-95 duration-200 border-0 outline-none">
+          <div
+            className="w-full max-w-[340px] bg-[#1c1c20] rounded-[28px] p-6 shadow-2xl flex flex-col items-center relative border-0 outline-none animate-in fade-in slide-in-from-top-4 duration-150 ease-out"
+          >
             {/* Modal Header: Logo + Brand Name on left, Circular (X) close button on right */}
-            <div className="w-full flex items-center justify-between mb-6">
+            <div className="w-full flex items-center justify-between mb-5">
               <div className="flex items-center gap-2.5">
                 <img
                   src="/assets/logo.png"
@@ -144,19 +146,23 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({
               </button>
             </div>
 
-            {/* Vertical Navigation Links */}
-            <nav className="w-full flex flex-col items-center gap-2 mb-6">
+            {/* Vertical Navigation Links - Completely transparent without any background box */}
+            <div
+              className="w-full flex flex-col items-center gap-1 mb-5"
+              style={{ background: 'transparent' }}
+            >
               {navLinks.map((link) => (
                 <a
                   key={link.label}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-zinc-300 hover:text-white text-base font-semibold py-2 transition-colors tracking-tight text-center w-full"
+                  style={{ background: 'transparent' }}
                 >
                   {link.label}
                 </a>
               ))}
-            </nav>
+            </div>
 
             {/* Primary Action Button (Launch Companion) */}
             <Link
@@ -194,7 +200,7 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="10" />
                   <line x1="2" y1="12" x2="22" y2="12" />
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z" />
                 </svg>
               </a>
 
