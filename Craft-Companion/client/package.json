@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "test": "tsc -p tsconfig.test.json && node -e \"require('fs').writeFileSync('dist-tests/package.json', JSON.stringify({type:'commonjs'}))\" && node --test dist-tests/services/craftworldCalculations.test.js dist-tests/modules/encyclopedia/encyclopedia.test.js dist-tests/modules/home/utils/formatters.test.js dist-tests/modules/profitability/services/cycleAdjuster.test.js dist-tests/modules/planner/services/plannerService.test.js dist-tests/modules/matrix/services/matrixService.test.js dist-tests/modules/settings/services/settingsService.test.js dist-tests/modules/compare/services/compareService.test.js dist-tests/modules/resources/services/resourceDetailService.test.js dist-tests/modules/timers/services/factoryTimersService.test.js dist-tests/modules/inventory/services/inventoryService.test.js dist-tests/modules/valuechain/services/valueChainService.test.js dist-tests/modules/empire/services/empireService.test.js dist-tests/modules/advisor/services/upgradeAdvisorService.test.js dist-tests/modules/prices/services/pricesService.test.js dist-tests/modules/calculator/services/calculatorService.test.js dist-tests/components/layout/nav/services/navbarService.test.js dist-tests/modules/auth/services/authService.test.js"
+    "test": "tsc -p tsconfig.test.json && node -e \"require('fs').writeFileSync('dist-tests/package.json', JSON.stringify({type:'commonjs'}))\" && node --test dist-tests/services/craftworldCalculations.test.js dist-tests/services/coinPriceService.test.js dist-tests/modules/encyclopedia/encyclopedia.test.js dist-tests/modules/home/utils/formatters.test.js dist-tests/modules/profitability/services/cycleAdjuster.test.js dist-tests/modules/planner/services/plannerService.test.js dist-tests/modules/matrix/services/matrixService.test.js dist-tests/modules/settings/services/settingsService.test.js dist-tests/modules/compare/services/compareService.test.js dist-tests/modules/resources/services/resourceDetailService.test.js dist-tests/modules/timers/services/factoryTimersService.test.js dist-tests/modules/inventory/services/inventoryService.test.js dist-tests/modules/valuechain/services/valueChainService.test.js dist-tests/modules/empire/services/empireService.test.js dist-tests/modules/advisor/services/upgradeAdvisorService.test.js dist-tests/modules/prices/services/pricesService.test.js dist-tests/modules/calculator/services/calculatorService.test.js dist-tests/components/layout/nav/services/navbarService.test.js dist-tests/modules/auth/services/authService.test.js"
   },
   "dependencies": {
     "@hugeicons/core-free-icons": "^4.3.5",
@@ -17,6 +17,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0",
+    "sileo": "^0.1.5",
     "solar-icon-set": "^2.0.1",
     "zustand": "^5.0.3"
   },

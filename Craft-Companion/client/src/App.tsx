@@ -4,6 +4,9 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './services/queryClient';
 import { LanguageProvider } from './utils/i18n';
 import ProtectedRoute from './components/ProtectedRoute';
+import { Toaster } from 'sileo';
+import { useSileoConfig } from './utils/sileoNotifications';
+import NotFound from './pages/NotFound';
 import EmpireDashboard from './pages/EmpireDashboard';
 import FactoryCompare from './pages/FactoryCompare';
 import FactoryTimers from './pages/FactoryTimers';
@@ -20,8 +23,12 @@ import ValueChainMap from './pages/ValueChainMap';
 import Prices from './pages/Prices';
 import ResourceDetail from './pages/ResourceDetail';
 import Encyclopedia from './pages/Encyclopedia';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 
 export default function App() {
+  const { config: sileoConfig } = useSileoConfig();
+
   useEffect(() => {
     // Initialize Theme (Dark by default, Light if chosen)
     const savedTheme = localStorage.getItem('craftworld.theme') || 'dark';
@@ -49,6 +56,15 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <Toaster
+        position={sileoConfig.position}
+        theme={sileoConfig.theme}
+        options={{
+          fill: sileoConfig.fill,
+          roundness: sileoConfig.roundness,
+          autopilot: sileoConfig.autopilot,
+        }}
+      />
       <LanguageProvider>
         <BrowserRouter>
         <Routes>
@@ -168,6 +184,12 @@ export default function App() {
             }
           />
           <Route path="/factory-encyclopedia" element={<Navigate to="/encyclopedia" replace />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/politica-de-privacidad" element={<Navigate to="/privacy" replace />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/terminos-y-condiciones" element={<Navigate to="/terms" replace />} />
+          <Route path="/legal" element={<Navigate to="/terms" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </LanguageProvider>

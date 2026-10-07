@@ -9,12 +9,20 @@ import { meRouter } from './routes/me.js';
 import { craftworldRouter } from './routes/craftworld.js';
 import { requireSession } from './auth/requireSession.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import {
+  generalApiLimiter,
+  authLimiter,
+  craftworldSyncLimiter,
+} from './middlewares/rateLimiter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const clientDistPath = path.resolve(__dirname, '../../client/dist');
 
 export const app = express();
+
+// Trust reverse proxy (Cloudflare, Railway, Render, Nginx) for accurate client IP detection
+app.set('trust proxy', 1);
 
 // 1. Security & Core Middleware
 app.use(
@@ -41,11 +49,12 @@ app.use(
 
 app.use(express.json({ limit: '2mb' }));
 
-// 2. API Routes
-app.use('/api/oauth', oauthRouter);
-app.use('/api/auth', oauthRouter);
+// 2. API Routes with Security Rate Limiting
+app.use('/api', generalApiLimiter);
+app.use('/api/oauth', authLimiter, oauthRouter);
+app.use('/api/auth', authLimiter, oauthRouter);
 app.use('/api/me', requireSession, meRouter);
-app.use('/api/craftworld', requireSession, craftworldRouter);
+app.use('/api/craftworld', requireSession, craftworldSyncLimiter, craftworldRouter);
 
 // 3. Static Client SPA Serving
 app.use(express.static(clientDistPath));

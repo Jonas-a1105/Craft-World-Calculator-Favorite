@@ -11,6 +11,7 @@ import {
   playNotificationSound,
   sendFactoryNotification,
 } from '../../../utils/notifications';
+import { notifySuccess, notifyError, notifyInfo } from '../../../utils/sileoNotifications';
 import { useCraftworldHomeQuery, useMeQuery } from '../../../services/queries/useCraftworldQueries';
 import type { UserProfile, UseSettingsReturn } from '../types';
 
@@ -198,6 +199,10 @@ export function useSettings(): UseSettingsReturn {
     setImportJson(data);
     navigator.clipboard.writeText(data).then(() => {
       setCopied(true);
+      notifySuccess(
+        language === 'es' ? 'Copiado al portapapeles' : 'Copied to clipboard',
+        language === 'es' ? 'Configuración JSON copiada' : 'JSON configuration copied'
+      );
       setStatus(language === 'es' ? '¡Copiado al portapapeles!' : 'Copied to clipboard!');
       setTimeout(() => setCopied(false), 2000);
     });
@@ -207,12 +212,24 @@ export function useSettings(): UseSettingsReturn {
     try {
       const imported = importPlayerConfig(importJson);
       setConfig(imported);
+      notifySuccess(
+        t('settings.status.imported'),
+        language === 'es'
+          ? 'Configuración importada y aplicada con éxito'
+          : 'Configuration imported and applied successfully'
+      );
       setStatus(t('settings.status.imported'));
       setShowImportBox(false);
     } catch {
+      notifyError(
+        t('settings.status.failed'),
+        language === 'es'
+          ? 'El texto JSON no tiene un formato válido'
+          : 'The JSON payload is malformed or invalid'
+      );
       setStatus(t('settings.status.failed'));
     }
-  }, [importJson, t]);
+  }, [importJson, language, t]);
 
   const handleResetConfig = useCallback(() => {
     if (!confirmReset) {
@@ -222,9 +239,15 @@ export function useSettings(): UseSettingsReturn {
       setConfig(resetPlayerConfig());
       setImportJson('');
       setConfirmReset(false);
+      notifyInfo(
+        t('settings.status.reset'),
+        language === 'es'
+          ? 'Configuración restablecida a valores por defecto'
+          : 'Configuration reset to factory defaults'
+      );
       setStatus(t('settings.status.reset'));
     }
-  }, [confirmReset, t]);
+  }, [confirmReset, language, t]);
 
   const clearStatus = useCallback(() => {
     setStatus('');

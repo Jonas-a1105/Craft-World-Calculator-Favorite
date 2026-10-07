@@ -1,3 +1,5 @@
+import { notifyInfo } from './sileoNotifications';
+
 type WindowWithAudio = Window & typeof globalThis & {
   webkitAudioContext?: typeof AudioContext;
 };
@@ -41,6 +43,7 @@ export function playNotificationSound() {
 
 export function sendFactoryNotification(title: string, body: string, icon?: string) {
   playNotificationSound();
+  notifyInfo(title, body);
 
   if (typeof window === 'undefined' || !('Notification' in window)) return;
   if (Notification.permission !== 'granted') return;

@@ -1,4 +1,10 @@
 export { LandingDashboard } from './components/LandingDashboard';
+export { LandingNavbar } from './components/LandingNavbar';
 export { LandingHero } from './components/LandingHero';
-export { LandingActions } from './components/LandingActions';
+export { LandingDeveloperSuite } from './components/LandingDeveloperSuite';
+export { LandingImpact } from './components/LandingImpact';
+export { LandingPricing } from './components/LandingPricing';
+export { LandingFaq } from './components/LandingFaq';
 export { LandingFooter } from './components/LandingFooter';
+export { CookiePreferencesModal } from './components/CookiePreferencesModal';
+export * from './types';

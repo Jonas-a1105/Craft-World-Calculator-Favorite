@@ -1,0 +1,138 @@
+:root {
+  --base-slot-size: 48px;
+  --max-scale: 1.48;
+  --lateral-expand-mult: 0.75;
+  --influence-radius: 80px;
+  --lerp-factor: 0.22;
+  --dock-height: 70px;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --base-slot-size: 34px;
+    --max-scale: 1.32;
+    --lateral-expand-mult: 0.45;
+    --influence-radius: 65px;
+    --dock-height: 54px;
+  }
+}
+
+/* 2D Stage - No perspective to ensure 100% crisp, razor-sharp vector rendering */
+.dock-perspective-stage {
+  perspective: none !important;
+}
+
+/* Stable macOS Glassmorphism Dock - Gris Oscuro Carbón MATE con Blur, SIN BORDE, ZERO sombras, CERO brillo */
+.glass-dock {
+  background: rgba(28, 28, 32, 0.95); /* Gris oscuro carbón 100% mate */
+  backdrop-filter: blur(20px); /* Desenfoque mate puro sin saturación ni iluminación */
+  -webkit-backdrop-filter: blur(20px);
+  border: none !important; /* SIN BORDE */
+  outline: none !important;
+  box-shadow: none !important; /* CERO sombras */
+  filter: none !important;
+  height: var(--dock-height);
+  will-change: width;
+  box-sizing: border-box;
+}
+
+html.light .glass-dock {
+  background: rgba(28, 28, 32, 0.95);
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Strictly Frontal Icon Core - Color Sólido Gris Mate Diferente, SIN BORDE, ZERO blur, ZERO sombras */
+.dock-icon-core {
+  transform-origin: center center !important;
+  border: none !important; /* SIN BORDE */
+  outline: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: #2e3037; /* Gris mate notablemente diferente al del dock */
+  color: #e2e8f0;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dock-icon-core:hover {
+  background-color: #3b3d46; /* Gris mate hover */
+  border: none !important;
+  outline: none !important;
+  color: #ffffff;
+}
+
+.dock-icon-core.is-active {
+  background-color: #484b56; /* Gris mate activo destacado */
+  border: none !important;
+  outline: none !important;
+  color: #ffffff;
+}
+
+html.light .dock-icon-core {
+  background-color: #2e3037;
+  border: none !important;
+  outline: none !important;
+  color: #e2e8f0;
+}
+
+html.light .dock-icon-core:hover {
+  background-color: #3b3d46;
+  border: none !important;
+  outline: none !important;
+  color: #ffffff;
+}
+
+html.light .dock-icon-core.is-active {
+  background-color: #484b56;
+  border: none !important;
+  outline: none !important;
+  color: #ffffff;
+}
+
+.dock-icon-core svg {
+  shape-rendering: geometricPrecision !important;
+  text-rendering: geometricPrecision !important;
+  image-rendering: -webkit-optimize-contrast;
+  display: block;
+}
+
+/* Slot container that handles horizontal space allocation */
+.dock-slot {
+  will-change: width;
+  flex-shrink: 0;
+}
+
+/* Tactile Pop Forward Animation on Click (Crisp 2D Scale) */
+@keyframes dock-pop-forward {
+  0%   { transform: scale(var(--curr-scale, 1)); }
+  35%  { transform: scale(calc(var(--curr-scale, 1) * 1.15)); }
+  65%  { transform: scale(calc(var(--curr-scale, 1) * 0.96)); }
+  85%  { transform: scale(calc(var(--curr-scale, 1) * 1.04)); }
+  100% { transform: scale(var(--curr-scale, 1)); }
+}
+
+.animate-dock-pop-forward {
+  animation: dock-pop-forward 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) forwards !important;
+}
+
+/* Subtle Charcoal / Glass Divider */
+.dock-separator {
+  width: 1.5px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
+}
+
+html.light .dock-separator {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Mirrored reflection beneath the dock - Hidden as user requested zero shadows */
+.dock-reflection {
+  display: none !important;
+}

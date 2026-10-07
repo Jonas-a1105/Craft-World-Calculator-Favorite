@@ -47,15 +47,16 @@ export const NavbarUserDropdown = ({
   closeDropdown,
 }: NavbarUserDropdownProps) => {
   return (
-    <div className="flex items-center gap-2.5 flex-shrink-0">
+    <div className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
       {/* Relink Button */}
       <button
         type="button"
         onClick={handleRelink}
         title={language === 'es' ? 'Revincular Cuenta' : 'Re-link Account'}
-        className="w-7 h-7 rounded-full bg-black/40 hover:bg-black/60 dark:bg-black/60 dark:hover:bg-black/80 backdrop-blur-md text-slate-700 dark:text-slate-200 hover:text-black dark:hover:text-white flex items-center justify-center transition-all border border-black/5 dark:border-white/10 cursor-pointer shadow-md"
+        className="w-7 h-7 rounded-full bg-[#24252e] hover:bg-[#2d2f3a] text-slate-200 hover:text-white flex items-center justify-center transition-all border-0 outline-none cursor-pointer"
+        style={{ border: 'none', outline: 'none' }}
       >
-        <RefreshLinear size={16} />
+        <RefreshLinear size={15} />
       </button>
 
       {/* User Avatar Button & Dropdown Container */}
@@ -63,7 +64,8 @@ export const NavbarUserDropdown = ({
         <button
           type="button"
           onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-          className="w-10 h-10 rounded-full overflow-hidden bg-[#202024] hover:ring-2 hover:ring-white/20 transition-all duration-150 cursor-pointer flex items-center justify-center flex-shrink-0 focus:outline-none"
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-[#24252e] hover:ring-2 hover:ring-white/20 transition-all duration-150 cursor-pointer flex items-center justify-center flex-shrink-0 focus:outline-none border-0 outline-none"
+          style={{ border: 'none', outline: 'none' }}
           title={user?.displayName || 'Player'}
         >
           {user?.avatarUrl ? (

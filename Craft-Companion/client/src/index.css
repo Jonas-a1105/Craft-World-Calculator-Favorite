@@ -1,6 +1,46 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 body {
   color: #ffffff;
+}
+
+/* ==========================================================================
+   SILEO NOTIFICATIONS - NATIVE LIB CONTRAST FIX & SHADOW ELEVATION
+   ========================================================================== */
+
+[data-sileo-viewport] {
+  z-index: 9999 !important;
+}
+
+/* Ensure toast root button remains transparent, and project deep elevation shadow following the fluid gooey contour */
+[data-sileo-toast],
+button[data-sileo-toast] {
+  background: transparent !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.38)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.22)) !important;
+}
+
+/* For light / white fills, soften the shadow */
+body.sileo-fill-light [data-sileo-toast],
+body.sileo-fill-light button[data-sileo-toast] {
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.12)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.08)) !important;
+}
+
+/* Description text contrast (overrides Sileo's bug where dark theme sets black text) */
+[data-sileo-viewport] [data-sileo-description],
+[data-sileo-viewport][data-theme="dark"] [data-sileo-description],
+[data-sileo-viewport][data-theme="system"] [data-sileo-description] {
+  color: #f4f4f5 !important;
+}
+
+body.sileo-fill-light [data-sileo-description],
+[data-sileo-viewport][data-theme="light"] body.sileo-fill-light [data-sileo-description] {
+  color: #18181b !important;
 }

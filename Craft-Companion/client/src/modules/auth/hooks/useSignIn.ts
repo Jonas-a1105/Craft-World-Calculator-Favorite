@@ -5,6 +5,7 @@ import { oauthAuthorize, quickLogin } from '../../../services/api';
 import { queryClient } from '../../../services/queryClient';
 import { useMeQuery } from '../../../services/queries/useCraftworldQueries';
 import { parseOAuthError, isUserAuthenticated } from '../services/authService';
+import { notifyError, notifyInfo, notifyWarning } from '../../../utils/sileoNotifications';
 
 export function useSignIn() {
   const nav = useNavigate();
@@ -29,6 +30,7 @@ export function useSignIn() {
     const errorParsed = parseOAuthError(window.location.search, t('signin.error.denied'));
     if (errorParsed) {
       setErrorMessage(errorParsed);
+      notifyError('Error de Autenticación', errorParsed);
     }
   }, [t]);
 
@@ -41,6 +43,12 @@ export function useSignIn() {
   }, []);
 
   const handleConnectOAuth = useCallback(() => {
+    notifyInfo(
+      language === 'es' ? 'Conexión OAuth' : 'OAuth Connection',
+      language === 'es'
+        ? 'Redirigiendo a Craft World OAuth...'
+        : 'Redirecting to Craft World OAuth...'
+    );
     showToast(
       language === 'es'
         ? 'Redirigiendo a Craft World OAuth...'
@@ -59,10 +67,12 @@ export function useSignIn() {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error al conectar sesión';
       setErrorMessage(msg);
+      notifyError(err);
     } finally {
       setIsLoading(false);
     }
   }, [nav]);
+
 
   const handleGuestLogin = useCallback(async () => {
     showToast(
@@ -77,6 +87,12 @@ export function useSignIn() {
     const val = accountInput.trim();
     if (!val) {
       inputRef.current?.focus();
+      notifyWarning(
+        language === 'es' ? 'Campo Requerido' : 'Required Field',
+        language === 'es'
+          ? 'Por favor, ingresa tu UID o nombre de usuario'
+          : 'Please enter your UID or username'
+      );
       showToast(
         language === 'es'
           ? 'Por favor, ingresa tu UID o usuario'

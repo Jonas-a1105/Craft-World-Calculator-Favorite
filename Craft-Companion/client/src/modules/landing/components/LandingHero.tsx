@@ -1,28 +1,100 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import type { LandingTranslations } from '../types';
+
 interface LandingHeroProps {
-  language: string;
+  content: LandingTranslations;
 }
 
-export const LandingHero = ({ language }: LandingHeroProps) => {
+const AVATARS = [
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=96&h=96&fit=crop&crop=faces&q=80',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=96&h=96&fit=crop&crop=faces&q=80',
+  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=96&h=96&fit=crop&crop=faces&q=80',
+];
+
+export const LandingHero: React.FC<LandingHeroProps> = ({ content }) => {
   return (
-    <div className="space-y-2">
-      <div className="mx-auto flex items-center justify-center">
-        <img
-          src="/assets/logo.png"
-          className="h-16 sm:h-20 w-auto object-contain drop-shadow-md"
-          alt="Craft World Logo"
-        />
+    <section className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-20 sm:pt-28 pb-24 text-center relative z-20">
+      {/* Top Pill Badge */}
+      <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#18181b]/80 border border-white/10 text-xs sm:text-sm font-medium text-zinc-300 mb-8 backdrop-blur-sm shadow-inner transition-transform hover:scale-105">
+        <span>{content.hero.badge}</span>
       </div>
-      <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white font-sans mt-3">
-        Craft World{' '}
-        <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-          Companion
-        </span>
+
+      {/* Main Headline */}
+      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.14] mb-6 max-w-3xl mx-auto">
+        {content.hero.headline.split('\n').map((line, idx) => (
+          <React.Fragment key={idx}>
+            {line}
+            {idx < content.hero.headline.split('\n').length - 1 && <br />}
+          </React.Fragment>
+        ))}
       </h1>
-      <p className="text-slate-300 text-sm md:text-base leading-relaxed">
-        {language === 'es'
-          ? 'Tus fábricas, tu inventario y el cálculo del valor de tus recursos en un solo lugar y en tiempo real.'
-          : 'Your factories, your inventory, and real-time calculations of resource values all in one place.'}
+
+      {/* Subtitle Paragraph */}
+      <p className="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed mb-10">
+        {content.hero.subtitle}
       </p>
-    </div>
+
+      {/* Call To Action Buttons */}
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-14">
+        {/* Primary White Button */}
+        <Link
+          to="/signin"
+          className="w-full sm:w-auto bg-white hover:bg-zinc-200 text-zinc-950 font-semibold px-6 py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl active:scale-95 text-sm sm:text-base group"
+        >
+          <span>{content.hero.primaryCta}</span>
+          <svg
+            className="w-4 h-4 text-zinc-950 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="7" y1="17" x2="17" y2="7" />
+            <polyline points="7 7 17 7 17 17" />
+          </svg>
+        </Link>
+
+        {/* Secondary Dark Button */}
+        <Link
+          to="/signin"
+          className="w-full sm:w-auto bg-[#18181b] hover:bg-[#232328] text-white border border-white/10 font-medium px-6 py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center active:scale-95 text-sm sm:text-base"
+        >
+          {content.hero.secondaryCta}
+        </Link>
+      </div>
+
+      {/* Social Proof / Ratings */}
+      <div className="inline-flex items-center justify-center gap-3">
+        {/* Overlapping Avatars */}
+        <div className="flex -space-x-2.5 overflow-hidden">
+          {AVATARS.map((src, idx) => (
+            <img
+              key={idx}
+              src={src}
+              alt={`Client ${idx + 1}`}
+              className="inline-block h-8 w-8 rounded-full ring-2 ring-[#0e0e10] object-cover"
+              loading="lazy"
+            />
+          ))}
+        </div>
+
+        {/* 5 Stars and Review Count */}
+        <div className="flex flex-col items-start text-left">
+          <div className="flex items-center gap-0.5 text-amber-400 text-xs sm:text-sm">
+            <span>★</span>
+            <span>★</span>
+            <span>★</span>
+            <span>★</span>
+            <span>★</span>
+          </div>
+          <span className="text-xs text-zinc-400 font-medium mt-0.5">
+            {content.hero.trustedBy}
+          </span>
+        </div>
+      </div>
+    </section>
   );
 };

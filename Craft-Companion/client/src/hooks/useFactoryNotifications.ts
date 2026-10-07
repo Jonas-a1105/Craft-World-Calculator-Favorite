@@ -183,8 +183,8 @@ export function useFactoryNotifications(language: string) {
 
           const title =
             language === 'es'
-              ? `¡Fábrica de ${resourceName} Completada! 🔔`
-              : `Factory ${resourceName} Completed! 🔔`;
+              ? `¡Fábrica de ${resourceName} Completada!`
+              : `Factory ${resourceName} Completed!`;
 
           const body =
             language === 'es'

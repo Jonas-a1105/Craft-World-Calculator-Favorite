@@ -10,6 +10,8 @@
   "include": [
     "src/services/craftworldCalculations.ts",
     "src/services/craftworldCalculations.test.ts",
+    "src/services/coinPriceService.ts",
+    "src/services/coinPriceService.test.ts",
     "src/services/durationFormat.ts",
     "src/services/factoryBoostModifiers.ts",
     "src/services/masteryModifiers.ts",

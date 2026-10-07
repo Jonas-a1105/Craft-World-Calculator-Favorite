@@ -528,7 +528,7 @@ button {
   outline: none;
 }
 
-button:not([class]) {
+button:not([class]):not([data-sileo-toast]) {
   background-color: rgba(255, 255, 255, 0.08);
   color: #d1d5db;
   font-weight: 600;
@@ -537,7 +537,7 @@ button:not([class]) {
   transition: background-color 0.12s ease;
 }
 
-button:not([class]):hover {
+button:not([class]):not([data-sileo-toast]):hover {
   background-color: rgba(255, 255, 255, 0.15);
   color: #ffffff;
 }
