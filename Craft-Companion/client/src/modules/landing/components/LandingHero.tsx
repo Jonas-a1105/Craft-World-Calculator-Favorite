@@ -14,7 +14,7 @@ const AVATARS = [
 
 export const LandingHero: React.FC<LandingHeroProps> = ({ content }) => {
   return (
-    <section className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-20 sm:pt-28 pb-24 text-center relative z-20">
+    <section className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-24 text-center relative z-20">
       {/* Top Pill Badge */}
       <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1c1c20] text-xs sm:text-sm font-medium text-zinc-300 mb-8 backdrop-blur-sm shadow-inner transition-transform hover:scale-105 border-0">
         <img src="/assets/resources/Coin.png" alt="Coin" className="w-4 h-4 object-contain" />
