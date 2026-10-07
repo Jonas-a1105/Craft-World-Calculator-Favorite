@@ -73,14 +73,30 @@ export function FactoryIcon({
   size?: number;
   className?: string;
 }) {
+  const norm = (symbol || '').trim().toLowerCase();
+  const capitalized = norm.charAt(0).toUpperCase() + norm.slice(1);
+  const [srcIndex, setSrcIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    setSrcIndex(0);
+  }, [symbol]);
+
+  const fallbackList = [
+    `/assets/factories/${capitalized}.gif`,
+    `/assets/factories/${capitalized}.png`,
+    `/assets/resources/${capitalized}.png`,
+  ];
+
   return (
     <img
-      src={getFactoryIconUrl(symbol)}
+      src={fallbackList[srcIndex] || '/assets/resources/Coin.png'}
       alt={symbol}
       className={`inline-block object-contain ${className}`}
       style={{ width: `${size}px`, height: `${size}px` }}
-      onError={(e) => {
-        (e.currentTarget as HTMLElement).style.opacity = '0.3';
+      onError={() => {
+        if (srcIndex < fallbackList.length - 1) {
+          setSrcIndex((prev) => prev + 1);
+        }
       }}
     />
   );

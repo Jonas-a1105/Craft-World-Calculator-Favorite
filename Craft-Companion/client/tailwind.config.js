@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
@@ -41,9 +42,9 @@ export default {
       },
       borderRadius: {
         'lg': '16px',
-        'xl': '16px',
-        '2xl': '16px',
-        '3xl': '16px',
+        'xl': '20px',
+        '2xl': '24px',
+        '3xl': '32px',
         'md': '14px',
         'sm': '10px',
       },

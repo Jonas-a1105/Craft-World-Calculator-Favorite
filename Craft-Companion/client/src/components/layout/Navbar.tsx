@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { logout, getCraftworldHome, getMe } from '../../services/api';
+import { logout, getCraftworldHome, getMe, oauthAuthorize } from '../../services/api';
 import { useTranslation } from '../../utils/i18n';
 import { useDragScroll } from '../../hooks/useDragScroll';
 
@@ -27,7 +27,29 @@ export const Navbar: React.FC = () => {
   } | null>(null);
   const [wallets, setWallets] = useState<any[]>([]);
   const [copiedWallet, setCopiedWallet] = useState<string | null>(null);
-  const [isDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    return localStorage.getItem('craftworld.theme') !== 'light';
+  });
+
+  const toggleTheme = () => {
+    const nextDark = !isDarkMode;
+    setIsDarkMode(nextDark);
+    if (nextDark) {
+      document.documentElement.classList.remove('light');
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('craftworld.theme', 'dark');
+      const isSolid = localStorage.getItem('craftworld.solidBackground') === 'true';
+      if (isSolid) {
+        document.body.classList.add('solid-bg');
+      }
+    } else {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('craftworld.theme', 'light');
+    }
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -170,36 +192,6 @@ export const Navbar: React.FC = () => {
       ),
     },
     {
-      path: '/value-chain-map',
-      labelEn: 'Chain',
-      labelEs: 'Cadena',
-      icon: (active) => (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={active ? 2.4 : 1.8}
-            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-          />
-        </svg>
-      ),
-    },
-    {
-      path: '/calculator',
-      labelEn: 'Calculate',
-      labelEs: 'Calcular',
-      icon: (active) => (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={active ? 2.4 : 1.8}
-            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-          />
-        </svg>
-      ),
-    },
-    {
       path: '/inventory-value',
       labelEn: 'Inventory',
       labelEs: 'Inventario',
@@ -225,6 +217,21 @@ export const Navbar: React.FC = () => {
             strokeLinejoin="round"
             strokeWidth={active ? 2.4 : 1.8}
             d="M13 10V3L4 14h7v7l9-11h-7z"
+          />
+        </svg>
+      ),
+    },
+    {
+      path: '/encyclopedia',
+      labelEn: 'Encyclopedia',
+      labelEs: 'Enciclopedia',
+      icon: (active) => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={active ? 2.4 : 1.8}
+            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
           />
         </svg>
       ),
@@ -275,21 +282,6 @@ export const Navbar: React.FC = () => {
       ),
     },
     {
-      path: '/prices',
-      labelEn: 'Prices',
-      labelEs: 'Precios',
-      icon: (active) => (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={active ? 2.4 : 1.8}
-            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-          />
-        </svg>
-      ),
-    },
-    {
       path: '/settings',
       labelEn: 'Settings',
       labelEs: 'Ajustes',
@@ -313,7 +305,12 @@ export const Navbar: React.FC = () => {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-[#141415] border-none px-4 md:px-8 py-3 mb-6 transition-all">
+    <nav
+      className="sticky top-0 z-50 w-full border-none px-4 md:px-8 py-3 mb-6 transition-colors duration-200"
+      style={{
+        backgroundColor: 'var(--navbar-bg, #141415)',
+      }}
+    >
       <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-4">
         {/* LEFT: Game Brand Logo */}
         <div className="flex items-center gap-3 flex-shrink-0">
@@ -370,9 +367,21 @@ export const Navbar: React.FC = () => {
           })}
         </div>
 
-        {/* RIGHT: Player Profile Avatar Button */}
-        <div className="relative flex-shrink-0" ref={dropdownRef}>
+        {/* RIGHT: Relink Button & Player Profile Avatar */}
+        <div className="flex items-center gap-2.5 flex-shrink-0">
           <button
+            type="button"
+            onClick={oauthAuthorize}
+            title={language === 'es' ? 'Revincular Cuenta' : 'Re-link Account'}
+            className="w-7 h-7 rounded-full bg-black/40 hover:bg-black/60 dark:bg-black/60 dark:hover:bg-black/80 backdrop-blur-md text-slate-700 dark:text-slate-200 hover:text-black dark:hover:text-white flex items-center justify-center transition-all border border-black/5 dark:border-white/10 cursor-pointer shadow-md"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+
+          <div className="relative flex-shrink-0" ref={dropdownRef}>
+            <button
             type="button"
             onClick={() => setUserDropdownOpen(!userDropdownOpen)}
             className="w-10 h-10 rounded-full overflow-hidden bg-[#202024] hover:ring-2 hover:ring-white/20 transition-all duration-150 cursor-pointer flex items-center justify-center flex-shrink-0 focus:outline-none"
@@ -583,13 +592,21 @@ export const Navbar: React.FC = () => {
                     <span className="text-xs font-medium text-zinc-200">Dark Mode</span>
                   </div>
 
-                  {/* Lime Active Toggle - Blocked / Always On */}
-                  <div
-                    title={language === 'es' ? 'Modo Oscuro siempre activo' : 'Dark Mode permanently active'}
-                    className="w-10 h-6 rounded-full p-1 bg-[#a3e635] flex items-center justify-end cursor-not-allowed opacity-90"
+                  {/* Interactive Lime Toggle */}
+                  <button
+                    type="button"
+                    onClick={toggleTheme}
+                    title={
+                      isDarkMode
+                        ? (language === 'es' ? 'Cambiar a Modo Claro' : 'Switch to Light Mode')
+                        : (language === 'es' ? 'Cambiar a Modo Oscuro' : 'Switch to Dark Mode')
+                    }
+                    className={`w-11 h-6 rounded-full p-1 transition-colors duration-200 cursor-pointer flex items-center ${
+                      isDarkMode ? 'bg-[#a3e635] justify-end' : 'bg-zinc-600 justify-start'
+                    }`}
                   >
-                    <div className="w-4 h-4 rounded-full bg-[#161618] shadow-sm" />
-                  </div>
+                    <div className="w-4 h-4 rounded-full bg-[#161618] shadow-md transform transition-transform" />
+                  </button>
                 </div>
 
                 {/* Add account Row */}
@@ -617,7 +634,8 @@ export const Navbar: React.FC = () => {
           )}
         </div>
       </div>
-    </nav>
+    </div>
+  </nav>
   );
 };
 

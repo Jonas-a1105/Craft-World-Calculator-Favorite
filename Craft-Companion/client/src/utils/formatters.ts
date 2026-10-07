@@ -4,6 +4,17 @@ export function formatNumber(value: unknown, digits = 2): string {
     : '0';
 }
 
+export function formatCompactNumber(value: unknown): string {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return '0';
+  if (Math.abs(value) >= 1_000_000) {
+    return (value / 1_000_000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + 'M';
+  }
+  if (Math.abs(value) >= 10_000) {
+    return (value / 1_000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + 'k';
+  }
+  return value.toLocaleString(undefined, { maximumFractionDigits: 1 });
+}
+
 export function formatFactoryName(symbol: string, lang = 'en'): string {
   const normalized = String(symbol || '').trim().toUpperCase();
   if (lang === 'es') {

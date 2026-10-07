@@ -297,11 +297,11 @@ export default function MyHome() {
                   )}
                 </div>
 
-                {/* Top Right Refresh Icon Button */}
+                {/* Top Right Relink Icon Button */}
                 <button
                   type="button"
-                  onClick={load}
-                  title={language === 'es' ? 'Actualizar Datos' : 'Refresh Data'}
+                  onClick={oauthAuthorize}
+                  title={language === 'es' ? 'Revincular Cuenta' : 'Re-link Account'}
                   className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-black/60 backdrop-blur-md hover:bg-black/80 text-slate-200 hover:text-white flex items-center justify-center transition-all border border-white/10 cursor-pointer shadow-md"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

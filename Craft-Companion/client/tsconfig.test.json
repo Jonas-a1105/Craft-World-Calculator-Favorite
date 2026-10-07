@@ -15,7 +15,8 @@
     "src/services/masteryModifiers.ts",
     "src/services/playerConfig.ts",
     "src/services/priceHistory.ts",
-    "src/services/workshopModifiers.ts"
+    "src/services/workshopModifiers.ts",
+    "src/modules/encyclopedia/**/*.ts"
   ],
   "exclude": ["src/**/*.tsx"]
 }

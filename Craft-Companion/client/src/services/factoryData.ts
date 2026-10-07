@@ -54,6 +54,12 @@ const csvPaths = [
   '/data/Game%20Data%20-%20Factories%20-%20rev.%20v_01%20%2Bevents%20(2)%20(1).csv',
 ];
 
+const isDev = Boolean(
+  typeof process !== 'undefined'
+    ? process.env?.NODE_ENV !== 'production'
+    : false,
+);
+
 let factoryDataCache: FactoryDataRow[] | null = null;
 
 function normalizeHeader(value: unknown): string {
@@ -241,7 +247,7 @@ function parseFactoryCsv(csv: string): FactoryDataRow[] {
       };
 
       if (!parsedRow.token && !parsedRow.output_token) {
-        if (import.meta.env.DEV) {
+        if (isDev) {
           console.warn('Skipping malformed factory CSV row with no token/output token', {
             line: lineIndex + 2,
             row,
@@ -260,7 +266,7 @@ function parseFactoryCsv(csv: string): FactoryDataRow[] {
     })
     .filter((row): row is FactoryDataRow => row !== null);
 
-  if (import.meta.env.DEV) {
+  if (isDev) {
     console.info(`Parsed ${rows.length} factory CSV rows`);
     console.info('Factory CSV sample row:', rows[0]);
   }
@@ -313,7 +319,7 @@ export async function loadFactoryData() {
       const csv = await response.text();
       const parsed = parseFactoryCsv(csv);
 
-      if (import.meta.env.DEV) {
+      if (isDev) {
         console.info(`Factory CSV path tried: ${path}`);
         console.info(`Factory CSV rows parsed from ${path}: ${parsed.length}`);
       }
@@ -328,7 +334,7 @@ export async function loadFactoryData() {
     } catch (error) {
       lastError = error;
 
-      if (import.meta.env.DEV) {
+      if (isDev) {
         console.warn(`Factory CSV load failed for ${path}`, error);
       }
     }

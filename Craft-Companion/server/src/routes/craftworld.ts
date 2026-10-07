@@ -16,26 +16,41 @@ import {
 
 export const craftworldRouter = Router();
 
-async function getFreshAccessToken(user: any): Promise<string> {
-  if (!user.craftWorldRefreshToken) return user.craftWorldAccessToken || '';
-  if (
-    user.craftWorldTokenExpiresAt &&
-    new Date(user.craftWorldTokenExpiresAt).getTime() > Date.now() + 60000
-  ) {
+async function getFreshAccessToken(user: any, force = false): Promise<string> {
+  const clientId = user.craftWorldClientId || process.env.CRAFTWORLD_OAUTH_CLIENT_ID || 'client_019f6f6c-3dbc-754a-a0ab-2fcf87a72975';
+  const clientSecret = user.craftWorldClientSecret || process.env.CRAFTWORLD_OAUTH_CLIENT_SECRET || 'secret_019f6f6c-3dbd-7b33-9113-1838eee440ce';
+
+  // Proactive refresh if expiring in less than 5 minutes (300,000 ms) or if forced
+  const isExpiringSoon =
+    !user.craftWorldTokenExpiresAt ||
+    new Date(user.craftWorldTokenExpiresAt).getTime() <= Date.now() + 300000;
+
+  if (!force && !isExpiringSoon && user.craftWorldAccessToken) {
+    return user.craftWorldAccessToken;
+  }
+
+  if (!user.craftWorldRefreshToken) {
     return user.craftWorldAccessToken || '';
   }
+
   try {
+    console.log(`[Token Refresh] Refreshing token for user ${user.id} (force=${force})...`);
     const refreshed = await refreshCraftworldToken(
       user.craftWorldRefreshToken,
-      user.craftWorldClientId,
-      user.craftWorldClientSecret,
+      clientId,
+      clientSecret,
     );
     user.craftWorldAccessToken = refreshed.accessToken;
-    user.craftWorldRefreshToken = refreshed.refreshToken;
-    user.craftWorldTokenExpiresAt = new Date(Date.now() + refreshed.expiresIn * 1000).toISOString();
+    if (refreshed.refreshToken) {
+      user.craftWorldRefreshToken = refreshed.refreshToken;
+    }
+    user.craftWorldClientId = clientId;
+    user.craftWorldClientSecret = clientSecret;
+    user.craftWorldTokenExpiresAt = new Date(Date.now() + (refreshed.expiresIn || 3600) * 1000).toISOString();
+    console.log(`[Token Refresh] Successfully refreshed token for user ${user.id}`);
     return refreshed.accessToken;
   } catch (err: any) {
-    console.warn('Craft World token refresh fallback:', err?.message);
+    console.warn(`[Token Refresh] Failed to refresh token for user ${user.id}:`, err?.message);
     return user.craftWorldAccessToken || '';
   }
 }
@@ -177,7 +192,7 @@ craftworldRouter.get('/dyno-cycle', async (req: any, res) => {
 
 craftworldRouter.get('/home', async (req: any, res) => {
   try {
-    const { accessToken } = await getUserAndToken(req);
+    const { user, accessToken } = await getUserAndToken(req);
     const [
       profile,
       craftWorld,
@@ -222,22 +237,46 @@ craftworldRouter.get('/home', async (req: any, res) => {
       ),
     ]);
 
-    res.json({
-      profile,
-      craftWorld,
-      masterpieces,
-      craft,
-      exchange,
-      onchain,
-      inventory,
-      purchases,
-      priceList,
-      dynoCycle,
+    const hasAnySuccess = Boolean(profile || craftWorld || inventory || craft);
+    const homePayload = {
+      profile: profile || user.lastCachedHome?.profile || {
+        uid: user.craftWorldUid || user.id,
+        displayName: user.craftWorldDisplayName || 'Craft Master',
+        level: user.craftWorldLevel || 10,
+        avatarUrl: user.craftWorldAvatarUrl,
+      },
+      craftWorld: craftWorld || user.lastCachedHome?.craftWorld,
+      masterpieces: masterpieces || user.lastCachedHome?.masterpieces,
+      craft: craft || user.lastCachedHome?.craft,
+      exchange: exchange || user.lastCachedHome?.exchange,
+      onchain: onchain || user.lastCachedHome?.onchain,
+      inventory: inventory || user.lastCachedHome?.inventory,
+      purchases: purchases || user.lastCachedHome?.purchases,
+      priceList: priceList || user.lastCachedHome?.priceList,
+      dynoCycle: dynoCycle || user.lastCachedHome?.dynoCycle,
       serverTime: new Date().toISOString(),
       lastSyncedAt: new Date().toISOString(),
-    });
+    };
+
+    if (hasAnySuccess) {
+      user.lastCachedHome = homePayload;
+      const users = await getUsers();
+      const uIndex = users.findIndex((u) => u.id === user.id);
+      if (uIndex >= 0) {
+        users[uIndex] = user;
+        await saveUsers(users);
+      }
+    }
+
+    res.json(homePayload);
   } catch (err: any) {
-    console.error('Error in /api/craftworld/home:', err);
+    console.error('Error in /api/craftworld/home:', err?.message);
+    const users = await getUsers();
+    const fallbackUser = users.find((u) => u.id === req.user?.id);
+    if (fallbackUser?.lastCachedHome) {
+      console.log('Serving cached home snapshot to prevent disconnect screen');
+      return res.json(fallbackUser.lastCachedHome);
+    }
     const status = err.status === 401 || String(err.message || '').includes('token') ? 401 : 502;
     res
       .status(status)

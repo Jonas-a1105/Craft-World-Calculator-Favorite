@@ -12,6 +12,7 @@ export type UserAccount = {
   craftWorldClientSecret?: string;
   createdAt: string;
   lastLoginAt?: string;
+  lastCachedHome?: any;
 };
 
 export type ResourceAmount = { symbol: string; amount: number };

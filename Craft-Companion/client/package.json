@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "test": "tsc -p tsconfig.test.json && node -e \"require('fs').writeFileSync('dist-tests/package.json', JSON.stringify({type:'commonjs'}))\" && node --test dist-tests/services/craftworldCalculations.test.js"
+    "test": "tsc -p tsconfig.test.json && node -e \"require('fs').writeFileSync('dist-tests/package.json', JSON.stringify({type:'commonjs'}))\" && node --test dist-tests/services/craftworldCalculations.test.js dist-tests/modules/encyclopedia/encyclopedia.test.js"
   },
   "dependencies": {
     "@walletconnect/ethereum-provider": "^2.21.8",
