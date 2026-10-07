@@ -17,7 +17,7 @@
     "src/services/priceHistory.ts",
     "src/services/workshopModifiers.ts",
     "src/services/valueChainCalculator.ts",
-    "src/modules/encyclopedia/**/*.ts",
+    "src/modules/encyclopedia/encyclopedia.test.ts",
     "src/modules/home/utils/**/*.ts",
     "src/modules/profitability/services/**/*.ts",
     "src/modules/planner/services/**/*.ts",
