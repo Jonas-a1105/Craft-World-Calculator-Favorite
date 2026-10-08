@@ -4,6 +4,8 @@ import { useTranslation } from '../../../utils/i18n';
 import { useMeQuery } from '../../../services/queries/useCraftworldQueries';
 import { isUserAuthenticated } from '../../auth/services/authService';
 import { getSplashStatusText, resolveSplashRedirect } from '../services/splashService';
+import { AnimatedLogo } from './AnimatedLogo';
+import { EmberParticles } from './EmberParticles';
 
 export interface SplashScreenProps {
   onComplete?: () => void;
@@ -24,11 +26,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
-  const [videoLoaded, setVideoLoaded] = useState(false);
 
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const exitTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const fallbackTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const animFrameRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number | null>(null);
 
   const targetPath = resolveSplashRedirect(
     isUserAuthenticated(me),
@@ -38,6 +40,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   const finishSplash = useCallback(() => {
     if (isExiting) return;
     setIsExiting(true);
+
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
 
     if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
     exitTimerRef.current = setTimeout(() => {
@@ -49,53 +55,67 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     }, 320);
   }, [isExiting, onComplete, navigate, targetPath]);
 
-  // Video progress and timing handler
-  const handleTimeUpdate = () => {
-    if (!videoRef.current) return;
-    const current = videoRef.current.currentTime;
-    const total = videoRef.current.duration || 6;
-    if (total > 0) {
-      setProgress(Math.min(1, current / total));
-    }
-  };
-
-  const handleVideoEnded = () => {
-    setProgress(1);
-    finishSplash();
-  };
-
-  // Toggle or unmute audio
-  const handleToggleSound = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!videoRef.current) return;
-    const nextMuted = !isMuted;
-    videoRef.current.muted = nextMuted;
-    setIsMuted(nextMuted);
-    if (!nextMuted) {
-      videoRef.current.play().catch(() => {});
-    }
-  };
-
-  // Unmute on direct screen click if currently muted
-  const handleScreenClick = () => {
-    if (isMuted && videoRef.current) {
-      videoRef.current.muted = false;
-      setIsMuted(false);
-      videoRef.current.play().catch(() => {});
-    }
-  };
-
-  // Fallback timer: if video fails to play or load, advance after 6.5s
+  // Audio initialization and cleanup
   useEffect(() => {
-    fallbackTimerRef.current = setTimeout(() => {
-      finishSplash();
-    }, 6500);
+    const audio = new Audio('/assets/splash.mp3');
+    audio.preload = 'auto';
+    audioRef.current = audio;
 
     return () => {
-      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+      audio.pause();
+      audioRef.current = null;
+    };
+  }, []);
+
+  // Smooth timer progress (6.0s duration)
+  useEffect(() => {
+    const totalDuration = 6000; // 6 seconds
+
+    const updateProgress = (timestamp: number) => {
+      if (!startTimeRef.current) startTimeRef.current = timestamp;
+      const elapsed = timestamp - startTimeRef.current;
+      const currentProgress = Math.min(1, elapsed / totalDuration);
+      setProgress(currentProgress);
+
+      if (currentProgress < 1) {
+        animFrameRef.current = requestAnimationFrame(updateProgress);
+      } else {
+        finishSplash();
+      }
+    };
+
+    animFrameRef.current = requestAnimationFrame(updateProgress);
+
+    return () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
     };
   }, [finishSplash]);
+
+  // Toggle audio
+  const handleToggleSound = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const nextMuted = !isMuted;
+    setIsMuted(nextMuted);
+
+    if (audioRef.current) {
+      if (!nextMuted) {
+        audioRef.current.currentTime = progress * 6;
+        audioRef.current.play().catch(() => {});
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  };
+
+  // Screen click unmute / advance
+  const handleScreenClick = () => {
+    if (isMuted && audioRef.current) {
+      setIsMuted(false);
+      audioRef.current.currentTime = progress * 6;
+      audioRef.current.play().catch(() => {});
+    }
+  };
 
   const statusText = getSplashStatusText(progress, language);
   const percentNumber = Math.min(100, Math.round(progress * 100));
@@ -105,15 +125,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       role="region"
       aria-label="Splash Screen"
       onClick={handleScreenClick}
-      className={`fixed inset-0 z-[99999] bg-[#121212] text-white flex flex-col items-center justify-center select-none transition-all duration-300 ease-out cursor-pointer overflow-hidden ${
+      className={`fixed inset-0 z-[99999] bg-[#141415] text-white flex flex-col items-center justify-center select-none transition-all duration-300 ease-out cursor-pointer overflow-hidden ${
         isExiting ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
       }`}
     >
-      {/* Dynamic ambient backglows */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[450px] bg-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[260px] bg-amber-500/10 rounded-full blur-[110px] pointer-events-none" />
+      {/* 1. Atmospheric Ambient Particles (Embers & Sparks) */}
+      <EmberParticles count={26} className="z-0 opacity-60" />
 
-      {/* TOP FLOATING CONTROLS (Non-intrusive HUD) */}
+      {/* 2. Top HUD Controls */}
       <div className="fixed top-4 sm:top-6 left-4 sm:left-6 z-50 flex items-center gap-2 pointer-events-none">
         <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
         <span className="text-[11px] font-mono tracking-wider text-zinc-400 uppercase font-semibold">
@@ -122,12 +141,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       </div>
 
       <div className="fixed top-4 sm:top-6 right-4 sm:right-6 z-50 flex items-center gap-2">
-        {/* Audio Mute/Unmute toggle */}
         <button
           type="button"
           onClick={handleToggleSound}
           aria-label={isMuted ? 'Activar sonido' : 'Silenciar sonido'}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 hover:bg-black/60 border border-white/10 text-xs font-mono text-zinc-300 hover:text-amber-400 transition-colors backdrop-blur-md cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono text-zinc-300 hover:text-amber-400 transition-colors backdrop-blur-md cursor-pointer"
         >
           {isMuted ? (
             <>
@@ -150,7 +168,6 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
           )}
         </button>
 
-        {/* Skip button */}
         {allowSkip && (
           <button
             type="button"
@@ -158,7 +175,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
               e.stopPropagation();
               finishSplash();
             }}
-            className="flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-black/40 hover:bg-amber-400/20 border border-white/10 hover:border-amber-400/30 text-xs font-mono text-zinc-300 hover:text-amber-300 transition-all backdrop-blur-md cursor-pointer active:scale-95"
+            className="flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-amber-400/20 border border-white/10 hover:border-amber-400/30 text-xs font-mono text-zinc-300 hover:text-amber-300 transition-all backdrop-blur-md cursor-pointer active:scale-95"
           >
             <span>{language === 'es' ? 'Saltar' : 'Skip'}</span>
             <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -168,46 +185,26 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
         )}
       </div>
 
-      {/* CENTER STAGE: BORDERLESS NATIVE ANIMATION */}
-      <main className="relative w-full h-full flex items-center justify-center p-2 sm:p-6 z-10 pointer-events-none">
-        <video
-          ref={videoRef}
-          src="/assets/splash.mp4"
-          autoPlay
-          muted={isMuted}
-          playsInline
-          onLoadedData={() => setVideoLoaded(true)}
-          onTimeUpdate={handleTimeUpdate}
-          onEnded={handleVideoEnded}
-          className="w-full max-w-4xl max-h-[82vh] object-contain pointer-events-none select-none drop-shadow-[0_0_40px_rgba(251,191,36,0.18)]"
-          style={{
-            mixBlendMode: 'screen',
-            filter: 'contrast(115%) brightness(92%)',
-          }}
-        />
-
-        {!videoLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-10 h-10 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
-          </div>
-        )}
+      {/* 3. Center Native Animated Logo (NO VIDEO TAG - NO IDM DOWNLOAD BARS) */}
+      <main className="relative w-full h-full flex items-center justify-center p-4 sm:p-8 z-10 pointer-events-none">
+        <AnimatedLogo className="w-full" />
       </main>
 
-      {/* BOTTOM FLOATING STATUS & ULTRA-THIN PROGRESS BAR */}
+      {/* 4. Bottom Status & Progress HUD */}
       <footer className="fixed bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-50 w-full max-w-md px-6 pointer-events-none">
         <div className="flex items-center justify-between w-full text-[11px] sm:text-xs font-mono text-zinc-400 px-1">
           <span className="truncate pr-3 text-zinc-300">{statusText}</span>
           <span className="text-amber-400 font-bold tracking-wider">{percentNumber}%</span>
         </div>
 
-        <p className="text-[10px] font-mono text-zinc-400 tracking-wider text-center">
+        <p className="text-[10px] font-mono text-zinc-500 tracking-wider text-center">
           {language === 'es'
             ? 'Toca en cualquier parte para saltar o activar audio'
             : 'Tap anywhere to skip or enable audio'}
         </p>
       </footer>
 
-      {/* Full-width hairline progress track at the bottom edge */}
+      {/* Ultra-thin gradient progress track on screen bottom edge */}
       <div className="fixed bottom-0 left-0 right-0 h-[3px] bg-zinc-900 z-50 pointer-events-none">
         <div
           className="h-full bg-gradient-to-r from-amber-400 via-purple-500 to-cyan-400 transition-all duration-150 ease-out shadow-[0_0_8px_rgba(251,191,36,0.6)]"
