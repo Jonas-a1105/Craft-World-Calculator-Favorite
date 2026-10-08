@@ -61,4 +61,8 @@ dashboard-app/
 *.mp4
 !client/public/assets/*.mp4
 !Craft-Companion/client/public/assets/*.mp4
+/splash1.json
+/Craft-Companion/splash1.json
+!client/public/assets/splash1.json
+!Craft-Companion/client/public/assets/splash1.json
 

@@ -4,7 +4,7 @@ import { useTranslation } from '../../../utils/i18n';
 import { useMeQuery } from '../../../services/queries/useCraftworldQueries';
 import { isUserAuthenticated } from '../../auth/services/authService';
 import { getSplashStatusText, resolveSplashRedirect } from '../services/splashService';
-import { AnimatedLogo } from './AnimatedLogo';
+import { LottieSplash } from './LottieSplash';
 import { EmberParticles } from './EmberParticles';
 
 export interface SplashScreenProps {
@@ -29,8 +29,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const exitTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const animFrameRef = useRef<number | null>(null);
-  const startTimeRef = useRef<number | null>(null);
+  const fallbackTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const targetPath = resolveSplashRedirect(
     isUserAuthenticated(me),
@@ -55,7 +54,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     }, 320);
   }, [isExiting, onComplete, navigate, targetPath]);
 
-  // Audio initialization and cleanup
+  // Audio setup
   useEffect(() => {
     const audio = new Audio('/assets/splash.mp3');
     audio.preload = 'auto';
@@ -67,27 +66,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     };
   }, []);
 
-  // Smooth timer progress (6.0s duration)
+  // Fallback timer: if animation fails to signal complete, finish after 6.5s
   useEffect(() => {
-    const totalDuration = 6000; // 6 seconds
-
-    const updateProgress = (timestamp: number) => {
-      if (!startTimeRef.current) startTimeRef.current = timestamp;
-      const elapsed = timestamp - startTimeRef.current;
-      const currentProgress = Math.min(1, elapsed / totalDuration);
-      setProgress(currentProgress);
-
-      if (currentProgress < 1) {
-        animFrameRef.current = requestAnimationFrame(updateProgress);
-      } else {
-        finishSplash();
-      }
-    };
-
-    animFrameRef.current = requestAnimationFrame(updateProgress);
+    fallbackTimerRef.current = setTimeout(() => {
+      finishSplash();
+    }, 6500);
 
     return () => {
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
       if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
     };
   }, [finishSplash]);
@@ -108,7 +94,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     }
   };
 
-  // Screen click unmute / advance
+  // Screen click to unmute or advance
   const handleScreenClick = () => {
     if (isMuted && audioRef.current) {
       setIsMuted(false);
@@ -116,6 +102,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       audioRef.current.play().catch(() => {});
     }
   };
+
+  const handleProgress = useCallback((val: number) => {
+    setProgress(val);
+  }, []);
 
   const statusText = getSplashStatusText(progress, language);
   const percentNumber = Math.min(100, Math.round(progress * 100));
@@ -125,14 +115,18 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       role="region"
       aria-label="Splash Screen"
       onClick={handleScreenClick}
-      className={`fixed inset-0 z-[99999] bg-[#141415] text-white flex flex-col items-center justify-center select-none transition-all duration-300 ease-out cursor-pointer overflow-hidden ${
+      className={`fixed inset-0 z-[99999] bg-[#121212] text-white flex flex-col items-center justify-center select-none transition-all duration-300 ease-out cursor-pointer overflow-hidden ${
         isExiting ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
       }`}
     >
-      {/* 1. Atmospheric Ambient Particles (Embers & Sparks) */}
-      <EmberParticles count={26} className="z-0 opacity-60" />
+      {/* 1. Ambient Dynamic Backglows */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[450px] bg-purple-600/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[260px] bg-amber-500/12 rounded-full blur-[110px] pointer-events-none" />
 
-      {/* 2. Top HUD Controls */}
+      {/* 2. Atmospheric Rising Embers */}
+      <EmberParticles count={22} className="z-0 opacity-50" />
+
+      {/* 3. Top Floating Controls */}
       <div className="fixed top-4 sm:top-6 left-4 sm:left-6 z-50 flex items-center gap-2 pointer-events-none">
         <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
         <span className="text-[11px] font-mono tracking-wider text-zinc-400 uppercase font-semibold">
@@ -141,6 +135,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       </div>
 
       <div className="fixed top-4 sm:top-6 right-4 sm:right-6 z-50 flex items-center gap-2">
+        {/* Audio Mute/Unmute toggle */}
         <button
           type="button"
           onClick={handleToggleSound}
@@ -168,6 +163,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
           )}
         </button>
 
+        {/* Skip button */}
         {allowSkip && (
           <button
             type="button"
@@ -185,12 +181,16 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
         )}
       </div>
 
-      {/* 3. Center Native Animated Logo (NO VIDEO TAG - NO IDM DOWNLOAD BARS) */}
+      {/* 4. Center Lottie Animation Stage (Native Vector/Canvas - No Video Element) */}
       <main className="relative w-full h-full flex items-center justify-center p-4 sm:p-8 z-10 pointer-events-none">
-        <AnimatedLogo className="w-full" />
+        <LottieSplash
+          onProgress={handleProgress}
+          onComplete={finishSplash}
+          className="w-full"
+        />
       </main>
 
-      {/* 4. Bottom Status & Progress HUD */}
+      {/* 5. Bottom Floating Status & Progress HUD */}
       <footer className="fixed bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-50 w-full max-w-md px-6 pointer-events-none">
         <div className="flex items-center justify-between w-full text-[11px] sm:text-xs font-mono text-zinc-400 px-1">
           <span className="truncate pr-3 text-zinc-300">{statusText}</span>
