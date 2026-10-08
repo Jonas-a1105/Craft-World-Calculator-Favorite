@@ -6,6 +6,7 @@ import { queryClient } from '../../../services/queryClient';
 import { useMeQuery } from '../../../services/queries/useCraftworldQueries';
 import { parseOAuthError, isUserAuthenticated } from '../services/authService';
 import { notifyError, notifyInfo, notifyWarning } from '../../../utils/sileoNotifications';
+import { primeSplashAudio } from '../../splash';
 
 export function useSignIn() {
   const nav = useNavigate();
@@ -58,6 +59,7 @@ export function useSignIn() {
   }, [language, showToast]);
 
   const handleQuickLogin = useCallback(async (uid?: string, displayName?: string) => {
+    primeSplashAudio();
     setIsLoading(true);
     setErrorMessage('');
     try {
