@@ -62,10 +62,6 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     return () => {
       window.removeEventListener('pointerdown', handleInteraction);
       window.removeEventListener('keydown', handleInteraction);
-      // Only forcibly stop if unmounted unexpectedly before natural finish
-      if (!hasFinishedRef.current) {
-        stopSplashAudio();
-      }
     };
   }, []);
 
