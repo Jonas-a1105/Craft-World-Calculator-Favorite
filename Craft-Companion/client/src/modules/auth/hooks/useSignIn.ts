@@ -6,7 +6,7 @@ import { queryClient } from '../../../services/queryClient';
 import { useMeQuery } from '../../../services/queries/useCraftworldQueries';
 import { parseOAuthError, isUserAuthenticated } from '../services/authService';
 import { notifyError, notifyInfo, notifyWarning } from '../../../utils/sileoNotifications';
-import { primeSplashAudio } from '../../splash';
+import { playSplashAudio, stopSplashAudio } from '../../splash';
 
 export function useSignIn() {
   const nav = useNavigate();
@@ -58,21 +58,30 @@ export function useSignIn() {
     oauthAuthorize();
   }, [language, showToast]);
 
-  const handleQuickLogin = useCallback(async (uid?: string, displayName?: string) => {
-    primeSplashAudio();
+  const handleQuickLogin = useCallback((uid?: string, displayName?: string) => {
+    // 1. Play audio synchronously within user click gesture context
+    playSplashAudio();
     setIsLoading(true);
     setErrorMessage('');
-    try {
-      await quickLogin(uid || 'craft_player', displayName || 'Player');
-      await queryClient.invalidateQueries();
-      nav('/splash?to=/home', { replace: true });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Error al conectar sesión';
-      setErrorMessage(msg);
-      notifyError(err);
-    } finally {
-      setIsLoading(false);
-    }
+
+    // 2. Navigate immediately to splash so user gets instant audio & animation feedback
+    nav('/splash?to=/home', { replace: true });
+
+    // 3. Complete authentication in background during splash animation
+    quickLogin(uid || 'craft_player', displayName || 'Player')
+      .then(async () => {
+        await queryClient.invalidateQueries();
+      })
+      .catch((err: unknown) => {
+        const msg = err instanceof Error ? err.message : 'Error al conectar sesión';
+        setErrorMessage(msg);
+        notifyError(err);
+        stopSplashAudio();
+        nav('/signin', { replace: true });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, [nav]);
 
 

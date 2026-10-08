@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMeQuery } from '../../../services/queries/useCraftworldQueries';
 import { isUserAuthenticated } from '../../auth/services/authService';
 import { resolveSplashRedirect } from '../services/splashService';
-import { playSplashAudio, stopSplashAudio } from '../services/splashAudio';
+import { playSplashAudio, fadeOutSplashAudio, stopSplashAudio } from '../services/splashAudio';
 import { LottieSplash } from './LottieSplash';
 
 export interface SplashScreenProps {
@@ -33,7 +33,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     hasFinishedRef.current = true;
     setIsExiting(true);
 
-    stopSplashAudio();
+    // Smooth organic volume fade-out instead of abrupt sound cut
+    fadeOutSplashAudio(600);
 
     setTimeout(() => {
       if (onComplete) {
@@ -41,7 +42,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       } else {
         navigate(targetPath, { replace: true });
       }
-    }, 350);
+    }, 450);
   }, [onComplete, navigate, targetPath]);
 
   const finishSplashRef = useRef(finishSplash);
@@ -61,7 +62,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     return () => {
       window.removeEventListener('pointerdown', handleInteraction);
       window.removeEventListener('keydown', handleInteraction);
-      stopSplashAudio();
+      // Only forcibly stop if unmounted unexpectedly before natural finish
+      if (!hasFinishedRef.current) {
+        stopSplashAudio();
+      }
     };
   }, []);
 
@@ -79,7 +83,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       role="region"
       aria-label="Splash Screen"
       onClick={() => playSplashAudio()}
-      className={`fixed inset-0 z-[99999] bg-[#141415] flex items-center justify-center select-none overflow-hidden transition-opacity duration-300 ease-out ${
+      className={`fixed inset-0 z-[99999] bg-[#141415] flex items-center justify-center select-none overflow-hidden transition-opacity duration-500 ease-out ${
         isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
