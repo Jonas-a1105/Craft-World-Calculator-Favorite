@@ -63,7 +63,7 @@ export function useSignIn() {
     try {
       await quickLogin(uid || 'craft_player', displayName || 'Player');
       await queryClient.invalidateQueries();
-      nav('/home', { replace: true });
+      nav('/splash?to=/home', { replace: true });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error al conectar sesión';
       setErrorMessage(msg);

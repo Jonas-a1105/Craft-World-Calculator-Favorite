@@ -200,7 +200,7 @@ export async function handleCallback(req: Request, res: Response): Promise<void>
     `${SESSION_COOKIE}=${signedToken}; ${sessionCookieOptions(isSecure)}`,
     `cc_logged_in=true; ${loggedInCookieOptions(isSecure)}`,
   ]);
-  res.redirect(`${activeOrigin}/home?token=${encodeURIComponent(signedToken)}`);
+  res.redirect(`${activeOrigin}/splash?to=/home&token=${encodeURIComponent(signedToken)}`);
 }
 
 export async function quickLogin(req: Request, res: Response, next: NextFunction): Promise<void> {

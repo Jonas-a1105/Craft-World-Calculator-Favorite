@@ -214,7 +214,7 @@ export const SettingsAppearanceCard: React.FC<SettingsAppearanceCardProps> = ({
           </div>
 
           <Link
-            to="/splash"
+            to="/splash?to=/settings"
             className="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-amber-400/20 text-xs font-mono font-medium text-zinc-300 hover:text-amber-300 border border-white/10 hover:border-amber-400/30 transition-all flex items-center gap-1.5 flex-shrink-0 active:scale-95"
           >
             <span>{language === 'es' ? 'Ver Splash' : 'Play Splash'}</span>
