@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircleBold, BoltBold, UserBold, CrownBold } from 'solar-icon-set';
+import { CardFireStreak } from './CardFireStreak';
 import type { LandingPricingSection } from '../types';
 
 interface LandingPricingProps {
@@ -115,65 +116,71 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
           </Link>
         </div>
 
-        {/* CARD 2: Industrial Pro (Most Popular) with Animated Game Laser Beam & Floating Aura */}
-        <div className="popular-card-container flex flex-col justify-between">
-          {/* Animated 360-degree Border Beam Layers */}
-          <div className="popular-card-beam" />
-          <div className="popular-card-beam-glow" />
+        {/* CARD 2: Industrial Pro (Most Popular) with Fire Streak Particles & Laser Beam */}
+        <div className="relative flex flex-col justify-between h-full group">
+          {/* Game Win-Streak Fire Particles rising from below and behind the card */}
+          <CardFireStreak />
 
-          {/* Inner Card Content */}
-          <div className="popular-card-inner p-7 flex flex-col justify-between relative h-full">
-            {/* Most Popular Solid Amber Floating Badge */}
-            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-amber-400 text-zinc-950 font-black px-4 py-1 rounded-full text-[11px] tracking-wide uppercase shadow-lg shadow-amber-500/30 border-0 select-none z-10 flex items-center gap-1.5">
-              <BoltBold className="w-3.5 h-3.5 text-zinc-950" />
-              <span>{plans.growth.badge}</span>
-            </div>
+          {/* Most Popular Solid Amber Floating Badge (outside overflow:hidden so it never clips!) */}
+          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-amber-400 text-zinc-950 font-black px-4 py-1 rounded-full text-[11px] tracking-wider uppercase shadow-xl shadow-amber-500/30 border-0 select-none z-30 flex items-center gap-1.5 whitespace-nowrap">
+            <BoltBold className="w-3.5 h-3.5 text-zinc-950" />
+            <span>{plans.growth.badge}</span>
+          </div>
 
-            <div>
-              {/* Header: Title, Description & Price */}
-              <div className="flex items-start justify-between gap-4 mb-4 pt-1">
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-white mb-2">
-                    {plans.growth.name}
-                  </h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed">
-                    {plans.growth.description}
-                  </p>
+          {/* The Card Container with 360 Laser Beam */}
+          <div className="popular-card-container flex flex-col justify-between h-full flex-1 relative z-10">
+            {/* Animated 360-degree Border Beam Layers */}
+            <div className="popular-card-beam" />
+            <div className="popular-card-beam-glow" />
+
+            {/* Inner Card Content */}
+            <div className="popular-card-inner p-7 pt-8 flex flex-col justify-between relative h-full">
+              <div>
+                {/* Header: Title, Description & Price */}
+                <div className="flex items-start justify-between gap-4 mb-4 pt-1">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-white mb-2">
+                      {plans.growth.name}
+                    </h3>
+                    <p className="text-xs text-zinc-400 leading-relaxed">
+                      {plans.growth.description}
+                    </p>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <span className="text-3xl font-extrabold text-white tracking-tight font-mono">
+                      {growthPrice}
+                    </span>
+                    <span className="text-[11px] text-zinc-500 font-medium block mt-0.5">
+                      {plans.growth.period}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right flex-shrink-0">
-                  <span className="text-3xl font-extrabold text-white tracking-tight font-mono">
-                    {growthPrice}
+
+                {/* Included Features List */}
+                <div className="mt-8 pt-4">
+                  <span className="text-xs font-semibold text-zinc-300 block mb-3.5">
+                    {plans.growth.featuresTitle}
                   </span>
-                  <span className="text-[11px] text-zinc-500 font-medium block mt-0.5">
-                    {plans.growth.period}
-                  </span>
+                  <ul className="space-y-2.5">
+                    {plans.growth.features.map((feat, idx) => (
+                      <li key={idx} className="text-xs sm:text-[13px] text-zinc-300 flex items-start gap-2">
+                        <CheckCircleBold className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
 
-              {/* Included Features List */}
-              <div className="mt-8 pt-4">
-                <span className="text-xs font-semibold text-zinc-300 block mb-3.5">
-                  {plans.growth.featuresTitle}
-                </span>
-                <ul className="space-y-2.5">
-                  {plans.growth.features.map((feat, idx) => (
-                    <li key={idx} className="text-xs sm:text-[13px] text-zinc-300 flex items-start gap-2">
-                      <CheckCircleBold className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                      <span>{feat}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {/* CTA Button (Solid Amber Primary) */}
+              <Link
+                to="/signin"
+                className="w-full mt-8 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold rounded-xl py-3 px-4 text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 border-0 outline-none group/btn"
+              >
+                <BoltBold className="w-4 h-4 text-zinc-950 group-hover/btn:scale-110 transition-transform" />
+                <span>{plans.growth.cta}</span>
+              </Link>
             </div>
-
-            {/* CTA Button (Solid Amber Primary) */}
-            <Link
-              to="/signin"
-              className="w-full mt-8 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold rounded-xl py-3 px-4 text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 border-0 outline-none group"
-            >
-              <BoltBold className="w-4 h-4 text-zinc-950 group-hover:scale-110 transition-transform" />
-              <span>{plans.growth.cta}</span>
-            </Link>
           </div>
         </div>
 
