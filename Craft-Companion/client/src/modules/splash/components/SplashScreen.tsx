@@ -122,7 +122,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
         isExiting ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
-      <div className="relative w-full max-w-[850px] aspect-[16/9] flex items-center justify-center p-4">
+      <div className="relative w-full max-w-[500px] sm:max-w-[540px] aspect-[16/9] flex items-center justify-center px-6">
         <LottieSplash
           onComplete={finishSplash}
           className="w-full h-full"

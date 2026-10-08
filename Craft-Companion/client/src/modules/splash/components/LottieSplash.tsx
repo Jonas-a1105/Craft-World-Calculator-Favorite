@@ -23,7 +23,7 @@ export const LottieSplash: React.FC<LottieSplashProps> = ({
       renderer: 'svg',
       loop: false,
       autoplay: true,
-      path: '/assets/splash1.json',
+      path: '/assets/splash1.json?v=3',
     });
 
     animRef.current = anim;
@@ -55,7 +55,7 @@ export const LottieSplash: React.FC<LottieSplashProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`w-full max-w-[850px] aspect-[16/9] flex items-center justify-center select-none pointer-events-none ${
+      className={`w-full max-w-[500px] sm:max-w-[540px] aspect-[16/9] flex items-center justify-center select-none pointer-events-none ${
         className || ''
       }`}
     />
