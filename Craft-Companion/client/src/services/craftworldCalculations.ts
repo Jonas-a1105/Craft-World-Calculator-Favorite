@@ -17,10 +17,18 @@ import {
   type WorkshopItem,
 } from './workshopModifiers';
 
+export {
+  getWorkshopSpeedBoostPercent,
+  getMasteryInputReductionPercent,
+};
+
+
+
 export type FactoryDataRow = {
   token: string;
   level: number;
   duration_min: number;
+  duration_raw?: string;
   output_token: string;
   output_amount: number;
   input_token_1: string;
@@ -29,6 +37,21 @@ export type FactoryDataRow = {
   input_amount_2: number;
   upgrade_token: string;
   upgrade_amount: number;
+  power_cost?: number;
+  yield_percent?: number;
+  xp_per_output?: number;
+  event?: string;
+  daily_production?: number;
+  output_change?: number;
+  duration_change?: number;
+  production_change?: number;
+  input_1_consumption_per_day?: number;
+  input_1_production_per_day_at_same_value?: number;
+  input_2_consumption_per_day?: number;
+  input_2_production_per_day_at_same_value?: number;
+  power_per_unit?: number;
+  xp_per_day?: number;
+  xp_per_battery?: number;
 };
 
 export type PriceMap = Record<string, number>;
@@ -142,8 +165,8 @@ function normalizeSymbol(symbol?: string) {
 }
 
 export function getFactoryDisplayLevel(rawLevel: number): number {
-  const lvl = Math.max(0, Math.floor(Number(rawLevel || 0)));
-  return lvl + 1;
+  const lvl = Math.max(1, Math.floor(Number(rawLevel || 1)));
+  return lvl;
 }
 
 function clampPositive(value: number, fallback = 0) {

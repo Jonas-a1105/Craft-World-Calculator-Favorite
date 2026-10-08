@@ -108,12 +108,24 @@ export const LevelCardRow: React.FC<LevelCardRowProps> = ({
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
             </svg>
-            {Number(c.runtimeMinutes.toFixed(1))} min
+            {c.row.duration_raw || `${Number(c.runtimeMinutes.toFixed(1))} min`}
           </span>
 
-          {c.xpPerHour > 0 && (
+          {c.row.yield_percent !== undefined && (
+            <span className="text-cyan-400 text-xs font-mono font-bold bg-[#1c1c20] px-2.5 py-1 rounded-full flex items-center gap-1">
+              {c.row.yield_percent}% {language === 'es' ? 'Rend.' : 'Yield'}
+            </span>
+          )}
+
+          {c.row.power_cost ? (
             <span className="text-amber-400 text-xs font-mono font-bold bg-[#1c1c20] px-2.5 py-1 rounded-full flex items-center gap-1">
-              ⭐ {formatCompactNumber(c.xpPerHour)} XP/h
+              ⚡ {c.row.power_cost >= 1000 ? `${(c.row.power_cost / 1000).toFixed(0)}k` : c.row.power_cost}
+            </span>
+          ) : null}
+
+          {c.xpPerHour > 0 && (
+            <span className="text-purple-400 text-xs font-mono font-bold bg-[#1c1c20] px-2.5 py-1 rounded-full flex items-center gap-1">
+              ★ {formatCompactNumber(c.xpPerHour)} XP/h
             </span>
           )}
         </div>

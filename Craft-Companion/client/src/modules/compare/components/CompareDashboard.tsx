@@ -29,6 +29,8 @@ export const CompareDashboard: React.FC = () => {
     cycle1,
     cycle2,
     comparisonVerdict,
+    withPlayerBonuses,
+    setWithPlayerBonuses,
     handleSwap,
     handleCompareNextLevel,
     handleCompareMaxLevel,
@@ -50,6 +52,33 @@ export const CompareDashboard: React.FC = () => {
         onSwap={handleSwap}
         language={language}
       />
+
+      {/* Simulation Mode Toggle Bar */}
+      <div className="flex items-center justify-between bg-[#18181b] p-2.5 px-4 rounded-2xl border border-white/5">
+        <span className="text-xs text-zinc-400 font-medium">
+          {language === 'es' ? 'Modo de Comparación:' : 'Comparison Mode:'}
+        </span>
+        <button
+          type="button"
+          onClick={() => setWithPlayerBonuses(!withPlayerBonuses)}
+          className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+            withPlayerBonuses
+              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+              : 'bg-[#141416] text-zinc-400 border border-zinc-800 hover:text-white'
+          }`}
+        >
+          <span>{withPlayerBonuses ? '🚀' : '🏛️'}</span>
+          <span>
+            {withPlayerBonuses
+              ? language === 'es'
+                ? 'Con mis Bonos (Taller, Maestrías, x2)'
+                : 'With Account Perks (Workshop, Mastery, 2x)'
+              : language === 'es'
+                ? 'Modo Base Puro (1x)'
+                : 'Pure Base (1x)'}
+          </span>
+        </button>
+      </div>
 
       {/* 1. Selection Ribbon: Side-by-Side Factory Selectors */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">

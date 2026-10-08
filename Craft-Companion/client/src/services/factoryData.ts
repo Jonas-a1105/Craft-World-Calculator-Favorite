@@ -2,6 +2,7 @@ export type FactoryDataRow = {
   token: string;
   level: number;
   duration_min: number;
+  duration_raw?: string;
   output_token: string;
   output_amount: number;
   input_token_1: string;
@@ -10,43 +11,75 @@ export type FactoryDataRow = {
   input_amount_2: number;
   upgrade_token: string;
   upgrade_amount: number;
+  power_cost?: number;
+  yield_percent?: number;
+  xp_per_output?: number;
+  event?: string;
+  daily_production?: number;
+  output_change?: number;
+  duration_change?: number;
+  production_change?: number;
+  input_1_consumption_per_day?: number;
+  input_1_production_per_day_at_same_value?: number;
+  input_2_consumption_per_day?: number;
+  input_2_production_per_day_at_same_value?: number;
+  power_per_unit?: number;
+  xp_per_day?: number;
+  xp_per_battery?: number;
 };
 
 export const ACTIVE_RESOURCES = new Set([
-  'EARTH',
-  'WATER',
-  'FIRE',
-  'MUD',
-  'CLAY',
-  'SAND',
-  'COPPER',
-  'SEAWATER',
-  'HEAT',
-  'ALGAE',
-  'LAVA',
-  'CERAMICS',
-  'STEEL',
-  'OXYGEN',
-  'GLASS',
-  'GAS',
-  'STONE',
-  'STEAM',
-  'SCREWS',
-  'FUEL',
-  'CEMENT',
-  'OIL',
   'ACID',
-  'SULFUR',
-  'PLASTICS',
-  'FIBERGLASS',
-  'ENERGY',
-  'HYDROGEN',
-  'DYNAMITE',
+  'ALGAE',
+  'ARTICLE',
+  'BEAM',
   'BOLTS',
-  'KEY',
+  'BOOK',
+  'BRICK',
+  'CEMENT',
   'CERAMICKEY',
-  'GLASSKEY',
+  'CERAMICS',
+  'CLAY',
+  'COPPER',
+  'DIPLOMA',
+  'DYNAMITE',
   'DYNOKEY',
+  'DYNONEST',
+  'EARTH',
+  'ENERGY',
+  'FIBERGLASS',
+  'FIRE',
+  'FUEL',
+  'GAS',
+  'GLASS',
+  'GLASSKEY',
+  'HEAT',
+  'HYDROGEN',
+  'KEY',
+  'LAVA',
+  'MUD',
+  'NAIL',
+  'NEST',
+  'OIL',
+  'OXYGEN',
+  'PAINT',
+  'PAPERWRAP',
+  'PLASTICS',
+  'SALT',
+  'SAND',
+  'SANDWRAP',
+  'SCREWS',
+  'SEAWATER',
+  'STEAM',
+  'STEAMWRAP',
+  'STEEL',
+  'STONE',
+  'SULFUR',
+  'TILE',
+  'WARMNEST',
+  'WATER',
+  'WETNEST',
+  'WIRE',
 ]);
 
 const csvPaths = [
@@ -244,6 +277,78 @@ function parseFactoryCsv(csv: string): FactoryDataRow[] {
         upgrade_amount: parseNumber(
           getFirst(row, ['upgrade_amount', 'upgrade_cost', 'upgrade_cost_amount']),
         ),
+
+        power_cost: parseNumber(
+          getFirst(row, ['power_cost', 'power', 'power_cost_amount']),
+          0,
+        ),
+
+        yield_percent: parseNumber(
+          getFirst(row, ['yield_percent', 'yield', 'yield_pct']),
+          100,
+        ),
+
+        xp_per_output: parseNumber(
+          getFirst(row, ['xp_per_output', 'xp']),
+          0,
+        ),
+
+        duration_raw: getFirst(row, ['duration_raw', 'duration']),
+
+        daily_production: parseNumber(
+          getFirst(row, ['daily_production', 'daily_prod']),
+          0,
+        ),
+
+        output_change: parseNumber(
+          getFirst(row, ['output_change']),
+          0,
+        ),
+
+        duration_change: parseNumber(
+          getFirst(row, ['duration_change']),
+          0,
+        ),
+
+        production_change: parseNumber(
+          getFirst(row, ['production_change']),
+          0,
+        ),
+
+        input_1_consumption_per_day: parseNumber(
+          getFirst(row, ['input_1_consumption_per_day', 'input_1_consumption']),
+          0,
+        ),
+
+        input_1_production_per_day_at_same_value: parseNumber(
+          getFirst(row, ['input_1_production_per_day_at_same_value']),
+          0,
+        ),
+
+        input_2_consumption_per_day: parseNumber(
+          getFirst(row, ['input_2_consumption_per_day', 'input_2_consumption']),
+          0,
+        ),
+
+        input_2_production_per_day_at_same_value: parseNumber(
+          getFirst(row, ['input_2_production_per_day_at_same_value']),
+          0,
+        ),
+
+        power_per_unit: parseNumber(
+          getFirst(row, ['power_per_unit']),
+          0,
+        ),
+
+        xp_per_day: parseNumber(
+          getFirst(row, ['xp_per_day']),
+          0,
+        ),
+
+        xp_per_battery: parseNumber(
+          getFirst(row, ['xp_per_battery']),
+          0,
+        ),
       };
 
       if (!parsedRow.token && !parsedRow.output_token) {
@@ -303,8 +408,24 @@ function ensureBaseResourceRows(parsed: FactoryDataRow[]): FactoryDataRow[] {
   return newRows;
 }
 
-export async function loadFactoryData() {
+export async function loadFactoryData(): Promise<FactoryDataRow[]> {
   if (factoryDataCache) return factoryDataCache;
+
+  // 1. Prioritize high-performance static JSON
+  try {
+    const jsonRes = await fetch('/data/factories.json');
+    if (jsonRes.ok) {
+      const jsonData = await jsonRes.json();
+      if (Array.isArray(jsonData) && jsonData.length > 0) {
+        factoryDataCache = ensureBaseResourceRows(jsonData);
+        return factoryDataCache;
+      }
+    }
+  } catch (error) {
+    if (isDev) {
+      console.warn('Notice: factories.json fetch failed, falling back to CSV', error);
+    }
+  }
 
   let lastError: unknown;
 

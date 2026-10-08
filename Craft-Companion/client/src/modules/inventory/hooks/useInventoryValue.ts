@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../../utils/i18n';
 import { useCraftworldHomeQuery } from '../../../services/queries/useCraftworldQueries';
 import { extractPriceMap } from '../../../services/priceService';
-import { savePriceSnapshots } from '../../../services/priceHistory';
+import { loadPriceHistory, savePriceSnapshots } from '../../../services/priceHistory';
 import { useAppStore } from '../../../store/useAppStore';
 import {
   extractRecommendations,
@@ -47,10 +47,16 @@ export function useInventoryValue() {
   );
 
   const rawInventory = useMemo(() => {
+    if (homeData?.craftWorld?.resources && Array.isArray(homeData.craftWorld.resources)) {
+      return homeData.craftWorld.resources;
+    }
     if (Array.isArray(homeData?.inventory)) {
       return homeData.inventory;
     }
-    return homeData?.inventory?.balances || [];
+    if (Array.isArray(homeData?.inventory?.balances)) {
+      return homeData.inventory.balances;
+    }
+    return [];
   }, [homeData]);
 
   const recommendations = useMemo(() => {
@@ -58,7 +64,8 @@ export function useInventoryValue() {
   }, [homeData]);
 
   const { valuedItems, totalValue } = useMemo(() => {
-    return calculateValuedInventory(rawInventory, prices, recommendations);
+    const history = loadPriceHistory();
+    return calculateValuedInventory(rawInventory, prices, recommendations, history);
   }, [rawInventory, prices, recommendations]);
 
   const resourceCount = useMemo(() => {

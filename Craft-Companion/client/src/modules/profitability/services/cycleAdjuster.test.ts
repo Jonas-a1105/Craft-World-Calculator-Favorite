@@ -19,19 +19,19 @@ test('extractOwnedMap extracts maximum 1-indexed levels for owned factories', ()
                 {
                   factory: {
                     definition: { id: 'WOOD' },
-                    level: 2, // display level 3
+                    level: 3, // real level 3
                   },
                 },
                 {
                   factory: {
                     definition: { id: 'WOOD' },
-                    level: 4, // display level 5
+                    level: 5, // real level 5
                   },
                 },
                 {
                   factory: {
                     definition: { id: 'IRON' },
-                    level: 0, // display level 1
+                    level: 1, // real level 1
                   },
                 },
               ],

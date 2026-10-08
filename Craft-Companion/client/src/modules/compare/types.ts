@@ -36,7 +36,10 @@ export interface UseFactoryCompareReturn {
   cycle1: FactoryCycleResult | null;
   cycle2: FactoryCycleResult | null;
   comparisonVerdict: ComparisonVerdict | null;
+  withPlayerBonuses: boolean;
+  setWithPlayerBonuses: (val: boolean) => void;
   handleSwap: () => void;
   handleCompareNextLevel: () => void;
   handleCompareMaxLevel: () => void;
 }
+

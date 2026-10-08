@@ -1,13 +1,17 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import type { FactoryDataRow } from '../../../services/factoryData';
-import { calculateFactoryCycle, type FactoryCycleResult } from '../../../services/craftworldCalculations';
+import {
+  calculateFactoryCycle,
+  type FactoryCycleResult,
+  type RuntimeContext,
+} from '../../../services/craftworldCalculations';
 import { extractPriceMap } from '../../../services/priceService';
 import { FactoryIcon } from '../../../components/GameIcon';
 import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/queries/useCraftworldQueries';
 import { useAppStore } from '../../../store/useAppStore';
 import type { UseFactoryCompareReturn } from '../types';
 import { calculateComparisonVerdict } from '../services/compareService';
-import type { CraftworldFactoryInstance } from '../../../types';
+import { extractPlotFactoriesMap } from '../../profitability/services/cycleAdjuster';
 
 export function useFactoryCompare(): UseFactoryCompareReturn {
   const { data: home, isLoading: isHomeLoading } = useCraftworldHomeQuery();
@@ -19,6 +23,17 @@ export function useFactoryCompare(): UseFactoryCompareReturn {
   const [level1, setLevel1] = useState(1);
   const [token2, setToken2] = useState('STEEL');
   const [level2, setLevel2] = useState(2);
+  const [withPlayerBonuses, setWithPlayerBonuses] = useState(true);
+
+  const plotFactoriesMap = useMemo(() => extractPlotFactoriesMap(home), [home]);
+
+  const userFactories = useMemo(() => {
+    const ownedMap: Record<string, number> = {};
+    plotFactoriesMap.forEach((detail, symbol) => {
+      ownedMap[symbol] = detail.level;
+    });
+    return ownedMap;
+  }, [plotFactoriesMap]);
 
   useEffect(() => {
     if (rows.length > 0 && token1 === 'STEEL') {
@@ -26,29 +41,27 @@ export function useFactoryCompare(): UseFactoryCompareReturn {
       if (preferred) {
         setToken1(preferred);
         setToken2(preferred);
-        setLevel1(1);
-        setLevel2(2);
+        const owned = userFactories[preferred];
+        setLevel1(owned || 1);
+        setLevel2(owned ? Math.min(owned + 1, 40) : 2);
       } else if (!rows.some((r) => r.token === 'STEEL')) {
         const first = rows[0].token;
         setToken1(first);
         setToken2(first);
-        setLevel1(1);
-        setLevel2(2);
+        const owned = userFactories[first];
+        setLevel1(owned || 1);
+        setLevel2(owned ? Math.min(owned + 1, 40) : 2);
+      } else {
+        const owned = userFactories['STEEL'];
+        if (owned) {
+          setLevel1(owned);
+          setLevel2(Math.min(owned + 1, 40));
+        }
       }
     }
-  }, [rows, token1, favorites]);
+  }, [rows, token1, favorites, userFactories]);
 
   const prices = useMemo(() => extractPriceMap(home), [home]);
-
-  const userFactories = useMemo(() => {
-    const ownedMap: Record<string, number> = {};
-    if (home?.craftWorld?.factories && Array.isArray(home.craftWorld.factories)) {
-      home.craftWorld.factories.forEach((f: CraftworldFactoryInstance) => {
-        if (f.symbol) ownedMap[f.symbol.toUpperCase()] = f.level || 1;
-      });
-    }
-    return ownedMap;
-  }, [home]);
 
   const uniqueTokens = useMemo(() => {
     return Array.from(new Set(rows.map((r) => r.token))).filter(Boolean);
@@ -104,13 +117,23 @@ export function useFactoryCompare(): UseFactoryCompareReturn {
     );
   }, [rows, token2, level2]);
 
+  const context: RuntimeContext = useMemo(() => {
+    if (!withPlayerBonuses) return {};
+    const rawHome = home as any;
+    return {
+      workshop: rawHome?.craft?.workshop || rawHome?.craftWorld?.workshop || [],
+      proficiencies: rawHome?.craft?.proficiencies || rawHome?.craftWorld?.proficiencies || [],
+      activeBoostMultiplier: home?.purchases?.isNoAdsActive ? 2 : 1,
+    };
+  }, [withPlayerBonuses, home]);
+
   const cycle1: FactoryCycleResult | null = useMemo(() => {
-    return row1 ? calculateFactoryCycle(row1, prices) : null;
-  }, [row1, prices]);
+    return row1 ? calculateFactoryCycle(row1, prices, context) : null;
+  }, [row1, prices, context]);
 
   const cycle2: FactoryCycleResult | null = useMemo(() => {
-    return row2 ? calculateFactoryCycle(row2, prices) : null;
-  }, [row2, prices]);
+    return row2 ? calculateFactoryCycle(row2, prices, context) : null;
+  }, [row2, prices, context]);
 
   const handleSwap = useCallback(() => {
     const tempT = token1;
@@ -156,6 +179,8 @@ export function useFactoryCompare(): UseFactoryCompareReturn {
     cycle1,
     cycle2,
     comparisonVerdict,
+    withPlayerBonuses,
+    setWithPlayerBonuses,
     handleSwap,
     handleCompareNextLevel,
     handleCompareMaxLevel,

@@ -75,6 +75,7 @@ export interface CraftworldFactoryInstance {
   boosters?: CraftworldFactoryBooster[];
   consumableBoosters?: CraftworldFactoryBooster[];
   workerBoostIntervals?: Array<{ boostValue?: number }>;
+  craftingReduction?: number;
 }
 
 export interface CraftworldLandArea {

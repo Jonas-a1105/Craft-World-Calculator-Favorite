@@ -23,12 +23,21 @@ export interface AdjustedCycleResult extends FactoryCycleResult {
   rawBaseMaterialsText?: string;
 }
 
+export type SimulationMode = 'base' | 'active_owned' | 'projected';
+
+export interface ModifierBadgeInfo {
+  type: 'booster' | 'worker' | 'workshop' | 'mastery';
+  label: string;
+  detail: string;
+}
+
 export interface FactorySummary {
   token: string;
   ownedLevel: number | null;
   activeRow: FactoryDataRow;
   cycle: AdjustedCycleResult;
   allRows: FactoryDataRow[];
+  modifiers?: ModifierBadgeInfo[];
 }
 
 import type { WorkshopItem } from '../../services/workshopModifiers';
@@ -38,12 +47,16 @@ export interface ProfitabilityContext {
   workshop: WorkshopItem[];
   proficiencies: ProficiencyItem[];
   activeBoosts: Array<{ boostValue: number }>;
+  manualBoostMultiplier?: number;
+  workersPercent?: number;
 }
 
 export interface UseProfitabilityReturn {
   loading: boolean;
   search: string;
   setSearch: (value: string) => void;
+  simulationMode: SimulationMode;
+  setSimulationMode: (mode: SimulationMode) => void;
   filterMode: FilterMode;
   setFilterMode: (mode: FilterMode) => void;
   sortBy: SortByOption;

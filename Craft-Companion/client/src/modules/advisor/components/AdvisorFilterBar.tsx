@@ -7,6 +7,7 @@ interface AdvisorFilterBarProps {
   searchTerm: string;
   onSearchTermChange: (term: string) => void;
   totalCount: number;
+  ownedCount?: number;
   language: string;
 }
 
@@ -16,12 +17,24 @@ export const AdvisorFilterBar: React.FC<AdvisorFilterBarProps> = ({
   searchTerm,
   onSearchTermChange,
   totalCount,
+  ownedCount,
   language,
 }) => {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
       {/* Quick Filter Pills */}
       <div className="flex items-center gap-1.5 bg-[#18181b] p-1 rounded-full text-xs overflow-x-auto no-scrollbar w-full sm:w-auto">
+        <button
+          type="button"
+          onClick={() => onFilterModeChange('owned')}
+          className={`flex-1 sm:flex-initial text-center px-4 py-2 rounded-full font-bold transition-all cursor-pointer border-none flex-shrink-0 ${
+            filterMode === 'owned'
+              ? 'bg-emerald-500 text-black shadow-md'
+              : 'text-zinc-400 hover:text-emerald-300 hover:bg-white/[0.04]'
+          }`}
+        >
+          🚜 {language === 'es' ? 'Mis Fábricas' : 'My Factories'} {ownedCount !== undefined ? `(${ownedCount})` : ''}
+        </button>
         <button
           type="button"
           onClick={() => onFilterModeChange('all')}

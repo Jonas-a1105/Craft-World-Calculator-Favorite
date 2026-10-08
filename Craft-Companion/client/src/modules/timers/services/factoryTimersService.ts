@@ -132,17 +132,17 @@ export function extractActiveRuns(
           const definition = fac.definition || facObj.definition || {};
           const tokenId = definition.id || fac.definitionId || fac.id || 'FACTORY';
           const rawLevel =
-            typeof crafting?.currentRunLevel === 'number'
+            typeof crafting?.currentRunLevel === 'number' && crafting.currentRunLevel > 0
               ? crafting.currentRunLevel
-              : typeof fac.level === 'number'
+              : typeof fac.level === 'number' && fac.level > 0
                 ? fac.level
-                : 0;
+                : 1;
 
-          const displayLevel = rawLevel + 1;
+          const displayLevel = rawLevel;
+          const levelIndex = Math.max(0, displayLevel - 1);
 
           const levelData =
-            definition.levels?.[rawLevel] ||
-            definition.levels?.[rawLevel - 1] ||
+            definition.levels?.[levelIndex] ||
             definition.levels?.[0];
           const baseMs = levelData?.millisecondsPerCompletion
             ? levelData.millisecondsPerCompletion

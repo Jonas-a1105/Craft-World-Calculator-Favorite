@@ -14,6 +14,7 @@ export const UpgradeAdvisorDashboard: React.FC = () => {
     setSearchTerm,
     filterMode,
     setFilterMode,
+    ownedCount,
     allRecommendations,
     filteredRecommendations,
   } = useUpgradeAdvisor();
@@ -37,6 +38,7 @@ export const UpgradeAdvisorDashboard: React.FC = () => {
           searchTerm={searchTerm}
           onSearchTermChange={setSearchTerm}
           totalCount={allRecommendations.length}
+          ownedCount={ownedCount}
           language={language}
         />
 

@@ -16,6 +16,10 @@ export const CalculatorDashboard: React.FC = () => {
     uniqueTokens,
     availableLevels,
     cycle,
+    simulationMode,
+    setSimulationMode,
+    activePlotDetail,
+    modifiers,
     handleTokenChange,
     handleLevelChange,
   } = useCalculator();
@@ -39,13 +43,21 @@ export const CalculatorDashboard: React.FC = () => {
           selectedLevel={selectedLevel}
           uniqueTokens={uniqueTokens}
           availableLevels={availableLevels}
+          simulationMode={simulationMode}
+          activePlotDetail={activePlotDetail}
           onSelectToken={handleTokenChange}
           onSelectLevel={handleLevelChange}
+          onSelectSimulationMode={setSimulationMode}
         />
 
         {cycle && (
           <div className="grid gap-4 md:grid-cols-2">
-            <CalculatorOutputCard language={language} cycle={cycle} />
+            <CalculatorOutputCard
+              language={language}
+              cycle={cycle}
+              simulationMode={simulationMode}
+              modifiers={modifiers}
+            />
             <CalculatorFinancialCard language={language} cycle={cycle} />
           </div>
         )}

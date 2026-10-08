@@ -1,7 +1,7 @@
 import React from 'react';
 import type { FactoryCycleResult } from '../../../services/craftworldCalculations';
 import { FactoryIcon, ResourceIcon } from '../../../components/GameIcon';
-import { formatNumber, formatCompactNumber } from '../../../utils/formatters';
+import { formatNumber, formatCompactNumber, formatCycleMinutes } from '../../../utils/formatters';
 
 export interface FactoryDetailCardProps {
   optionLabel: 'A' | 'B';
@@ -114,14 +114,38 @@ export const FactoryDetailCard: React.FC<FactoryDetailCardProps> = ({
             {language === 'es' ? 'Tiempo de Ciclo' : 'Cycle Duration'}
           </span>
           <span className="font-mono font-bold text-white block mt-0.5">
-            {Number(cycle.runtimeMinutes.toFixed(1))} min
+            {formatCycleMinutes(cycle.runtimeMinutes)}
+          </span>
+        </div>
+
+        {/* Rendimiento */}
+        <div className="bg-[#141416] p-3 rounded-2xl">
+          <span className="text-[10px] uppercase font-bold text-zinc-500 block">
+            {language === 'es' ? 'Rendimiento' : 'Yield'}
+          </span>
+          <span className="font-mono font-bold text-cyan-400 block mt-0.5">
+            {cycle.row.yield_percent !== undefined ? `${cycle.row.yield_percent}%` : '100%'}
+          </span>
+        </div>
+
+        {/* Energía / Ciclo */}
+        <div className="bg-[#141416] p-3 rounded-2xl">
+          <span className="text-[10px] uppercase font-bold text-zinc-500 block">
+            {language === 'es' ? 'Energía / Ciclo' : 'Power / Cycle'}
+          </span>
+          <span className="font-mono font-bold text-amber-400 block mt-0.5">
+            {cycle.row.power_cost ? (
+              <span>⚡ {cycle.row.power_cost >= 1000 ? `${(cycle.row.power_cost / 1000).toFixed(0)}k` : cycle.row.power_cost}</span>
+            ) : (
+              <span className="text-zinc-500">0 ⚡</span>
+            )}
           </span>
         </div>
 
         {/* Margen */}
         <div className="bg-[#141416] p-3 rounded-2xl">
           <span className="text-[10px] uppercase font-bold text-zinc-500 block">
-            {language === 'es' ? 'Margen de Margen' : 'Profit Margin'}
+            {language === 'es' ? 'Margen' : 'Profit Margin'}
           </span>
           <span
             className={`font-mono font-bold block mt-0.5 ${
@@ -137,7 +161,7 @@ export const FactoryDetailCard: React.FC<FactoryDetailCardProps> = ({
         </div>
 
         {/* XP / Día */}
-        <div className="bg-[#141416] p-3 rounded-2xl">
+        <div className="bg-[#141416] p-3 rounded-2xl col-span-2">
           <span className="text-[10px] uppercase font-bold text-zinc-500 block">
             {language === 'es' ? 'XP Ganada / Día' : 'Daily XP'}
           </span>

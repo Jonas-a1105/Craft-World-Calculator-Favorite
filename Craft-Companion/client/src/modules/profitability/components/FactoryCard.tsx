@@ -94,6 +94,32 @@ export const FactoryCard: React.FC<FactoryCardProps> = ({ summary, onSelect }) =
             : `Direct extraction of ${summary.token}. Produces continuously at ${summary.cycle.runsPerHour.toFixed(1)} cycles/h.`}
       </p>
 
+      {/* Active Modifiers Badges */}
+      {summary.modifiers && summary.modifiers.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 -mt-2">
+          {summary.modifiers.map((m, idx) => {
+            const colorClass =
+              m.type === 'booster'
+                ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                : m.type === 'worker'
+                  ? 'bg-sky-500/15 text-sky-300 border-sky-500/30'
+                  : m.type === 'workshop'
+                    ? 'bg-purple-500/15 text-purple-300 border-purple-500/30'
+                    : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+
+            return (
+              <span
+                key={idx}
+                className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border ${colorClass}`}
+                title={m.detail}
+              >
+                {m.label}
+              </span>
+            );
+          })}
+        </div>
+      )}
+
       {/* Stats 4 Columns with Thin Vertical Dividers */}
       <div className="grid grid-cols-4 divide-x divide-white/10 pt-1 text-center">
         <div className="px-1">

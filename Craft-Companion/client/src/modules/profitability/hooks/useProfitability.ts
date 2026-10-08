@@ -11,9 +11,11 @@ import type {
   ModalViewTab,
   UseProfitabilityReturn,
   ProfitabilityContext,
+  SimulationMode,
 } from '../types';
 import {
   extractOwnedMap,
+  extractPlotFactoriesMap,
   buildFactorySummaries,
   filterAndSortSummaries,
   getAdjustedCycle,
@@ -24,6 +26,7 @@ export function useProfitability(): UseProfitabilityReturn {
   const { data: rows = [], isLoading: isRowsLoading } = useFactoryDataQuery();
   const loading = isHomeLoading || isRowsLoading;
 
+  const [simulationMode, setSimulationMode] = useState<SimulationMode>('projected');
   const [search, setSearch] = useState('');
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [sortBy, setSortBy] = useState<SortByOption>('profit_hour');
@@ -38,14 +41,16 @@ export function useProfitability(): UseProfitabilityReturn {
   const [inputSupplyMode, setInputSupplyMode] = useState<InputSupplyMode>('market');
 
   const prices = useMemo(() => extractPriceMap(homeData), [homeData]);
-
   const ownedMap = useMemo(() => extractOwnedMap(homeData), [homeData]);
+  const plotFactoriesMap = useMemo(() => extractPlotFactoriesMap(homeData), [homeData]);
+  const isNoAdsActive = Boolean(homeData?.purchases?.isNoAdsActive);
 
   const context: ProfitabilityContext = useMemo(
     () => ({
       workshop: useWorkshop ? homeData?.craft?.workshop || [] : [],
       proficiencies: useMastery ? homeData?.craft?.proficiencies || [] : [],
       activeBoosts: useBoosters ? [{ boostValue: 0.5 }] : [],
+      manualBoostMultiplier: useBoosters ? 2 : 1,
     }),
     [useWorkshop, useMastery, useBoosters, homeData],
   );
@@ -55,12 +60,25 @@ export function useProfitability(): UseProfitabilityReturn {
       buildFactorySummaries({
         rows,
         ownedMap,
+        plotFactoriesMap,
         prices,
         context,
         inputSupplyMode,
         useMastery,
+        simulationMode,
+        isNoAdsActive,
       }),
-    [rows, ownedMap, prices, context, inputSupplyMode, useMastery],
+    [
+      rows,
+      ownedMap,
+      plotFactoriesMap,
+      prices,
+      context,
+      inputSupplyMode,
+      useMastery,
+      simulationMode,
+      isNoAdsActive,
+    ],
   );
 
   const favorites = useAppStore((state) => state.favorites);
@@ -100,14 +118,54 @@ export function useProfitability(): UseProfitabilityReturn {
   const modalCycleResults = useMemo(() => {
     if (!modalSummary) return [];
 
+    const effectiveUseMastery = simulationMode === 'base' ? false : useMastery;
+
+    const modalContext: ProfitabilityContext = simulationMode === 'base'
+      ? {
+          workshop: [],
+          proficiencies: [],
+          activeBoosts: [],
+          manualBoostMultiplier: 1,
+        }
+      : simulationMode === 'active_owned'
+        ? (() => {
+            const plotDetail = plotFactoriesMap.get(modalSummary.token);
+            let plotBoost = isNoAdsActive ? 2 : 1;
+            if (plotDetail?.boosters && plotDetail.boosters.length > 0) {
+              const hasActiveBooster = plotDetail.boosters.some((b) => (b.boostValue || 0) > 0);
+              if (hasActiveBooster) plotBoost = Math.max(plotBoost, 2);
+            }
+            let workersPct = 0;
+            if (plotDetail?.workerBoostIntervals && plotDetail.workerBoostIntervals.length > 0) {
+              const sumBonus = plotDetail.workerBoostIntervals.reduce(
+                (sum, w) => sum + (w.boostValue || 0),
+                0,
+              );
+              workersPct = sumBonus * 100;
+            }
+            return {
+              workshop: homeData?.craft?.workshop || [],
+              proficiencies: homeData?.craft?.proficiencies || [],
+              activeBoosts: [],
+              manualBoostMultiplier: plotBoost,
+              workersPercent: workersPct,
+            };
+          })()
+        : {
+            workshop: homeData?.craft?.workshop || [],
+            proficiencies: homeData?.craft?.proficiencies || [],
+            activeBoosts: [],
+            manualBoostMultiplier: isNoAdsActive ? 2 : 1,
+          };
+
     let results = modalSummary.allRows.map((r) =>
       getAdjustedCycle({
         row: r,
         prices,
-        context,
+        context: modalContext,
         inputSupplyMode,
         allRows: rows,
-        useMastery,
+        useMastery: effectiveUseMastery,
       }),
     );
 
@@ -121,7 +179,18 @@ export function useProfitability(): UseProfitabilityReturn {
     }
 
     return results;
-  }, [modalSummary, modalLevelFilter, prices, context, inputSupplyMode, rows, useMastery]);
+  }, [
+    modalSummary,
+    modalLevelFilter,
+    prices,
+    simulationMode,
+    plotFactoriesMap,
+    isNoAdsActive,
+    homeData,
+    inputSupplyMode,
+    rows,
+    useMastery,
+  ]);
 
   const modalChainAnalysis = useMemo(() => {
     if (!modalSummary) return null;
@@ -140,6 +209,8 @@ export function useProfitability(): UseProfitabilityReturn {
     loading,
     search,
     setSearch,
+    simulationMode,
+    setSimulationMode,
     filterMode,
     setFilterMode,
     sortBy,

@@ -2,6 +2,7 @@ import React from 'react';
 import { SkeletonDashboardPage } from '../../../components/Skeleton';
 import { useProfitability } from '../hooks/useProfitability';
 import { ProfitabilityHeader } from './ProfitabilityHeader';
+import { SimulationModeSelector } from './SimulationModeSelector';
 import { ModifiersRibbon } from './ModifiersRibbon';
 import { FilterRibbon } from './FilterRibbon';
 import { FactoryGrid } from './FactoryGrid';
@@ -12,6 +13,8 @@ export const ProfitabilityDashboard: React.FC = () => {
     loading,
     search,
     setSearch,
+    simulationMode,
+    setSimulationMode,
     filterMode,
     setFilterMode,
     sortBy,
@@ -46,6 +49,13 @@ export const ProfitabilityDashboard: React.FC = () => {
     <div className="w-full max-w-[1200px] mx-auto space-y-6 pb-12">
       {/* Header */}
       <ProfitabilityHeader />
+
+      {/* 3 Core Simulation Modes: Base / Active Owned / Projected */}
+      <SimulationModeSelector
+        simulationMode={simulationMode}
+        setSimulationMode={setSimulationMode}
+        ownedCount={ownedCount}
+      />
 
       {/* Live Boost & Input Supply Mode Controls Ribbon */}
       <ModifiersRibbon
@@ -90,6 +100,7 @@ export const ProfitabilityDashboard: React.FC = () => {
         modalLevelFilter={modalLevelFilter}
         setModalLevelFilter={setModalLevelFilter}
         inputSupplyMode={inputSupplyMode}
+        simulationMode={simulationMode}
         onClose={() => setSelectedTokenModal(null)}
       />
     </div>

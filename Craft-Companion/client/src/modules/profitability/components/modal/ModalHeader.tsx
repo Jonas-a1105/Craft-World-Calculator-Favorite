@@ -1,15 +1,16 @@
 import React from 'react';
-import type { FactorySummary } from '../../types';
+import type { FactorySummary, SimulationMode } from '../../types';
 import { useTranslation } from '../../../../utils/i18n';
 import { FactoryIcon } from '../../../../components/GameIcon';
 import { CloseCircleLinear } from 'solar-icon-set';
 
 export interface ModalHeaderProps {
   summary: FactorySummary;
+  simulationMode?: SimulationMode;
   onClose: () => void;
 }
 
-export const ModalHeader: React.FC<ModalHeaderProps> = ({ summary, onClose }) => {
+export const ModalHeader: React.FC<ModalHeaderProps> = ({ summary, simulationMode, onClose }) => {
   const { language } = useTranslation();
 
   return (
@@ -25,7 +26,7 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({ summary, onClose }) =>
         </div>
 
         <div className="min-w-0">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <h2 className="text-xl sm:text-2xl font-bold text-white tracking-wide truncate">
               {summary.token}
             </h2>
@@ -34,6 +35,21 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({ summary, onClose }) =>
                 {language === 'es'
                   ? `Posees Nivel ${summary.ownedLevel}`
                   : `Owned Level ${summary.ownedLevel}`}
+              </span>
+            )}
+            {simulationMode && (
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/5 text-zinc-300 border border-white/10 flex-shrink-0">
+                {simulationMode === 'base'
+                  ? language === 'es'
+                    ? '🏛️ Modo Base'
+                    : '🏛️ Base Mode'
+                  : simulationMode === 'active_owned'
+                    ? language === 'es'
+                      ? '🚜 En Vivo (Parcela)'
+                      : '🚜 Live Plot'
+                    : language === 'es'
+                      ? '🚀 Con Bonos'
+                      : '🚀 Projected'}
               </span>
             )}
           </div>

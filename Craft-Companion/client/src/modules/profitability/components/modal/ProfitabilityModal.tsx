@@ -6,6 +6,7 @@ import type {
   ModalViewTab,
   FilterMode,
   InputSupplyMode,
+  SimulationMode,
 } from '../../types';
 import type { ValueChainAnalysis } from '../../../../services/valueChainCalculator';
 import { useTranslation } from '../../../../utils/i18n';
@@ -23,6 +24,7 @@ export interface ProfitabilityModalProps {
   modalLevelFilter: FilterMode;
   setModalLevelFilter: (filter: FilterMode) => void;
   inputSupplyMode: InputSupplyMode;
+  simulationMode?: SimulationMode;
   onClose: () => void;
 }
 
@@ -35,6 +37,7 @@ export const ProfitabilityModal: React.FC<ProfitabilityModalProps> = ({
   modalLevelFilter,
   setModalLevelFilter,
   inputSupplyMode,
+  simulationMode,
   onClose,
 }) => {
   const { language } = useTranslation();
@@ -45,7 +48,7 @@ export const ProfitabilityModal: React.FC<ProfitabilityModalProps> = ({
     <div className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200">
       <div className="w-full max-w-5xl bg-[#18181b] rounded-[32px] p-6 sm:p-7 space-y-5 max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border-none animate-in zoom-in-95 duration-200">
         {/* Modal Header */}
-        <ModalHeader summary={summary} onClose={onClose} />
+        <ModalHeader summary={summary} simulationMode={simulationMode} onClose={onClose} />
 
         {/* Modal View Selector */}
         <ModalTabsNav

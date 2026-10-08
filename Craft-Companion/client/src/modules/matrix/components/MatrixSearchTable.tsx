@@ -75,6 +75,18 @@ export const MatrixSearchTable: React.FC<MatrixSearchTableProps> = ({
               <th className="p-3">
                 {language === 'es' ? 'Salida' : 'Output'}
               </th>
+              <th className="p-3 text-right">
+                {language === 'es' ? 'Rendimiento' : 'Yield'}
+              </th>
+              <th className="p-3 text-right">
+                {language === 'es' ? 'Energía' : 'Power'}
+              </th>
+              <th className="p-3 text-right">
+                {language === 'es' ? 'XP' : 'XP'}
+              </th>
+              <th className="p-3 text-right">
+                {language === 'es' ? 'Prod/Día' : 'Daily Prod'}
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5 font-mono">
@@ -104,7 +116,9 @@ export const MatrixSearchTable: React.FC<MatrixSearchTableProps> = ({
                     <span>{r.token}</span>
                   </td>
                 <td className="p-3 text-zinc-300">Nv. {r.level}</td>
-                <td className="p-3 text-zinc-400">{r.duration_min} min</td>
+                <td className="p-3 text-zinc-400 font-mono text-[11px]">
+                  {r.duration_raw || `${r.duration_min} min`}
+                </td>
                 <td className="p-3">
                   {r.input_token_1 ? (
                     <span className="flex items-center gap-1.5">
@@ -128,6 +142,36 @@ export const MatrixSearchTable: React.FC<MatrixSearchTableProps> = ({
                 <td className="p-3 font-bold text-emerald-400 flex items-center gap-1.5">
                   <ResourceIcon symbol={r.output_token} size={18} />
                   {r.output_amount} {r.output_token}
+                </td>
+                <td className="p-3 text-right font-mono text-cyan-400 font-medium">
+                  {r.yield_percent !== undefined ? `${r.yield_percent}%` : '100%'}
+                </td>
+                <td className="p-3 text-right font-mono text-amber-400">
+                  {r.power_cost ? (
+                    <span className="inline-flex items-center gap-1 justify-end">
+                      <span className="text-[10px] text-amber-500/80">⚡</span>
+                      {r.power_cost >= 1000 ? `${(r.power_cost / 1000).toFixed(0)}k` : r.power_cost}
+                    </span>
+                  ) : (
+                    <span className="text-zinc-600">0</span>
+                  )}
+                </td>
+                <td className="p-3 text-right font-mono text-purple-400">
+                  {r.xp_per_output ? (
+                    <span className="inline-flex items-center gap-1 justify-end">
+                      <span className="text-[10px] text-purple-500/80">★</span>
+                      {r.xp_per_output >= 1000000
+                        ? `${(r.xp_per_output / 1000000).toFixed(1)}M`
+                        : r.xp_per_output >= 1000
+                        ? `${(r.xp_per_output / 1000).toFixed(0)}k`
+                        : r.xp_per_output}
+                    </span>
+                  ) : (
+                    <span className="text-zinc-600">—</span>
+                  )}
+                </td>
+                <td className="p-3 text-right font-mono text-emerald-400 font-semibold">
+                  {r.daily_production ? r.daily_production.toLocaleString() : '—'}
                 </td>
               </tr>
             ); })}

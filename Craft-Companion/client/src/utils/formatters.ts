@@ -66,3 +66,17 @@ export function formatFactoryName(symbol: string, lang = 'en'): string {
   }
   return normalized.toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
 }
+
+export function formatCycleMinutes(minutes: number): string {
+  if (!Number.isFinite(minutes) || minutes <= 0) return '0 min';
+  if (minutes < 1) {
+    return `${Math.round(minutes * 60)}s`;
+  }
+  if (minutes < 60) {
+    return `${Number(minutes.toFixed(1))} min`;
+  }
+  const h = Math.floor(minutes / 60);
+  const m = Math.round(minutes % 60);
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
+

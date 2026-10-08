@@ -25,7 +25,7 @@ export const CATEGORIES: Record<string, MatrixCategory> = {
     color: 'text-blue-400',
     border: 'border-blue-500/30',
     bg: 'bg-blue-500/10 hover:bg-blue-500/20',
-    resources: ['WATER', 'SEAWATER', 'ALGAE', 'OXYGEN', 'HYDROGEN'],
+    resources: ['WATER', 'SEAWATER', 'ALGAE', 'OXYGEN', 'HYDROGEN', 'SALT'],
   },
   Fire: {
     label: 'Fire',
@@ -53,36 +53,41 @@ export const CATEGORIES: Record<string, MatrixCategory> = {
     color: 'text-emerald-400',
     border: 'border-emerald-500/30',
     bg: 'bg-emerald-500/10 hover:bg-emerald-500/20',
-    resources: ['SCREWS', 'COPPERKEY'],
+    resources: ['NEST', 'WARMNEST', 'WETNEST', 'DYNONEST'],
   },
   Wraps: {
     label: 'Wraps',
     color: 'text-lime-400',
     border: 'border-lime-500/30',
     bg: 'bg-lime-500/10 hover:bg-lime-500/20',
-    resources: [],
+    resources: ['PAPERWRAP', 'SANDWRAP', 'STEAMWRAP'],
   },
   Academy: {
     label: 'Academy',
     color: 'text-indigo-400',
     border: 'border-indigo-500/30',
     bg: 'bg-indigo-500/10 hover:bg-indigo-500/20',
-    resources: [],
+    resources: ['ARTICLE', 'BOOK', 'DIPLOMA'],
   },
   Construction: {
     label: 'Construction',
     color: 'text-orange-400',
     border: 'border-orange-500/30',
     bg: 'bg-orange-500/10 hover:bg-orange-500/20',
-    resources: [],
+    resources: ['BRICK', 'BEAM', 'TILE', 'WIRE', 'PAINT', 'NAIL', 'SCREWS'],
   },
 };
 
 export const DEFAULT_RESOURCE_ORDER: string[] = [
-  'MUD', 'CLAY', 'SAND', 'COPPER', 'SEAWATER', 'HEAT', 'ALGAE', 'LAVA', 'CERAMICS',
-  'STEEL', 'OXYGEN', 'GLASS', 'GAS', 'STONE', 'STEAM', 'SCREWS', 'FUEL', 'CEMENT',
-  'OIL', 'ACID', 'SULFUR', 'PLASTICS', 'FIBERGLASS', 'ENERGY', 'HYDROGEN', 'DYNAMITE',
-  'BOLTS', 'KEY', 'CERAMICKEY', 'GLASSKEY', 'DYNOKEY'
+  'EARTH', 'MUD', 'CLAY', 'SAND', 'COPPER', 'CERAMICS', 'STONE', 'CEMENT', 'BOLTS',
+  'WATER', 'SEAWATER', 'ALGAE', 'OXYGEN', 'HYDROGEN', 'SALT',
+  'FIRE', 'HEAT', 'LAVA', 'STEEL', 'GLASS', 'STEAM', 'ENERGY',
+  'GAS', 'FUEL', 'OIL', 'ACID', 'SULFUR', 'PLASTICS', 'FIBERGLASS', 'DYNAMITE',
+  'KEY', 'CERAMICKEY', 'GLASSKEY', 'DYNOKEY',
+  'NEST', 'WARMNEST', 'WETNEST', 'DYNONEST',
+  'PAPERWRAP', 'SANDWRAP', 'STEAMWRAP',
+  'ARTICLE', 'BOOK', 'DIPLOMA',
+  'BRICK', 'BEAM', 'TILE', 'WIRE', 'PAINT', 'NAIL', 'SCREWS'
 ];
 
 export function calculateSpeedMultiplier(
@@ -117,11 +122,12 @@ export function calculateProfitPerHour(
   buySlippageFactor: number,
   sellSlippageFactor: number,
   powerPrice: number,
+  workshop?: Array<{ symbol?: string; token?: string; level?: number }>,
 ): MatrixCellProfit {
   if (!row) return { profit: 0, valid: false, runtime: 0 };
 
   const proficiencies = masteryLevel > 0 ? [{ token: resource, level: masteryLevel }] : [];
-  const baseRuntime = calculateFactoryRuntime(row, { proficiencies });
+  const baseRuntime = calculateFactoryRuntime(row, { proficiencies, workshop: workshop || [] });
   const runtimeMinutes = speedMultiplier > 0 ? baseRuntime / speedMultiplier : baseRuntime;
 
   if (runtimeMinutes <= 0) return { profit: 0, valid: false, runtime: 0 };
@@ -130,7 +136,8 @@ export function calculateProfitPerHour(
   let revenue = calculateRevenue(row, priceMap, { proficiencies }) * sellSlippageFactor;
 
   if (powerPrice > 0) {
-    const powerUnits = runtimeMinutes * 10;
+    // Official power cost per cycle from Google Sheet dataset (1 battery = 100,000 power units)
+    const powerUnits = row.power_cost !== undefined ? row.power_cost : runtimeMinutes * 10;
     const powerCost = (powerUnits / 100000) * powerPrice;
     inputCost += powerCost;
   }

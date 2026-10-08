@@ -53,11 +53,12 @@ export function useMatrix(): UseMatrixReturn {
       setPriceMap((prev) => (Object.keys(prev).length === 0 ? extracted : prev));
 
       const newMasteryMap: Record<string, number> = {};
-      if (home?.craftWorld?.proficiencies && Array.isArray(home.craftWorld.proficiencies)) {
-        home.craftWorld.proficiencies.forEach((p) => {
+      const rawProficiencies = home?.craft?.proficiencies || home?.craftWorld?.proficiencies;
+      if (rawProficiencies && Array.isArray(rawProficiencies)) {
+        rawProficiencies.forEach((p: { symbol?: string; token?: string; level?: number; claimedLevel?: number }) => {
           const sym = (p.symbol || p.token || '').toUpperCase();
           if (sym) {
-            newMasteryMap[sym] = Math.min(10, Math.max(0, p.level || p.claimedLevel || 0));
+            newMasteryMap[sym] = Math.min(10, Math.max(0, p.level ?? p.claimedLevel ?? 0));
           }
         });
       }
@@ -115,6 +116,11 @@ export function useMatrix(): UseMatrixReturn {
     return map;
   }, [rows]);
 
+  const workshop = useMemo(() => {
+    const rawHome = home as any;
+    return rawHome?.craft?.workshop || rawHome?.craftWorld?.workshop || [];
+  }, [home]);
+
   const getCellProfit = useCallback(
     (resource: string, level: number): MatrixCellProfit => {
       const row = rowLookup.get(`${resource}_${level}`);
@@ -128,9 +134,10 @@ export function useMatrix(): UseMatrixReturn {
         buySlippageFactor,
         sellSlippageFactor,
         powerPrice,
+        workshop,
       );
     },
-    [rowLookup, masteryMap, speedMultiplier, priceMap, buySlippageFactor, sellSlippageFactor, powerPrice]
+    [rowLookup, masteryMap, speedMultiplier, priceMap, buySlippageFactor, sellSlippageFactor, powerPrice, workshop]
   );
 
   const handleResetPrices = useCallback(() => {
