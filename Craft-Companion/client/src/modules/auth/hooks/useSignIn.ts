@@ -85,19 +85,9 @@ export function useSignIn() {
   }, [nav]);
 
 
-  // Ensure no splash audio lingers when on sign in page
-  useEffect(() => {
-    stopSplashAudio();
-  }, []);
-
   const handleGuestLogin = useCallback(() => {
-    showToast(
-      language === 'es'
-        ? 'Iniciando en Modo Invitado...'
-        : 'Connecting in Guest Mode...'
-    );
     handleQuickLogin('craft_guest', 'Guest Player');
-  }, [handleQuickLogin, language, showToast]);
+  }, [handleQuickLogin]);
 
   const handleFormSubmit = useCallback(() => {
     const val = accountInput.trim();
@@ -117,13 +107,8 @@ export function useSignIn() {
       return;
     }
 
-    showToast(
-      language === 'es'
-        ? `Accediendo con cuenta: ${val}...`
-        : `Connecting with account: ${val}...`
-    );
     handleQuickLogin(val, val);
-  }, [accountInput, handleQuickLogin, language, showToast]);
+  }, [accountInput, handleQuickLogin, language]);
 
   const handleMainButtonClick = useCallback(() => {
     if (!isAccordionOpen) {

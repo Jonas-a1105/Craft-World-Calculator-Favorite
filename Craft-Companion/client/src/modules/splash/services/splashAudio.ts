@@ -1,27 +1,17 @@
 /**
  * Audio manager for Splash Screen using Web Audio API.
  * Solves browser autoplay restrictions by:
- * 1. Preloading raw audio bytes in memory on app startup without touching AudioContext
- * 2. Creating / resuming AudioContext strictly on user gesture (login / settings click)
- * 3. Avoiding console Autoplay warnings via navigator.userActivation checks
- * 4. Smooth organic exponential fade-out on completion (GainNode ramp)
- * 5. Bypassing external download managers (IDM) via in-memory buffer playback
+ * 1. Preloading & decoding audio into memory on app startup
+ * 2. Allowing synchronous user-gesture playback on login and settings clicks
+ * 3. Smooth organic fade-out on completion (GainNode exponential ramp)
+ * 4. Bypassing external download managers (IDM) via in-memory buffer decode
  */
 
 let audioCtx: AudioContext | null = null;
-let rawAudioBytes: ArrayBuffer | null = null;
 let audioBuffer: AudioBuffer | null = null;
 let activeSource: AudioBufferSourceNode | null = null;
 let gainNode: GainNode | null = null;
 let isPreloading = false;
-let isDecoding = false;
-
-export function hasUserGesture(): boolean {
-  if (typeof navigator !== 'undefined' && 'userActivation' in navigator) {
-    return Boolean(navigator.userActivation.hasBeenActive);
-  }
-  return true;
-}
 
 function getAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
@@ -37,13 +27,15 @@ function getAudioContext(): AudioContext | null {
 }
 
 export function preloadSplashAudio() {
-  if (rawAudioBytes || audioBuffer || isPreloading) return;
+  const ctx = getAudioContext();
+  if (!ctx || audioBuffer || isPreloading) return;
   isPreloading = true;
 
   fetch('/assets/splash.mp3')
     .then((res) => res.arrayBuffer())
-    .then((buf) => {
-      rawAudioBytes = buf;
+    .then((buf) => ctx.decodeAudioData(buf))
+    .then((decoded) => {
+      audioBuffer = decoded;
     })
     .catch(() => {})
     .finally(() => {
@@ -52,40 +44,24 @@ export function preloadSplashAudio() {
 }
 
 export function primeSplashAudio() {
-  preloadSplashAudio();
-  if (hasUserGesture()) {
-    const ctx = getAudioContext();
-    if (ctx && ctx.state === 'suspended') {
-      ctx.resume().catch(() => {});
-    }
+  const ctx = getAudioContext();
+  if (ctx && ctx.state === 'suspended') {
+    ctx.resume().catch(() => {});
   }
+  preloadSplashAudio();
 }
 
 export function playSplashAudio(): boolean {
-  // If already actively playing, keep it playing
-  if (activeSource) {
-    return true;
-  }
-
-  // If the browser hasn't had any user gesture yet (e.g. direct page refresh),
-  // Chrome will block AudioContext and log an autoplay warning.
-  // Instead of triggering browser console warnings, listen for the first user interaction.
-  if (!hasUserGesture()) {
-    const unlockOnGesture = () => {
-      window.removeEventListener('pointerdown', unlockOnGesture);
-      window.removeEventListener('keydown', unlockOnGesture);
-      playSplashAudio();
-    };
-    window.addEventListener('pointerdown', unlockOnGesture, { once: true });
-    window.addEventListener('keydown', unlockOnGesture, { once: true });
-    return false;
-  }
-
   const ctx = getAudioContext();
   if (!ctx) return false;
 
   if (ctx.state === 'suspended') {
     ctx.resume().catch(() => {});
+  }
+
+  // If already actively playing, keep it playing
+  if (activeSource) {
+    return true;
   }
 
   if (!gainNode) {
@@ -120,30 +96,12 @@ export function playSplashAudio(): boolean {
     return startSource(audioBuffer);
   }
 
-  if (rawAudioBytes && !isDecoding) {
-    isDecoding = true;
-    ctx.decodeAudioData(rawAudioBytes.slice(0))
-      .then((decoded) => {
-        audioBuffer = decoded;
-        if (!activeSource && gainNode) {
-          startSource(decoded);
-        }
-      })
-      .catch(() => {})
-      .finally(() => {
-        isDecoding = false;
-      });
-    return false;
-  }
-
-  if (!isPreloading && !rawAudioBytes) {
+  // If buffer not decoded yet, load and start as soon as ready
+  if (!isPreloading) {
     isPreloading = true;
     fetch('/assets/splash.mp3')
       .then((res) => res.arrayBuffer())
-      .then((buf) => {
-        rawAudioBytes = buf;
-        return ctx.decodeAudioData(buf.slice(0));
-      })
+      .then((buf) => ctx.decodeAudioData(buf))
       .then((decoded) => {
         audioBuffer = decoded;
         if (!activeSource && gainNode) {
@@ -168,7 +126,7 @@ export function fadeOutSplashAudio(durationMs: number = 600) {
       gainNode.gain.cancelScheduledValues(now);
       const currentGain = Math.max(0.0001, gainNode.gain.value || 1.0);
       gainNode.gain.setValueAtTime(currentGain, now);
-      // Exponential ramp down to near-zero for natural sound dissipation
+      // Exponential ramp down to near-zero for natural sound tail
       gainNode.gain.exponentialRampToValueAtTime(0.0001, now + durationSec);
     } catch {}
 
