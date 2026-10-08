@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { CheckCircleBold, BoltBold, UserBold, CrownBold } from 'solar-icon-set';
 import type { LandingPricingSection } from '../types';
 
 interface LandingPricingProps {
@@ -23,8 +24,8 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
         <span>{pricing.badge}</span>
       </div>
 
-      {/* Main Headline */}
-      <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight mb-3">
+      {/* Main Headline with Game Font */}
+      <h2 className="text-3xl sm:text-4xl md:text-5xl font-game tracking-wide text-white leading-tight mb-3">
         {pricing.title}
       </h2>
 
@@ -68,7 +69,7 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
 
       {/* 3 Pricing Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left items-stretch">
-        {/* CARD 1: Hobby */}
+        {/* CARD 1: Hobby / Explorer */}
         <div className="bg-[#1c1c20] rounded-3xl p-7 flex flex-col justify-between hover:bg-[#222227] transition-all duration-300 shadow-xl group border-0">
           <div>
             {/* Header: Title, Description & Price */}
@@ -96,7 +97,7 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
               <ul className="space-y-2.5">
                 {plans.hobby.features.map((feat, idx) => (
                   <li key={idx} className="text-xs sm:text-[13px] text-zinc-300 flex items-start gap-2">
-                    <span className="text-amber-400 font-bold select-none">•</span>
+                    <CheckCircleBold className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                     <span>{feat}</span>
                   </li>
                 ))}
@@ -107,72 +108,76 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
           {/* CTA Button */}
           <Link
             to="/signin"
-            className="w-full mt-8 bg-[#24252e] hover:bg-[#2e303a] text-white rounded-xl py-3 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 border-0 outline-none"
+            className="w-full mt-8 bg-[#24252e] hover:bg-[#2e303a] text-white rounded-xl py-3 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 border-0 outline-none group"
           >
-            <svg className="w-3.5 h-3.5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-            </svg>
+            <UserBold className="w-3.5 h-3.5 text-zinc-400 group-hover:scale-110 transition-transform" />
             <span>{plans.hobby.cta}</span>
           </Link>
         </div>
 
-        {/* CARD 2: Growth (Most Popular) */}
-        <div className="bg-[#1c1c20] rounded-3xl p-7 flex flex-col justify-between relative hover:bg-[#222227] transition-all duration-300 shadow-2xl group border-0">
-          {/* Most Popular Floating Badge */}
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400/20 px-3.5 py-0.5 rounded-full text-[11px] font-bold text-amber-300 shadow-md border-0">
-            {plans.growth.badge}
-          </div>
+        {/* CARD 2: Industrial Pro (Most Popular) with Animated Game Laser Beam & Floating Aura */}
+        <div className="popular-card-container flex flex-col justify-between">
+          {/* Animated 360-degree Border Beam Layers */}
+          <div className="popular-card-beam" />
+          <div className="popular-card-beam-glow" />
 
-          <div>
-            {/* Header: Title, Description & Price */}
-            <div className="flex items-start justify-between gap-4 mb-4">
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-white mb-2">
-                  {plans.growth.name}
-                </h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  {plans.growth.description}
-                </p>
+          {/* Inner Card Content */}
+          <div className="popular-card-inner p-7 flex flex-col justify-between relative h-full">
+            {/* Most Popular Solid Amber Floating Badge */}
+            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-amber-400 text-zinc-950 font-black px-4 py-1 rounded-full text-[11px] tracking-wide uppercase shadow-lg shadow-amber-500/30 border-0 select-none z-10 flex items-center gap-1.5">
+              <BoltBold className="w-3.5 h-3.5 text-zinc-950" />
+              <span>{plans.growth.badge}</span>
+            </div>
+
+            <div>
+              {/* Header: Title, Description & Price */}
+              <div className="flex items-start justify-between gap-4 mb-4 pt-1">
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    {plans.growth.name}
+                  </h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    {plans.growth.description}
+                  </p>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <span className="text-3xl font-extrabold text-white tracking-tight font-mono">
+                    {growthPrice}
+                  </span>
+                  <span className="text-[11px] text-zinc-500 font-medium block mt-0.5">
+                    {plans.growth.period}
+                  </span>
+                </div>
               </div>
-              <div className="text-right flex-shrink-0">
-                <span className="text-3xl font-extrabold text-white tracking-tight font-mono">
-                  {growthPrice}
+
+              {/* Included Features List */}
+              <div className="mt-8 pt-4">
+                <span className="text-xs font-semibold text-zinc-300 block mb-3.5">
+                  {plans.growth.featuresTitle}
                 </span>
-                <span className="text-[11px] text-zinc-500 font-medium block mt-0.5">
-                  {plans.growth.period}
-                </span>
+                <ul className="space-y-2.5">
+                  {plans.growth.features.map((feat, idx) => (
+                    <li key={idx} className="text-xs sm:text-[13px] text-zinc-300 flex items-start gap-2">
+                      <CheckCircleBold className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                      <span>{feat}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
 
-            {/* Included Features List */}
-            <div className="mt-8 pt-4">
-              <span className="text-xs font-semibold text-zinc-300 block mb-3.5">
-                {plans.growth.featuresTitle}
-              </span>
-              <ul className="space-y-2.5">
-                {plans.growth.features.map((feat, idx) => (
-                  <li key={idx} className="text-xs sm:text-[13px] text-zinc-300 flex items-start gap-2">
-                    <span className="text-amber-400 font-bold select-none">•</span>
-                    <span>{feat}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {/* CTA Button (Solid Amber Primary) */}
+            <Link
+              to="/signin"
+              className="w-full mt-8 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold rounded-xl py-3 px-4 text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 border-0 outline-none group"
+            >
+              <BoltBold className="w-4 h-4 text-zinc-950 group-hover:scale-110 transition-transform" />
+              <span>{plans.growth.cta}</span>
+            </Link>
           </div>
-
-          {/* CTA Button (Amber Primary) */}
-          <Link
-            to="/signin"
-            className="w-full mt-8 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold rounded-xl py-3 px-4 text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 border-0 outline-none"
-          >
-            <svg className="w-3.5 h-3.5 text-zinc-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-            </svg>
-            <span>{plans.growth.cta}</span>
-          </Link>
         </div>
 
-        {/* CARD 3: Scale */}
+        {/* CARD 3: Scale / Guild Master */}
         <div className="bg-[#1c1c20] rounded-3xl p-7 flex flex-col justify-between hover:bg-[#222227] transition-all duration-300 shadow-xl group border-0">
           <div>
             {/* Header: Title, Description & Price */}
@@ -203,7 +208,7 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
               <ul className="space-y-2.5">
                 {plans.scale.features.map((feat, idx) => (
                   <li key={idx} className="text-xs sm:text-[13px] text-zinc-300 flex items-start gap-2">
-                    <span className="text-amber-400 font-bold select-none">•</span>
+                    <CheckCircleBold className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                     <span>{feat}</span>
                   </li>
                 ))}
@@ -214,15 +219,9 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
           {/* CTA Button */}
           <Link
             to="/signin"
-            className="w-full mt-8 bg-[#24252e] hover:bg-[#2e303a] text-white rounded-xl py-3 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 border-0 outline-none"
+            className="w-full mt-8 bg-[#24252e] hover:bg-[#2e303a] text-white rounded-xl py-3 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 border-0 outline-none group"
           >
-            <svg className="w-3.5 h-3.5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="4" width="18" height="16" rx="2" />
-              <circle cx="9" cy="10" r="2" />
-              <line x1="15" y1="8" x2="17" y2="8" />
-              <line x1="15" y1="12" x2="17" y2="12" />
-              <line x1="7" y1="16" x2="17" y2="16" />
-            </svg>
+            <CrownBold className="w-3.5 h-3.5 text-zinc-400 group-hover:scale-110 transition-transform" />
             <span>{plans.scale.cta}</span>
           </Link>
         </div>

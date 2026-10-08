@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { ArrowRightUpLinear } from 'solar-icon-set';
 import { useMeQuery } from '../../../services/queries/useCraftworldQueries';
 import { isUserAuthenticated } from '../../auth/services/authService';
 
@@ -39,10 +40,10 @@ export const LandingActions = ({ language }: LandingActionsProps) => {
             href="https://craftworld.game"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-amber-400 hover:text-amber-300 font-semibold transition-colors flex items-center justify-center gap-1"
+            className="text-xs text-amber-400 hover:text-amber-300 font-semibold transition-colors flex items-center justify-center gap-1 group"
           >
             <span>{language === 'es' ? '¿Aún no juegas? Regístrate en Craft World' : "Don't have an account? Register on Craft World"}</span>
-            <span>↗</span>
+            <ArrowRightUpLinear className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </a>
         </>
       )}

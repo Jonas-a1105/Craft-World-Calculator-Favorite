@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { StarBold } from 'solar-icon-set';
 import type { LandingImpactSection, TestimonialItem } from '../types';
 
 interface LandingImpactProps {
@@ -148,7 +149,7 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, speed = 28, direction = 
             {/* Stars */}
             <div className="flex items-center gap-1 text-amber-400 text-xs mt-5">
               {Array.from({ length: item.stars }).map((_, sIdx) => (
-                <span key={sIdx}>★</span>
+                <StarBold key={sIdx} className="w-3.5 h-3.5 text-amber-400" />
               ))}
             </div>
           </div>
@@ -167,8 +168,8 @@ export const LandingImpact: React.FC<LandingImpactProps> = ({ impact }) => {
           <span>{impact.badge}</span>
         </div>
 
-        {/* Main Headline */}
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight mb-3">
+        {/* Main Headline with Game Font */}
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-game tracking-wide text-white leading-tight mb-3">
           {impact.title}
         </h2>
 
@@ -194,12 +195,12 @@ export const LandingImpact: React.FC<LandingImpactProps> = ({ impact }) => {
           </div>
           <div className="flex flex-col items-start text-left">
             <div className="flex items-center gap-1.5">
-              <div className="flex items-center text-amber-400 text-xs sm:text-sm">
-                <span>★</span>
-                <span>★</span>
-                <span>★</span>
-                <span>★</span>
-                <span>★</span>
+              <div className="flex items-center text-amber-400 gap-0.5">
+                <StarBold className="w-3.5 h-3.5 text-amber-400" />
+                <StarBold className="w-3.5 h-3.5 text-amber-400" />
+                <StarBold className="w-3.5 h-3.5 text-amber-400" />
+                <StarBold className="w-3.5 h-3.5 text-amber-400" />
+                <StarBold className="w-3.5 h-3.5 text-amber-400" />
               </div>
               <span className="text-sm font-bold text-white font-mono">{impact.ratingBadge.score}</span>
             </div>

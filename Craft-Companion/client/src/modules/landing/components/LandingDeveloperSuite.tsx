@@ -34,8 +34,8 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
         <span>{suite.badge}</span>
       </div>
 
-      {/* Main Section Headline */}
-      <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-[1.18] mb-8 max-w-3xl mx-auto">
+      {/* Main Section Headline with Game Font */}
+      <h2 className="text-3xl sm:text-4xl md:text-5xl font-game tracking-wide text-white leading-[1.18] mb-8 max-w-3xl mx-auto">
         {suite.titleLine1}
         <br />
         {suite.titleLine2}

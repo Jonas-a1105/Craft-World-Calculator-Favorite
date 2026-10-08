@@ -26,8 +26,8 @@ export const LandingFaq: React.FC<LandingFaqProps> = ({ faq }) => {
             <span>{faq.badge}</span>
           </div>
 
-          {/* Headline */}
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4 leading-tight">
+          {/* Headline with Game Font */}
+          <h2 className="text-3xl sm:text-4xl font-game tracking-wide text-white mb-4 leading-tight">
             {faq.title}
           </h2>
 

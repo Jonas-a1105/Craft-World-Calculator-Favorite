@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { StarBold } from 'solar-icon-set';
 import type { LandingTranslations } from '../types';
 
 interface LandingHeroProps {
@@ -21,8 +22,8 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ content }) => {
         <span>{content.hero.badge}</span>
       </div>
 
-      {/* Main Headline */}
-      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.14] mb-6 max-w-3xl mx-auto">
+      {/* Main Headline with Game Font */}
+      <h1 className="text-4xl sm:text-5xl md:text-6xl font-game tracking-wide text-white leading-[1.14] mb-6 max-w-3xl mx-auto">
         {content.hero.headline.split('\n').map((line, idx) => (
           <React.Fragment key={idx}>
             {line}
@@ -84,12 +85,12 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ content }) => {
 
         {/* 5 Stars and Review Count */}
         <div className="flex flex-col items-start text-left">
-          <div className="flex items-center gap-0.5 text-amber-400 text-xs sm:text-sm">
-            <span>★</span>
-            <span>★</span>
-            <span>★</span>
-            <span>★</span>
-            <span>★</span>
+          <div className="flex items-center gap-0.5 text-amber-400">
+            <StarBold className="w-3.5 h-3.5 text-amber-400" />
+            <StarBold className="w-3.5 h-3.5 text-amber-400" />
+            <StarBold className="w-3.5 h-3.5 text-amber-400" />
+            <StarBold className="w-3.5 h-3.5 text-amber-400" />
+            <StarBold className="w-3.5 h-3.5 text-amber-400" />
           </div>
           <span className="text-xs text-zinc-400 font-medium mt-0.5">
             {content.hero.trustedBy}

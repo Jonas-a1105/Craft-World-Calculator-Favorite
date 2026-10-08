@@ -959,6 +959,94 @@ html.light ::-webkit-scrollbar-thumb:hover {
   animation: logoBreathing 3.6s ease-in-out infinite;
 }
 
+/* ==========================================================================
+   Most Popular Game Card - Traveling Border Beam & Ambient Floating Aura
+   ========================================================================== */
+@keyframes border-beam-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes card-game-float {
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow: 0 12px 36px -8px rgba(245, 158, 11, 0.28), 0 0 20px -2px rgba(245, 158, 11, 0.16);
+  }
+  50% {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 52px -10px rgba(245, 158, 11, 0.45), 0 0 32px 4px rgba(245, 158, 11, 0.28);
+  }
+}
+
+.popular-card-container {
+  position: relative;
+  border-radius: 26px;
+  padding: 2px;
+  overflow: hidden;
+  animation: card-game-float 4.2s ease-in-out infinite;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+}
+
+.popular-card-container:hover {
+  animation-play-state: paused;
+  transform: translateY(-8px) scale(1.015);
+  box-shadow: 0 28px 60px -10px rgba(245, 158, 11, 0.55), 0 0 38px 6px rgba(245, 158, 11, 0.35);
+}
+
+.popular-card-beam {
+  position: absolute;
+  inset: -200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 60deg,
+    rgba(245, 158, 11, 0.25) 74deg,
+    #f59e0b 84deg,
+    #ffffff 90deg,
+    #f59e0b 96deg,
+    rgba(245, 158, 11, 0.25) 106deg,
+    transparent 120deg,
+    transparent 360deg
+  );
+  animation: border-beam-rotate 4s linear infinite;
+  pointer-events: none;
+}
+
+.popular-card-beam-glow {
+  position: absolute;
+  inset: -200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 65deg,
+    rgba(245, 158, 11, 0.6) 80deg,
+    #ffffff 90deg,
+    rgba(245, 158, 11, 0.6) 100deg,
+    transparent 115deg,
+    transparent 360deg
+  );
+  filter: blur(10px);
+  animation: border-beam-rotate 4s linear infinite;
+  pointer-events: none;
+}
+
+.popular-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #1c1c20;
+  border-radius: 24px;
+  z-index: 1;
+}
+
+html.light .popular-card-inner {
+  background-color: #ffffff !important;
+}
+
 
 
 
