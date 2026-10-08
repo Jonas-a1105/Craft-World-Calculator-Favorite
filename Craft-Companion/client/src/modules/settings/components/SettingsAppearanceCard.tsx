@@ -1,6 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { COLOR_PRESETS } from '../services/settingsService';
-import { MoonBold, PaletteBold, GlobalBold } from 'solar-icon-set';
+import { MoonBold, PaletteBold, GlobalBold, PlayBold } from 'solar-icon-set';
 
 export interface SettingsAppearanceCardProps {
   isDarkMode: boolean;
@@ -189,6 +190,35 @@ export const SettingsAppearanceCard: React.FC<SettingsAppearanceCardProps> = ({
               EN
             </button>
           </div>
+        </div>
+
+        {/* Subtle Divider */}
+        <div className="h-px bg-white/[0.04]" />
+
+        {/* Row 4: Splash Screen Preview */}
+        <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/15 text-amber-400 flex items-center justify-center flex-shrink-0">
+              <PlayBold className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-xs font-bold text-white block truncate">
+                {language === 'es' ? 'Pantalla de Carga (Splash)' : 'Startup Splash Screen'}
+              </span>
+              <span className="text-[11px] text-zinc-400 block truncate mt-0.5">
+                {language === 'es'
+                  ? 'Ver animación de Angry Dynomites Lab'
+                  : 'Play Angry Dynomites Lab animation'}
+              </span>
+            </div>
+          </div>
+
+          <Link
+            to="/splash"
+            className="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-amber-400/20 text-xs font-mono font-medium text-zinc-300 hover:text-amber-300 border border-white/10 hover:border-amber-400/30 transition-all flex items-center gap-1.5 flex-shrink-0 active:scale-95"
+          >
+            <span>{language === 'es' ? 'Ver Splash' : 'Play Splash'}</span>
+          </Link>
         </div>
       </div>
     </div>

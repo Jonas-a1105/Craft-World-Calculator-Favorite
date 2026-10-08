@@ -35,7 +35,8 @@
     "src/modules/prices/services/**/*.ts",
     "src/modules/calculator/services/**/*.ts",
     "src/components/layout/nav/services/**/*.ts",
-    "src/modules/auth/services/**/*.ts"
+    "src/modules/auth/services/**/*.ts",
+    "src/modules/splash/services/**/*.ts"
   ],
   "exclude": ["src/**/*.tsx"]
 }

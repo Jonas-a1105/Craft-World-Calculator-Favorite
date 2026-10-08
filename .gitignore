@@ -56,3 +56,9 @@ creator_kit/
 dashboard-app/
 *.txt
 /fondo.jpeg
+
+# Temporary video source files in root
+*.mp4
+!client/public/assets/*.mp4
+!Craft-Companion/client/public/assets/*.mp4
+

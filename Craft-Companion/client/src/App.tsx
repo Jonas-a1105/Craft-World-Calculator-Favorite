@@ -25,6 +25,7 @@ import ResourceDetail from './pages/ResourceDetail';
 import Encyclopedia from './pages/Encyclopedia';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import Splash from './pages/Splash';
 
 export default function App() {
   const { config: sileoConfig } = useSileoConfig();
@@ -69,6 +70,7 @@ export default function App() {
         <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/splash" element={<Splash />} />
           <Route path="/signin" element={<SignIn />} />
           <Route
             path="/home"
