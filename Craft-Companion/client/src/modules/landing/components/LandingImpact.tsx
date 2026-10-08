@@ -169,7 +169,7 @@ export const LandingImpact: React.FC<LandingImpactProps> = ({ impact }) => {
         </div>
 
         {/* Main Headline with Game Font */}
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-game tracking-wide text-white leading-tight mb-3">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-game text-white leading-[1.35] sm:leading-[1.4] mb-4 max-w-2xl mx-auto">
           {impact.title}
         </h2>
 

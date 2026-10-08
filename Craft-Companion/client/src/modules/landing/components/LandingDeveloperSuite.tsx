@@ -35,9 +35,9 @@ export const LandingDeveloperSuite: React.FC<LandingDeveloperSuiteProps> = ({ su
       </div>
 
       {/* Main Section Headline with Game Font */}
-      <h2 className="text-3xl sm:text-4xl md:text-5xl font-game tracking-wide text-white leading-[1.18] mb-8 max-w-3xl mx-auto">
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-game text-white leading-[1.35] sm:leading-[1.4] mb-8 max-w-2xl mx-auto">
         {suite.titleLine1}
-        <br />
+        <br className="hidden sm:inline" />{' '}
         {suite.titleLine2}
       </h2>
 

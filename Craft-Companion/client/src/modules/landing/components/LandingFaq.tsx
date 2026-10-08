@@ -27,7 +27,7 @@ export const LandingFaq: React.FC<LandingFaqProps> = ({ faq }) => {
           </div>
 
           {/* Headline with Game Font */}
-          <h2 className="text-3xl sm:text-4xl font-game tracking-wide text-white mb-4 leading-tight">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-game text-white mb-4 leading-[1.35] sm:leading-[1.4]">
             {faq.title}
           </h2>
 

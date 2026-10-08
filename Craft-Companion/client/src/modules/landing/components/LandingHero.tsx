@@ -23,7 +23,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ content }) => {
       </div>
 
       {/* Main Headline with Game Font */}
-      <h1 className="text-4xl sm:text-5xl md:text-6xl font-game tracking-wide text-white leading-[1.14] mb-6 max-w-3xl mx-auto">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-game text-white leading-[1.35] sm:leading-[1.4] mb-6 max-w-2xl mx-auto">
         {content.hero.headline.split('\n').map((line, idx) => (
           <React.Fragment key={idx}>
             {line}
