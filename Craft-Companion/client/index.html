@@ -1,13 +1,37 @@
 <!doctype html>
-<html lang="es" class="dark" data-theme="dark">
+<html lang="es" class="dark" data-theme="dark" style="background-color: #141415; color: #ffffff;">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#141415" />
     <title>Craft Companion - Calculadora de Economía y Producción para CraftWorld</title>
     <meta name="description" content="Craft Companion - La suite analítica definitiva para jugadores de CraftWorld. Calculadoras de rentabilidad en tiempo real, mapas de cadenas de valor, temporizadores y optimización de imperio." />
     <meta name="keywords" content="CraftWorld, Craft Companion, calculadora, economía, rentabilidad, temporizadores, fábricas, simulador, guía, craft world" />
-    <meta name="theme-color" content="#141415" />
     <meta name="robots" content="index, follow" />
+
+    <!-- Anti-FOUC & Anti-White-Flash Critical Inlines -->
+    <style>
+      html, body, #root {
+        background-color: #141415 !important;
+        color: #ffffff;
+      }
+    </style>
+    <script>
+      (function() {
+        try {
+          var theme = localStorage.getItem('craftworld.theme') || 'dark';
+          var isSolid = localStorage.getItem('craftworld.solidBackground') === 'true';
+          var solidColor = localStorage.getItem('craftworld.solidBackgroundColor') || (theme === 'light' ? '#f3f4f6' : '#141415');
+          var bg = theme === 'light' ? '#f3f4f6' : (isSolid ? solidColor : '#141415');
+          document.documentElement.style.backgroundColor = bg;
+          document.documentElement.style.setProperty('--canvas-bg', bg);
+          document.documentElement.classList.toggle('dark', theme !== 'light');
+          document.documentElement.classList.toggle('light', theme === 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script>
 
     <!-- Favicon & App Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -30,7 +54,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@300;400;700&family=Press+Start+2P&family=Tiny5&family=VT323&display=swap" rel="stylesheet">
   </head>
-  <body>
+  <body style="background-color: #141415; color: #ffffff;">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

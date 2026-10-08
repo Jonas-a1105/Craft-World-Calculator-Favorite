@@ -2,7 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+html,
+body,
+#root {
+  background-color: var(--canvas-bg, #141415);
   color: #ffffff;
 }
 
