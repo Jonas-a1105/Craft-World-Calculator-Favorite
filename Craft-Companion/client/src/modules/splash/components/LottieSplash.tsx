@@ -55,7 +55,7 @@ export const LottieSplash: React.FC<LottieSplashProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`w-full max-w-[840px] aspect-[16/9] flex items-center justify-center select-none pointer-events-none drop-shadow-[0_16px_50px_rgba(147,51,234,0.35)] ${
+      className={`w-full max-w-[850px] aspect-[16/9] flex items-center justify-center select-none pointer-events-none ${
         className || ''
       }`}
     />
