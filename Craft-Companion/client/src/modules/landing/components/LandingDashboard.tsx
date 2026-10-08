@@ -24,7 +24,7 @@ export const LandingDashboard: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen w-full bg-[#141415] text-white flex flex-col font-main selection:bg-amber-400/20 selection:text-amber-300 relative overflow-x-hidden">
+    <div className="min-h-screen w-full bg-[#141415] text-white flex flex-col font-main selection:bg-amber-400/20 selection:text-amber-300 relative overflow-x-hidden route-view">
       {/* Top Floating Navbar */}
       <LandingNavbar
         content={content}

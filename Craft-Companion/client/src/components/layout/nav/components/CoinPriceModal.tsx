@@ -52,7 +52,7 @@ export const CoinPriceModal: React.FC<CoinPriceModalProps> = ({ isOpen, onClose 
 
       {/* Modal Dialog Card (Centered in viewport, matte dark, no borders) */}
       <div
-        className="relative w-full max-w-xl sm:max-w-2xl bg-[#141416] rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col gap-4 z-10 max-h-[92vh] overflow-y-auto overflow-x-hidden border-0 outline-none"
+        className="relative w-full max-w-xl sm:max-w-2xl bg-[#141416] rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col gap-4 z-10 max-h-[92vh] overflow-y-auto overflow-x-hidden border-0 outline-none route-view"
         style={{ border: 'none', outline: 'none' }}
         role="dialog"
         aria-modal="true"

@@ -111,7 +111,7 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-[620px] bg-[#1c1c20] rounded-3xl p-6 sm:p-8 shadow-2xl text-left overflow-hidden border-0">
+      <div className="relative w-full max-w-[620px] bg-[#1c1c20] rounded-3xl p-6 sm:p-8 shadow-2xl text-left overflow-hidden border-0 route-view">
         {/* Header Section */}
         <div className="flex items-start justify-between gap-4 mb-2">
           <h2

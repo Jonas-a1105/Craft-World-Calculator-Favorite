@@ -11,7 +11,7 @@ export const PrivacyPolicy: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#141415] text-zinc-300 font-main py-12 px-4 sm:px-6 lg:px-8 selection:bg-amber-400/20 selection:text-amber-300">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto route-view">
         {/* Top Navigation */}
         <div className="bg-[#1c1c20] rounded-2xl px-5 py-3.5 flex items-center justify-between mb-8 shadow-md border-0">
           <Link
