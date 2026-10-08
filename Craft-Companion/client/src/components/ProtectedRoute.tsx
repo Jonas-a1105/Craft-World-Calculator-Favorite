@@ -10,7 +10,13 @@ function isCookieLogged() {
 }
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const [authenticated, setAuthenticated] = useState<boolean | null>(null);
+  // Pre-seed authentication status from cookie/token to eliminate jarring flashes on reload or redirect
+  const [authenticated, setAuthenticated] = useState<boolean | null>(() => {
+    if (isCookieLogged() || Boolean(localStorage.getItem('cc_token'))) {
+      return true;
+    }
+    return null;
+  });
 
   useEffect(() => {
     let mounted = true;
@@ -41,15 +47,9 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     };
   }, []);
 
+  // Seamless fallback without blue flash or spinners
   if (authenticated === null) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-300">
-        <div className="flex items-center gap-3">
-          <div className="w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm font-semibold">Verificando sesión...</span>
-        </div>
-      </div>
-    );
+    return <div className="min-h-screen bg-[var(--canvas-bg,#141415)]" />;
   }
 
   return authenticated ? children : <Navigate to="/signin" replace />;
