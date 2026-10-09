@@ -1,21 +1,35 @@
 import { useState, useEffect, useMemo } from 'react';
-import { CatalogItem, LevelProgression, SummaryStats, TableViewMode, EncyclopediaCategory } from '../types';
-import { RESOURCE_ITEMS, BUILDING_ITEMS } from '../data/catalog';
+import { CatalogItem, LevelProgression, SummaryStats, EncyclopediaCategory, OfficialEvent } from '../types';
+import { RESOURCE_ITEMS, BUILDING_ITEMS, EVENT_ITEMS } from '../data/catalog';
+import { OFFICIAL_EVENTS, getEventByCatalogId } from '../data/eventsCatalog';
 import { fetchProgressionForItem, computeSummaryStats } from '../services/progressionGenerator';
 
-export function useEncyclopedia() {
-  const [category, setCategory] = useState<EncyclopediaCategory>('resources');
-  const [selectedItemId, setSelectedItemId] = useState<string>('EARTH');
-  const [viewMode, setViewMode] = useState<TableViewMode>('essential');
+export function useEncyclopedia(initialMode: 'encyclopedia' | 'events' = 'encyclopedia') {
+  const [category, setCategory] = useState<EncyclopediaCategory>(initialMode === 'events' ? 'events' : 'resources');
+  const [selectedItemId, setSelectedItemId] = useState<string>(initialMode === 'events' ? 'event-fishing-frenzy' : 'EARTH');
   const [search, setSearch] = useState<string>('');
   const [levels, setLevels] = useState<LevelProgression[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const allItems = useMemo(() => [...RESOURCE_ITEMS, ...BUILDING_ITEMS], []);
+  useEffect(() => {
+    if (initialMode === 'events') {
+      setCategory('events');
+      setSelectedItemId((prev) => (prev.startsWith('event-') ? prev : 'event-fishing-frenzy'));
+    } else if (initialMode === 'encyclopedia' && category === 'events') {
+      setCategory('resources');
+      setSelectedItemId('EARTH');
+    }
+  }, [initialMode]);
+
+  const allItems = useMemo(() => [...RESOURCE_ITEMS, ...BUILDING_ITEMS, ...EVENT_ITEMS], []);
 
   const selectedItem = useMemo(() => {
-    return allItems.find((i) => i.id === selectedItemId) || RESOURCE_ITEMS[0];
-  }, [allItems, selectedItemId]);
+    return allItems.find((i) => i.id === selectedItemId) || (initialMode === 'events' ? EVENT_ITEMS[0] : RESOURCE_ITEMS[0]);
+  }, [allItems, selectedItemId, initialMode]);
+
+  const selectedEvent: OfficialEvent = useMemo(() => {
+    return getEventByCatalogId(selectedItem.id) || OFFICIAL_EVENTS[0];
+  }, [selectedItem]);
 
   const filteredResources = useMemo(() => {
     if (!search.trim()) return RESOURCE_ITEMS;
@@ -29,7 +43,19 @@ export function useEncyclopedia() {
     return BUILDING_ITEMS.filter((i) => i.name.toLowerCase().includes(q) || i.nameEs.toLowerCase().includes(q));
   }, [search]);
 
+  const filteredEvents = useMemo(() => {
+    if (!search.trim()) return EVENT_ITEMS;
+    const q = search.toLowerCase();
+    return EVENT_ITEMS.filter((i) => i.name.toLowerCase().includes(q) || i.nameEs.toLowerCase().includes(q));
+  }, [search]);
+
   useEffect(() => {
+    if (selectedItem.category === 'events') {
+      setLevels([]);
+      setLoading(false);
+      return;
+    }
+
     let active = true;
     setLoading(true);
 
@@ -63,14 +89,14 @@ export function useEncyclopedia() {
     category,
     selectedItem,
     selectedItemId,
-    viewMode,
+    selectedEvent,
     search,
     levels,
     loading,
     summaryStats,
     filteredResources,
     filteredBuildings,
-    setViewMode,
+    filteredEvents,
     setSearch,
     selectItem,
   };

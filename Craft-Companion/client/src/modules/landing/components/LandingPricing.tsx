@@ -25,8 +25,8 @@ export const LandingPricing: React.FC<LandingPricingProps> = ({ pricing }) => {
         <span>{pricing.badge}</span>
       </div>
 
-      {/* Main Headline with Game Font */}
-      <h2 className="text-xl sm:text-2xl md:text-3xl font-game text-white leading-[1.35] sm:leading-[1.4] mb-4 max-w-2xl mx-auto">
+      {/* Main Headline */}
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight sm:leading-snug mb-4 max-w-2xl mx-auto">
         {pricing.title}
       </h2>
 

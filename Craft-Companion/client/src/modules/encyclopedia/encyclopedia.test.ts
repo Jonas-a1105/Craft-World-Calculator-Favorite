@@ -1,7 +1,8 @@
 import * as assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { getEarthMineProgression } from './services/earthMineProgression';
-import { computeSummaryStats } from './services/progressionGenerator';
+import { computeSummaryStats, fetchProgressionForItem } from './services/progressionGenerator';
+import { RESOURCE_ITEMS, BUILDING_ITEMS } from './data/catalog';
 import {
   formatCompact,
   formatWithCommas,
@@ -89,4 +90,96 @@ test('summary stats computation', () => {
   assert.equal(stats.prodPerDayAtMax, 360000);
   assert.equal(stats.powerAtMax, 7);
   assert.equal(stats.cycleDurationAtMaxSeconds, 14400);
+});
+
+test('fetchProgressionForItem loads real static game data for Mud and Acid', async () => {
+  const mudItem = RESOURCE_ITEMS.find((i) => i.id === 'MUD');
+  assert.ok(mudItem, 'Mud item must exist in catalog');
+
+  const mudLevels = await fetchProgressionForItem(mudItem);
+  assert.equal(mudLevels.length, 50, 'Mud must have 50 extracted levels');
+
+  // Verify Level 1 Mud
+  const mud1 = mudLevels[0];
+  assert.equal(mud1.level, 1);
+  assert.equal(mud1.outputAmount, 1);
+  assert.equal(mud1.input1Token, 'EARTH');
+  assert.equal(mud1.input1Amount, 3);
+  assert.equal(mud1.upgradeCostToken, 'EARTH');
+  assert.equal(mud1.upgradeCostAmount, 1);
+  assert.equal(mud1.prodPerDay, 8640);
+  assert.equal(mud1.power, 0);
+
+  // Verify Acid factory
+  const acidItem = RESOURCE_ITEMS.find((i) => i.id === 'ACID');
+  assert.ok(acidItem, 'Acid item must exist in catalog');
+
+  const acidLevels = await fetchProgressionForItem(acidItem);
+  assert.equal(acidLevels.length, 10, 'Acid must have 10 extracted levels');
+
+  const acid1 = acidLevels[0];
+  assert.equal(acid1.level, 1);
+  assert.equal(acid1.power, 297500, 'Acid power cost must be 297,500');
+  assert.equal(acid1.xpPerOutput, 4000000);
+  assert.equal(acid1.input1Token, 'FUEL');
+  assert.equal(acid1.input2Token, 'SCREWS');
+});
+
+test('fetchProgressionForItem correctly loads Paperwrap and Water', async () => {
+  const paperwrapItem = RESOURCE_ITEMS.find((i) => i.id === 'PAPERWRAP');
+  assert.ok(paperwrapItem, 'Paperwrap item must exist in catalog');
+
+  const paperwrapLevels = await fetchProgressionForItem(paperwrapItem);
+  assert.equal(paperwrapLevels.length, 35, 'Paperwrap must have 35 extracted levels');
+
+  const waterItem = RESOURCE_ITEMS.find((i) => i.id === 'WATER');
+  assert.ok(waterItem, 'Water item must exist in catalog');
+
+  const waterLevels = await fetchProgressionForItem(waterItem);
+  assert.equal(waterLevels.length, 40, 'Water must have 40 extracted levels');
+});
+
+test('buildings correctly load real spreadsheet progression data', async () => {
+  const townHall = BUILDING_ITEMS.find((b) => b.id === 'TOWN_HALL');
+  assert.ok(townHall, 'Town Hall must exist in building catalog');
+  const thLevels = await fetchProgressionForItem(townHall);
+  assert.equal(thLevels.length, 11, 'Town Hall must load exactly 11 levels (0-10) from sheet');
+  assert.equal(thLevels[0].level, 0);
+  assert.equal(thLevels[10].level, 10);
+
+  const airstream = BUILDING_ITEMS.find((b) => b.id === 'AIRSTREAM');
+  assert.ok(airstream, 'Airstream must exist in building catalog');
+  const airLevels = await fetchProgressionForItem(airstream);
+  assert.equal(airLevels.length, 15, 'Airstream must load 15 levels from sheet');
+
+  const workshop = BUILDING_ITEMS.find((b) => b.id === 'WORKSHOP');
+  assert.ok(workshop, 'Workshop must exist in building catalog');
+  const wsLevels = await fetchProgressionForItem(workshop);
+  assert.equal(wsLevels.length, 76, 'Workshop must load 76 levels (0-75) from sheet');
+});
+
+test('official events catalog loads authentic spreadsheet and event data', () => {
+  const { OFFICIAL_EVENTS, getEventByCatalogId } = require('./data/eventsCatalog');
+  const { EVENT_ITEMS } = require('./data/catalog');
+
+  assert.equal(OFFICIAL_EVENTS.length, 3, 'Must contain 3 official Masterpiece events');
+  assert.equal(EVENT_ITEMS.length, 3, 'Must contain 3 event catalog items');
+
+  const fishingEvent = getEventByCatalogId('event-fishing-frenzy');
+  assert.ok(fishingEvent, 'Fishing Frenzy event must be found');
+  assert.equal(fishingEvent.prizeSymbol, '$FISH');
+  assert.equal(fishingEvent.poolFactor, '70%');
+  assert.equal(fishingEvent.recipes.length, 9, 'Fishing Frenzy must include 9 coastal recipes');
+  assert.equal(fishingEvent.recipes[0].symbol, 'DYNOFISH');
+  assert.equal(fishingEvent.recipes[8].symbol, 'LOBSTER');
+
+  const axieEvent = getEventByCatalogId('event-axie-infinity');
+  assert.ok(axieEvent, 'Axie event must be found');
+  assert.equal(axieEvent.prizeSymbol, '$AXS');
+  assert.equal(axieEvent.poolFactor, '80%');
+
+  const ronkeEvent = getEventByCatalogId('event-ronke-moku');
+  assert.ok(ronkeEvent, 'Ronke event must be found');
+  assert.equal(ronkeEvent.prizeSymbol, '$RICE');
+  assert.equal(ronkeEvent.poolFactor, '69%');
 });

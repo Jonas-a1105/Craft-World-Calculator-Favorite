@@ -22,12 +22,14 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ content }) => {
         <span>{content.hero.badge}</span>
       </div>
 
-      {/* Main Headline with Game Font */}
-      <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-game text-white leading-[1.35] sm:leading-[1.4] mb-6 max-w-2xl mx-auto">
+      {/* Main Headline */}
+      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-extrabold tracking-tight text-white leading-[1.14] sm:leading-[1.18] mb-6 max-w-3xl mx-auto">
         {content.hero.headline.split('\n').map((line, idx) => (
           <React.Fragment key={idx}>
             {line}
-            {idx < content.hero.headline.split('\n').length - 1 && <br />}
+            {idx < content.hero.headline.split('\n').length - 1 && (
+              <br className="hidden sm:inline" />
+            )}
           </React.Fragment>
         ))}
       </h1>

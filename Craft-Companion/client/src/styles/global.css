@@ -90,6 +90,7 @@ html.light body.solid-bg nav {
 .font-game,
 .font-impostor {
   font-family: 'TheImpostor', sans-serif !important;
+  line-height: 1.5;
 }
 
 .font-retro-craft {
@@ -959,6 +960,19 @@ html.light ::-webkit-scrollbar-thumb:hover {
   animation: logoBreathing 3.6s ease-in-out infinite;
 }
 
+@keyframes streakShine {
+  0% {
+    transform: translateX(-120%) skewX(-20deg);
+  }
+  30%, 100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+.animate-streak-shine {
+  animation: streakShine 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
 /* ==========================================================================
    Most Popular Game Card - Traveling Laser Border Beam
    ========================================================================== */
@@ -1033,6 +1047,21 @@ html.light ::-webkit-scrollbar-thumb:hover {
 
 html.light .popular-card-inner {
   background-color: #ffffff !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 

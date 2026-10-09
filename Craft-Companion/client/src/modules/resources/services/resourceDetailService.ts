@@ -64,7 +64,9 @@ export function generateChartSeries(
       Math.cos(i * 1.4 + symSeed) * 0.3 +
       Math.sin(i * 3.1) * 0.2;
     const step = currentPrice * volatility * pseudoNoise;
-    const val = Math.max(0.0001, prevVal + step);
+    const minFloor = currentPrice > 0 ? currentPrice * 0.5 : 0.0001;
+    const maxCeil = currentPrice > 0 ? currentPrice * 1.8 : 1000;
+    const val = Math.max(minFloor, Math.min(maxCeil, prevVal + step));
     rawVals.push(val);
     prevVal = val;
   }

@@ -23,8 +23,8 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ footer, onOpenCook
           </span>
         </div>
 
-        {/* Main Headline with Game Font */}
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-game text-white max-w-xl mx-auto leading-[1.35] sm:leading-[1.4] mb-8">
+        {/* Main Headline */}
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white max-w-xl mx-auto leading-tight sm:leading-snug mb-8">
           {footer.headline}
         </h2>
 

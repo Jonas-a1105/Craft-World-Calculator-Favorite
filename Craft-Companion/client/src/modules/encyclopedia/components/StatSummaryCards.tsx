@@ -22,19 +22,31 @@ export const StatSummaryCards: React.FC<Props> = ({ stats }) => {
       color: 'text-emerald-400',
     },
     {
-      label: language === 'es' ? 'PODER AL MÁX' : 'POWER AT MAX',
-      value: stats.powerAtMax.toString(),
+      label: language === 'es' ? 'ENERGÍA AL MÁX' : 'POWER AT MAX',
+      value: stats.powerAtMax >= 1000 ? formatCompact(stats.powerAtMax) : stats.powerAtMax.toString(),
       color: 'text-amber-400',
     },
     {
       label: language === 'es' ? 'CICLO AL MÁX' : 'CYCLE AT MAX',
-      value: formatDuration(stats.cycleDurationAtMaxSeconds),
+      value: stats.cycleDurationAtMaxFormatted || formatDuration(stats.cycleDurationAtMaxSeconds),
       color: 'text-indigo-400',
     },
   ];
 
+  if (stats.xpPerDayAtMax && stats.xpPerDayAtMax > 0) {
+    cards.push({
+      label: language === 'es' ? 'XP / DÍA AL MÁX' : 'XP / DAY AT MAX',
+      value: formatCompact(stats.xpPerDayAtMax),
+      color: 'text-purple-400',
+    });
+  }
+
+  const gridColsClass = cards.length === 5
+    ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5'
+    : 'grid-cols-2 lg:grid-cols-4';
+
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5 mb-5 w-full min-w-0 max-w-full">
+    <div className={`grid ${gridColsClass} gap-2.5 sm:gap-3.5 mb-5 w-full min-w-0 max-w-full`}>
       {cards.map((card, idx) => (
         <div
           key={idx}

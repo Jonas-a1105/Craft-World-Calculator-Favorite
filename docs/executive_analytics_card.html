@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executive Analytics Card - Obsidian Carbon</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            obsidian: {
+              canvas: '#090a0c',
+              card: '#111215',
+              subcard: '#16171b',
+              subcardHover: '#1a1b20',
+              border: '#202127',
+              borderSubtle: '#1a1b20',
+              pill: '#1e1f25',
+              pillHover: '#262830',
+              barInactive: '#22242a',
+            },
+            accent: {
+              orange: '#ff6200',
+              orangeGlow: 'rgba(255, 98, 0, 0.35)',
+              yellow: '#f59e0b',
+              teal: '#14b8a6',
+              green: '#22c55e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #090a0c;
+      color: #e5e7eb;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Ambient card elevation in obsidian tone */
+    .card-shadow {
+      box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.92), 
+                  0 0 1px 1px rgba(255, 255, 255, 0.04);
+    }
+
+    /* Tooltip arrow pointing right to the dock icon */
+    .tooltip-arrow-right::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -5px;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 5px solid #1c1d22;
+    }
+
+    /* Vertical metric bars transitions */
+    .metric-bar {
+      transition: height 0.4s cubic-bezier(0.34, 1.3, 0.64, 1), 
+                  background-color 0.3s ease, 
+                  box-shadow 0.3s ease;
+    }
+
+    /* Interactive SVG Donut segments */
+    .donut-slice {
+      transition: stroke-dasharray 0.7s cubic-bezier(0.34, 1.2, 0.64, 1), 
+                  stroke-dashoffset 0.7s cubic-bezier(0.34, 1.2, 0.64, 1), 
+                  stroke-width 0.25s ease, 
+                  filter 0.25s ease;
+      cursor: pointer;
+    }
+    .donut-slice:hover {
+      stroke-width: 16;
+      filter: brightness(1.2);
+    }
+
+    /* Horizontal channel bar segments */
+    .channel-bar-segment {
+      transition: width 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+    }
+
+    /* Custom scrollbar reset */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #202127;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-8 select-none relative overflow-x-hidden">
+
+  <!-- Ambient carbon subtle radial glow -->
+  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] bg-orange-600/[0.035] rounded-full blur-[140px] pointer-events-none"></div>
+
+  <!-- Primary Outer Wrapper: Navigation Dock (Left) + Analytics Card (Right) -->
+  <div class="flex flex-col md:flex-row items-center md:items-start justify-center gap-4 sm:gap-6 relative z-10 w-full max-w-[540px]">
+
+    <!-- Left Navigation Dock (Properly positioned beside the card) -->
+    <nav class="flex md:flex-col items-center gap-2.5 shrink-0 order-2 md:order-1 pt-1 sm:pt-2 relative" aria-label="Sidebar Navigation">
+      
+      <!-- Dock Item 1: Performance (Active) with Left Floating Tooltip -->
+      <div class="relative group flex items-center">
+        <!-- Tooltip Pill (Left positioned with arrow pointing to the button) -->
+        <div id="dock-tooltip" class="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-3 py-1.5 rounded-xl bg-[#1c1d22] border border-[#272930] text-xs font-semibold text-zinc-200 tracking-tight whitespace-nowrap shadow-2xl tooltip-arrow-right hidden md:flex items-center transition-all duration-200 pointer-events-none">
+          <span id="tooltip-text">Performance</span>
+        </div>
+
+        <button onclick="switchDockTab('performance', this)" id="dock-btn-performance" class="dock-btn w-12 h-12 rounded-[18px] bg-[#16171b] border border-[#272930] hover:border-orange-500/50 flex items-center justify-center text-[#ff6200] transition-all duration-200 shadow-lg relative active:scale-95 group" title="Performance">
+          <!-- Active Pill Dot on Left -->
+          <span class="dock-indicator absolute left-1.5 w-1 h-3 rounded-full bg-[#ff6200] transition-all"></span>
+          
+          <!-- Orange Pie Chart Slice Icon -->
+          <svg class="w-6 h-6 transform -rotate-45" viewBox="0 0 24 24" fill="none">
+            <path d="M21.21 15.89A10 10 0 1 1 8 2.83" stroke="#ff6200" stroke-width="2.5" stroke-linecap="round"></path>
+            <path d="M22 12A10 10 0 0 0 12 2v10z" fill="#ff6200"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Dock Item 2: Customers -->
+      <div class="relative flex items-center">
+        <button onclick="switchDockTab('customers', this)" id="dock-btn-customers" class="dock-btn w-12 h-12 rounded-[18px] bg-[#131417] border border-[#1e2025] hover:border-zinc-700 hover:text-zinc-300 flex items-center justify-center text-zinc-500 transition-all duration-200 shadow-md active:scale-95" title="Customers">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Dock Item 3: Settings -->
+      <div class="relative flex items-center">
+        <button onclick="switchDockTab('settings', this)" id="dock-btn-settings" class="dock-btn w-12 h-12 rounded-[18px] bg-[#131417] border border-[#1e2025] hover:border-zinc-700 hover:text-zinc-300 flex items-center justify-center text-zinc-500 transition-all duration-200 shadow-md active:scale-95" title="Settings">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Dock Item 4: Mode Switcher (Live Simulation Toggle) -->
+      <div class="relative flex items-center">
+        <button onclick="toggleSimulation(this)" id="dock-btn-toggle" class="dock-btn w-12 h-12 rounded-[18px] bg-[#131417] border border-[#1e2025] hover:border-zinc-700 hover:text-zinc-300 flex items-center justify-center text-zinc-500 transition-all duration-200 shadow-md active:scale-95" title="Modo Simulación">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="6" width="20" height="12" rx="6"></rect>
+            <circle id="toggle-switch-circle" cx="8" cy="12" r="3" fill="currentColor"></circle>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Dashboard Card Component (Clean obsidian card without phone bezels or status bar) -->
+    <main class="w-full max-w-[395px] bg-[#111215] border border-[#202127] rounded-[30px] p-4.5 sm:p-5 card-shadow relative overflow-hidden order-1 md:order-2">
+
+      <!-- Card Top Header: Brand Polygonal Logo & Hamburger Menu -->
+      <div class="flex items-center justify-between px-1 mb-4">
+        <!-- Brand Orange Geometric Logo -->
+        <div class="flex items-center gap-2 cursor-pointer group" onclick="pulseLogo()" title="Brand">
+          <div class="w-7 h-7 relative flex items-center justify-center transition-transform duration-300 group-hover:scale-105" id="brand-logo-icon">
+            <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none">
+              <path d="M16 3L5 9.5V22.5L16 29L20.5 26.2V20.2L16 22.8L9.5 19V13L16 9.2L22.5 13V16.5H27V9.5L16 3Z" fill="#ff6200"></path>
+              <path d="M16 11.5L11 14.5V17.5L16 20.5L21 17.5V14.5L16 11.5Z" fill="#ff7a24"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 3-Line Hamburger Icon -->
+        <button class="w-8 h-8 rounded-lg flex flex-col justify-center items-end gap-1.5 p-1 text-zinc-400 hover:text-white transition-colors" aria-label="Menú">
+          <span class="w-5 h-[2px] bg-zinc-300 rounded-full"></span>
+          <span class="w-5 h-[2px] bg-zinc-300 rounded-full"></span>
+          <span class="w-3.5 h-[2px] bg-zinc-300 rounded-full"></span>
+        </button>
+      </div>
+
+      <!-- Card Section 1: Product Categories -->
+      <section class="bg-[#16171b] border border-[#202127] hover:border-[#2a2c34] rounded-[22px] p-4 mb-3 transition-all duration-200">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-1">
+          <div class="flex items-center gap-1.5 text-zinc-200 font-medium text-[13px]">
+            <span>Product Categories</span>
+            <span class="w-3.5 h-3.5 rounded-full border border-zinc-500/50 text-[9px] flex items-center justify-center text-zinc-400 cursor-help" title="Métrica porcentual por categoría de producto">i</span>
+          </div>
+          <button onclick="toggleDetails('categories')" class="px-2.5 py-0.5 rounded-md bg-[#1e1f25] hover:bg-[#252730] border border-[#282a32] text-zinc-300 text-[11px] font-medium tracking-tight transition-colors">
+            Details
+          </button>
+        </div>
+
+        <!-- Metric Stat Row -->
+        <div class="flex items-baseline gap-2 mb-3">
+          <span id="cat-percentage" class="text-3xl font-extrabold text-white tracking-tight leading-none font-sans">58%</span>
+          <span id="cat-trend" class="text-xs font-semibold text-[#22c55e] flex items-center gap-0.5">
+            +2.1% <span class="text-zinc-400 font-normal">vs last week</span>
+          </span>
+        </div>
+
+        <!-- Segmented Barcode Visualizer (30 individual vertical bars) -->
+        <div class="w-full bg-[#121316] p-2.5 rounded-xl border border-[#1b1c21] mb-3">
+          <div id="bar-chart-container" class="flex items-end justify-between gap-[3px] h-[32px] w-full px-0.5">
+            <!-- 30 Dynamic Vertical Bars injected by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Bottom Carousel Row: Category Name + Controls + Quantity -->
+        <div class="flex items-center justify-between text-xs pt-0.5">
+          <!-- Category Selector -->
+          <div class="flex items-center gap-2">
+            <span id="cat-current-name" class="font-medium text-zinc-200 text-[13px]">Accessories</span>
+            <!-- Carousel Arrows -->
+            <div class="flex items-center bg-[#1e1f25] border border-[#272932] rounded-lg p-0.5 gap-0.5">
+              <button onclick="cycleCategory(-1)" class="w-5 h-5 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-700/40 rounded transition-colors" title="Categoría anterior">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </button>
+              <button onclick="cycleCategory(1)" class="w-5 h-5 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-700/40 rounded transition-colors" title="Siguiente categoría">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Product Count & Delta -->
+          <div class="flex items-center gap-1.5 text-zinc-300 text-[12px] font-medium">
+            <span id="cat-count">45 products</span>
+            <span class="text-zinc-500 font-bold">•</span>
+            <span id="cat-growth" class="text-[#22c55e] font-semibold">+3.2%</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card Section 2: Customer Segments -->
+      <section class="bg-[#16171b] border border-[#202127] hover:border-[#2a2c34] rounded-[22px] p-4 mb-3 transition-all duration-200">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-1.5 text-zinc-200 font-medium text-[13px]">
+            <span>Customer Segments</span>
+            <span class="w-3.5 h-3.5 rounded-full border border-zinc-500/50 text-[9px] flex items-center justify-center text-zinc-400 cursor-help" title="Distribución de usuarios por segmento">i</span>
+          </div>
+          <span class="text-xs font-semibold text-[#22c55e]">
+            +5.8% <span class="text-zinc-400 font-normal">vs last week</span>
+          </span>
+        </div>
+
+        <!-- Donut Visual + Breakdown Legend -->
+        <div class="flex items-center justify-between gap-3">
+          
+          <!-- SVG Donut Chart -->
+          <div class="relative w-[114px] h-[114px] shrink-0 flex items-center justify-center">
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+              <!-- Dark carbon background track ring -->
+              <circle cx="60" cy="60" r="42" fill="none" stroke="#22242a" stroke-width="14" stroke-linecap="round"></circle>
+
+              <!-- Segment 1: Premium (Orange: 32%) -->
+              <circle id="donut-seg-premium" class="donut-slice" cx="60" cy="60" r="42" fill="none" stroke="#ff6200" stroke-width="14" stroke-linecap="round" stroke-dasharray="84 264" stroke-dashoffset="0" onmouseover="highlightSegment('premium')" onmouseout="resetSegmentHighlight()"></circle>
+
+              <!-- Segment 2: Regular (Yellow: 46%) -->
+              <circle id="donut-seg-regular" class="donut-slice" cx="60" cy="60" r="42" fill="none" stroke="#f59e0b" stroke-width="14" stroke-linecap="round" stroke-dasharray="121 264" stroke-dashoffset="-88" onmouseover="highlightSegment('regular')" onmouseout="resetSegmentHighlight()"></circle>
+
+              <!-- Segment 3: New (Teal: 20%) -->
+              <circle id="donut-seg-new" class="donut-slice" cx="60" cy="60" r="42" fill="none" stroke="#14b8a6" stroke-width="14" stroke-linecap="round" stroke-dasharray="52 264" stroke-dashoffset="-213" onmouseover="highlightSegment('new')" onmouseout="resetSegmentHighlight()"></circle>
+            </svg>
+
+            <!-- Center Donut Cutout Icon/Value -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span id="donut-center-label" class="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Total</span>
+              <span id="donut-center-val" class="text-xs font-bold text-white font-mono">100%</span>
+            </div>
+          </div>
+
+          <!-- Segments Metric List -->
+          <div class="flex-1 space-y-2 text-xs">
+            <!-- Row 1: Premium -->
+            <div class="flex items-center justify-between group cursor-pointer p-1 rounded-md hover:bg-[#1e2026] transition-colors" onmouseover="highlightSegment('premium')" onmouseout="resetSegmentHighlight()">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#ff6200] shrink-0"></span>
+                <span class="text-zinc-300 font-medium">Premium</span>
+              </div>
+              <div class="font-mono text-zinc-200">
+                <span class="font-semibold text-white">$9,450</span>
+                <span class="text-zinc-500 ml-1">· 32%</span>
+              </div>
+            </div>
+
+            <!-- Row 2: Regular -->
+            <div class="flex items-center justify-between group cursor-pointer p-1 rounded-md hover:bg-[#1e2026] transition-colors" onmouseover="highlightSegment('regular')" onmouseout="resetSegmentHighlight()">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#f59e0b] shrink-0"></span>
+                <span class="text-zinc-300 font-medium">Regular</span>
+              </div>
+              <div class="font-mono text-zinc-200">
+                <span class="font-semibold text-white">$8,320</span>
+                <span class="text-zinc-500 ml-1">· 46%</span>
+              </div>
+            </div>
+
+            <!-- Row 3: New -->
+            <div class="flex items-center justify-between group cursor-pointer p-1 rounded-md hover:bg-[#1e2026] transition-colors" onmouseover="highlightSegment('new')" onmouseout="resetSegmentHighlight()">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#14b8a6] shrink-0"></span>
+                <span class="text-zinc-300 font-medium">New</span>
+              </div>
+              <div class="font-mono text-zinc-200">
+                <span class="font-semibold text-white">$3,280</span>
+                <span class="text-zinc-500 ml-1">· 20%</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Card Section 3: Marketing Channels -->
+      <section class="bg-[#16171b] border border-[#202127] hover:border-[#2a2c34] rounded-[22px] p-4 transition-all duration-200">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-1">
+          <div class="flex items-center gap-1.5 text-zinc-200 font-medium text-[13px]">
+            <span>Marketing Channels</span>
+            <span class="w-3.5 h-3.5 rounded-full border border-zinc-500/50 text-[9px] flex items-center justify-center text-zinc-400 cursor-help" title="Volumen y eficacia de canales de adquisición">i</span>
+          </div>
+          <button onclick="toggleDetails('marketing')" class="px-2.5 py-0.5 rounded-md bg-[#1e1f25] hover:bg-[#252730] border border-[#282a32] text-zinc-300 text-[11px] font-medium tracking-tight transition-colors">
+            Details
+          </button>
+        </div>
+
+        <!-- Metric Stat Row -->
+        <div class="flex items-baseline gap-2 mb-3">
+          <span id="mkt-percentage" class="text-3xl font-extrabold text-white tracking-tight leading-none font-sans">82%</span>
+          <span class="text-xs font-semibold text-[#22c55e] flex items-center gap-0.5">
+            +2.1% <span class="text-zinc-400 font-normal">vs last week</span>
+          </span>
+        </div>
+
+        <!-- Segmented Horizontal Pill Bar -->
+        <div class="w-full flex items-center gap-1.5 mb-3">
+          <!-- Segment 1: Organic Search (Orange) -->
+          <div id="mkt-seg-organic" class="channel-bar-segment h-[11px] bg-[#ff6200] rounded-full" style="width: 52%;" title="Organic Search: 52%"></div>
+          <!-- Segment 2: Social Media (Yellow) -->
+          <div id="mkt-seg-social" class="channel-bar-segment h-[11px] bg-[#f59e0b] rounded-full" style="width: 32%;" title="Social Media: 32%"></div>
+          <!-- Segment 3: Direct (Teal) -->
+          <div id="mkt-seg-direct" class="channel-bar-segment h-[11px] bg-[#14b8a6] rounded-full" style="width: 16%;" title="Direct: 16%"></div>
+        </div>
+
+        <!-- Legend Sub-Row -->
+        <div class="flex items-center justify-between text-[11px] text-zinc-300 font-medium pt-0.5 px-0.5">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-[#ff6200]"></span>
+            <span>Organic Search</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span>
+            <span>Social Media</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-[#14b8a6]"></span>
+            <span>Direct</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Feedback Toast Popover -->
+      <div id="info-sheet" class="absolute bottom-3 left-3 right-3 bg-[#1b1c22] border border-[#292c36] rounded-2xl p-3 shadow-2xl text-xs text-zinc-200 transform translate-y-28 opacity-0 transition-all duration-300 pointer-events-none z-30 flex items-start justify-between gap-3">
+        <div class="flex items-start gap-2.5">
+          <span class="w-2 h-2 rounded-full bg-[#ff6200] mt-1 shrink-0"></span>
+          <div>
+            <p id="sheet-title" class="font-bold text-white text-[13px]">Detalles de Rendimiento</p>
+            <p id="sheet-desc" class="text-zinc-400 mt-0.5 leading-relaxed text-[11.5px]">Análisis predictivo de conversiones y retención del catálogo.</p>
+          </div>
+        </div>
+        <button onclick="dismissSheet()" class="text-zinc-400 hover:text-white p-1">✕</button>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script>
+    // Product category dataset
+    const categoriesData = [
+      { name: 'Accessories', percentage: 58, trend: '+2.1%', count: '45 products', growth: '+3.2%', activeBars: 18 },
+      { name: 'Footwear', percentage: 76, trend: '+5.4%', count: '82 products', growth: '+7.1%', activeBars: 23 },
+      { name: 'Apparel', percentage: 43, trend: '-1.8%', count: '128 products', growth: '-0.9%', activeBars: 13 },
+      { name: 'Electronics', percentage: 89, trend: '+8.3%', count: '34 products', growth: '+12.4%', activeBars: 27 },
+      { name: 'Home Living', percentage: 65, trend: '+3.7%', count: '61 products', growth: '+4.5%', activeBars: 20 }
+    ];
+
+    let currentCatIndex = 0;
+    const TOTAL_BARS = 30;
+
+    // Initialize the 30 vertical barcode bars
+    function initializeBarChart() {
+      const container = document.getElementById('bar-chart-container');
+      container.innerHTML = '';
+
+      for (let i = 0; i < TOTAL_BARS; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'metric-bar flex-1 rounded-[1.5px] cursor-pointer';
+        bar.style.height = '12px';
+        bar.style.backgroundColor = '#22242a';
+        
+        // Interactive bar tap
+        bar.addEventListener('click', () => {
+          selectCustomBarCount(i + 1);
+        });
+
+        container.appendChild(bar);
+      }
+
+      updateBarChartDisplay(categoriesData[0].activeBars, true);
+    }
+
+    // Dynamic wave animation on vertical bars
+    function updateBarChartDisplay(activeCount, animateWave = true) {
+      const bars = document.querySelectorAll('.metric-bar');
+      bars.forEach((bar, index) => {
+        const isActive = index < activeCount;
+        
+        let targetHeight = 16;
+        if (isActive) {
+          const wave = Math.sin((index / activeCount) * Math.PI) * 12;
+          targetHeight = Math.min(29, Math.max(14, 16 + wave));
+        }
+
+        if (animateWave) {
+          setTimeout(() => {
+            bar.style.height = `${targetHeight}px`;
+            if (isActive) {
+              bar.style.backgroundColor = '#ff6200';
+              bar.style.boxShadow = '0 0 6px rgba(255, 98, 0, 0.4)';
+            } else {
+              bar.style.backgroundColor = '#22242a';
+              bar.style.boxShadow = 'none';
+            }
+          }, index * 12);
+        } else {
+          bar.style.height = `${targetHeight}px`;
+          bar.style.backgroundColor = isActive ? '#ff6200' : '#22242a';
+          bar.style.boxShadow = isActive ? '0 0 6px rgba(255, 98, 0, 0.4)' : 'none';
+        }
+      });
+    }
+
+    // Number counting transition helper
+    function animateValue(elementId, start, end, duration, suffix = '') {
+      const obj = document.getElementById(elementId);
+      if (!obj) return;
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const currentVal = Math.floor(progress * (end - start) + start);
+        obj.textContent = currentVal + suffix;
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+
+    // Cycle through product categories
+    function cycleCategory(direction) {
+      const prevPercentage = categoriesData[currentCatIndex].percentage;
+      currentCatIndex = (currentCatIndex + direction + categoriesData.length) % categoriesData.length;
+      const data = categoriesData[currentCatIndex];
+
+      document.getElementById('cat-current-name').textContent = data.name;
+      document.getElementById('cat-count').textContent = data.count;
+      
+      const growthElem = document.getElementById('cat-growth');
+      growthElem.textContent = data.growth;
+      growthElem.className = data.growth.startsWith('+') ? 'text-[#22c55e] font-semibold' : 'text-[#f87171] font-semibold';
+
+      const trendElem = document.getElementById('cat-trend');
+      trendElem.innerHTML = `${data.trend} <span class="text-zinc-400 font-normal">vs last week</span>`;
+      trendElem.className = data.trend.startsWith('+') ? 'text-xs font-semibold text-[#22c55e] flex items-center gap-0.5' : 'text-xs font-semibold text-[#f87171] flex items-center gap-0.5';
+
+      animateValue('cat-percentage', prevPercentage, data.percentage, 400, '%');
+      updateBarChartDisplay(data.activeBars, true);
+    }
+
+    // Tap directly on bar chart
+    function selectCustomBarCount(count) {
+      const percentage = Math.round((count / TOTAL_BARS) * 100);
+      const currentVal = parseInt(document.getElementById('cat-percentage').textContent) || 50;
+      animateValue('cat-percentage', currentVal, percentage, 300, '%');
+      updateBarChartDisplay(count, false);
+    }
+
+    // Donut Segments Hover Focus
+    function highlightSegment(type) {
+      const centerLabel = document.getElementById('donut-center-label');
+      const centerVal = document.getElementById('donut-center-val');
+
+      if (type === 'premium') {
+        centerLabel.textContent = 'Premium';
+        centerVal.textContent = '32%';
+        centerVal.className = 'text-xs font-bold text-[#ff6200] font-mono';
+      } else if (type === 'regular') {
+        centerLabel.textContent = 'Regular';
+        centerVal.textContent = '46%';
+        centerVal.className = 'text-xs font-bold text-[#f59e0b] font-mono';
+      } else if (type === 'new') {
+        centerLabel.textContent = 'New';
+        centerVal.textContent = '20%';
+        centerVal.className = 'text-xs font-bold text-[#14b8a6] font-mono';
+      }
+    }
+
+    function resetSegmentHighlight() {
+      const centerLabel = document.getElementById('donut-center-label');
+      const centerVal = document.getElementById('donut-center-val');
+      centerLabel.textContent = 'Total';
+      centerVal.textContent = '100%';
+      centerVal.className = 'text-xs font-bold text-white font-mono';
+    }
+
+    // Dock Navigation switcher with left tooltip repositioning
+    function switchDockTab(tabKey, buttonElem) {
+      document.querySelectorAll('.dock-btn').forEach(btn => {
+        btn.classList.remove('bg-[#16171b]', 'text-[#ff6200]', 'border-orange-500/50');
+        btn.classList.add('bg-[#131417]', 'text-zinc-500', 'border-[#1e2025]');
+        const indicator = btn.querySelector('.dock-indicator');
+        if (indicator) indicator.remove();
+      });
+
+      buttonElem.classList.remove('bg-[#131417]', 'text-zinc-500', 'border-[#1e2025]');
+      buttonElem.classList.add('bg-[#16171b]', 'text-[#ff6200]', 'border-orange-500/50');
+
+      const indicator = document.createElement('span');
+      indicator.className = 'dock-indicator absolute left-1.5 w-1 h-3 rounded-full bg-[#ff6200] transition-all';
+      buttonElem.appendChild(indicator);
+
+      // Reposition tooltip to the left of the active button
+      const tooltip = document.getElementById('dock-tooltip');
+      const tooltipText = document.getElementById('tooltip-text');
+      const names = {
+        performance: 'Performance',
+        customers: 'Customers',
+        settings: 'Settings'
+      };
+      tooltipText.textContent = names[tabKey] || tabKey;
+      buttonElem.parentElement.appendChild(tooltip);
+    }
+
+    // Toggle live simulation mode
+    let isSimulating = false;
+    let simInterval = null;
+
+    function toggleSimulation(btn) {
+      isSimulating = !isSimulating;
+      const circle = document.getElementById('toggle-switch-circle');
+
+      if (isSimulating) {
+        circle.setAttribute('cx', '16');
+        circle.setAttribute('fill', '#ff6200');
+        btn.classList.add('border-orange-500/50', 'text-[#ff6200]');
+        showNotification('Modo Simulación Activo', 'Las métricas y barras se actualizan de forma continua.');
+        
+        simInterval = setInterval(() => {
+          cycleCategory(1);
+          const org = 45 + Math.floor(Math.random() * 16);
+          const soc = 20 + Math.floor(Math.random() * 15);
+          const dir = 100 - org - soc;
+          document.getElementById('mkt-seg-organic').style.width = org + '%';
+          document.getElementById('mkt-seg-social').style.width = soc + '%';
+          document.getElementById('mkt-seg-direct').style.width = dir + '%';
+        }, 3000);
+      } else {
+        circle.setAttribute('cx', '8');
+        circle.setAttribute('fill', 'currentColor');
+        btn.classList.remove('border-orange-500/50', 'text-[#ff6200]');
+        clearInterval(simInterval);
+        showNotification('Simulación Detenida', 'Valores fijados en su estado nominal.');
+      }
+    }
+
+    // Interactive details sheet trigger
+    function toggleDetails(section) {
+      if (section === 'categories') {
+        const current = categoriesData[currentCatIndex];
+        showNotification(
+          `Categoría: ${current.name}`,
+          `Crecimiento proyectado de ${current.growth} con ${current.count} analizados.`
+        );
+      } else if (section === 'marketing') {
+        showNotification(
+          'Marketing Channels',
+          'Tráfico orgánico liderando con un 52% de participación de canal.'
+        );
+      }
+    }
+
+    // Notification toast popup
+    function showNotification(title, message) {
+      const sheet = document.getElementById('info-sheet');
+      document.getElementById('sheet-title').textContent = title;
+      document.getElementById('sheet-desc').textContent = message;
+
+      sheet.classList.remove('translate-y-28', 'opacity-0', 'pointer-events-none');
+      sheet.classList.add('translate-y-0', 'opacity-100');
+
+      clearTimeout(window.sheetTimeout);
+      window.sheetTimeout = setTimeout(() => {
+        dismissSheet();
+      }, 3500);
+    }
+
+    function dismissSheet() {
+      const sheet = document.getElementById('info-sheet');
+      sheet.classList.add('translate-y-28', 'opacity-0', 'pointer-events-none');
+      sheet.classList.remove('translate-y-0', 'opacity-100');
+    }
+
+    // Logo pulse effect on click
+    function pulseLogo() {
+      const icon = document.getElementById('brand-logo-icon');
+      icon.classList.add('scale-125');
+      setTimeout(() => icon.classList.remove('scale-125'), 250);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initializeBarChart();
+    });
+  </script>
+</body>
+</html>

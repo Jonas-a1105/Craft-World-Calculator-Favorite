@@ -10,14 +10,14 @@ interface Props {
 export const EncyclopediaHeader: React.FC<Props> = ({ search, onSearchChange }) => {
   const { language } = useTranslation();
 
-  // Remove diacritics so TheImpostor font glyphs never fallback to system fonts
-  const rawTitle = language === 'es' ? 'Enciclopedia de Fabricas' : 'Factory Encyclopedia';
+  // Clean title without extra text, centered with description
+  const rawTitle = language === 'es' ? 'Enciclopedia' : 'Encyclopedia';
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-1 mb-4">
-      <div className="space-y-1 min-w-0 max-w-full">
+    <div className="flex flex-col items-center justify-center text-center gap-3 mt-1 mb-6 w-full">
+      <div className="space-y-1.5 max-w-2xl mx-auto text-center">
         <h1
-          className="text-base sm:text-lg md:text-xl font-game text-white tracking-wide leading-tight truncate"
+          className="text-lg sm:text-xl md:text-2xl font-game text-white tracking-wide leading-tight"
           style={{
             fontFamily: "'TheImpostor', sans-serif",
             textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 0 12px rgba(56,189,248,0.2)',
@@ -26,20 +26,20 @@ export const EncyclopediaHeader: React.FC<Props> = ({ search, onSearchChange }) 
         >
           {rawTitle}
         </h1>
-        <p className="text-xs md:text-sm text-slate-400 font-main max-w-3xl leading-relaxed">
+        <p className="text-xs md:text-sm text-slate-400 font-main max-w-2xl mx-auto leading-relaxed text-center">
           {language === 'es'
             ? 'Enciclopedia completa de cada edificio, directo de los datos del juego: costes, rendimiento, producción y detalles de mejora en cada nivel.'
             : 'Full encyclopedia of every building, straight from the game data: costs, yields, production and upgrade details at every level.'}
         </p>
       </div>
 
-      <div className="relative w-full md:w-64 shrink-0">
+      <div className="relative w-full max-w-md mx-auto">
         <input
           type="text"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={language === 'es' ? 'Buscar fábrica...' : 'Search building...'}
-          className="w-full bg-[#1c1c20] text-slate-200 placeholder-slate-500 text-xs px-4 py-2.5 rounded-full border-none focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all shadow-inner"
+          placeholder={language === 'es' ? 'Buscar fábrica o recurso...' : 'Search building or resource...'}
+          className="w-full bg-[#1c1c20] text-slate-200 placeholder-slate-500 text-xs px-4 py-2.5 rounded-full border-none focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all shadow-inner text-center"
         />
         {search && (
           <button

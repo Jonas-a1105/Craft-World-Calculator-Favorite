@@ -5,6 +5,7 @@ import { useResourceDetail } from '../hooks/useResourceDetail';
 import { ResourceDetailHeader } from './ResourceDetailHeader';
 import { ResourcePriceBanner } from './ResourcePriceBanner';
 import { ResourceInteractiveChart } from './ResourceInteractiveChart';
+import { ResourceMarketStatsCard } from './ResourceMarketStatsCard';
 import { ResourceActivityList } from './ResourceActivityList';
 
 export const ResourceDetailDashboard: React.FC = () => {
@@ -12,6 +13,7 @@ export const ResourceDetailDashboard: React.FC = () => {
     symbol,
     language,
     loading,
+    poolItem,
     chartSeries,
     activityTrades,
     activeTimeframe,
@@ -65,6 +67,13 @@ export const ResourceDetailDashboard: React.FC = () => {
           handlePointerMove={handlePointerMove}
           handlePointerUp={handlePointerUp}
           handlePointerCancel={handlePointerCancel}
+        />
+
+        {/* Real Ronin Katana DEX Market Metrics (ATH, ATL, Median, Average, TVL) */}
+        <ResourceMarketStatsCard
+          symbol={symbol}
+          poolItem={poolItem}
+          activeTimeframe={activeTimeframe}
         />
 
         <ResourceActivityList trades={activityTrades} />

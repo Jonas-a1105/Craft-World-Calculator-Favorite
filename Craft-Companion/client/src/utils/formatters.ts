@@ -15,6 +15,8 @@ export function formatCompactNumber(value: unknown): string {
   return value.toLocaleString(undefined, { maximumFractionDigits: 1 });
 }
 
+export const formatCompact = formatCompactNumber;
+
 export function formatFactoryName(symbol: string, lang = 'en'): string {
   const normalized = String(symbol || '').trim().toUpperCase();
   if (lang === 'es') {

@@ -411,6 +411,35 @@ function ensureBaseResourceRows(parsed: FactoryDataRow[]): FactoryDataRow[] {
 export async function loadFactoryData(): Promise<FactoryDataRow[]> {
   if (factoryDataCache) return factoryDataCache;
 
+  // 0. Node.js environment fallback for automated tests and SSR
+  if (typeof window === 'undefined') {
+    try {
+      const dynamicImport = new Function('mod', 'return import(mod)');
+      const fs = await dynamicImport('node:fs');
+      const path = await dynamicImport('node:path');
+      const cwd = process.cwd();
+      const possiblePaths = [
+        path.resolve(cwd, 'client/public/data/factories.json'),
+        path.resolve(cwd, 'public/data/factories.json'),
+        path.resolve(cwd, 'data/factories.json'),
+        path.resolve(cwd, '../client/public/data/factories.json'),
+        path.resolve(cwd, '../../client/public/data/factories.json'),
+      ];
+      for (const p of possiblePaths) {
+        if (fs.existsSync(p)) {
+          const raw = fs.readFileSync(p, 'utf8');
+          const jsonData = JSON.parse(raw);
+          if (Array.isArray(jsonData) && jsonData.length > 0) {
+            factoryDataCache = ensureBaseResourceRows(jsonData);
+            return factoryDataCache;
+          }
+        }
+      }
+    } catch {
+      // Fall through to browser fetch
+    }
+  }
+
   // 1. Prioritize high-performance static JSON
   try {
     const jsonRes = await fetch('/data/factories.json');

@@ -5,13 +5,21 @@
     "moduleResolution": "Node",
     "outDir": "dist-tests",
     "rootDir": "src",
-    "noEmit": false
+    "noEmit": false,
+    "resolveJsonModule": true
   },
   "include": [
+    "src/modules/baseCost/types.ts",
+    "src/modules/baseCost/data/**/*.ts",
+    "src/modules/baseCost/services/**/*.ts",
+    "src/modules/baseCost/baseCost.test.ts",
+    "src/services/factoryData.ts",
     "src/services/craftworldCalculations.ts",
     "src/services/craftworldCalculations.test.ts",
     "src/services/coinPriceService.ts",
     "src/services/coinPriceService.test.ts",
+    "src/services/roninPoolsService.ts",
+    "src/services/roninPoolsService.test.ts",
     "src/services/durationFormat.ts",
     "src/services/factoryBoostModifiers.ts",
     "src/services/masteryModifiers.ts",
@@ -19,6 +27,8 @@
     "src/services/priceHistory.ts",
     "src/services/workshopModifiers.ts",
     "src/services/valueChainCalculator.ts",
+    "src/modules/encyclopedia/types.ts",
+    "src/modules/encyclopedia/data/**/*.ts",
     "src/modules/encyclopedia/encyclopedia.test.ts",
     "src/modules/home/utils/**/*.ts",
     "src/modules/profitability/services/**/*.ts",
@@ -36,7 +46,19 @@
     "src/modules/calculator/services/**/*.ts",
     "src/components/layout/nav/services/**/*.ts",
     "src/modules/auth/services/**/*.ts",
-    "src/modules/splash/services/**/*.ts"
+    "src/modules/splash/services/**/*.ts",
+    "src/modules/masterpiece/types.ts",
+    "src/modules/masterpiece/data/**/*.ts",
+    "src/modules/masterpiece/services/**/*.ts",
+    "src/modules/masterpiece/masterpiece.test.ts",
+    "src/modules/upgradeSimulator/types.ts",
+    "src/modules/upgradeSimulator/data/**/*.ts",
+    "src/modules/upgradeSimulator/services/**/*.ts",
+    "src/modules/upgradeSimulator/upgradeSimulator.test.ts",
+    "src/modules/powerSimulator/types.ts",
+    "src/modules/powerSimulator/data/**/*.ts",
+    "src/modules/powerSimulator/services/**/*.ts",
+    "src/modules/powerSimulator/powerSimulator.test.ts"
   ],
   "exclude": ["src/**/*.tsx"]
 }

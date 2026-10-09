@@ -1,13 +1,18 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from '../../../utils/i18n';
 import { useCraftworldHomeQuery } from '../../../services/queries/useCraftworldQueries';
 import { filterMarketPrices } from '../services/pricesService';
-import type { PriceListData, MarketPriceItem } from '../types';
+import { fetchRoninPoolsData } from '../../../services/roninPoolsService';
+import type { MarketPriceItem } from '../types';
 
 export function useMarketPrices() {
   const { language } = useTranslation();
   const { data: home, isLoading: loading } = useCraftworldHomeQuery();
   const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    fetchRoninPoolsData();
+  }, []);
 
   const prices: MarketPriceItem[] = useMemo(() => {
     return (home?.priceList?.prices || []).map((p) => ({

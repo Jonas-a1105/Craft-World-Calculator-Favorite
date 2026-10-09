@@ -23,6 +23,10 @@ import ValueChainMap from './pages/ValueChainMap';
 import Prices from './pages/Prices';
 import ResourceDetail from './pages/ResourceDetail';
 import Encyclopedia from './pages/Encyclopedia';
+import Masterpiece from './pages/Masterpiece';
+import UpgradeSimulator from './pages/UpgradeSimulator';
+import PowerSimulator from './pages/PowerSimulator';
+import BaseCost from './pages/BaseCost';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import Splash from './pages/Splash';
@@ -122,6 +126,30 @@ export default function App() {
             }
           />
           <Route
+            path="/upgrade-simulator"
+            element={
+              <ProtectedRoute>
+                <UpgradeSimulator />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/power-simulator"
+            element={
+              <ProtectedRoute>
+                <PowerSimulator />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/base-cost"
+            element={
+              <ProtectedRoute>
+                <BaseCost />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/matrix"
             element={
               <ProtectedRoute>
@@ -181,10 +209,27 @@ export default function App() {
             path="/encyclopedia"
             element={
               <ProtectedRoute>
-                <Encyclopedia />
+                <Encyclopedia mode="encyclopedia" />
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/encyclopedia/events"
+            element={
+              <ProtectedRoute>
+                <Encyclopedia mode="events" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/masterpiece"
+            element={
+              <ProtectedRoute>
+                <Masterpiece />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/events" element={<Navigate to="/encyclopedia/events" replace />} />
           <Route path="/factory-encyclopedia" element={<Navigate to="/encyclopedia" replace />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/politica-de-privacidad" element={<Navigate to="/privacy" replace />} />

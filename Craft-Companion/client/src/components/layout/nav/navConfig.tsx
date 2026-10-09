@@ -21,6 +21,14 @@ import {
   StopwatchLinear,
   Widget2BoldDuotone,
   Widget2Linear,
+  CrownBoldDuotone,
+  CrownLinear,
+  TuningBoldDuotone,
+  TuningLinear,
+  BatteryChargeBoldDuotone,
+  BatteryChargeLinear,
+  CalculatorBoldDuotone,
+  CalculatorLinear,
   SettingsBoldDuotone,
   SettingsLinear,
 } from 'solar-icon-set';
@@ -69,11 +77,39 @@ export const NAV_ITEMS: NavItem[] = [
       active ? <BoltBoldDuotone size={24} className="w-6 h-6 text-yellow-400" /> : <BoltLinear size={24} className="w-6 h-6 text-slate-300" />,
   },
   {
+    path: '/upgrade-simulator',
+    labelEn: 'Upgrade Sim',
+    labelEs: 'Mejoras Sim',
+    icon: (active: boolean) =>
+      active ? <TuningBoldDuotone size={24} className="w-6 h-6 text-amber-400" /> : <TuningLinear size={24} className="w-6 h-6 text-slate-300" />,
+  },
+  {
+    path: '/power-simulator',
+    labelEn: 'Power Sim',
+    labelEs: 'Poder Sim',
+    icon: (active: boolean) =>
+      active ? <BatteryChargeBoldDuotone size={24} className="w-6 h-6 text-cyan-400" /> : <BatteryChargeLinear size={24} className="w-6 h-6 text-slate-300" />,
+  },
+  {
+    path: '/base-cost',
+    labelEn: 'Base Cost',
+    labelEs: 'Costo Base',
+    icon: (active: boolean) =>
+      active ? <CalculatorBoldDuotone size={24} className="w-6 h-6 text-emerald-400" /> : <CalculatorLinear size={24} className="w-6 h-6 text-slate-300" />,
+  },
+  {
     path: '/encyclopedia',
     labelEn: 'Encyclopedia',
     labelEs: 'Enciclopedia',
     icon: (active: boolean) =>
       active ? <Book2BoldDuotone size={24} className="w-6 h-6 text-indigo-400" /> : <Book2Linear size={24} className="w-6 h-6 text-slate-300" />,
+  },
+  {
+    path: '/masterpiece',
+    labelEn: 'Masterpiece',
+    labelEs: 'Masterpiece',
+    icon: (active: boolean) =>
+      active ? <CrownBoldDuotone size={24} className="w-6 h-6 text-amber-400" /> : <CrownLinear size={24} className="w-6 h-6 text-slate-300" />,
   },
   {
     path: '/compare',
