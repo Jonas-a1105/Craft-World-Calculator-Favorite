@@ -39,7 +39,7 @@ export const BaseCostSettingsBar: React.FC<BaseCostSettingsBarProps> = ({
             />
             <span className="text-slate-300 text-xs font-mono font-medium">Buy slippage</span>
           </div>
-          <div className="flex items-center gap-1 bg-[#1c1c22] px-2.5 py-1 rounded-xl ring-1 ring-white/5 font-mono text-xs">
+          <div className="flex items-center gap-1.5 bg-[#1c1c22] px-3 py-1 rounded-xl ring-1 ring-white/10 font-mono text-xs shadow-sm">
             <input
               type="number"
               min={0}
@@ -51,9 +51,9 @@ export const BaseCostSettingsBar: React.FC<BaseCostSettingsBarProps> = ({
                   buySlippagePct: Math.max(0, parseFloat(e.target.value) || 0),
                 })
               }
-              className="w-10 bg-transparent text-right text-slate-100 font-semibold focus:outline-none"
+              className="w-12 bg-transparent text-center text-slate-100 font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
-            <span className="text-slate-500">%</span>
+            <span className="text-slate-400 font-semibold">%</span>
           </div>
         </label>
 
@@ -68,7 +68,7 @@ export const BaseCostSettingsBar: React.FC<BaseCostSettingsBarProps> = ({
             />
             <span className="text-slate-300 text-xs font-mono font-medium">Sell slippage</span>
           </div>
-          <div className="flex items-center gap-1 bg-[#1c1c22] px-2.5 py-1 rounded-xl ring-1 ring-white/5 font-mono text-xs">
+          <div className="flex items-center gap-1.5 bg-[#1c1c22] px-3 py-1 rounded-xl ring-1 ring-white/10 font-mono text-xs shadow-sm">
             <input
               type="number"
               min={0}
@@ -80,9 +80,9 @@ export const BaseCostSettingsBar: React.FC<BaseCostSettingsBarProps> = ({
                   sellSlippagePct: Math.max(0, parseFloat(e.target.value) || 0),
                 })
               }
-              className="w-10 bg-transparent text-right text-slate-100 font-semibold focus:outline-none"
+              className="w-12 bg-transparent text-center text-slate-100 font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
-            <span className="text-slate-500">%</span>
+            <span className="text-slate-400 font-semibold">%</span>
           </div>
         </label>
 
@@ -92,7 +92,7 @@ export const BaseCostSettingsBar: React.FC<BaseCostSettingsBarProps> = ({
             <BatteryChargeBoldDuotone size={18} className="text-cyan-400 shrink-0" />
             <span className="text-slate-300 text-xs font-mono font-medium">Power:</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-[#1c1c22] px-2.5 py-1 rounded-xl ring-1 ring-white/5 font-mono text-xs">
+          <div className="flex items-center gap-1.5 bg-[#1c1c22] px-3 py-1 rounded-xl ring-1 ring-white/10 font-mono text-xs shadow-sm">
             <input
               type="number"
               min={0}
@@ -104,7 +104,7 @@ export const BaseCostSettingsBar: React.FC<BaseCostSettingsBarProps> = ({
                   powerPricePer100k: Math.max(0, parseFloat(e.target.value) || 0),
                 })
               }
-              className="w-14 bg-transparent text-right text-cyan-300 font-semibold focus:outline-none"
+              className="w-16 bg-transparent text-center text-cyan-300 font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
             <span className="text-[11px] text-slate-400">COIN/100k</span>
           </div>
