@@ -110,7 +110,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
             <div className="py-2.5 flex flex-wrap items-center gap-1.5 sm:gap-2">
               {row.earth > 0 && (
                 <div
-                  className="flex items-center gap-1.5 bg-[#24211a] px-2.5 py-1 rounded-xl text-xs font-mono text-amber-300 ring-1 ring-amber-500/20 shadow-sm"
+                  className="flex items-center gap-1.5 bg-[#24211a] px-2.5 py-1 rounded-xl text-xs font-mono text-amber-300 shadow-sm"
                   title={`${row.earth.toFixed(4)} Earth`}
                 >
                   <ResourceIcon symbol="EARTH" size={15} />
@@ -120,7 +120,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
               )}
               {row.water > 0 && (
                 <div
-                  className="flex items-center gap-1.5 bg-[#16202c] px-2.5 py-1 rounded-xl text-xs font-mono text-blue-300 ring-1 ring-blue-500/20 shadow-sm"
+                  className="flex items-center gap-1.5 bg-[#16202c] px-2.5 py-1 rounded-xl text-xs font-mono text-blue-300 shadow-sm"
                   title={`${row.water.toFixed(4)} Water`}
                 >
                   <ResourceIcon symbol="WATER" size={15} />
@@ -130,7 +130,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
               )}
               {row.fire > 0 && (
                 <div
-                  className="flex items-center gap-1.5 bg-[#2c1a1a] px-2.5 py-1 rounded-xl text-xs font-mono text-rose-300 ring-1 ring-rose-500/20 shadow-sm"
+                  className="flex items-center gap-1.5 bg-[#2c1a1a] px-2.5 py-1 rounded-xl text-xs font-mono text-rose-300 shadow-sm"
                   title={`${row.fire.toFixed(4)} Fire`}
                 >
                   <ResourceIcon symbol="FIRE" size={15} />
@@ -140,7 +140,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
               )}
               {row.dust > 0 && (
                 <div
-                  className="flex items-center gap-1.5 bg-[#251a2c] px-2.5 py-1 rounded-xl text-xs font-mono text-purple-300 ring-1 ring-purple-500/20 shadow-sm"
+                  className="flex items-center gap-1.5 bg-[#251a2c] px-2.5 py-1 rounded-xl text-xs font-mono text-purple-300 shadow-sm"
                   title={`${row.dust.toFixed(4)} Dust`}
                 >
                   <ResourceIcon symbol="DUST" size={15} />
@@ -150,7 +150,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
               )}
               {row.lumber > 0 && (
                 <div
-                  className="flex items-center gap-1.5 bg-[#1c2618] px-2.5 py-1 rounded-xl text-xs font-mono text-lime-300 ring-1 ring-lime-500/20 shadow-sm"
+                  className="flex items-center gap-1.5 bg-[#1c2618] px-2.5 py-1 rounded-xl text-xs font-mono text-lime-300 shadow-sm"
                   title={`${row.lumber.toFixed(4)} Lumber`}
                 >
                   <ResourceIcon symbol="LUMBER" size={15} />
@@ -160,7 +160,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
               )}
               {row.powerPerUnit > 0 && (
                 <div
-                  className="flex items-center gap-1.5 bg-[#112028] px-2.5 py-1 rounded-xl text-xs font-mono text-cyan-300 ring-1 ring-cyan-500/20 shadow-sm"
+                  className="flex items-center gap-1.5 bg-[#112028] px-2.5 py-1 rounded-xl text-xs font-mono text-cyan-300 shadow-sm"
                   title={`${row.powerPerUnit.toFixed(2)} Power por unidad`}
                 >
                   <BatteryChargeBoldDuotone size={15} className="text-cyan-400" />
@@ -197,7 +197,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                   <span>{row.profit >= 0 ? '+' : ''}{formatCoin(row.profit)}</span>
                   <ResourceIcon symbol="COIN" size={12} />
                   {row.marginPct !== null && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-lg bg-[#131316] ml-1 shadow-inner ring-1 ring-white/5">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-lg bg-[#131316] ml-1 shadow-inner">
                       {row.marginPct >= 0 ? '+' : ''}{row.marginPct.toFixed(0)}%
                     </span>
                   )}

@@ -39,7 +39,7 @@ export const BaseCostSettingsBar: React.FC<BaseCostSettingsBarProps> = ({
             />
             <span className="text-slate-300 text-xs font-mono font-medium">Buy slippage</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-[#1c1c22] px-3 py-1 rounded-xl ring-1 ring-white/10 font-mono text-xs shadow-sm">
+          <div className="flex items-center gap-1.5 bg-[#1c1c22] px-3 py-1 rounded-xl font-mono text-xs shadow-sm">
             <input
               type="number"
               min={0}
@@ -68,7 +68,7 @@ export const BaseCostSettingsBar: React.FC<BaseCostSettingsBarProps> = ({
             />
             <span className="text-slate-300 text-xs font-mono font-medium">Sell slippage</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-[#1c1c22] px-3 py-1 rounded-xl ring-1 ring-white/10 font-mono text-xs shadow-sm">
+          <div className="flex items-center gap-1.5 bg-[#1c1c22] px-3 py-1 rounded-xl font-mono text-xs shadow-sm">
             <input
               type="number"
               min={0}
@@ -92,7 +92,7 @@ export const BaseCostSettingsBar: React.FC<BaseCostSettingsBarProps> = ({
             <BatteryChargeBoldDuotone size={18} className="text-cyan-400 shrink-0" />
             <span className="text-slate-300 text-xs font-mono font-medium">Power:</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-[#1c1c22] px-3 py-1 rounded-xl ring-1 ring-white/10 font-mono text-xs shadow-sm">
+          <div className="flex items-center gap-1.5 bg-[#1c1c22] px-3 py-1 rounded-xl font-mono text-xs shadow-sm">
             <input
               type="number"
               min={0}
@@ -124,7 +124,7 @@ export const BaseCostSettingsBar: React.FC<BaseCostSettingsBarProps> = ({
             placeholder="Buscar recurso..."
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full bg-[#131316] text-slate-100 placeholder-slate-500 text-xs rounded-xl pl-9 pr-8 py-2 focus:outline-none focus:ring-1 focus:ring-amber-400/50 shadow-inner ring-1 ring-white/10"
+            className="w-full bg-[#131316] text-slate-100 placeholder-slate-500 text-xs rounded-xl pl-9 pr-8 py-2 focus:outline-none shadow-inner border-none"
           />
           {search && (
             <button
@@ -143,7 +143,7 @@ export const BaseCostSettingsBar: React.FC<BaseCostSettingsBarProps> = ({
             className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all shadow-sm ${
               selectedCategory === 'all'
                 ? 'bg-amber-400 text-black font-bold shadow-amber-400/20'
-                : 'bg-[#131316] text-slate-400 hover:bg-[#202026] hover:text-slate-200 ring-1 ring-white/5'
+                : 'bg-[#131316] text-slate-400 hover:bg-[#202026] hover:text-slate-200'
             }`}
           >
             Todos ({48})
@@ -158,7 +158,7 @@ export const BaseCostSettingsBar: React.FC<BaseCostSettingsBarProps> = ({
                 className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all shadow-sm ${
                   isActive
                     ? 'bg-amber-400 text-black font-bold shadow-amber-400/20'
-                    : 'bg-[#131316] text-slate-400 hover:bg-[#202026] hover:text-slate-200 ring-1 ring-white/5'
+                    : 'bg-[#131316] text-slate-400 hover:bg-[#202026] hover:text-slate-200'
                 }`}
               >
                 {cat.labelEs} ({cat.resources.length})

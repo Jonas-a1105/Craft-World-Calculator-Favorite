@@ -58,8 +58,8 @@ export const BaseCostLevelSelector: React.FC<BaseCostLevelSelectorProps> = ({
         onClick={() => setIsOpen((prev) => !prev)}
         className={`group/lvl flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-mono transition-all border-none outline-none cursor-pointer shadow-sm active:scale-95 ${
           isOpen
-            ? 'bg-[#22222a] ring-1 ring-amber-400 text-white'
-            : 'bg-[#131316] hover:bg-[#1c1c22] ring-1 ring-white/10 text-slate-200'
+            ? 'bg-[#22222a] text-white'
+            : 'bg-[#131316] hover:bg-[#1c1c22] text-slate-200'
         }`}
         title={`Nivel ${curLevel} de ${maxLevel} (Click para cambiar)`}
         aria-expanded={isOpen}
@@ -76,7 +76,7 @@ export const BaseCostLevelSelector: React.FC<BaseCostLevelSelectorProps> = ({
 
       {/* Custom Designed Level Selection Window */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 z-50 w-64 p-3 rounded-2xl bg-[#16161c] shadow-2xl shadow-black/95 ring-1 ring-white/10 animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 top-full mt-2 z-50 w-64 p-3 rounded-2xl bg-[#16161c] shadow-2xl shadow-black/95 border-none animate-in fade-in zoom-in-95 duration-150">
           {/* Header */}
           <div className="flex items-center justify-between pb-2 border-b border-white/5">
             <div>

@@ -53,7 +53,7 @@ export const BaseCostHeader: React.FC<BaseCostHeaderProps> = ({
           title="Copiar niveles de fábrica y maestrías desde la tabla de precios"
           className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all shadow-md active:scale-95 ${
             justImported
-              ? 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/40'
+              ? 'bg-emerald-500/20 text-emerald-300 font-semibold'
               : 'bg-[#18181c] text-amber-400 hover:bg-[#222228] hover:text-amber-300'
           }`}
         >
