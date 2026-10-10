@@ -14,7 +14,7 @@ export const InventoryTotalHeader: React.FC<InventoryTotalHeaderProps> = ({
   language,
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center text-center py-4 space-y-2">
+    <div className="flex flex-col items-center justify-center text-center py-4 space-y-2 select-none">
       <div className="flex items-center gap-2.5">
         <ResourceIcon symbol="Coin" size={30} />
         <span className="text-base sm:text-lg text-slate-300 font-semibold tracking-wide">
@@ -36,3 +36,4 @@ export const InventoryTotalHeader: React.FC<InventoryTotalHeaderProps> = ({
     </div>
   );
 };
+

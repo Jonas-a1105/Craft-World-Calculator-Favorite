@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { BaseCostRowData } from '../types';
 import { ResourceIcon } from '../../../components/GameIcon';
 import { BaseCostLevelSelector } from './BaseCostLevelSelector';
@@ -8,10 +8,18 @@ import {
   formatQuantity,
   getMarginTextColor,
 } from '../services/baseCostCalculatorService';
-import { LinkCircleLinear, BatteryChargeBoldDuotone } from 'solar-icon-set';
+import {
+  LinkCircleLinear,
+  BatteryChargeBoldDuotone,
+  BoltBoldDuotone,
+  CartLargeBoldDuotone,
+  LeafBoldDuotone,
+  AltArrowDownLinear,
+} from 'solar-icon-set';
 
 interface BaseCostCardViewProps {
   rows: BaseCostRowData[];
+  strategyFilter?: 'all' | 'craft' | 'buy';
   onLevelChange: (token: string, level: number) => void;
   onMasteryChange: (token: string, mastery: number) => void;
 }
@@ -30,25 +38,324 @@ const CATEGORY_STYLES: Record<string, { text: string; bg: string }> = {
 
 export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
   rows,
+  strategyFilter = 'all',
   onLevelChange,
   onMasteryChange,
 }) => {
+  const [expandedToken, setExpandedToken] = useState<string | null>(null);
+
   if (rows.length === 0) {
     return (
-      <div className="rounded-[28px] sm:rounded-[32px] bg-[#1c1c22] p-12 text-center text-slate-500 font-mono text-xs shadow-xl shadow-black/25">
-        No se encontraron recursos que coincidan con los filtros de búsqueda.
+      <div className="rounded-[32px] bg-[#1c1c22] p-12 text-center text-slate-500 font-mono text-xs shadow-xl shadow-black/25">
+        No se encontraron recursos que coincidan con los filtros de búsqueda o estrategia.
       </div>
     );
   }
 
+  const toggleExpand = (token: string) => {
+    setExpandedToken((prev) => (prev === token ? null : token));
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
       {rows.map((row) => {
-        const marginColor = getMarginTextColor(row.marginPct);
         const catStyle = CATEGORY_STYLES[row.category.toLowerCase()] || {
           text: 'text-slate-400',
           bg: 'bg-slate-800/40',
         };
+
+        // If strategyFilter is 'craft' or 'buy', show the tactical decision card!
+        if (strategyFilter === 'craft' || strategyFilter === 'buy') {
+          const isExpanded = expandedToken === row.token;
+          const directDiffPct =
+            row.marketBuyPrice > 0
+              ? ((row.directCraftCost - row.marketBuyPrice) / row.marketBuyPrice) * 100
+              : 0;
+
+          const baseDiffPct =
+            row.marketBuyPrice > 0
+              ? ((row.baseElementalCraftCost - row.marketBuyPrice) / row.marketBuyPrice) * 100
+              : 0;
+
+          return (
+            <div
+              key={row.token}
+              className="flex flex-col justify-between rounded-[28px] sm:rounded-[32px] bg-[#1c1c22] hover:bg-[#212128] p-5 shadow-xl shadow-black/25 transition-all duration-200 border-none select-none relative group"
+            >
+              <div className="space-y-3.5">
+                {/* 1. Top Bar: Icon, Name, Category & Selectors */}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-12 h-12 rounded-2xl bg-zinc-800/50 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                      <ResourceIcon symbol={row.token} size={32} className="drop-shadow shrink-0" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-extrabold text-base text-white truncate tracking-wide">
+                          {row.name}
+                        </span>
+                        {row.poolUrl && (
+                          <a
+                            href={row.poolUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title={`Ver ${row.name} en Defined.fi`}
+                            className="text-zinc-500 hover:text-amber-400 transition-colors shrink-0"
+                          >
+                            <LinkCircleLinear size={14} />
+                          </a>
+                        )}
+                      </div>
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded-full text-[10px] uppercase font-semibold tracking-wider mt-0.5 ${catStyle.text} ${catStyle.bg}`}
+                      >
+                        {row.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Level & Mastery Selectors */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex flex-col items-center">
+                      <span className="text-[9px] font-bold text-zinc-500 uppercase">Lvl</span>
+                      <BaseCostLevelSelector
+                        token={row.token}
+                        curLevel={row.curLevel}
+                        maxLevel={row.maxLevel}
+                        onLevelChange={onLevelChange}
+                      />
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <span className="text-[9px] font-bold text-zinc-500 uppercase">Mast</span>
+                      <BaseCostMasterySelector
+                        token={row.token}
+                        mastery={row.mastery}
+                        onMasteryChange={onMasteryChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Tactical Recommendation Banner */}
+                {row.isRootResource ? (
+                  <div className="bg-zinc-800/50 px-3.5 py-2 rounded-2xl flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2 text-zinc-300">
+                      <LeafBoldDuotone className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span className="font-bold">Recurso Raíz Elemental</span>
+                    </div>
+                    <span className="text-[10px] font-semibold text-zinc-500 uppercase">
+                      Extracción Base
+                    </span>
+                  </div>
+                ) : row.bestStrategy === 'buy_market' ? (
+                  <div className="bg-cyan-500/10 px-3.5 py-2.5 rounded-2xl flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <CartLargeBoldDuotone className="w-4 h-4 text-cyan-400 shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-xs font-black text-cyan-300 tracking-wide">
+                          COMPRAR EN MERCADO
+                        </div>
+                        <div className="text-[11px] text-zinc-400 truncate">
+                          {row.savingsPct > 0
+                            ? `Ahorras ${row.savingsPct.toFixed(1)}% vs craftearlo`
+                            : 'Crafteo directo genera sobrecosto'}
+                        </div>
+                      </div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 font-extrabold text-[10px] shrink-0">
+                      COMPRA
+                    </span>
+                  </div>
+                ) : row.bestStrategy === 'craft_direct' ? (
+                  <div className="bg-emerald-500/10 px-3.5 py-2.5 rounded-2xl flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <BoltBoldDuotone className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-xs font-black text-emerald-300 tracking-wide">
+                          CRAFTEO DIRECTO
+                        </div>
+                        <div className="text-[11px] text-zinc-400 truncate">
+                          Ahorras {row.savingsPct.toFixed(1)}% vs comprar en mercado
+                        </div>
+                      </div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-extrabold text-[10px] shrink-0">
+                      CRAFTEA
+                    </span>
+                  </div>
+                ) : row.bestStrategy === 'craft_hybrid' ? (
+                  <div className="bg-amber-500/10 px-3.5 py-2.5 rounded-2xl flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <BoltBoldDuotone className="w-4 h-4 text-amber-400 shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-xs font-black text-amber-300 tracking-wide">
+                          RUTA HÍBRIDA ÓPTIMA
+                        </div>
+                        <div className="text-[11px] text-zinc-400 truncate">
+                          Ahorras {row.savingsPct.toFixed(1)}% combinando compra y crafteo
+                        </div>
+                      </div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 font-extrabold text-[10px] shrink-0">
+                      HÍBRIDO
+                    </span>
+                  </div>
+                ) : (
+                  <div className="bg-emerald-500/10 px-3.5 py-2.5 rounded-2xl flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <LeafBoldDuotone className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-xs font-black text-emerald-300 tracking-wide">
+                          CRAFTEO VERTICAL BASE
+                        </div>
+                        <div className="text-[11px] text-zinc-400 truncate">
+                          Ahorras {row.savingsPct.toFixed(1)}% desde elementos raíz
+                        </div>
+                      </div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-extrabold text-[10px] shrink-0">
+                      VERTICAL
+                    </span>
+                  </div>
+                )}
+
+                {/* 3. Three-Way Cost Comparison Grid */}
+                <div className="bg-zinc-800/50 rounded-2xl p-3 grid grid-cols-3 gap-2 text-center">
+                  <div className="flex flex-col items-center">
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-tight">
+                      Mercado
+                    </span>
+                    <div className="flex items-center gap-1 font-extrabold text-xs text-white mt-0.5 tabular-nums">
+                      <span>{formatCoin(row.marketBuyPrice)}</span>
+                      <ResourceIcon symbol="COIN" size={12} />
+                    </div>
+                    <span className="text-[9px] font-bold text-zinc-500 mt-0.5">Precio Vivo</span>
+                  </div>
+
+                  <div className="flex flex-col items-center">
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-tight">
+                      Insumos Directos
+                    </span>
+                    <div className="flex items-center gap-1 font-extrabold text-xs text-white mt-0.5 tabular-nums">
+                      <span>{formatCoin(row.directCraftCost)}</span>
+                      <ResourceIcon symbol="COIN" size={12} />
+                    </div>
+                    {!row.isRootResource && (
+                      <span
+                        className={`text-[9px] font-extrabold mt-0.5 ${
+                          directDiffPct < 0
+                            ? 'text-emerald-400'
+                            : directDiffPct > 0
+                              ? 'text-rose-400'
+                              : 'text-zinc-500'
+                        }`}
+                      >
+                        {directDiffPct < 0 ? '' : '+'}
+                        {directDiffPct.toFixed(0)}%
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col items-center">
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-tight">
+                      Desde Base
+                    </span>
+                    <div className="flex items-center gap-1 font-extrabold text-xs text-white mt-0.5 tabular-nums">
+                      <span>{formatCoin(row.baseElementalCraftCost)}</span>
+                      <ResourceIcon symbol="COIN" size={12} />
+                    </div>
+                    {!row.isRootResource && (
+                      <span
+                        className={`text-[9px] font-extrabold mt-0.5 ${
+                          baseDiffPct < 0
+                            ? 'text-emerald-400'
+                            : baseDiffPct > 0
+                              ? 'text-rose-400'
+                              : 'text-zinc-500'
+                        }`}
+                      >
+                        {baseDiffPct < 0 ? '' : '+'}
+                        {baseDiffPct.toFixed(0)}%
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* 4. Expandable Recipe & Smart Route Breakdown */}
+                {!row.isRootResource && row.directInputs.length > 0 && (
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      onClick={() => toggleExpand(row.token)}
+                      className="w-full flex items-center justify-between px-2 py-1.5 rounded-xl hover:bg-zinc-800/40 text-[11px] font-bold text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <span>Receta & Desglose de Insumos</span>
+                      <AltArrowDownLinear
+                        size={14}
+                        className={`transform transition-transform ${isExpanded ? 'rotate-180 text-amber-400' : ''}`}
+                      />
+                    </button>
+
+                    {isExpanded && (
+                      <div className="mt-2 space-y-2 pt-2 border-t border-white/5 animate-in fade-in duration-200">
+                        {row.directInputs.map((inp) => (
+                          <div
+                            key={inp.symbol}
+                            className="bg-zinc-800/40 p-2.5 rounded-xl flex items-center justify-between gap-2"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <ResourceIcon symbol={inp.symbol} size={20} className="shrink-0" />
+                              <div className="min-w-0">
+                                <span className="text-xs font-bold text-white truncate block">
+                                  {inp.amountPerUnit < 1
+                                    ? inp.amountPerUnit.toFixed(2)
+                                    : inp.amountPerUnit.toFixed(1)}{' '}
+                                  {inp.name}
+                                </span>
+                                <span className="text-[10px] text-zinc-400 block tabular-nums">
+                                  Mercado: {formatCoin(inp.marketPrice)} COIN
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="shrink-0 text-right">
+                              {inp.bestAction === 'buy' ? (
+                                <span className="px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 font-bold text-[10px] flex items-center gap-1">
+                                  <CartLargeBoldDuotone className="w-3 h-3" />
+                                  Comprar
+                                </span>
+                              ) : (
+                                <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 font-bold text-[10px] flex items-center gap-1">
+                                  <BoltBoldDuotone className="w-3 h-3" />
+                                  Craftear tú
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+
+                        {row.powerPerUnit > 0 && (
+                          <div className="bg-zinc-800/40 px-2.5 py-1.5 rounded-xl flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-1.5 text-zinc-300">
+                              <BatteryChargeBoldDuotone size={14} className="text-amber-400" />
+                              <span className="text-[11px] font-bold">Energía requerida</span>
+                            </div>
+                            <span className="text-[11px] font-extrabold text-zinc-300 tabular-nums">
+                              {formatQuantity(row.powerPerUnit)} kW ({formatCoin(row.powerCoin)} COIN)
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        // DEFAULT VIEW ("Todos" filter): Exact Classic Base Cost Card from screenshot!
+        const marginColor = getMarginTextColor(row.marginPct);
 
         return (
           <div
@@ -106,7 +413,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
               </div>
             </div>
 
-            {/* Middle: Elemental & Power Requirements */}
+            {/* Middle: Elemental & Power Requirements (Exact colorful pills) */}
             <div className="py-2.5 flex flex-wrap items-center gap-1.5 sm:gap-2">
               {row.earth > 0 && (
                 <div
@@ -170,7 +477,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
               )}
             </div>
 
-            {/* Bottom: Financial Stats & Profit Badge */}
+            {/* Bottom: Financial Stats & Profit Badge (3 Columns) */}
             <div className="grid grid-cols-3 items-center gap-2 pt-2.5 border-t border-white/5 text-xs font-mono">
               <div>
                 <div className="text-[10px] text-slate-400 uppercase tracking-tight">Costo Total</div>

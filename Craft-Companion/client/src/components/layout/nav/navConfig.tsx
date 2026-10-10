@@ -19,8 +19,6 @@ import {
   ScaleLinear,
   StopwatchBoldDuotone,
   StopwatchLinear,
-  Widget2BoldDuotone,
-  Widget2Linear,
   CrownBoldDuotone,
   CrownLinear,
   TuningBoldDuotone,
@@ -29,6 +27,8 @@ import {
   BatteryChargeLinear,
   CalculatorBoldDuotone,
   CalculatorLinear,
+  BellBingBoldDuotone,
+  BellBingLinear,
   SettingsBoldDuotone,
   SettingsLinear,
 } from 'solar-icon-set';
@@ -61,6 +61,13 @@ export const NAV_ITEMS: NavItem[] = [
     labelEs: 'Ganancia',
     icon: (active: boolean) =>
       active ? <Chart2BoldDuotone size={24} className="w-6 h-6 text-emerald-400" /> : <Chart2Linear size={24} className="w-6 h-6 text-slate-300" />,
+  },
+  {
+    path: '/trading-bot',
+    labelEn: 'Trading Bot',
+    labelEs: 'Trading Bot',
+    icon: (active: boolean) =>
+      active ? <BellBingBoldDuotone size={24} className="w-6 h-6 text-amber-400" /> : <BellBingLinear size={24} className="w-6 h-6 text-slate-300" />,
   },
   {
     path: '/inventory-value',
@@ -124,13 +131,6 @@ export const NAV_ITEMS: NavItem[] = [
     labelEs: 'Tiempos',
     icon: (active: boolean) =>
       active ? <StopwatchBoldDuotone size={24} className="w-6 h-6 text-rose-400" /> : <StopwatchLinear size={24} className="w-6 h-6 text-slate-300" />,
-  },
-  {
-    path: '/matrix',
-    labelEn: 'Matrix',
-    labelEs: 'Matriz',
-    icon: (active: boolean) =>
-      active ? <Widget2BoldDuotone size={24} className="w-6 h-6 text-teal-400" /> : <Widget2Linear size={24} className="w-6 h-6 text-slate-300" />,
   },
   {
     path: '/settings',

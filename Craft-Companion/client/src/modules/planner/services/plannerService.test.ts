@@ -5,6 +5,7 @@ import {
   buildMaterialEntries,
   buildMissingClipboardText,
   extractCraftingSteps,
+  extractBlueprintEntries,
 } from './plannerService';
 import type { RecipeNode } from '../../../services/craftworldCalculations';
 
@@ -82,4 +83,75 @@ test('extractCraftingSteps constructs steps bottom-up from recipe tree', () => {
   assert.equal(steps[0].cyclesNeeded, 2); // 10 / 5
   assert.equal(steps[0].totalTimeMin, 10); // 2 * 5
   assert.equal(steps[0].inputs[0].amount, 20); // 10 * 2
+});
+
+test('extractBlueprintEntries generates entire production blueprint and make vs buy decisions', () => {
+  const rows = [
+    {
+      token: 'STEEL_MILL',
+      level: 1,
+      duration_min: 60,
+      output_token: 'STEEL',
+      output_amount: 1,
+      input_token_1: 'COPPER',
+      input_amount_1: 5,
+      input_token_2: '',
+      input_amount_2: 0,
+      upgrade_token: '',
+      upgrade_amount: 0,
+    },
+    {
+      token: 'COPPER_SMELTER',
+      level: 1,
+      duration_min: 30,
+      output_token: 'COPPER',
+      output_amount: 1,
+      input_token_1: 'EARTH',
+      input_amount_1: 20,
+      input_token_2: '',
+      input_amount_2: 0,
+      upgrade_token: '',
+      upgrade_amount: 0,
+    },
+  ];
+
+  const prices = {
+    EARTH: 0.1,
+    COPPER: 3, // Crafting Copper takes 20 Earth = 2 COIN < 3 COIN market -> Best: CRAFT!
+    STEEL: 10, // Crafting Steel takes 5 Copper = 15 COIN > 10 COIN market -> Best: BUY!
+  };
+
+  const userStock = {
+    EARTH: 100,
+    COPPER: 0,
+    STEEL: 1,
+  };
+
+  const blueprint = extractBlueprintEntries(rows, 'STEEL', 10, userStock, prices, 'all');
+
+  // Must contain all 3 resources of the chain: EARTH (base), COPPER (intermediate), STEEL (target)
+  assert.equal(blueprint.length, 3);
+
+  const earth = blueprint.find((b) => b.symbol === 'EARTH')!;
+  assert.ok(earth);
+  assert.equal(earth.isRawElement, true);
+  assert.equal(earth.requiredQty, 1000); // 10 Steel * 5 Copper * 20 Earth
+  assert.equal(earth.missing, 900); // 1000 - 100
+  assert.equal(earth.recommendedAction, 'buy');
+
+  const copper = blueprint.find((b) => b.symbol === 'COPPER')!;
+  assert.ok(copper);
+  assert.equal(copper.isCraftable, true);
+  assert.equal(copper.requiredQty, 50); // 10 * 5
+  assert.equal(copper.craftCostPerUnit, 2); // 20 * 0.1
+  assert.equal(copper.unitPrice, 3);
+  assert.equal(copper.recommendedAction, 'craft'); // 2 < 3 -> craft!
+
+  const steel = blueprint.find((b) => b.symbol === 'STEEL')!;
+  assert.ok(steel);
+  assert.equal(steel.isTarget, true);
+  assert.equal(steel.requiredQty, 10);
+  assert.equal(steel.craftCostPerUnit, 15); // 5 * 3
+  assert.equal(steel.unitPrice, 10);
+  assert.equal(steel.recommendedAction, 'buy'); // 10 < 15 -> buy market!
 });

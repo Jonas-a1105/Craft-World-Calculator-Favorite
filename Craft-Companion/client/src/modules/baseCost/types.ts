@@ -62,6 +62,23 @@ export interface BaseCostSettings {
   powerPricePer100k: number;
 }
 
+export type OptimalStrategy =
+  | 'buy_market'
+  | 'craft_direct'
+  | 'craft_hybrid'
+  | 'craft_base';
+
+export interface DirectInputDetail {
+  symbol: string;
+  name: string;
+  amountPerUnit: number;
+  marketPrice: number;
+  totalMarketCost: number;
+  cheapestCraftCost: number;
+  bestAction: 'buy' | 'craft';
+  savingsPct: number;
+}
+
 export interface BaseCostRowData {
   token: string;
   name: string;
@@ -87,6 +104,18 @@ export interface BaseCostRowData {
   sellPrice: number;
   profit: number;
   marginPct: number | null;
+
+  // Make vs Buy & Smart Routing
+  isRootResource: boolean;
+  marketBuyPrice: number;
+  directInputs: DirectInputDetail[];
+  directCraftCost: number;
+  baseElementalCraftCost: number;
+  hybridCraftCost: number;
+  cheapestCost: number;
+  bestStrategy: OptimalStrategy;
+  savingsPct: number;
+  isCraftCheaper: boolean;
 }
 
 export interface BaseCostSummaryStats {

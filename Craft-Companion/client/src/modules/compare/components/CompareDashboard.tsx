@@ -5,8 +5,10 @@ import { useFactoryCompare } from '../hooks/useFactoryCompare';
 import { CompareHeader } from './CompareHeader';
 import { ComparePresetsBar } from './ComparePresetsBar';
 import { FactorySelectorCard } from './FactorySelectorCard';
+import { CompareHatchChartCard } from './CompareHatchChartCard';
 import { CompareVerdictCard } from './CompareVerdictCard';
 import { FactoryDetailCard } from './FactoryDetailCard';
+import { RocketBoldDuotone, Buildings2BoldDuotone } from 'solar-icon-set';
 
 export const CompareDashboard: React.FC = () => {
   const { language } = useTranslation();
@@ -41,7 +43,7 @@ export const CompareDashboard: React.FC = () => {
   }
 
   return (
-    <div className="w-full max-w-[1100px] mx-auto space-y-6 pb-12">
+    <div className="w-full max-w-[1100px] mx-auto space-y-6 pb-12 select-none">
       {/* Game Title Header */}
       <CompareHeader language={language} />
 
@@ -54,20 +56,24 @@ export const CompareDashboard: React.FC = () => {
       />
 
       {/* Simulation Mode Toggle Bar */}
-      <div className="flex items-center justify-between bg-[#18181b] p-2.5 px-4 rounded-2xl border border-white/5">
+      <div className="flex items-center justify-between bg-[#18181b] p-3 px-5 rounded-2xl shadow-md border-none">
         <span className="text-xs text-zinc-400 font-medium">
           {language === 'es' ? 'Modo de Comparación:' : 'Comparison Mode:'}
         </span>
         <button
           type="button"
           onClick={() => setWithPlayerBonuses(!withPlayerBonuses)}
-          className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+          className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border-none shadow-sm ${
             withPlayerBonuses
-              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-              : 'bg-[#141416] text-zinc-400 border border-zinc-800 hover:text-white'
+              ? 'bg-emerald-500/20 text-emerald-300'
+              : 'bg-[#141416] text-zinc-400 hover:text-white'
           }`}
         >
-          <span>{withPlayerBonuses ? '🚀' : '🏛️'}</span>
+          {withPlayerBonuses ? (
+            <RocketBoldDuotone className="w-4 h-4 text-emerald-400" />
+          ) : (
+            <Buildings2BoldDuotone className="w-4 h-4 text-zinc-400" />
+          )}
           <span>
             {withPlayerBonuses
               ? language === 'es'
@@ -109,12 +115,22 @@ export const CompareDashboard: React.FC = () => {
         />
       </div>
 
-      {/* 2. Comparative Verdict Banner */}
+      {/* 2. Comparative Performance Trends Chart (From Mockup with Hatch Patterns) */}
+      {comparisonVerdict && cycle1 && cycle2 && (
+        <CompareHatchChartCard
+          cycle1={cycle1}
+          cycle2={cycle2}
+          verdict={comparisonVerdict}
+          language={language}
+        />
+      )}
+
+      {/* 3. Comparative Verdict Banner */}
       {comparisonVerdict && cycle1 && cycle2 && (
         <CompareVerdictCard verdict={comparisonVerdict} language={language} />
       )}
 
-      {/* 3. Detailed Side-by-Side Metrics Cards */}
+      {/* 4. Detailed Side-by-Side Metrics Cards */}
       {cycle1 && cycle2 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FactoryDetailCard

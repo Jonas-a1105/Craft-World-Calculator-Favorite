@@ -12,6 +12,8 @@ import { displayNumber } from '../../utils/formatters';
 import { DonutRing } from '../visuals/DonutRing';
 import { MiniBarChart } from '../visuals/MiniBarChart';
 import { SparklineWave } from '../visuals/SparklineWave';
+import { HomeWeeklySplineCard } from '../visuals/HomeWeeklySplineCard';
+import { HomePlayerFinancialCard } from '../visuals/HomePlayerFinancialCard';
 import { StatusBadge } from '../StatusBadge';
 import {
   BoltBoldDuotone,
@@ -185,7 +187,19 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         </div>
       </div>
 
-      {/* 2. TARJETAS INDEPENDIENTES SOBRE EL BODY */}
+      {/* 2. GRÁFICA DE TRANSICIÓN SEMANAL (INSPIRADA EN MOCKUP DE DOCS) */}
+      <HomeWeeklySplineCard language={language} basePower={craft?.power ?? 100} />
+
+      {/* 3. PANEL DE IDENTIDAD & ANÁLISIS INTELIGENTE (MOCKUP INFO USER TRANSACCIÓN) */}
+      <HomePlayerFinancialCard
+        profile={profile}
+        craftWorld={craftWorld}
+        craft={craft}
+        purchases={purchases}
+        language={language}
+      />
+
+      {/* 4. TARJETAS INDEPENDIENTES SOBRE EL BODY */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
         {/* Tarjeta Independiente 1: Resumen General */}
         <div className="bg-[#18181b] rounded-[32px] p-5 sm:p-6 space-y-4 shadow-xl border-none">

@@ -9,11 +9,11 @@
 
 @media (max-width: 640px) {
   :root {
-    --base-slot-size: 34px;
-    --max-scale: 1.32;
-    --lateral-expand-mult: 0.45;
+    --base-slot-size: 40px;
+    --max-scale: 1.28;
+    --lateral-expand-mult: 0;
     --influence-radius: 65px;
-    --dock-height: 54px;
+    --dock-height: 56px;
   }
 }
 
@@ -34,6 +34,30 @@
   height: var(--dock-height);
   will-change: width;
   box-sizing: border-box;
+}
+
+@media (max-width: 639px) {
+  .glass-dock {
+    max-width: calc(100vw - 20px) !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+  }
+  .glass-dock::-webkit-scrollbar {
+    display: none !important;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
 
 html.light .glass-dock {

@@ -1,6 +1,14 @@
 import React from 'react';
 import type { PlannerViewTab, MaterialFilter, PlannerKpiStats } from '../types';
 import { useTranslation } from '../../../utils/i18n';
+import {
+  BoxBold,
+  BoltBold,
+  CopyBold,
+  CheckCircleBold,
+  CartLargeBoldDuotone,
+  BoltBoldDuotone,
+} from 'solar-icon-set';
 
 export interface PlannerTabsNavProps {
   viewTab: PlannerViewTab;
@@ -24,137 +32,135 @@ export const PlannerTabsNav: React.FC<PlannerTabsNavProps> = ({
   onCopyMissing,
 }) => {
   const { language } = useTranslation();
+  const isEs = language === 'es';
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5 border-b border-white/[0.06] pb-4">
-      {/* View Switcher Tabs */}
-      <div className="flex items-center gap-1.5 bg-[#141416] p-1 rounded-full w-full md:w-auto">
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5 border-b border-white/[0.06] pb-4 select-none">
+      {/* 1. View Switcher Tabs (Plano de Recursos vs Secuencia de Fábricas) */}
+      <div className="flex items-center gap-1.5 bg-[#18181b] p-1.5 rounded-2xl w-full md:w-auto">
         <button
           type="button"
           onClick={() => setViewTab('materials')}
-          className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer border-none ${
+          className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-none ${
             viewTab === 'materials'
-              ? 'bg-sky-500 text-white shadow-lg'
-              : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              ? 'bg-amber-500 text-black shadow-lg font-black'
+              : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
           }`}
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-            />
-          </svg>
+          <BoxBold className="w-4 h-4 shrink-0" />
           <span>
-            {language === 'es' ? 'Materias Primas' : 'Raw Materials'} (
-            {kpiStats.totalTypes})
+            {isEs ? 'Plano de Recursos' : 'Resource Blueprint'} ({kpiStats.totalTypes})
           </span>
         </button>
 
         <button
           type="button"
           onClick={() => setViewTab('steps')}
-          className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer border-none ${
+          className={`flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-none ${
             viewTab === 'steps'
-              ? 'bg-sky-500 text-white shadow-lg'
-              : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              ? 'bg-amber-500 text-black shadow-lg font-black'
+              : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
           }`}
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M13 10V3L4 14h7v7l9-11h-7z"
-            />
-          </svg>
+          <BoltBold className="w-4 h-4 shrink-0" />
           <span>
-            {language === 'es' ? 'Pasos de Fabricación' : 'Crafting Steps'} (
-            {craftingStepsCount})
+            {isEs ? 'Secuencia de Fábricas' : 'Factory Sequence'} ({craftingStepsCount})
           </span>
         </button>
       </div>
 
-      {/* Utility Actions (Filters + Copy Button) */}
+      {/* 2. Utility Actions (Filter Pills + Copy Deficits) */}
       {viewTab === 'materials' && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full md:w-auto">
           {/* Filter Pills */}
-          <div className="flex items-center gap-1 bg-[#141416] p-1 rounded-full text-xs w-full sm:w-auto">
+          <div className="flex items-center gap-1 bg-[#18181b] p-1.5 rounded-2xl text-xs w-full sm:w-auto overflow-x-auto">
             <button
               type="button"
               onClick={() => setMaterialFilter('all')}
-              className={`flex-1 sm:flex-initial text-center px-3 py-1.5 rounded-full font-bold transition-colors cursor-pointer border-none ${
+              className={`flex-1 sm:flex-initial text-center px-3 py-1.5 rounded-xl font-bold transition-colors cursor-pointer border-none shrink-0 ${
                 materialFilter === 'all'
-                  ? 'bg-[#202024] text-white shadow-sm'
+                  ? 'bg-zinc-800 text-white shadow-sm font-black'
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              {language === 'es' ? 'Todos' : 'All'}
+              {isEs ? 'Todos' : 'All'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMaterialFilter('sell_buy')}
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-1 px-3 py-1.5 rounded-xl font-bold transition-colors cursor-pointer border-none shrink-0 ${
+                materialFilter === 'sell_buy'
+                  ? 'bg-emerald-500/20 text-emerald-300 shadow-sm font-black'
+                  : 'text-zinc-400 hover:text-emerald-300'
+              }`}
+            >
+              <span>{isEs ? 'Vender y Comprar' : 'Sell & Buy'}</span>
+              {kpiStats.sellBuyStepsCount > 0 && (
+                <span className="font-mono">({kpiStats.sellBuyStepsCount})</span>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMaterialFilter('convert')}
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-1 px-3 py-1.5 rounded-xl font-bold transition-colors cursor-pointer border-none shrink-0 ${
+                materialFilter === 'convert'
+                  ? 'bg-cyan-500/20 text-cyan-300 shadow-sm font-black'
+                  : 'text-zinc-400 hover:text-cyan-300'
+              }`}
+            >
+              <span>{isEs ? 'Convertir Fábrica' : 'Convert in Factory'}</span>
+              {kpiStats.convertStepsCount > 0 && (
+                <span className="font-mono">({kpiStats.convertStepsCount})</span>
+              )}
             </button>
             <button
               type="button"
               onClick={() => setMaterialFilter('missing')}
-              className={`flex-1 sm:flex-initial text-center px-3 py-1.5 rounded-full font-bold transition-colors cursor-pointer border-none ${
+              className={`flex-1 sm:flex-initial text-center px-3 py-1.5 rounded-xl font-bold transition-colors cursor-pointer border-none shrink-0 ${
                 materialFilter === 'missing'
-                  ? 'bg-rose-500/20 text-rose-300'
+                  ? 'bg-rose-500/20 text-rose-300 shadow-sm font-black'
                   : 'text-zinc-400 hover:text-rose-300'
               }`}
             >
-              {language === 'es' ? 'Faltantes' : 'Missing'} (
-              {kpiStats.missingTypes})
+              {isEs ? 'Faltantes' : 'Missing'}
             </button>
             <button
               type="button"
               onClick={() => setMaterialFilter('ready')}
-              className={`flex-1 sm:flex-initial text-center px-3 py-1.5 rounded-full font-bold transition-colors cursor-pointer border-none ${
+              className={`flex-1 sm:flex-initial text-center px-3 py-1.5 rounded-xl font-bold transition-colors cursor-pointer border-none shrink-0 ${
                 materialFilter === 'ready'
-                  ? 'bg-emerald-500/20 text-emerald-300'
+                  ? 'bg-emerald-500/20 text-emerald-300 shadow-sm font-black'
                   : 'text-zinc-400 hover:text-emerald-300'
               }`}
             >
-              {language === 'es' ? 'Listos' : 'Ready'} ({kpiStats.readyTypes})
+              {isEs ? 'Almacén' : 'Stock'}
             </button>
           </div>
 
-          {/* Copy Button */}
+          {/* Copy Missing Button */}
           <div className="flex justify-end w-full sm:w-auto">
             <button
               type="button"
               onClick={onCopyMissing}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#141416] hover:bg-[#202024] text-zinc-300 hover:text-white text-xs font-bold transition-all cursor-pointer border-none shadow-sm"
+              className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer border-none shadow-sm ${
+                copiedNotification
+                  ? 'bg-emerald-500/20 text-emerald-300'
+                  : 'bg-zinc-800/70 hover:bg-zinc-700 text-zinc-300 hover:text-white'
+              }`}
             >
-              <svg
-                className="w-3.5 h-3.5 text-zinc-400"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                />
-              </svg>
-              <span className="whitespace-nowrap">
+              {copiedNotification ? (
+                <CheckCircleBold className="w-4 h-4 text-emerald-400 shrink-0" />
+              ) : (
+                <CopyBold className="w-4 h-4 text-zinc-400 shrink-0" />
+              )}
+              <span className="whitespace-nowrap font-extrabold">
                 {copiedNotification
-                  ? language === 'es'
+                  ? isEs
                     ? '¡Copiado!'
                     : 'Copied!'
-                  : language === 'es'
-                    ? 'Copiar faltantes'
-                    : 'Copy missing'}
+                  : isEs
+                    ? 'Copiar Faltantes'
+                    : 'Copy Missing'}
               </span>
             </button>
           </div>

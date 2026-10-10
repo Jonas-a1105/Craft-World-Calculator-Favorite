@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Financiero - Obsidiana Carbón</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            obsidian: {
+              950: '#07080a',
+              900: '#0c0d10',
+              850: '#111317',
+              800: '#16181e',
+              750: '#1c1f26',
+              700: '#242831',
+              600: '#323744',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #07080a;
+      color: #f3f4f6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Carbon obsidian subtle woven texture */
+    .carbon-surface {
+      background-color: #0f1115;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(255, 255, 255, 0.03) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(147, 51, 234, 0.04) 0px, transparent 60%);
+    }
+
+    /* Category pill magenta rings with subtle neon glow */
+    .category-ring {
+      border: 1.8px solid #c026d3;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .category-ring:hover {
+      border-color: #e879f9;
+      box-shadow: 0 0 14px rgba(217, 70, 239, 0.35);
+      transform: translateY(-2px);
+    }
+    .category-ring.active {
+      background-color: rgba(192, 38, 211, 0.18);
+      border-color: #f0abfc;
+      box-shadow: 0 0 18px rgba(217, 70, 239, 0.45);
+    }
+
+    /* Credit card dusk mountain art using pure CSS/gradients */
+    .credit-card-dusk {
+      background: linear-gradient(180deg, #373349 0%, #684f5c 35%, #8f6568 55%, #3d2b3c 78%, #1f1a27 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Card 3D tilt effect */
+    .card-tilt {
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+      transform-style: preserve-3d;
+    }
+    .card-tilt:hover {
+      transform: translateY(-4px) rotateX(3deg) rotateY(-2deg);
+      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(168, 85, 247, 0.15);
+    }
+
+    /* Shimmer reflection on card */
+    .card-shimmer {
+      background: linear-gradient(
+        115deg,
+        transparent 20%,
+        rgba(255, 255, 255, 0.15) 35%,
+        rgba(255, 255, 255, 0.25) 45%,
+        transparent 60%
+      );
+      mix-blend-mode: overlay;
+      pointer-events: none;
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0c0d10;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #242831;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #323744;
+    }
+
+    .no-select {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-3 sm:p-6 md:p-10 no-select">
+
+  <!-- Main obsidian card wrapper -->
+  <main class="w-full max-w-[780px] carbon-surface border border-obsidian-750/80 rounded-[38px] p-6 sm:p-9 shadow-2xl relative overflow-hidden">
+    
+    <!-- Ambient obsidian glow orbs -->
+    <div class="absolute -top-36 -left-36 w-96 h-96 bg-purple-900/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-36 -right-36 w-96 h-96 bg-fuchsia-900/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col space-y-7">
+
+      <!-- Category Circle Badges with Magenta Ring -->
+      <section aria-label="Categorías" class="flex items-center gap-3 sm:gap-4 overflow-x-auto pb-1 pt-1 scrollbar-none">
+        
+        <!-- 1. Transporte (Car) -->
+        <button onclick="filterCategory('transporte', this)" class="category-ring active w-12 h-12 rounded-full flex items-center justify-center bg-obsidian-850 text-white shrink-0 group" title="Transporte">
+          <svg class="w-5 h-5 text-fuchsia-200 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M5 17a2 2 0 1 0 4 0 2 2 0 0 0-4 0m10 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"></path>
+            <path d="M5 17H3v-4l2-5h10l2 5v4h-2"></path>
+            <path d="M5 12h14"></path>
+          </svg>
+        </button>
+
+        <!-- 2. Comida (Burger) -->
+        <button onclick="filterCategory('comida', this)" class="category-ring w-12 h-12 rounded-full flex items-center justify-center bg-obsidian-850 text-white shrink-0 group" title="Comida y Restaurantes">
+          <svg class="w-5 h-5 text-fuchsia-200 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M4 11a8 8 0 0 1 16 0H4z"></path>
+            <path d="M4 15h16"></path>
+            <path d="M6 18h12a2 2 0 0 1 2 2H4a2 2 0 0 1 2-2z"></path>
+          </svg>
+        </button>
+
+        <!-- 3. Supermercado (Carrot) -->
+        <button onclick="filterCategory('supermercado', this)" class="category-ring w-12 h-12 rounded-full flex items-center justify-center bg-obsidian-850 text-white shrink-0 group" title="Supermercado">
+          <svg class="w-5 h-5 text-fuchsia-200 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M2.27 21.7s9.87-3.5 12.73-6.36a4.5 4.5 0 0 0-6.36-6.37C5.77 11.84 2.27 21.7 2.27 21.7zM15 9l6-6M18 9l3-3M15 6l3-3"></path>
+          </svg>
+        </button>
+
+        <!-- 4. Entretenimiento (Sparkles / Disco) -->
+        <button onclick="filterCategory('entretenimiento', this)" class="category-ring w-12 h-12 rounded-full flex items-center justify-center bg-obsidian-850 text-white shrink-0 group" title="Entretenimiento">
+          <svg class="w-5 h-5 text-fuchsia-200 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="7"></circle>
+            <path d="M12 5V3m0 18v-2M5 12H3m18 0h-2m-3-9 2-2M7 17l-2 2m12 0 2 2M7 7 5 5"></path>
+          </svg>
+        </button>
+
+        <!-- 5. Trabajo / Negocios (Briefcase) -->
+        <button onclick="filterCategory('trabajo', this)" class="category-ring w-12 h-12 rounded-full flex items-center justify-center bg-obsidian-850 text-white shrink-0 group" title="Trabajo">
+          <svg class="w-5 h-5 text-fuchsia-200 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+            <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <path d="M12 12v2"></path>
+          </svg>
+        </button>
+
+        <!-- 6. Enlace / Otros (Pill / Link) -->
+        <button onclick="filterCategory('otros', this)" class="category-ring w-12 h-12 rounded-full flex items-center justify-center bg-obsidian-850 text-white shrink-0 group" title="Otros gastos">
+          <svg class="w-5 h-5 text-fuchsia-200 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="m9 15 6-6m-4-3 1.5-1.5a4.95 4.95 0 0 1 7 7L18 13m-7 4-1.5 1.5a4.95 4.95 0 0 1-7-7L4 10"></path>
+          </svg>
+        </button>
+
+      </section>
+
+      <!-- Header: Date, Prediction Subtitle & Dropdown -->
+      <section class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pt-1">
+        <div>
+          <h1 class="text-2xl sm:text-[26px] font-bold tracking-tight text-white">
+            Jueves, 12 de Febrero
+          </h1>
+          <p class="text-xs sm:text-[13px] text-zinc-400 mt-1 font-normal tracking-wide">
+            <span class="font-medium text-zinc-300">Predice lo que sigue.</span> Inteligencia que aprende de tus patrones.
+          </p>
+        </div>
+
+        <!-- Custom Dropdown Selector -->
+        <div class="relative shrink-0">
+          <button id="timeframe-btn" onclick="toggleTimeframeDropdown()" 
+                  class="flex items-center gap-2 px-4 py-2 bg-obsidian-800/90 border border-obsidian-700/80 hover:border-obsidian-600 text-zinc-200 text-xs sm:text-sm font-semibold rounded-2xl transition-all shadow-sm">
+            <span id="selected-timeframe">Esta semana</span>
+            <svg class="w-3.5 h-3.5 text-zinc-400 transition-transform duration-200" id="dropdown-chevron" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+
+          <!-- Dropdown Options Menu -->
+          <div id="timeframe-menu" class="hidden absolute right-0 mt-2 w-44 bg-obsidian-850/95 border border-obsidian-700 backdrop-blur-xl rounded-2xl py-1.5 shadow-2xl z-30 transition-all">
+            <button onclick="setTimeframe('Hoy')" class="w-full text-left px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-obsidian-750 hover:text-white transition-colors">Hoy</button>
+            <button onclick="setTimeframe('Esta semana')" class="w-full text-left px-4 py-2 text-xs font-medium text-fuchsia-400 bg-fuchsia-950/20 hover:bg-obsidian-750 transition-colors">Esta semana</button>
+            <button onclick="setTimeframe('Este mes')" class="w-full text-left px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-obsidian-750 hover:text-white transition-colors">Este mes</button>
+            <button onclick="setTimeframe('Últimos 30 días')" class="w-full text-left px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-obsidian-750 hover:text-white transition-colors">Últimos 30 días</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Middle Row: Credit Card & Insights Card -->
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
+        
+        <!-- Virtual Debit Card with Sunset Mountain Aesthetic -->
+        <div class="credit-card-dusk card-tilt rounded-[26px] p-5 sm:p-6 text-white flex flex-col justify-between h-[210px] sm:h-[224px] shadow-xl border border-white/10 relative cursor-pointer group" onclick="toggleBalanceMask()">
+          
+          <!-- Card reflection glass layer -->
+          <div class="absolute inset-0 card-shimmer"></div>
+
+          <!-- Stylized Moon & Mountain Silhouette SVG inside the card -->
+          <svg class="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-45 mix-blend-screen" viewBox="0 0 350 200" preserveAspectRatio="none" fill="none">
+            <!-- Glowing Moon -->
+            <circle cx="115" cy="65" r="13" fill="#ffe9c4" filter="drop-shadow(0 0 8px #fcd34d)"></circle>
+            <!-- Distant Mountains -->
+            <path d="M0 130 L45 95 L95 125 L160 80 L220 125 L290 85 L350 120 L350 200 L0 200 Z" fill="#2d1d36"></path>
+            <!-- Foreground Ridges -->
+            <path d="M0 150 L60 120 L130 145 L190 115 L260 145 L320 125 L350 140 L350 200 L0 200 Z" fill="#171220"></path>
+          </svg>
+
+          <!-- Top row: EMV Chip & Frosted Pill Switch -->
+          <div class="relative z-10 flex items-center justify-between">
+            <!-- Chip icon with micro-details -->
+            <div class="w-9 h-7 rounded-md bg-gradient-to-tr from-amber-200/90 to-amber-100 border border-amber-300/40 p-1 flex flex-col justify-between shadow-inner">
+              <div class="w-full h-[1.5px] bg-amber-800/40"></div>
+              <div class="w-full flex justify-between">
+                <div class="w-2.5 h-2 bg-amber-800/40 rounded-sm"></div>
+                <div class="w-2.5 h-2 bg-amber-800/40 rounded-sm"></div>
+              </div>
+              <div class="w-full h-[1.5px] bg-amber-800/40"></div>
+            </div>
+
+            <!-- Frosted Glass Pill Toggle (Simulating card status/freeze) -->
+            <div class="w-10 h-5 rounded-full bg-white/25 backdrop-blur-md p-0.5 flex items-center justify-end border border-white/30 shadow-sm transition-all" id="card-toggle-pill">
+              <div class="w-4 h-4 rounded-full bg-white shadow-sm"></div>
+            </div>
+          </div>
+
+          <!-- Center: Card Number -->
+          <div class="relative z-10 my-auto pt-2">
+            <div class="tracking-[0.26em] text-white/95 text-xs sm:text-sm font-mono font-semibold drop-shadow-md">
+              •••• •••• •••• 3493
+            </div>
+          </div>
+
+          <!-- Bottom: Cardholder Name & Balance -->
+          <div class="relative z-10 flex items-end justify-between text-xs tracking-wider">
+            <div>
+              <div class="text-[9px] font-semibold text-white/60 uppercase tracking-widest">Titular de la tarjeta</div>
+              <div class="font-bold text-white text-xs sm:text-[13px] tracking-wide mt-0.5 drop-shadow-sm uppercase">Alfikri Djati</div>
+            </div>
+            <div class="text-right">
+              <div class="text-[9px] font-semibold text-white/60 uppercase tracking-widest">Saldo disponible</div>
+              <div id="card-balance-display" class="font-extrabold text-white text-sm sm:text-base tracking-tight mt-0.5 drop-shadow-sm">
+                $92,038.56
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Insights Recommendation Card -->
+        <div class="bg-obsidian-850/90 border border-obsidian-750 rounded-[26px] p-5 sm:p-6 flex flex-col justify-between shadow-lg relative overflow-hidden group">
+          
+          <div>
+            <!-- Header with Bulb Icon -->
+            <div class="flex items-center gap-2 mb-3.5">
+              <div class="w-6 h-6 rounded-lg bg-amber-400/10 flex items-center justify-center text-amber-300">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                  <path d="M9 18h6m-4 4h2"></path>
+                  <path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6h8c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"></path>
+                </svg>
+              </div>
+              <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Análisis Inteligente</h3>
+            </div>
+
+            <!-- Dynamic Insight Text -->
+            <p id="insight-text" class="text-[13.5px] sm:text-[14.5px] leading-relaxed text-zinc-200 transition-opacity duration-300">
+              ¡Has administrado la mayor parte de tu presupuesto de
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-obsidian-750 border border-obsidian-650 text-white font-medium text-xs align-baseline mx-0.5">
+                <svg class="w-3.5 h-3.5 text-zinc-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M5 17a2 2 0 1 0 4 0 2 2 0 0 0-4 0m10 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"></path>
+                  <path d="M5 17H3v-4l2-5h10l2 5v4h-2"></path>
+                  <path d="M5 12h14"></path>
+                </svg>
+                transporte
+              </span>
+              con eficacia! Considera añadir un poco más o explorar alternativas de viaje para ahorrar dinero.
+            </p>
+          </div>
+
+          <!-- Carousel / Segmented Progress Bar (4 segments) -->
+          <div class="pt-4">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="nextInsight()">
+              <div id="seg-0" class="h-1 flex-1 rounded-full bg-white transition-all duration-300"></div>
+              <div id="seg-1" class="h-1 flex-1 rounded-full bg-obsidian-700 hover:bg-obsidian-600 transition-all duration-300"></div>
+              <div id="seg-2" class="h-1 flex-1 rounded-full bg-obsidian-700 hover:bg-obsidian-600 transition-all duration-300"></div>
+              <div id="seg-3" class="h-1 flex-1 rounded-full bg-obsidian-700 hover:bg-obsidian-600 transition-all duration-300"></div>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-zinc-500 mt-2 font-medium">
+              <span id="insight-counter">Paso 1 de 4</span>
+              <span class="text-fuchsia-400/80 hover:text-fuchsia-300 cursor-pointer" onclick="nextInsight()">Siguiente análisis &rarr;</span>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- Section: Gastos de esta semana (3 cards) -->
+      <section>
+        <div class="flex items-center justify-between mb-3.5">
+          <h2 class="text-sm font-semibold text-zinc-100 tracking-tight">Gastos de esta semana</h2>
+          <span class="text-xs text-zinc-500 font-medium hover:text-zinc-300 cursor-pointer" onclick="showToast('Historial completo de gastos actualizado')">Ver todos</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          
+          <!-- Card 1: Sainsbury's -->
+          <div class="expense-card group bg-obsidian-850/80 hover:bg-obsidian-800 border border-obsidian-750 hover:border-obsidian-650 rounded-2xl p-3.5 flex items-center justify-between transition-all duration-200 cursor-pointer" onclick="showToast('Supermercado: Sainsbury\'s - $12.00')">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-xl bg-obsidian-800 border border-obsidian-700 flex items-center justify-center text-zinc-300 group-hover:scale-105 transition-transform">
+                <!-- Carrot Icon -->
+                <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                  <path d="M2.27 21.7s9.87-3.5 12.73-6.36a4.5 4.5 0 0 0-6.36-6.37C5.77 11.84 2.27 21.7 2.27 21.7zM15 9l6-6M18 9l3-3M15 6l3-3"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-xs sm:text-[13px] font-semibold text-zinc-200 group-hover:text-white truncate max-w-[95px]">Sainsbury's</h4>
+                <p class="text-[11px] text-zinc-500">Supermercado</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs sm:text-[13px] font-bold text-zinc-100">$12.00</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Marion's Station -->
+          <div class="expense-card group bg-obsidian-850/80 hover:bg-obsidian-800 border border-obsidian-750 hover:border-obsidian-650 rounded-2xl p-3.5 flex items-center justify-between transition-all duration-200 cursor-pointer" onclick="showToast('Transporte: Marion\'s St... - $5.00')">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-xl bg-obsidian-800 border border-obsidian-700 flex items-center justify-center text-zinc-300 group-hover:scale-105 transition-transform">
+                <!-- Car Icon -->
+                <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                  <path d="M5 17a2 2 0 1 0 4 0 2 2 0 0 0-4 0m10 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"></path>
+                  <path d="M5 17H3v-4l2-5h10l2 5v4h-2"></path>
+                  <path d="M5 12h14"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-xs sm:text-[13px] font-semibold text-zinc-200 group-hover:text-white truncate max-w-[95px]">Marion's St...</h4>
+                <p class="text-[11px] text-zinc-500">Transporte</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs sm:text-[13px] font-bold text-zinc-100">$5.00</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Netflix -->
+          <div class="expense-card group bg-obsidian-850/80 hover:bg-obsidian-800 border border-obsidian-750 hover:border-obsidian-650 rounded-2xl p-3.5 flex items-center justify-between transition-all duration-200 cursor-pointer" onclick="showToast('Entretenimiento: Netflix - $20.00')">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-xl bg-obsidian-800 border border-obsidian-700 flex items-center justify-center text-zinc-300 group-hover:scale-105 transition-transform">
+                <!-- Sparkles Disco Icon -->
+                <svg class="w-5 h-5 text-fuchsia-400" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="7"></circle>
+                  <path d="M12 5V3m0 18v-2M5 12H3m18 0h-2"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-xs sm:text-[13px] font-semibold text-zinc-200 group-hover:text-white truncate max-w-[95px]">Netflix</h4>
+                <p class="text-[11px] text-zinc-500">Entretenimiento</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs sm:text-[13px] font-bold text-zinc-100">$20.00</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Section: Suscripciones (6 cards) -->
+      <section>
+        <div class="flex items-center justify-between mb-3.5">
+          <h2 class="text-sm font-semibold text-zinc-100 tracking-tight">Suscripciones</h2>
+          <span class="text-xs text-zinc-500 font-medium hover:text-zinc-300 cursor-pointer" onclick="showToast('Gestionando 6 suscripciones activas')">Administrar</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+          
+          <!-- 1. Figma -->
+          <div class="sub-card group bg-obsidian-850/80 hover:bg-obsidian-800 border border-obsidian-750 hover:border-obsidian-650 rounded-2xl p-3.5 flex items-center justify-between transition-all duration-200 cursor-pointer" onclick="showToast('Suscripción Figma: $20.00 /mes')">
+            <div class="flex items-center gap-3">
+              <!-- Figma Logo -->
+              <div class="w-11 h-11 rounded-xl bg-[#0c0d10] border border-obsidian-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform p-2">
+                <svg class="w-6 h-6" viewBox="0 0 38 57" fill="none">
+                  <path d="M19 28.5A9.5 9.5 0 1 1 28.5 19 9.5 9.5 0 0 1 19 28.5z" fill="#1ABCFE"/>
+                  <path d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5A9.5 9.5 0 0 1 9.5 57 9.5 9.5 0 0 1 0 47.5z" fill="#0ACF83"/>
+                  <path d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19z" fill="#FF7262"/>
+                  <path d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5z" fill="#F24E1E"/>
+                  <path d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5z" fill="#A259FF"/>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-xs sm:text-[13px] font-semibold text-zinc-200 group-hover:text-white">Figma</h4>
+                <p class="text-[11px] text-zinc-500">Trabajo</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs sm:text-[13px] font-bold text-zinc-100">$20.00</div>
+              <div class="text-[10px] text-zinc-500 font-medium">/mes</div>
+            </div>
+          </div>
+
+          <!-- 2. ClickUp -->
+          <div class="sub-card group bg-obsidian-850/80 hover:bg-obsidian-800 border border-obsidian-750 hover:border-obsidian-650 rounded-2xl p-3.5 flex items-center justify-between transition-all duration-200 cursor-pointer" onclick="showToast('Suscripción ClickUp: $20.00 /mes')">
+            <div class="flex items-center gap-3">
+              <!-- ClickUp Logo -->
+              <div class="w-11 h-11 rounded-xl bg-obsidian-900 border border-obsidian-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform p-2">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 14.5L7.5 11.5C9.8 13.5 14.2 13.5 16.5 11.5L20 14.5C16.5 17.8 7.5 17.8 4 14.5Z" fill="#38BDF8"/>
+                  <path d="M12 5.5L7 10L9.5 12L12 9.5L14.5 12L17 10L12 5.5Z" fill="#F43F5E"/>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-xs sm:text-[13px] font-semibold text-zinc-200 group-hover:text-white">ClickUp</h4>
+                <p class="text-[11px] text-zinc-500">Trabajo</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs sm:text-[13px] font-bold text-zinc-100">$20.00</div>
+              <div class="text-[10px] text-zinc-500 font-medium">/mes</div>
+            </div>
+          </div>
+
+          <!-- 3. Slack -->
+          <div class="sub-card group bg-obsidian-850/80 hover:bg-obsidian-800 border border-obsidian-750 hover:border-obsidian-650 rounded-2xl p-3.5 flex items-center justify-between transition-all duration-200 cursor-pointer" onclick="showToast('Suscripción Slack: $20.00 /mes')">
+            <div class="flex items-center gap-3">
+              <!-- Slack Logo -->
+              <div class="w-11 h-11 rounded-xl bg-obsidian-900 border border-obsidian-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform p-2">
+                <svg class="w-6 h-6" viewBox="0 0 24 24">
+                  <path d="M6 15a2 2 0 1 1-2-2h2v2zm1 0a2 2 0 1 1 4 0v5a2 2 0 1 1-4 0v-5z" fill="#E01E5A"/>
+                  <path d="M9 6a2 2 0 1 1 2-2v2H9zm0 1a2 2 0 1 1 0 4H4a2 2 0 1 1 0-4h5z" fill="#36C5F0"/>
+                  <path d="M18 9a2 2 0 1 1 2 2h-2V9zm-1 0a2 2 0 1 1-4 0V4a2 2 0 1 1 4 0v5z" fill="#2EB67D"/>
+                  <path d="M15 18a2 2 0 1 1-2 2v-2h2zm0-1a2 2 0 1 1 0-4h5a2 2 0 1 1 0 4h-5z" fill="#ECB22E"/>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-xs sm:text-[13px] font-semibold text-zinc-200 group-hover:text-white">Slack</h4>
+                <p class="text-[11px] text-zinc-500">Trabajo</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs sm:text-[13px] font-bold text-zinc-100">$20.00</div>
+              <div class="text-[10px] text-zinc-500 font-medium">/mes</div>
+            </div>
+          </div>
+
+          <!-- 4. Freepik -->
+          <div class="sub-card group bg-obsidian-850/80 hover:bg-obsidian-800 border border-obsidian-750 hover:border-obsidian-650 rounded-2xl p-3.5 flex items-center justify-between transition-all duration-200 cursor-pointer" onclick="showToast('Suscripción Freepik: $45.00 /mes')">
+            <div class="flex items-center gap-3">
+              <!-- Freepik Logo -->
+              <div class="w-11 h-11 rounded-xl bg-[#1264a3] border border-blue-400/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform text-white font-extrabold text-xl font-sans">
+                F
+              </div>
+              <div>
+                <h4 class="text-xs sm:text-[13px] font-semibold text-zinc-200 group-hover:text-white">Freepik</h4>
+                <p class="text-[11px] text-zinc-500">Trabajo</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs sm:text-[13px] font-bold text-zinc-100">$45.00</div>
+              <div class="text-[10px] text-zinc-500 font-medium">/mes</div>
+            </div>
+          </div>
+
+          <!-- 5. Spotify -->
+          <div class="sub-card group bg-obsidian-850/80 hover:bg-obsidian-800 border border-obsidian-750 hover:border-obsidian-650 rounded-2xl p-3.5 flex items-center justify-between transition-all duration-200 cursor-pointer" onclick="showToast('Suscripción Spotify: $8.00 /mes')">
+            <div class="flex items-center gap-3">
+              <!-- Spotify Logo -->
+              <div class="w-11 h-11 rounded-xl bg-[#1db954] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform p-2 shadow-sm">
+                <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.503 17.308c-.216.353-.674.464-1.026.248-2.812-1.718-6.35-2.106-10.518-1.154-.403.092-.806-.157-.899-.56-.092-.403.158-.806.56-.899 4.562-1.042 8.487-.597 11.635 1.339.352.216.464.674.248 1.026zm1.47-3.266c-.272.441-.853.58-1.294.308-3.218-1.978-8.125-2.55-11.932-1.394-.499.151-1.028-.135-1.179-.634-.151-.499.135-1.028.634-1.179 4.356-1.322 9.776-.684 13.463 1.583.441.272.58.853.308 1.294v.022zm.126-3.41c-3.859-2.292-10.228-2.503-13.916-1.383-.593.18-1.222-.158-1.402-.751-.18-.593.158-1.222.751-1.402 4.238-1.286 11.273-1.042 15.698 1.583.533.316.707 1.011.391 1.544-.316.533-1.011.707-1.544.391z"/>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-xs sm:text-[13px] font-semibold text-zinc-200 group-hover:text-white">Spotify</h4>
+                <p class="text-[11px] text-zinc-500">Entretenimiento</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs sm:text-[13px] font-bold text-zinc-100">$8.00</div>
+              <div class="text-[10px] text-zinc-500 font-medium">/mes</div>
+            </div>
+          </div>
+
+          <!-- 6. Strava -->
+          <div class="sub-card group bg-obsidian-850/80 hover:bg-obsidian-800 border border-obsidian-750 hover:border-obsidian-650 rounded-2xl p-3.5 flex items-center justify-between transition-all duration-200 cursor-pointer" onclick="showToast('Suscripción Strava: $15.00 /mes')">
+            <div class="flex items-center gap-3">
+              <!-- Strava Logo -->
+              <div class="w-11 h-11 rounded-xl bg-[#fc4c02] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform p-2 shadow-sm">
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7.008 13.828h4.172"/>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-xs sm:text-[13px] font-semibold text-zinc-200 group-hover:text-white">Strava</h4>
+                <p class="text-[11px] text-zinc-500">Entretenimiento</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs sm:text-[13px] font-bold text-zinc-100">$15.00</div>
+              <div class="text-[10px] text-zinc-500 font-medium">/mes</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Notification Toast UI -->
+    <div id="toast" class="fixed bottom-6 right-6 max-w-sm bg-obsidian-800/95 border border-fuchsia-500/40 text-zinc-200 text-xs sm:text-sm font-medium px-4 py-3 rounded-2xl shadow-2xl backdrop-blur-xl translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2.5 z-50">
+      <span class="w-2 h-2 rounded-full bg-fuchsia-400 animate-ping"></span>
+      <span id="toast-text">Notificación</span>
+    </div>
+
+  </main>
+
+  <script>
+    // Insights carousel data in Spanish
+    const insightsList = [
+      {
+        tag: 'transporte',
+        icon: '<svg class="w-3.5 h-3.5 text-zinc-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 17a2 2 0 1 0 4 0 2 2 0 0 0-4 0m10 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"></path><path d="M5 17H3v-4l2-5h10l2 5v4h-2"></path><path d="M5 12h14"></path></svg>',
+        text: '¡Has administrado la mayor parte de tu presupuesto de <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-obsidian-750 border border-obsidian-650 text-white font-medium text-xs align-baseline mx-0.5"><svg class="w-3.5 h-3.5 text-zinc-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 17a2 2 0 1 0 4 0 2 2 0 0 0-4 0m10 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"></path><path d="M5 17H3v-4l2-5h10l2 5v4h-2"></path><path d="M5 12h14"></path></svg> transporte</span> con eficacia! Considera añadir un poco más o explorar alternativas de viaje para ahorrar dinero.'
+      },
+      {
+        tag: 'supermercado',
+        icon: '<svg class="w-3.5 h-3.5 text-zinc-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2.27 21.7s9.87-3.5 12.73-6.36a4.5 4.5 0 0 0-6.36-6.37C5.77 11.84 2.27 21.7 2.27 21.7zM15 9l6-6M18 9l3-3M15 6l3-3"></path></svg>',
+        text: 'Tus compras de <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-obsidian-750 border border-obsidian-650 text-white font-medium text-xs align-baseline mx-0.5">supermercado</span> han bajado un 14% esta semana. ¡Excelente ritmo de ahorro en alimentos frescos!'
+      },
+      {
+        tag: 'suscripciones',
+        icon: '<svg class="w-3.5 h-3.5 text-zinc-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>',
+        text: 'Detectamos <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-obsidian-750 border border-obsidian-650 text-white font-medium text-xs align-baseline mx-0.5">3 servicios</span> de trabajo que vencen en 5 días. Tu saldo actual cubre holgadamente las renovaciones automáticas.'
+      },
+      {
+        tag: 'ahorro',
+        icon: '<svg class="w-3.5 h-3.5 text-zinc-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"></circle><path d="M12 5V3m0 18v-2"></path></svg>',
+        text: 'Meta mensual: Has reservado el <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-obsidian-750 border border-obsidian-650 text-emerald-400 font-medium text-xs align-baseline mx-0.5">+24%</span> proyectado. Mantén este patrón hasta el fin de semana.'
+      }
+    ];
+
+    let currentInsightIdx = 0;
+    let isBalanceHidden = false;
+    let toastTimeout = null;
+
+    // Cycle through insights
+    function nextInsight() {
+      currentInsightIdx = (currentInsightIdx + 1) % insightsList.length;
+      const data = insightsList[currentInsightIdx];
+      const textEl = document.getElementById('insight-text');
+      const counterEl = document.getElementById('insight-counter');
+
+      textEl.style.opacity = '0';
+      setTimeout(() => {
+        textEl.innerHTML = data.text;
+        textEl.style.opacity = '1';
+      }, 150);
+
+      counterEl.textContent = `Paso ${currentInsightIdx + 1} de ${insightsList.length}`;
+
+      // Update segment indicators
+      for (let i = 0; i < 4; i++) {
+        const seg = document.getElementById(`seg-${i}`);
+        if (i === currentInsightIdx) {
+          seg.className = 'h-1 flex-1 rounded-full bg-white transition-all duration-300';
+        } else {
+          seg.className = 'h-1 flex-1 rounded-full bg-obsidian-700 hover:bg-obsidian-600 transition-all duration-300';
+        }
+      }
+    }
+
+    // Toggle card balance masking
+    function toggleBalanceMask() {
+      const balanceEl = document.getElementById('card-balance-display');
+      const togglePill = document.getElementById('card-toggle-pill');
+      isBalanceHidden = !isBalanceHidden;
+
+      if (isBalanceHidden) {
+        balanceEl.textContent = '$ ••••••••';
+        togglePill.classList.remove('justify-end', 'bg-white/25');
+        togglePill.classList.add('justify-start', 'bg-zinc-700/60');
+        showToast('Saldo ocultado por privacidad');
+      } else {
+        balanceEl.textContent = '$92,038.56';
+        togglePill.classList.remove('justify-start', 'bg-zinc-700/60');
+        togglePill.classList.add('justify-end', 'bg-white/25');
+        showToast('Saldo visible: $92,038.56');
+      }
+    }
+
+    // Timeframe selector
+    function toggleTimeframeDropdown() {
+      const menu = document.getElementById('timeframe-menu');
+      const chevron = document.getElementById('dropdown-chevron');
+      menu.classList.toggle('hidden');
+      chevron.classList.toggle('rotate-180');
+    }
+
+    function setTimeframe(label) {
+      document.getElementById('selected-timeframe').textContent = label;
+      toggleTimeframeDropdown();
+      showToast(`Periodo actualizado a: ${label}`);
+    }
+
+    // Category filter interactions
+    function filterCategory(categoryName, btnElement) {
+      document.querySelectorAll('.category-ring').forEach(btn => btn.classList.remove('active'));
+      btnElement.classList.add('active');
+      showToast(`Filtrando vista por: ${categoryName.toUpperCase()}`);
+    }
+
+    // Non-blocking toast notification helper
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toast-text');
+      text.textContent = msg;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 2600);
+    }
+
+    // Close timeframe menu when clicking outside
+    document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('timeframe-menu');
+      const btn = document.getElementById('timeframe-btn');
+      if (dropdown && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+        if (!dropdown.classList.contains('hidden')) {
+          dropdown.classList.add('hidden');
+          document.getElementById('dropdown-chevron').classList.remove('rotate-180');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Market Trends Chart</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0c0d0f;
+      color: #f3f4f6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Inactive Bar Fine Diagonal Hatch Pattern */
+    .bar-hatch-inactive {
+      background-color: #15171d;
+      background-image: repeating-linear-gradient(
+        -48deg,
+        rgba(255, 255, 255, 0.085) 0px,
+        rgba(255, 255, 255, 0.085) 1.5px,
+        transparent 1.5px,
+        transparent 5.5px
+      );
+    }
+
+    /* Active Bar Neon Cyan Diagonal Hatch Pattern */
+    .bar-hatch-active {
+      background-color: #0d1e2e;
+      background-image: repeating-linear-gradient(
+        -48deg,
+        rgba(56, 189, 248, 0.35) 0px,
+        rgba(56, 189, 248, 0.35) 1.5px,
+        transparent 1.5px,
+        transparent 5.5px
+      );
+    }
+
+    /* Neon electric glow for the highlighted active bar */
+    .neon-cyan-glow {
+      box-shadow: 0 0 24px -2px rgba(56, 189, 248, 0.38),
+                  inset 0 0 14px rgba(56, 189, 248, 0.16);
+    }
+
+    /* Dynamic spring transition for fluid height expansion/reduction */
+    .bar-spring {
+      transition: height 0.75s cubic-bezier(0.34, 1.25, 0.64, 1),
+                  border-color 0.35s ease,
+                  background-color 0.35s ease,
+                  box-shadow 0.4s ease;
+      will-change: height;
+    }
+
+    /* Subtle frame wrapper transition */
+    .frame-transition {
+      transition: border-color 0.3s ease,
+                  background-color 0.3s ease,
+                  box-shadow 0.3s ease;
+    }
+
+    /* Prevent text selection when rapidly switching */
+    .no-select {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-3 sm:p-6 md:p-10 no-select">
+
+  <!-- Main Card Container -->
+  <div class="w-full max-w-[850px] bg-[#141518] border border-[#23242b] rounded-[34px] p-6 sm:p-9 shadow-2xl relative overflow-hidden">
+    
+    <!-- Ambient backlights matching the screenshot's subtle depth -->
+    <div class="absolute -top-28 -left-28 w-80 h-80 bg-blue-600/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-28 -right-28 w-80 h-80 bg-sky-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 sm:gap-9 items-stretch relative z-10">
+
+      <div class="lg:col-span-4 flex flex-col justify-between space-y-8">
+        
+        <!-- Header: Sparkline Icon & Title -->
+        <div>
+          <div class="flex items-center gap-3.5 mb-7">
+            <!-- Sparkline icon box -->
+            <div class="w-11 h-11 rounded-2xl bg-[#1d1f25] border border-[#2b2d37] flex items-center justify-center text-zinc-300 shadow-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                <polyline points="16 7 22 7 22 13"></polyline>
+              </svg>
+            </div>
+            <h1 class="text-[21px] font-bold leading-tight tracking-tight text-white">
+              Market<br>Trends
+            </h1>
+          </div>
+
+          <!-- Token Selector Buttons (BTC, ETH, SOL) -->
+          <div class="flex flex-col gap-2.5">
+            <div class="flex items-center gap-2.5">
+              <!-- BTC Button -->
+              <button id="btn-btc" onclick="selectCrypto('btc')" 
+                      class="crypto-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 bg-white text-black shadow-md cursor-pointer">
+                BTC
+              </button>
+              <!-- ETH Button -->
+              <button id="btn-eth" onclick="selectCrypto('eth')" 
+                      class="crypto-btn px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 bg-[#212328] text-zinc-400 border border-[#2c2e37] hover:text-white hover:bg-[#282a32] cursor-pointer">
+                ETH
+              </button>
+            </div>
+            <!-- SOL Button -->
+            <div>
+              <button id="btn-sol" onclick="selectCrypto('sol')" 
+                      class="crypto-btn px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 bg-[#212328] text-zinc-400 border border-[#2c2e37] hover:text-white hover:bg-[#282a32] cursor-pointer">
+                SOL
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4">
+          <!-- Grow Tag with animated pulse dot -->
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1b1c21] border border-[#2a2c35] mb-2.5 text-xs font-semibold text-zinc-300 tracking-wide">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="grow-pill-text">Grow +17%</span>
+          </div>
+          <!-- Big Dynamic Price Display -->
+          <div id="main-price" class="text-3xl sm:text-[38px] font-black tracking-tight text-white transition-all">
+            $68,332
+          </div>
+        </div>
+
+      </div>
+
+      <div class="lg:col-span-8 bg-[#101114] border border-[#202229] rounded-[28px] p-5 sm:p-7 flex flex-col justify-between shadow-xl relative">
+        
+        <!-- Comparison Header & Dual Numerical Values -->
+        <div class="flex items-start justify-between mb-8">
+          <div>
+            <h2 class="text-[17px] font-semibold text-zinc-100 tracking-tight">Comparison</h2>
+          </div>
+          <div class="text-right">
+            <div id="comp-base-price" class="text-sm font-medium text-zinc-500 tracking-tight transition-all">
+              $60,477
+            </div>
+            <div id="comp-high-price" class="text-base font-bold text-zinc-100 tracking-tight transition-all">
+              $68,332
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart Drawing Canvas Area -->
+        <div class="relative w-full h-[230px] flex">
+          
+          <!-- Y-Axis Labels -->
+          <div class="w-10 h-full flex flex-col justify-between text-right pr-3.5 text-xs font-medium text-zinc-500 select-none pb-6">
+            <span>60%</span>
+            <span>45%</span>
+            <span>30%</span>
+            <span>15%</span>
+            <span>0%</span>
+          </div>
+
+          <!-- Chart Bars Container with Fixed Height Canvas -->
+          <div class="relative flex-1 h-full pb-6">
+            
+            <!-- Horizontal Dashed Gridlines -->
+            <div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-6">
+              <div class="w-full border-b border-dashed border-[#20222a]"></div>
+              <div class="w-full border-b border-dashed border-[#20222a]"></div>
+              <div class="w-full border-b border-dashed border-[#20222a]"></div>
+              <div class="w-full border-b border-dashed border-[#20222a]"></div>
+              <div class="w-full border-b border-[#2b2d38]"></div>
+            </div>
+
+            <!-- Fixed 5 Column Elements for Seamless Spring Transitions -->
+            <div class="relative z-10 w-full h-full flex items-end justify-between px-1 sm:px-3">
+              
+              <!-- Column 0: Sep -->
+              <div onclick="selectMonth(0)" class="flex flex-col items-center justify-end h-full relative cursor-pointer group w-[54px] sm:w-[62px]">
+                <div id="tooltip-0" class="absolute -top-7 text-xs font-bold text-white tracking-wider transition-opacity duration-300 opacity-0 pointer-events-none">+9%</div>
+                <div id="frame-0" class="relative w-full flex flex-col items-center frame-transition p-1 sm:p-1.5 rounded-2xl">
+                  <div id="bar-0" class="w-full rounded-[18px] bar-spring relative flex flex-col justify-between items-center py-2.5 overflow-hidden border border-[#525767] bar-hatch-inactive group-hover:border-zinc-300" style="height: 40px;">
+                    <div id="cap-0" class="w-6 sm:w-7 h-[2px] rounded-full transition-colors duration-200 bg-[#525767] group-hover:bg-zinc-300"></div>
+                    <span id="pct-0" class="text-xs transition-colors duration-200 select-none text-zinc-300 font-semibold">23%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Column 1: Oct -->
+              <div onclick="selectMonth(1)" class="flex flex-col items-center justify-end h-full relative cursor-pointer group w-[54px] sm:w-[62px]">
+                <div id="tooltip-1" class="absolute -top-7 text-xs font-bold text-white tracking-wider transition-opacity duration-300 opacity-0 pointer-events-none">+14%</div>
+                <div id="frame-1" class="relative w-full flex flex-col items-center frame-transition p-1 sm:p-1.5 rounded-2xl">
+                  <div id="bar-1" class="w-full rounded-[18px] bar-spring relative flex flex-col justify-between items-center py-2.5 overflow-hidden border border-[#525767] bar-hatch-inactive group-hover:border-zinc-300" style="height: 40px;">
+                    <div id="cap-1" class="w-6 sm:w-7 h-[2px] rounded-full transition-colors duration-200 bg-[#525767] group-hover:bg-zinc-300"></div>
+                    <span id="pct-1" class="text-xs transition-colors duration-200 select-none text-zinc-300 font-semibold">34%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Column 2: Nov (Default Active) -->
+              <div onclick="selectMonth(2)" class="flex flex-col items-center justify-end h-full relative cursor-pointer group w-[54px] sm:w-[62px]">
+                <div id="tooltip-2" class="absolute -top-7 text-xs font-bold text-white tracking-wider transition-opacity duration-300 opacity-100 pointer-events-none">+17%</div>
+                <div id="frame-2" class="relative w-full flex flex-col items-center frame-transition p-1 sm:p-1.5 rounded-2xl border-2 border-dashed border-[#3e4453] bg-[#1a1c22]/40">
+                  <div id="bar-2" class="w-full rounded-[18px] bar-spring relative flex flex-col justify-between items-center py-2.5 overflow-hidden border-2 border-[#38bdf8] bar-hatch-active neon-cyan-glow" style="height: 40px;">
+                    <div id="cap-2" class="w-6 sm:w-7 h-[2px] rounded-full transition-colors duration-200 bg-[#38bdf8]"></div>
+                    <span id="pct-2" class="text-xs transition-colors duration-200 select-none text-white font-bold">48%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Column 3: Dec -->
+              <div onclick="selectMonth(3)" class="flex flex-col items-center justify-end h-full relative cursor-pointer group w-[54px] sm:w-[62px]">
+                <div id="tooltip-3" class="absolute -top-7 text-xs font-bold text-white tracking-wider transition-opacity duration-300 opacity-0 pointer-events-none">+11%</div>
+                <div id="frame-3" class="relative w-full flex flex-col items-center frame-transition p-1 sm:p-1.5 rounded-2xl">
+                  <div id="bar-3" class="w-full rounded-[18px] bar-spring relative flex flex-col justify-between items-center py-2.5 overflow-hidden border border-[#525767] bar-hatch-inactive group-hover:border-zinc-300" style="height: 40px;">
+                    <div id="cap-3" class="w-6 sm:w-7 h-[2px] rounded-full transition-colors duration-200 bg-[#525767] group-hover:bg-zinc-300"></div>
+                    <span id="pct-3" class="text-xs transition-colors duration-200 select-none text-zinc-300 font-semibold">26%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Column 4: Jan -->
+              <div onclick="selectMonth(4)" class="flex flex-col items-center justify-end h-full relative cursor-pointer group w-[54px] sm:w-[62px]">
+                <div id="tooltip-4" class="absolute -top-7 text-xs font-bold text-white tracking-wider transition-opacity duration-300 opacity-0 pointer-events-none">+15%</div>
+                <div id="frame-4" class="relative w-full flex flex-col items-center frame-transition p-1 sm:p-1.5 rounded-2xl">
+                  <div id="bar-4" class="w-full rounded-[18px] bar-spring relative flex flex-col justify-between items-center py-2.5 overflow-hidden border border-[#525767] bar-hatch-inactive group-hover:border-zinc-300" style="height: 40px;">
+                    <div id="cap-4" class="w-6 sm:w-7 h-[2px] rounded-full transition-colors duration-200 bg-[#525767] group-hover:bg-zinc-300"></div>
+                    <span id="pct-4" class="text-xs transition-colors duration-200 select-none text-zinc-300 font-semibold">36%</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <div class="flex pl-10 pr-1 sm:pr-3 justify-between text-xs font-semibold text-zinc-400 pt-1 select-none">
+          <div class="w-[54px] sm:w-[62px] text-center">Sep</div>
+          <div class="w-[54px] sm:w-[62px] text-center">Oct</div>
+          <div class="w-[54px] sm:w-[62px] text-center">Nov</div>
+          <div class="w-[54px] sm:w-[62px] text-center">Dec</div>
+          <div class="w-[54px] sm:w-[62px] text-center">Jan</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Quick action bar at the footer -->
+    <div class="mt-6 pt-4 border-t border-[#1e2027] flex flex-wrap items-center justify-between text-[11px] text-zinc-500 gap-2">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span>Dynamic real-time transitions &amp; fluid spring interpolations</span>
+      </div>
+      <button onclick="triggerSimulatedPulse()" class="text-xs text-sky-400 hover:text-sky-300 cursor-pointer font-medium transition-colors">
+        ⚡ Simular movimiento de mercado
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    const cryptoData = {
+      btc: {
+        symbol: 'BTC',
+        name: 'Bitcoin',
+        currentPrice: 68332,
+        basePrice: 60477,
+        activeMonthIdx: 2, // 'Nov'
+        months: [
+          { name: 'Sep', value: 23, delta: '+9%' },
+          { name: 'Oct', value: 34, delta: '+14%' },
+          { name: 'Nov', value: 48, delta: '+17%' },
+          { name: 'Dec', value: 26, delta: '+11%' },
+          { name: 'Jan', value: 36, delta: '+15%' }
+        ]
+      },
+      eth: {
+        symbol: 'ETH',
+        name: 'Ethereum',
+        currentPrice: 3840,
+        basePrice: 3210,
+        activeMonthIdx: 3, // 'Dec'
+        months: [
+          { name: 'Sep', value: 31, delta: '+13%' },
+          { name: 'Oct', value: 44, delta: '+18%' },
+          { name: 'Nov', value: 38, delta: '+14%' },
+          { name: 'Dec', value: 55, delta: '+24%' },
+          { name: 'Jan', value: 42, delta: '+19%' }
+        ]
+      },
+      sol: {
+        symbol: 'SOL',
+        name: 'Solana',
+        currentPrice: 194,
+        basePrice: 148,
+        activeMonthIdx: 4, // 'Jan'
+        months: [
+          { name: 'Sep', value: 19, delta: '+8%' },
+          { name: 'Oct', value: 29, delta: '+13%' },
+          { name: 'Nov', value: 41, delta: '+17%' },
+          { name: 'Dec', value: 35, delta: '+15%' },
+          { name: 'Jan', value: 57, delta: '+31%' }
+        ]
+      }
+    };
+
+    let currentCryptoKey = 'btc';
+    let selectedMonthIndex = 2; // Nov
+    const MAX_SCALE = 60; // 60% top line
+    const CHART_DRAW_HEIGHT_PX = 206; // Maximum drawable bar height in pixels
+
+    /* Current displayed values to animate numbers smoothly */
+    const currentBarValues = [0, 0, 0, 0, 0];
+
+    function animateTextNumber(elementId, start, end, duration = 650, suffix = '%') {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+
+      const startTime = performance.now();
+      const change = end - start;
+
+      function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease Out Quart
+        const ease = 1 - Math.pow(1 - progress, 4);
+        const current = Math.round(start + change * ease);
+        el.textContent = current + suffix;
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          el.textContent = end + suffix;
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    function animateCurrency(elementId, start, end, duration = 650) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+
+      const startTime = performance.now();
+      const change = end - start;
+
+      function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 4);
+        const current = Math.round(start + change * ease);
+        el.textContent = '$' + current.toLocaleString();
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          el.textContent = '$' + end.toLocaleString();
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    function updateChartBars(animateValues = true) {
+      const data = cryptoData[currentCryptoKey];
+
+      data.months.forEach((item, index) => {
+        const isSelected = (index === selectedMonthIndex);
+        
+        // Calculate fluid pixel height
+        const targetHeight = Math.max(38, Math.round((item.value / MAX_SCALE) * CHART_DRAW_HEIGHT_PX));
+        
+        const bar = document.getElementById(`bar-${index}`);
+        const frame = document.getElementById(`frame-${index}`);
+        const cap = document.getElementById(`cap-${index}`);
+        const pct = document.getElementById(`pct-${index}`);
+        const tooltip = document.getElementById(`tooltip-${index}`);
+
+        if (!bar) return;
+
+        // 1. Update fluid height - triggers CSS spring transition
+        bar.style.height = `${targetHeight}px`;
+
+        // 2. Animate numerical counter inside the bar
+        if (animateValues) {
+          const oldVal = currentBarValues[index] || item.value;
+          animateTextNumber(`pct-${index}`, oldVal, item.value, 700, '%');
+        } else {
+          pct.textContent = item.value + '%';
+        }
+        currentBarValues[index] = item.value;
+
+        // 3. Update tooltip text
+        if (tooltip) {
+          tooltip.textContent = item.delta;
+        }
+
+        // 4. Update active / inactive styling
+        if (isSelected) {
+          // Frame with dashed bounding box
+          frame.className = 'relative w-full flex flex-col items-center frame-transition p-1 sm:p-1.5 rounded-2xl border-2 border-dashed border-[#3e4453] bg-[#1a1c22]/40';
+          
+          // Glowing cyan active bar
+          bar.className = 'w-full rounded-[18px] bar-spring relative flex flex-col justify-between items-center py-2.5 overflow-hidden border-2 border-[#38bdf8] bar-hatch-active neon-cyan-glow';
+          cap.className = 'w-6 sm:w-7 h-[2px] rounded-full transition-colors duration-200 bg-[#38bdf8]';
+          pct.className = 'text-xs transition-colors duration-200 select-none text-white font-bold';
+
+          // Tooltip visible
+          if (tooltip) {
+            tooltip.className = 'absolute -top-7 text-xs font-bold text-white tracking-wider transition-all duration-300 opacity-100 scale-100 pointer-events-none';
+          }
+        } else {
+          // Regular inactive bar
+          frame.className = 'relative w-full flex flex-col items-center frame-transition p-1 sm:p-1.5 rounded-2xl border border-transparent';
+          
+          bar.className = 'w-full rounded-[18px] bar-spring relative flex flex-col justify-between items-center py-2.5 overflow-hidden border border-[#525767] bar-hatch-inactive group-hover:border-zinc-300';
+          cap.className = 'w-6 sm:w-7 h-[2px] rounded-full transition-colors duration-200 bg-[#525767] group-hover:bg-zinc-300';
+          pct.className = 'text-xs transition-colors duration-200 select-none text-zinc-300 font-semibold';
+
+          if (tooltip) {
+            tooltip.className = 'absolute -top-7 text-xs font-bold text-white tracking-wider transition-all duration-300 opacity-0 scale-90 pointer-events-none group-hover:opacity-60';
+          }
+        }
+      });
+
+      // Update Grow pill tag
+      const growTag = document.getElementById('grow-pill-text');
+      if (growTag) {
+        growTag.textContent = `Grow ${data.months[selectedMonthIndex].delta}`;
+      }
+    }
+
+    function selectMonth(index) {
+      if (selectedMonthIndex === index) return;
+      selectedMonthIndex = index;
+      updateChartBars(false);
+    }
+
+    function selectCrypto(key) {
+      if (currentCryptoKey === key) return;
+
+      const prevData = cryptoData[currentCryptoKey];
+      currentCryptoKey = key;
+      const nextData = cryptoData[currentCryptoKey];
+
+      // Update active month to the coin's highlighted peak
+      selectedMonthIndex = nextData.activeMonthIdx;
+
+      // Update Tab Pill Styling
+      ['btc', 'eth', 'sol'].forEach(k => {
+        const btn = document.getElementById(`btn-${k}`);
+        if (!btn) return;
+        if (k === key) {
+          btn.className = 'crypto-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 bg-white text-black shadow-md cursor-pointer';
+        } else {
+          btn.className = 'crypto-btn px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 bg-[#212328] text-zinc-400 border border-[#2c2e37] hover:text-white hover:bg-[#282a32] cursor-pointer';
+        }
+      });
+
+      // Animate prices
+      animateCurrency('main-price', prevData.currentPrice, nextData.currentPrice, 600);
+      animateCurrency('comp-high-price', prevData.currentPrice, nextData.currentPrice, 600);
+      animateCurrency('comp-base-price', prevData.basePrice, nextData.basePrice, 600);
+
+      // Trigger fluid height transitions across all 5 bars
+      updateChartBars(true);
+    }
+
+    function triggerSimulatedPulse() {
+      const data = cryptoData[currentCryptoKey];
+      // Randomly adjust slightly each bar to showcase dynamic fluid height scaling
+      data.months.forEach(m => {
+        const variance = Math.floor(Math.random() * 11) - 5;
+        m.value = Math.max(16, Math.min(58, m.value + variance));
+      });
+      updateChartBars(true);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Initialize heights smoothly from baseline
+      setTimeout(() => {
+        updateChartBars(true);
+      }, 50);
+    });
+  </script>
+
+</body>
+</html>

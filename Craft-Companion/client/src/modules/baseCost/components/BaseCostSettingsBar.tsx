@@ -5,24 +5,30 @@ import {
   MagniferLinear,
   CloseCircleBoldDuotone,
   BatteryChargeBoldDuotone,
+  BoltBoldDuotone,
+  CartLargeBoldDuotone,
 } from 'solar-icon-set';
 
 interface BaseCostSettingsBarProps {
   settings: BaseCostSettings;
   search: string;
   selectedCategory: CategoryKey;
+  strategyFilter: 'all' | 'craft' | 'buy';
   onUpdateSettings: (partial: Partial<BaseCostSettings>) => void;
   onSearchChange: (search: string) => void;
   onSelectCategory: (category: CategoryKey) => void;
+  onStrategyFilterChange: (filter: 'all' | 'craft' | 'buy') => void;
 }
 
 export const BaseCostSettingsBar: React.FC<BaseCostSettingsBarProps> = ({
   settings,
   search,
   selectedCategory,
+  strategyFilter,
   onUpdateSettings,
   onSearchChange,
   onSelectCategory,
+  onStrategyFilterChange,
 }) => {
   return (
     <div className="flex flex-col gap-4 rounded-[28px] sm:rounded-[32px] bg-[#1c1c22] p-4 sm:p-5 shadow-xl shadow-black/25 select-none border-none">
@@ -108,6 +114,50 @@ export const BaseCostSettingsBar: React.FC<BaseCostSettingsBarProps> = ({
             />
             <span className="text-[11px] text-slate-400">COIN/100k</span>
           </div>
+        </div>
+      </div>
+
+      {/* Middle Row: Strategy Segmented Control (All / Best Craft / Best Buy) */}
+      <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1">
+        <span className="text-[11px] font-mono text-slate-400 font-semibold uppercase tracking-wider">
+          Estrategia Óptima:
+        </span>
+        <div className="flex items-center gap-1.5 bg-[#131316] p-1 rounded-2xl shadow-inner">
+          <button
+            type="button"
+            onClick={() => onStrategyFilterChange('all')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              strategyFilter === 'all'
+                ? 'bg-amber-400 text-black font-bold shadow-md'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Todos
+          </button>
+          <button
+            type="button"
+            onClick={() => onStrategyFilterChange('craft')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              strategyFilter === 'craft'
+                ? 'bg-emerald-500/20 text-emerald-300 font-bold shadow-md'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <BoltBoldDuotone className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Mejor Craftear</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onStrategyFilterChange('buy')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              strategyFilter === 'buy'
+                ? 'bg-cyan-500/20 text-cyan-300 font-bold shadow-md'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <CartLargeBoldDuotone className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Mejor Comprar</span>
+          </button>
         </div>
       </div>
 

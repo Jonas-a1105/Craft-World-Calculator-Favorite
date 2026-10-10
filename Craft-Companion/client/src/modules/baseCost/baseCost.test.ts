@@ -155,3 +155,56 @@ test('BaseCost: should calculate smooth margin text color without throwing', () 
   assert.ok(getMarginTextColor(-30).includes('rgb('));
   assert.equal(getMarginTextColor(null), '#6B67A0');
 });
+
+test('BaseCost: should correctly identify root resources and default to market', () => {
+  const settings: BaseCostSettings = {
+    buySlippage: false,
+    buySlippagePct: 0,
+    sellSlippage: false,
+    sellSlippagePct: 0,
+    powerPricePer100k: 0,
+  };
+  const prices = { EARTH: 0.005 };
+  const row = calculateBaseCostRow('EARTH', {}, {}, settings, prices, 'earth');
+  assert.equal(row.isRootResource, true);
+  assert.equal(row.bestStrategy, 'buy_market');
+  assert.equal(row.directInputs.length, 0);
+});
+
+test('BaseCost: should recommend crafting when market price exceeds craft cost', () => {
+  const settings: BaseCostSettings = {
+    buySlippage: false,
+    buySlippagePct: 0,
+    sellSlippage: false,
+    sellSlippagePct: 0,
+    powerPricePer100k: 0,
+  };
+  // Mud craft cost = 3 * Earth (0.01) = 0.03
+  // Mud market price = 0.10 (more expensive on market -> better to craft!)
+  const prices = { EARTH: 0.01, MUD: 0.1 };
+  const row = calculateBaseCostRow('MUD', { MUD: 1 }, { MUD: 0 }, settings, prices, 'earth');
+  assert.equal(row.isRootResource, false);
+  assert.equal(row.isCraftCheaper, true);
+  assert.ok(row.bestStrategy === 'craft_direct' || row.bestStrategy === 'craft_base');
+  assert.ok(row.savingsPct > 50);
+  assert.equal(row.directInputs.length, 1);
+  assert.equal(row.directInputs[0].symbol, 'EARTH');
+});
+
+test('BaseCost: should recommend buying on market when craft cost exceeds market price', () => {
+  const settings: BaseCostSettings = {
+    buySlippage: false,
+    buySlippagePct: 0,
+    sellSlippage: false,
+    sellSlippagePct: 0,
+    powerPricePer100k: 0,
+  };
+  // Mud craft cost = 3 * Earth (0.05) = 0.15
+  // Mud market price = 0.05 (much cheaper on market -> buy on market!)
+  const prices = { EARTH: 0.05, MUD: 0.05 };
+  const row = calculateBaseCostRow('MUD', { MUD: 1 }, { MUD: 0 }, settings, prices, 'earth');
+  assert.equal(row.isRootResource, false);
+  assert.equal(row.isCraftCheaper, false);
+  assert.equal(row.bestStrategy, 'buy_market');
+  assert.ok(row.savingsPct > 0);
+});

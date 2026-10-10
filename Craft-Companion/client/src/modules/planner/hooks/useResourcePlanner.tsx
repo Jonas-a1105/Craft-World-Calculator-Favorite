@@ -1,7 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import type { FactoryDataRow } from '../../../services/factoryData';
 import { extractPriceMap } from '../../../services/priceService';
-import { buildRecipeTree, flattenRecipeToBaseResources } from '../../../services/craftworldCalculations';
+import { buildRecipeTree } from '../../../services/craftworldCalculations';
 import { ResourceIcon } from '../../../components/GameIcon';
 import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/queries/useCraftworldQueries';
 import { useAppStore } from '../../../store/useAppStore';
@@ -11,9 +10,9 @@ import type {
   UseResourcePlannerReturn,
 } from '../types';
 import {
+  extractBlueprintEntries,
   extractCraftingSteps,
   computeKpiStats,
-  buildMaterialEntries,
   buildMissingClipboardText,
 } from '../services/plannerService';
 
@@ -67,34 +66,49 @@ export function useResourcePlanner(): UseResourcePlannerReturn {
     }));
   }, [uniqueTokens]);
 
+  const blueprintEntries = useMemo(() => {
+    return extractBlueprintEntries(
+      rows,
+      targetToken,
+      targetAmount,
+      userResources,
+      prices,
+      'all',
+    );
+  }, [rows, targetToken, targetAmount, userResources, prices]);
+
+  const filteredMaterialEntries = useMemo(() => {
+    return extractBlueprintEntries(
+      rows,
+      targetToken,
+      targetAmount,
+      userResources,
+      prices,
+      materialFilter,
+    );
+  }, [rows, targetToken, targetAmount, userResources, prices, materialFilter]);
+
   const tree = useMemo(() => {
     return buildRecipeTree(rows, targetToken, targetAmount);
   }, [rows, targetToken, targetAmount]);
-
-  const baseRequirements = useMemo(() => {
-    return flattenRecipeToBaseResources(tree);
-  }, [tree]);
 
   const craftingSteps = useMemo(() => {
     return extractCraftingSteps(tree);
   }, [tree]);
 
   const kpiStats = useMemo(() => {
-    return computeKpiStats(baseRequirements, userResources, prices);
-  }, [baseRequirements, userResources, prices]);
-
-  const filteredMaterialEntries = useMemo(() => {
-    return buildMaterialEntries(
-      baseRequirements,
+    return computeKpiStats(
+      blueprintEntries,
       userResources,
       prices,
-      materialFilter,
+      targetToken,
+      targetAmount,
     );
-  }, [baseRequirements, userResources, prices, materialFilter]);
+  }, [blueprintEntries, userResources, prices, targetToken, targetAmount]);
 
   const handleCopyMissing = useCallback(() => {
     const textToCopy = buildMissingClipboardText(
-      baseRequirements,
+      blueprintEntries,
       userResources,
       targetToken,
       targetAmount,
@@ -104,7 +118,7 @@ export function useResourcePlanner(): UseResourcePlannerReturn {
       setCopiedNotification(true);
       setTimeout(() => setCopiedNotification(false), 2500);
     }
-  }, [baseRequirements, userResources, targetToken, targetAmount]);
+  }, [blueprintEntries, userResources, targetToken, targetAmount]);
 
   return {
     loading,

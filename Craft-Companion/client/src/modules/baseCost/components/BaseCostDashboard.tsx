@@ -20,6 +20,8 @@ export const BaseCostDashboard: React.FC = () => {
     setSearch,
     selectedCategory,
     setSelectedCategory,
+    strategyFilter,
+    setStrategyFilter,
     setLevel,
     setMastery,
     setMaxAllLevels,
@@ -69,9 +71,11 @@ export const BaseCostDashboard: React.FC = () => {
           settings={settings}
           search={search}
           selectedCategory={selectedCategory}
+          strategyFilter={strategyFilter}
           onUpdateSettings={updateSettings}
           onSearchChange={setSearch}
           onSelectCategory={setSelectedCategory}
+          onStrategyFilterChange={setStrategyFilter}
         />
 
         {/* Resource Cards View */}
@@ -83,6 +87,7 @@ export const BaseCostDashboard: React.FC = () => {
         ) : (
           <BaseCostCardView
             rows={filteredRows}
+            strategyFilter={strategyFilter}
             onLevelChange={setLevel}
             onMasteryChange={setMastery}
           />

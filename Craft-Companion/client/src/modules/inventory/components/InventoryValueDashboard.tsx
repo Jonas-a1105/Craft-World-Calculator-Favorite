@@ -3,6 +3,7 @@ import Layout from '../../../components/Layout';
 import { SkeletonDashboardPage } from '../../../components/Skeleton';
 import { useInventoryValue } from '../hooks/useInventoryValue';
 import { InventoryTotalHeader } from './InventoryTotalHeader';
+import { InventoryExecutiveAnalyticsCard } from './InventoryExecutiveAnalyticsCard';
 import { InventoryCategoryFilterBar } from './InventoryCategoryFilterBar';
 import { InventoryGrid } from './InventoryGrid';
 
@@ -30,7 +31,7 @@ export const InventoryValueDashboard: React.FC = () => {
 
   return (
     <Layout>
-      <div className="w-full max-w-[1100px] mx-auto space-y-6 pt-2">
+      <div className="w-full max-w-[1100px] mx-auto space-y-6 pt-2 select-none">
         <InventoryTotalHeader
           totalValue={totalValue}
           resourceCount={resourceCount}
@@ -40,6 +41,12 @@ export const InventoryValueDashboard: React.FC = () => {
         <InventoryCategoryFilterBar
           activeCategory={activeCategory}
           onSelectCategory={selectCategory}
+          language={language}
+        />
+
+        <InventoryExecutiveAnalyticsCard
+          items={filteredItems}
+          totalValue={totalValue}
           language={language}
         />
 

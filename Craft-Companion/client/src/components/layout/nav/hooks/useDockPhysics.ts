@@ -38,7 +38,13 @@ export function useDockPhysics(language: string) {
 
   const hoveredIndexRef = useRef<number | null>(null);
 
+  const activeTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const hideTooltip = useCallback(() => {
+    if (activeTooltipTimerRef.current) {
+      clearTimeout(activeTooltipTimerRef.current);
+      activeTooltipTimerRef.current = null;
+    }
     if (tooltipRef.current) {
       tooltipRef.current.classList.remove('opacity-100', 'scale-100');
       tooltipRef.current.classList.add('opacity-0', 'scale-95');
@@ -46,25 +52,55 @@ export function useDockPhysics(language: string) {
     hoveredIndexRef.current = null;
   }, []);
 
+  const positionTooltipAtSlot = useCallback((index: number) => {
+    const slot = slotRefs.current[index];
+    const stage = dockStageRef.current;
+    if (!slot || !tooltipRef.current || !stage) return;
+
+    const stageRect = stage.getBoundingClientRect();
+    const slotRect = slot.getBoundingClientRect();
+    let relativeX = slotRect.left + slotRect.width / 2 - stageRect.left;
+
+    // Keep badge safely inside viewport on mobile
+    const minX = 42;
+    const maxX = Math.max(minX, stageRect.width - 42);
+    relativeX = Math.max(minX, Math.min(maxX, relativeX));
+
+    tooltipRef.current.style.left = `${relativeX}px`;
+  }, []);
+
   const showTooltip = useCallback(
     (index: number) => {
-      const slot = slotRefs.current[index];
       const item = NAV_ITEMS[index];
-      const stage = dockStageRef.current;
-      if (!slot || !item || !tooltipRef.current || !stage) return;
+      if (!item || !tooltipRef.current) return;
+
+      if (activeTooltipTimerRef.current) {
+        clearTimeout(activeTooltipTimerRef.current);
+        activeTooltipTimerRef.current = null;
+      }
 
       const label = language === 'es' ? item.labelEs : item.labelEn;
       setTooltipText(label);
+      positionTooltipAtSlot(index);
 
-      const stageRect = stage.getBoundingClientRect();
-      const slotRect = slot.getBoundingClientRect();
-      const relativeX = slotRect.left + slotRect.width / 2 - stageRect.left;
-      tooltipRef.current.style.left = `${relativeX}px`;
       tooltipRef.current.classList.remove('opacity-0', 'scale-95');
       tooltipRef.current.classList.add('opacity-100', 'scale-100');
       hoveredIndexRef.current = index;
     },
-    [language]
+    [language, positionTooltipAtSlot]
+  );
+
+  const showActivePageBadge = useCallback(
+    (index: number, durationMs = 2000) => {
+      if (index < 0 || index >= NAV_ITEMS.length) return;
+      showTooltip(index);
+
+      activeTooltipTimerRef.current = setTimeout(() => {
+        hideTooltip();
+        activeTooltipTimerRef.current = null;
+      }, durationMs);
+    },
+    [showTooltip, hideTooltip]
   );
 
   const triggerPopAnimation = useCallback((index: number) => {
@@ -97,19 +133,19 @@ export function useDockPhysics(language: string) {
 
       let baseSlotWidth = 48;
       if (isMobile) {
-        baseSlotWidth = Math.min(36, Math.max(28, Math.floor((width - 36) / NAV_ITEMS.length) - 3));
+        baseSlotWidth = 40;
       } else if (isTablet) {
         baseSlotWidth = 44;
       }
 
       return {
         baseSlotWidth,
-        gap: isMobile ? 4 : 8,
-        maxScale: isMobile ? 1.32 : 1.48,
+        gap: isMobile ? 6 : 8,
+        maxScale: isMobile ? 1.28 : 1.48,
         radius: isMobile ? 65 : 80,
         lerpFactor: 0.22,
         depth3D: 0,
-        lateralMult: isMobile ? 0.4 : 0.7,
+        lateralMult: isMobile ? 0 : 0.7,
         dockPaddingX: isMobile ? 16 : 24,
         separatorWidth: 1.5 + (isMobile ? 6 : 8),
       };
@@ -129,13 +165,17 @@ export function useDockPhysics(language: string) {
 
       if (!dockShelfRef.current) return;
       const shelfRect = dockShelfRef.current.getBoundingClientRect();
+      const isMobile = window.innerWidth < 640;
 
-      // Strict bounds: Only trigger hover when pointer actually enters the shelf area
+      const verticalPadTop = isMobile ? 40 : 0;
+      const verticalPadBottom = isMobile ? 30 : 0;
+      const horizontalPad = isMobile ? 25 : 0;
+
       if (
-        clientY >= shelfRect.top &&
-        clientY <= shelfRect.bottom &&
-        clientX >= shelfRect.left &&
-        clientX <= shelfRect.right
+        clientY >= shelfRect.top - verticalPadTop &&
+        clientY <= shelfRect.bottom + verticalPadBottom &&
+        clientX >= shelfRect.left - horizontalPad &&
+        clientX <= shelfRect.right + horizontalPad
       ) {
         pointerPosRef.current.isNear = true;
       } else {
@@ -145,6 +185,9 @@ export function useDockPhysics(language: string) {
     };
 
     const onMouseMove = (e: MouseEvent) => handlePointer(e.clientX, e.clientY);
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length > 0) handlePointer(e.touches[0].clientX, e.touches[0].clientY);
+    };
     const onTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) handlePointer(e.touches[0].clientX, e.touches[0].clientY);
     };
@@ -152,7 +195,11 @@ export function useDockPhysics(language: string) {
       pointerPosRef.current.isNear = false;
       pointerPosRef.current.x = null;
       pointerPosRef.current.y = null;
-      hideTooltip();
+      setTimeout(() => {
+        if (!pointerPosRef.current.isNear) {
+          hideTooltip();
+        }
+      }, 600);
     };
     const onMouseLeaveDoc = () => {
       pointerPosRef.current.isNear = false;
@@ -162,8 +209,10 @@ export function useDockPhysics(language: string) {
     };
 
     window.addEventListener('mousemove', onMouseMove, { passive: true });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
     window.addEventListener('touchmove', onTouchMove, { passive: true });
     window.addEventListener('touchend', onTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', onTouchEnd, { passive: true });
     document.addEventListener('mouseleave', onMouseLeaveDoc, { passive: true });
 
     const getMagnificationFactor = (cursorX: number, itemCenterX: number, radius: number) => {
@@ -179,38 +228,38 @@ export function useDockPhysics(language: string) {
       const states = physicsStatesRef.current;
 
       if (stage && shelf) {
-        const stageCenterX = window.innerWidth / 2;
-        const separatorIdx = NAV_ITEMS.length - 1;
+        const isMobileNow = window.innerWidth < 640;
 
-        let currentTotalSlotsWidth = 0;
-        for (let i = 0; i < states.length; i++) {
-          currentTotalSlotsWidth += states[i].currentWidth;
-        }
-        const currentDockContentWidth =
-          currentTotalSlotsWidth +
-          (states.length - 1) * cfg.gap +
-          cfg.separatorWidth;
-        const dockLeftX = stageCenterX - currentDockContentWidth / 2;
-
-        let accumulatedX = dockLeftX;
+        // Accurate screen centers respecting any horizontal scrollLeft or parent positioning
         const slotScreenCenters: number[] = [];
         for (let i = 0; i < states.length; i++) {
-          if (i === separatorIdx) accumulatedX += cfg.separatorWidth;
-          const center = accumulatedX + states[i].currentWidth / 2;
-          slotScreenCenters.push(center);
-          accumulatedX += states[i].currentWidth + cfg.gap;
+          const slotEl = slotRefs.current[i];
+          if (slotEl) {
+            const rect = slotEl.getBoundingClientRect();
+            slotScreenCenters.push(rect.left + rect.width / 2);
+          } else {
+            slotScreenCenters.push(0);
+          }
         }
 
         let newTotalDockWidth =
           cfg.dockPaddingX + cfg.separatorWidth + (states.length - 1) * cfg.gap;
 
         const { x: mouseX, isNear } = pointerPosRef.current;
+        let closestIndex = -1;
+        let minDistance = Infinity;
 
         for (let i = 0; i < states.length; i++) {
           const state = states[i];
           const itemCenterX = slotScreenCenters[i];
 
           if (isNear && mouseX !== null) {
+            const dist = Math.abs(mouseX - itemCenterX);
+            if (dist < minDistance) {
+              minDistance = dist;
+              closestIndex = i;
+            }
+
             const factor = getMagnificationFactor(mouseX, itemCenterX, cfg.radius);
             state.targetScale = 1 + (cfg.maxScale - 1) * factor;
             const lateralExtra =
@@ -239,7 +288,9 @@ export function useDockPhysics(language: string) {
 
           const slotEl = slotRefs.current[i];
           if (slotEl) {
-            slotEl.style.width = `${state.currentWidth.toFixed(2)}px`;
+            if (!isMobileNow) {
+              slotEl.style.width = `${state.currentWidth.toFixed(2)}px`;
+            }
             slotEl.style.zIndex = String(Math.round(state.currentScale * 100));
           }
 
@@ -256,19 +307,46 @@ export function useDockPhysics(language: string) {
           }
         }
 
-        const roundedWidth = Math.round(newTotalDockWidth);
-        shelf.style.width = `${roundedWidth}px`;
-        if (reflection) {
-          reflection.style.width = `${roundedWidth}px`;
+        // Dynamically update tooltip label on finger glide or mouse scrub
+        if (isNear && mouseX !== null && closestIndex !== -1 && minDistance <= cfg.radius) {
+          if (hoveredIndexRef.current !== closestIndex) {
+            const item = NAV_ITEMS[closestIndex];
+            if (item) {
+              const label = language === 'es' ? item.labelEs : item.labelEn;
+              setTooltipText(label);
+              hoveredIndexRef.current = closestIndex;
+              if (tooltipRef.current) {
+                tooltipRef.current.classList.remove('opacity-0', 'scale-95');
+                tooltipRef.current.classList.add('opacity-100', 'scale-100');
+              }
+            }
+          }
         }
 
+        if (isMobileNow) {
+          shelf.style.width = 'max-content';
+          shelf.style.maxWidth = 'calc(100vw - 20px)';
+        } else {
+          const roundedWidth = Math.round(newTotalDockWidth);
+          shelf.style.width = `${roundedWidth}px`;
+          shelf.style.maxWidth = 'none';
+        }
+        if (reflection) {
+          reflection.style.width = isMobileNow ? 'max-content' : `${Math.round(newTotalDockWidth)}px`;
+        }
+
+        // Tooltip follows active slot in real-time, even while shelf is scrolling
         if (hoveredIndexRef.current !== null && tooltipRef.current && stage) {
           const hoveredIdx = hoveredIndexRef.current;
           const currentSlot = slotRefs.current[hoveredIdx];
           if (currentSlot) {
             const stageRect = stage.getBoundingClientRect();
             const rect = currentSlot.getBoundingClientRect();
-            tooltipRef.current.style.left = `${rect.left + rect.width / 2 - stageRect.left}px`;
+            let relativeX = rect.left + rect.width / 2 - stageRect.left;
+            const minX = 42;
+            const maxX = Math.max(minX, stageRect.width - 42);
+            relativeX = Math.max(minX, Math.min(maxX, relativeX));
+            tooltipRef.current.style.left = `${relativeX}px`;
           }
         }
       }
@@ -282,11 +360,13 @@ export function useDockPhysics(language: string) {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('touchcancel', onTouchEnd);
       document.removeEventListener('mouseleave', onMouseLeaveDoc);
     };
-  }, [hideTooltip]);
+  }, [hideTooltip, language]);
 
   return {
     dockStageRef,
@@ -298,6 +378,7 @@ export function useDockPhysics(language: string) {
     tooltipText,
     showTooltip,
     hideTooltip,
+    showActivePageBadge,
     triggerPopAnimation,
   };
 }

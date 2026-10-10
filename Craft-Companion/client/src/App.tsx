@@ -12,7 +12,6 @@ import FactoryCompare from './pages/FactoryCompare';
 import FactoryTimers from './pages/FactoryTimers';
 import InventoryValue from './pages/InventoryValue';
 import Landing from './pages/Landing';
-import Matrix from './pages/Matrix';
 import MyHome from './pages/MyHome';
 import Profitability from './pages/Profitability';
 import ResourcePlanner from './pages/ResourcePlanner';
@@ -30,6 +29,7 @@ import BaseCost from './pages/BaseCost';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import Splash from './pages/Splash';
+import TradingBot from './pages/TradingBot';
 
 export default function App() {
   const { config: sileoConfig } = useSileoConfig();
@@ -151,11 +151,7 @@ export default function App() {
           />
           <Route
             path="/matrix"
-            element={
-              <ProtectedRoute>
-                <Matrix />
-              </ProtectedRoute>
-            }
+            element={<Navigate to="/base-cost" replace />}
           />
           <Route
             path="/compare"
@@ -194,6 +190,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Prices />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/trading-bot"
+            element={
+              <ProtectedRoute>
+                <TradingBot />
               </ProtectedRoute>
             }
           />

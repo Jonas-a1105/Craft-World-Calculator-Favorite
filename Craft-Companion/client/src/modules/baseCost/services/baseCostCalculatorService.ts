@@ -135,6 +135,127 @@ export function calculateBaseCostRow(
   const marginPct =
     baseCost > 0 && Number.isFinite(profit) ? (profit / baseCost) * 100 : null;
 
+  // Make vs Buy & Smart Routing Analysis
+  const isRootResource = ['EARTH', 'WATER', 'FIRE', 'DUST', 'LUMBER'].includes(norm);
+  const marketBuyPrice = tokenPrice * buyMult;
+
+  let directInputs: import('../types').DirectInputDetail[] = [];
+  let directCraftCost = totalCost;
+  let hybridCraftCost = totalCost;
+  const baseElementalCraftCost = totalCost;
+  let cheapestCost = totalCost;
+  let bestStrategy: import('../types').OptimalStrategy = 'buy_market';
+  let savingsPct = 0;
+  let isCraftCheaper = false;
+
+  if (isRootResource) {
+    cheapestCost = marketBuyPrice > 0 ? marketBuyPrice : totalCost;
+    bestStrategy = 'buy_market';
+    savingsPct = 0;
+    isCraftCheaper = false;
+  } else {
+    const fList = factoriesMap[norm];
+    const f = fList ? (fList.find((x) => x.level === curLevel) ?? fList[0]) : null;
+    const mult = MASTERY_MULTIPLIERS[mastery] ?? 1;
+
+    let directInputsMarketCost = 0;
+    let hybridInputsCost = 0;
+    const directPowerCoin =
+      f && f.output > 0
+        ? (f.powerCost / f.output) * (settings.powerPricePer100k / 100_000)
+        : 0;
+
+    if (f && f.output > 0) {
+      const rawInputs = [f.input1, f.input2].filter(Boolean);
+      for (const inp of rawInputs) {
+        if (!inp) continue;
+        const amountPerUnit = inp.amount / f.output / mult;
+        const inpSym = inp.symbol.toUpperCase();
+        const inpMeta = RESOURCE_METADATA[inpSym] ?? { name: inpSym };
+        const inpRawPrice = prices[inpSym] ?? 0;
+        const inpMarketPrice = inpRawPrice * buyMult;
+        const totalMarketCost = amountPerUnit * inpMarketPrice;
+
+        // Calculate cost to craft this component from its elemental base
+        const inpDecomp = calcBaseResources(inpSym, levels, masteries, factoriesMap);
+        const inpRawBaseCost =
+          inpDecomp.earth * earthPrice +
+          inpDecomp.water * waterPrice +
+          inpDecomp.fire * firePrice +
+          inpDecomp.dust * dustPrice +
+          inpDecomp.lumber * lumberPrice;
+        const inpBaseCost = inpRawBaseCost * buyMult;
+        const inpPowerCoin =
+          inpDecomp.powerPerUnit * (settings.powerPricePer100k / 100_000);
+        const cheapestCraftCost = inpBaseCost + inpPowerCoin;
+
+        // Make vs buy decision for this specific input
+        const isInputCraftCheaper =
+          cheapestCraftCost > 0 &&
+          inpMarketPrice > 0 &&
+          cheapestCraftCost < inpMarketPrice;
+        const bestAction: 'buy' | 'craft' = isInputCraftCheaper ? 'craft' : 'buy';
+        const inputSavingsPct =
+          inpMarketPrice > 0
+            ? Math.abs(((inpMarketPrice - cheapestCraftCost) / inpMarketPrice) * 100)
+            : 0;
+
+        directInputs.push({
+          symbol: inpSym,
+          name: inpMeta.name,
+          amountPerUnit,
+          marketPrice: inpMarketPrice,
+          totalMarketCost,
+          cheapestCraftCost,
+          bestAction,
+          savingsPct: inputSavingsPct,
+        });
+
+        directInputsMarketCost += totalMarketCost;
+        const effectivePrice = isInputCraftCheaper ? cheapestCraftCost : inpMarketPrice;
+        hybridInputsCost += effectivePrice * amountPerUnit;
+      }
+    }
+
+    directCraftCost = directInputsMarketCost + directPowerCoin;
+    hybridCraftCost = hybridInputsCost + directPowerCoin;
+
+    const craftOptions: {
+      type: 'craft_direct' | 'craft_hybrid' | 'craft_base';
+      cost: number;
+    }[] = [
+      { type: 'craft_direct' as const, cost: directCraftCost },
+      { type: 'craft_hybrid' as const, cost: hybridCraftCost },
+      { type: 'craft_base' as const, cost: baseElementalCraftCost },
+    ].filter((o) => o.cost > 0);
+
+    const cheapestCraft =
+      craftOptions.length > 0
+        ? craftOptions.reduce((min, o) => (o.cost < min.cost ? o : min), craftOptions[0])
+        : { type: 'craft_direct' as const, cost: directCraftCost };
+
+    if (
+      marketBuyPrice > 0 &&
+      cheapestCraft.cost > 0 &&
+      cheapestCraft.cost < marketBuyPrice - 0.000001
+    ) {
+      bestStrategy = cheapestCraft.type;
+      cheapestCost = cheapestCraft.cost;
+      savingsPct = ((marketBuyPrice - cheapestCraft.cost) / marketBuyPrice) * 100;
+      isCraftCheaper = true;
+    } else if (marketBuyPrice > 0 && cheapestCraft.cost > 0) {
+      bestStrategy = 'buy_market';
+      cheapestCost = marketBuyPrice;
+      savingsPct = ((cheapestCraft.cost - marketBuyPrice) / cheapestCraft.cost) * 100;
+      isCraftCheaper = false;
+    } else if (cheapestCraft.cost > 0) {
+      bestStrategy = cheapestCraft.type;
+      cheapestCost = cheapestCraft.cost;
+      savingsPct = 0;
+      isCraftCheaper = true;
+    }
+  }
+
   return {
     token: norm,
     name: meta.name,
@@ -158,6 +279,16 @@ export function calculateBaseCostRow(
     sellPrice,
     profit,
     marginPct,
+    isRootResource,
+    marketBuyPrice,
+    directInputs,
+    directCraftCost,
+    baseElementalCraftCost,
+    hybridCraftCost,
+    cheapestCost,
+    bestStrategy,
+    savingsPct,
+    isCraftCheaper,
   };
 }
 

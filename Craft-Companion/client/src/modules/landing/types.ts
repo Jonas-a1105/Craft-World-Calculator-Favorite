@@ -140,6 +140,30 @@ export interface LandingCookiesSection {
   acceptAll: string;
 }
 
+export interface RollingBentoCardItem {
+  title: string;
+  subtitle: string;
+  tag: string;
+  img: string;
+}
+
+export interface LandingRollingBentoSection {
+  badge: string;
+  title: string;
+  subtitle: string;
+  liveBadge: string;
+  pausedBadge: string;
+  state1: string;
+  state2: string;
+  state3: string;
+  state4: string;
+  play: string;
+  pause: string;
+  roll3D: string;
+  viewCode: string;
+  cards: RollingBentoCardItem[];
+}
+
 export interface LandingTranslations {
   brandName: string;
   nav: {
@@ -162,6 +186,7 @@ export interface LandingTranslations {
     trustedBy: string;
   };
   suite: LandingSuiteSection;
+  rollingBento?: LandingRollingBentoSection;
   pricing: LandingPricingSection;
   impact: LandingImpactSection;
   faq: LandingFaqSection;
@@ -171,3 +196,4 @@ export interface LandingTranslations {
 
 // Re-export content from dedicated content module
 export { LANDING_CONTENT } from './landingContent';
+

@@ -50,6 +50,7 @@ export function useBaseCost() {
   const [justImported, setJustImported] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<CategoryKey>('all');
+  const [strategyFilter, setStrategyFilter] = useState<'all' | 'craft' | 'buy'>('all');
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
   // Levels & Masteries
@@ -190,6 +191,12 @@ export function useBaseCost() {
       result = result.filter((r) => r.category === selectedCategory);
     }
 
+    if (strategyFilter === 'craft') {
+      result = result.filter((r) => !r.isRootResource && r.isCraftCheaper);
+    } else if (strategyFilter === 'buy') {
+      result = result.filter((r) => !r.isRootResource && !r.isCraftCheaper);
+    }
+
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       result = result.filter(
@@ -201,7 +208,7 @@ export function useBaseCost() {
     }
 
     return result;
-  }, [allRows, selectedCategory, search]);
+  }, [allRows, selectedCategory, strategyFilter, search]);
 
   // Grouped rows by category
   const groupedRows = useMemo(() => {
@@ -346,6 +353,8 @@ export function useBaseCost() {
     setSearch,
     selectedCategory,
     setSelectedCategory,
+    strategyFilter,
+    setStrategyFilter,
     viewMode,
     setViewMode,
     setLevel,

@@ -3,6 +3,7 @@ import { useTranslation } from '../../../utils/i18n';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { LandingNavbar } from './LandingNavbar';
 import { LandingHero } from './LandingHero';
+import { LandingRollingBentoSection } from './LandingRollingBentoSection';
 import { LandingDeveloperSuite } from './LandingDeveloperSuite';
 import { LandingImpact } from './LandingImpact';
 import { LandingPricing } from './LandingPricing';
@@ -36,6 +37,12 @@ export const LandingDashboard: React.FC = () => {
       <main className="flex-1 flex flex-col items-center">
         {/* Hero Section */}
         <LandingHero content={content} />
+
+        {/* Dynamic Rolling Bento Pro Section */}
+        <LandingRollingBentoSection
+          bento={content.rollingBento}
+          language={currentLang}
+        />
 
         {/* Developer Suite Section */}
         <LandingDeveloperSuite suite={content.suite} />

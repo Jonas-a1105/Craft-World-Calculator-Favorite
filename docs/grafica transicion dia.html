@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedidos Diarios - Dashboard Dark Mode</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            card: {
+              bg: '#131417',
+              inner: '#181a1f',
+              border: '#23252b',
+              hover: '#1b1d22',
+            },
+            accent: {
+              blue: '#2f70fa',
+              cyan: '#38bdf8',
+              green: '#00c950',
+              red: '#f87171'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0c0e;
+      color: #f3f4f6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Ambient elevation shadow */
+    .dashboard-shadow {
+      box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+    }
+
+    /* Animated transitions for SVG curve and fill */
+    .chart-path {
+      transition: d 0.65s cubic-bezier(0.34, 1.25, 0.64, 1);
+    }
+
+    /* Pulsing glow point for active day */
+    @keyframes indicatorPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.75; }
+    }
+    .pulse-dot {
+      animation: indicatorPulse 2.2s infinite ease-in-out;
+      transform-origin: center;
+    }
+
+    /* Day button interactive underline animation */
+    .active-indicator {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8 select-none">
+
+  <!-- Ambient blue back-glow -->
+  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[380px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"></div>
+
+  <!-- Main Card Container -->
+  <div class="w-full max-w-[620px] bg-[#131417] border border-[#23252b] rounded-[26px] p-6 sm:p-7 dashboard-shadow relative z-10">
+
+    <!-- Card Header: Title + Region Dropdown -->
+    <header class="flex items-center justify-between gap-4 mb-4">
+      <div class="flex items-center gap-3">
+        <!-- Shopping Bag Icon in rounded container -->
+        <div class="w-10 h-10 rounded-xl bg-[#1d1f24] border border-[#2c2f38] flex items-center justify-center text-zinc-200 shrink-0 shadow-inner">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+        </div>
+        <h1 class="text-[19px] font-bold text-white tracking-tight leading-tight">Pedidos Diarios</h1>
+      </div>
+
+      <!-- Region Selector with Dropdown Menu -->
+      <div class="relative">
+        <button id="region-btn" onclick="toggleRegionMenu()" class="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-[#1c1e23] hover:bg-[#23262d] border border-[#2a2d36] text-zinc-200 text-sm font-medium tracking-tight transition-all duration-150 active:scale-95">
+          <span id="current-region-label" class="font-mono text-[13px] text-zinc-300">us-east</span>
+          <svg class="w-3.5 h-3.5 text-zinc-400 transition-transform duration-200" id="region-chevron" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+
+        <!-- Region Dropdown Menu -->
+        <div id="region-dropdown" class="absolute right-0 mt-2 w-36 bg-[#181a1f] border border-[#2a2d36] rounded-xl shadow-2xl py-1 z-30 opacity-0 pointer-events-none transition-all duration-150 transform -translate-y-1">
+          <button onclick="changeRegion('us-east')" class="w-full text-left px-3.5 py-1.5 text-xs font-mono text-zinc-200 hover:bg-[#23262e] transition-colors flex items-center justify-between">
+            <span>us-east</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-500" id="dot-us-east"></span>
+          </button>
+          <button onclick="changeRegion('eu-west')" class="w-full text-left px-3.5 py-1.5 text-xs font-mono text-zinc-400 hover:text-zinc-200 hover:bg-[#23262e] transition-colors flex items-center justify-between">
+            <span>eu-west</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-transparent" id="dot-eu-west"></span>
+          </button>
+          <button onclick="changeRegion('sa-east')" class="w-full text-left px-3.5 py-1.5 text-xs font-mono text-zinc-400 hover:text-zinc-200 hover:bg-[#23262e] transition-colors flex items-center justify-between">
+            <span>sa-east</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-transparent" id="dot-sa-east"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Spline Area Chart (Interactive Smooth Wave) -->
+    <div class="relative w-full h-[180px] sm:h-[195px] overflow-hidden -mx-2">
+      <svg id="chart-svg" class="w-full h-full" viewBox="0 0 700 200" preserveAspectRatio="none">
+        <defs>
+          <!-- Smooth vertical gradient fade -->
+          <linearGradient id="chart-blue-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#2152b3" stop-opacity="0.55" />
+            <stop offset="45%" stop-color="#183670" stop-opacity="0.25" />
+            <stop offset="100%" stop-color="#131417" stop-opacity="0.0" />
+          </linearGradient>
+
+          <!-- Line Glow Filter -->
+          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#2f70fa" flood-opacity="0.45" />
+          </filter>
+        </defs>
+
+        <!-- Area fill path -->
+        <path id="chart-area" class="chart-path" fill="url(#chart-blue-gradient)" d="M 0 95 C 40 92, 50 85, 50 85 C 100 80, 140 70, 150 70 C 200 70, 230 40, 250 40 C 280 40, 320 110, 350 110 C 390 110, 420 55, 450 55 C 490 55, 520 155, 550 155 C 590 155, 620 170, 650 170 C 680 170, 690 175, 700 175 L 700 200 L 0 200 Z" />
+
+        <!-- Line stroke path -->
+        <path id="chart-line" class="chart-path" fill="none" stroke="#2f70fa" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" d="M 0 95 C 40 92, 50 85, 50 85 C 100 80, 140 70, 150 70 C 200 70, 230 40, 250 40 C 280 40, 320 110, 350 110 C 390 110, 420 55, 450 55 C 490 55, 520 155, 550 155 C 590 155, 620 170, 650 170 C 680 170, 690 175, 700 175" />
+
+        <!-- Active point indicator dot (pulses on the selected day) -->
+        <g id="active-marker" transform="translate(250, 40)">
+          <circle r="10" fill="#2f70fa" fill-opacity="0.25" class="pulse-dot"></circle>
+          <circle r="4.5" fill="#ffffff" stroke="#2f70fa" stroke-width="2.5"></circle>
+        </g>
+      </svg>
+    </div>
+
+    <!-- 7-Day Metric Selector Grid -->
+    <div class="mt-2 border-t border-b border-[#23252b] grid grid-cols-7 relative">
+      
+      <!-- Day 1: Lun -->
+      <button onclick="selectDay(0)" id="day-btn-0" class="day-tab group relative py-3 px-1 flex flex-col items-center justify-center text-center border-r border-[#23252b] hover:bg-[#181a1f]/70 transition-colors">
+        <div class="flex items-center gap-1 text-xs text-zinc-300 font-medium">
+          <span>Lun</span>
+          <span class="text-[#00c950] font-bold text-[11px] leading-none">↑</span>
+        </div>
+        <div class="mt-1 text-[15px] sm:text-[17px] font-bold text-white font-sans tracking-tight" id="val-day-0">380</div>
+        <div class="text-[11px] text-[#8e929b] font-normal leading-tight mt-0.5">Pedidos</div>
+      </button>
+
+      <!-- Day 2: Mar -->
+      <button onclick="selectDay(1)" id="day-btn-1" class="day-tab group relative py-3 px-1 flex flex-col items-center justify-center text-center border-r border-[#23252b] hover:bg-[#181a1f]/70 transition-colors">
+        <div class="flex items-center gap-1 text-xs text-zinc-300 font-medium">
+          <span>Mar</span>
+          <span class="text-[#00c950] font-bold text-[11px] leading-none">↑</span>
+        </div>
+        <div class="mt-1 text-[15px] sm:text-[17px] font-bold text-white font-sans tracking-tight" id="val-day-1">420</div>
+        <div class="text-[11px] text-[#8e929b] font-normal leading-tight mt-0.5">Pedidos</div>
+      </button>
+
+      <!-- Day 3: Mié (Selected by default) -->
+      <button onclick="selectDay(2)" id="day-btn-2" class="day-tab group relative py-3 px-1 flex flex-col items-center justify-center text-center border-r border-[#23252b] bg-[#1d2026] transition-colors">
+        <div class="flex items-center gap-1 text-xs text-zinc-300 font-medium">
+          <span>Mié</span>
+          <span class="text-[#00c950] font-bold text-[11px] leading-none">↑</span>
+        </div>
+        <div class="mt-1 text-[15px] sm:text-[17px] font-bold text-white font-sans tracking-tight" id="val-day-2">490</div>
+        <div class="text-[11px] text-[#8e929b] font-normal leading-tight mt-0.5">Pedidos</div>
+        <!-- White bottom indicator bar -->
+        <div id="day-underline" class="absolute bottom-0 left-0 right-0 h-[2px] bg-white"></div>
+      </button>
+
+      <!-- Day 4: Jue -->
+      <button onclick="selectDay(3)" id="day-btn-3" class="day-tab group relative py-3 px-1 flex flex-col items-center justify-center text-center border-r border-[#23252b] hover:bg-[#181a1f]/70 transition-colors">
+        <div class="flex items-center gap-1 text-xs text-zinc-300 font-medium">
+          <span>Jue</span>
+          <span class="text-[#f87171] font-bold text-[11px] leading-none">↓</span>
+        </div>
+        <div class="mt-1 text-[15px] sm:text-[17px] font-bold text-white font-sans tracking-tight" id="val-day-3">310</div>
+        <div class="text-[11px] text-[#8e929b] font-normal leading-tight mt-0.5">Pedidos</div>
+      </button>
+
+      <!-- Day 5: Vie -->
+      <button onclick="selectDay(4)" id="day-btn-4" class="day-tab group relative py-3 px-1 flex flex-col items-center justify-center text-center border-r border-[#23252b] hover:bg-[#181a1f]/70 transition-colors">
+        <div class="flex items-center gap-1 text-xs text-zinc-300 font-medium">
+          <span>Vie</span>
+          <span class="text-[#00c950] font-bold text-[11px] leading-none">↑</span>
+        </div>
+        <div class="mt-1 text-[15px] sm:text-[17px] font-bold text-white font-sans tracking-tight" id="val-day-4">460</div>
+        <div class="text-[11px] text-[#8e929b] font-normal leading-tight mt-0.5">Pedidos</div>
+      </button>
+
+      <!-- Day 6: Sáb -->
+      <button onclick="selectDay(5)" id="day-btn-5" class="day-tab group relative py-3 px-1 flex flex-col items-center justify-center text-center border-r border-[#23252b] hover:bg-[#181a1f]/70 transition-colors">
+        <div class="flex items-center gap-1 text-xs text-zinc-300 font-medium">
+          <span>Sáb</span>
+          <span class="text-[#f87171] font-bold text-[11px] leading-none">↓</span>
+        </div>
+        <div class="mt-1 text-[15px] sm:text-[17px] font-bold text-white font-sans tracking-tight" id="val-day-5">210</div>
+        <div class="text-[11px] text-[#8e929b] font-normal leading-tight mt-0.5">Pedidos</div>
+      </button>
+
+      <!-- Day 7: Dom -->
+      <button onclick="selectDay(6)" id="day-btn-6" class="day-tab group relative py-3 px-1 flex flex-col items-center justify-center text-center hover:bg-[#181a1f]/70 transition-colors">
+        <div class="flex items-center gap-1 text-xs text-zinc-300 font-medium">
+          <span>Dom</span>
+          <span class="text-[#f87171] font-bold text-[11px] leading-none">↓</span>
+        </div>
+        <div class="mt-1 text-[15px] sm:text-[17px] font-bold text-white font-sans tracking-tight" id="val-day-6">180</div>
+        <div class="text-[11px] text-[#8e929b] font-normal leading-tight mt-0.5">Pedidos</div>
+      </button>
+
+    </div>
+
+    <!-- Card Footer: Daily Revenue & Target Status -->
+    <footer class="mt-5 flex items-end justify-between gap-4">
+      <div>
+        <p class="text-xs text-[#8e929b] font-normal tracking-wide">Ingresos Diarios</p>
+        <p class="text-white text-[15px] sm:text-[16px] font-bold tracking-tight mt-1 font-sans">
+          <span id="footer-day-prefix">Mié:</span>
+          <span id="footer-revenue-val">$22.050 USD</span>
+          <span class="text-zinc-400 font-normal text-xs sm:text-[13px] ml-1">(Ticket prom.: <span id="footer-aov-val">$45</span>)</span>
+        </p>
+      </div>
+
+      <div class="flex flex-col items-end shrink-0">
+        <span class="text-xs text-[#8e929b] font-normal mb-1.5">Estado del Objetivo</span>
+        <div id="target-badge" class="px-3.5 py-1.5 rounded-full bg-[#1b1d22] border border-[#2b2e36] text-[#e4e4e7] text-xs font-semibold tracking-tight shadow-sm transition-all duration-200">
+          Meta Alcanzada
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Auxiliary Demo Controls -->
+  <div class="mt-6 flex flex-wrap items-center justify-center gap-2.5 text-xs text-zinc-400 z-10">
+    <button onclick="simulateOrderSurge()" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-blue-500 hover:text-white transition-all flex items-center gap-1.5">
+      <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+      Simular Aumento de Pedidos
+    </button>
+    <button onclick="resetData()" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:text-white transition-all">
+      Restablecer Original
+    </button>
+  </div>
+
+  <script>
+    // Dataset for available regions
+    const regionalData = {
+      'us-east': {
+        days: [
+          { day: 'Lun', arrow: 'up', orders: 380, x: 50, y: 85, aov: 45, target: true },
+          { day: 'Mar', arrow: 'up', orders: 420, x: 150, y: 70, aov: 45, target: true },
+          { day: 'Mié', arrow: 'up', orders: 490, x: 250, y: 40, aov: 45, target: true },
+          { day: 'Jue', arrow: 'down', orders: 310, x: 350, y: 110, aov: 45, target: false },
+          { day: 'Vie', arrow: 'up', orders: 460, x: 450, y: 55, aov: 45, target: true },
+          { day: 'Sáb', arrow: 'down', orders: 210, x: 550, y: 155, aov: 45, target: false },
+          { day: 'Dom', arrow: 'down', orders: 180, x: 650, y: 170, aov: 45, target: false }
+        ]
+      },
+      'eu-west': {
+        days: [
+          { day: 'Lun', arrow: 'up', orders: 290, x: 50, y: 120, aov: 52, target: true },
+          { day: 'Mar', arrow: 'up', orders: 340, x: 150, y: 100, aov: 52, target: true },
+          { day: 'Mié', arrow: 'up', orders: 410, x: 250, y: 72, aov: 52, target: true },
+          { day: 'Jue', arrow: 'up', orders: 430, x: 350, y: 64, aov: 52, target: true },
+          { day: 'Vie', arrow: 'up', orders: 520, x: 450, y: 35, aov: 52, target: true },
+          { day: 'Sáb', arrow: 'down', orders: 280, x: 550, y: 125, aov: 52, target: false },
+          { day: 'Dom', arrow: 'down', orders: 230, x: 650, y: 145, aov: 52, target: false }
+        ]
+      },
+      'sa-east': {
+        days: [
+          { day: 'Lun', arrow: 'down', orders: 210, x: 50, y: 150, aov: 38, target: false },
+          { day: 'Mar', arrow: 'up', orders: 280, x: 150, y: 125, aov: 38, target: false },
+          { day: 'Mié', arrow: 'up', orders: 360, x: 250, y: 95, aov: 38, target: true },
+          { day: 'Jue', arrow: 'down', orders: 320, x: 350, y: 110, aov: 38, target: false },
+          { day: 'Vie', arrow: 'up', orders: 450, x: 450, y: 60, aov: 38, target: true },
+          { day: 'Sáb', arrow: 'up', orders: 470, x: 550, y: 52, aov: 38, target: true },
+          { day: 'Dom', arrow: 'down', orders: 340, x: 650, y: 100, aov: 38, target: false }
+        ]
+      }
+    };
+
+    let currentRegion = 'us-east';
+    let selectedDayIndex = 2; // Miércoles por defecto
+
+    // Helper to generate smooth cubic bezier SVG path from coordinate points
+    function generateSplinePath(points) {
+      if (points.length === 0) return '';
+
+      // Start left extrapolation
+      const p0 = points[0];
+      let linePath = `M 0 ${p0.y + 10} C 25 ${p0.y + 7}, 35 ${p0.y}, ${p0.x} ${p0.y}`;
+
+      for (let i = 0; i < points.length - 1; i++) {
+        const curr = points[i];
+        const next = points[i + 1];
+        const cpX1 = curr.x + (next.x - curr.x) / 2;
+        const cpY1 = curr.y;
+        const cpX2 = curr.x + (next.x - curr.x) / 2;
+        const cpY2 = next.y;
+        linePath += ` C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${next.x} ${next.y}`;
+      }
+
+      // Smooth out to right edge
+      const pLast = points[points.length - 1];
+      linePath += ` C ${pLast.x + 25} ${pLast.y + 2}, 680 ${pLast.y + 5}, 700 ${pLast.y + 5}`;
+      const areaPath = `${linePath} L 700 200 L 0 200 Z`;
+
+      return { linePath, areaPath };
+    }
+
+    // Select specific day column and sync chart + footer
+    function selectDay(index) {
+      selectedDayIndex = index;
+      const data = regionalData[currentRegion].days;
+      const dayData = data[index];
+
+      // Update active column styling
+      document.querySelectorAll('.day-tab').forEach((tab, i) => {
+        tab.classList.remove('bg-[#1d2026]');
+        const underline = tab.querySelector('#day-underline');
+        if (underline) underline.remove();
+
+        if (i === index) {
+          tab.classList.add('bg-[#1d2026]');
+          const indicator = document.createElement('div');
+          indicator.id = 'day-underline';
+          indicator.className = 'absolute bottom-0 left-0 right-0 h-[2px] bg-white active-indicator';
+          tab.appendChild(indicator);
+        }
+      });
+
+      // Move marker dot to point
+      const marker = document.getElementById('active-marker');
+      marker.setAttribute('transform', `translate(${dayData.x}, ${dayData.y})`);
+
+      // Update footer details
+      const revenue = dayData.orders * dayData.aov;
+      const formattedRevenue = '$' + revenue.toLocaleString('de-DE') + ' USD';
+      
+      document.getElementById('footer-day-prefix').textContent = `${dayData.day}:`;
+      document.getElementById('footer-revenue-val').textContent = formattedRevenue;
+      document.getElementById('footer-aov-val').textContent = `$${dayData.aov}`;
+
+      // Update target badge
+      const badge = document.getElementById('target-badge');
+      if (dayData.target) {
+        badge.textContent = 'Meta Alcanzada';
+        badge.className = 'px-3.5 py-1.5 rounded-full bg-[#1b1d22] border border-[#2b2e36] text-[#e4e4e7] text-xs font-semibold tracking-tight shadow-sm';
+      } else {
+        badge.textContent = 'Objetivo Pendiente';
+        badge.className = 'px-3.5 py-1.5 rounded-full bg-[#24171a] border border-[#4a1f26] text-[#f87171] text-xs font-semibold tracking-tight shadow-sm';
+      }
+    }
+
+    // Redraw SVG path curves and values for the selected region
+    function updateChart() {
+      const data = regionalData[currentRegion].days;
+      const { linePath, areaPath } = generateSplinePath(data);
+
+      document.getElementById('chart-line').setAttribute('d', linePath);
+      document.getElementById('chart-area').setAttribute('d', areaPath);
+
+      // Update days tabs values & arrows
+      data.forEach((item, i) => {
+        const valElem = document.getElementById(`val-day-${i}`);
+        if (valElem) valElem.textContent = item.orders;
+
+        const tab = document.getElementById(`day-btn-${i}`);
+        const arrow = tab.querySelector('span:last-child');
+        if (item.arrow === 'up') {
+          arrow.textContent = '↑';
+          arrow.className = 'text-[#00c950] font-bold text-[11px] leading-none';
+        } else {
+          arrow.textContent = '↓';
+          arrow.className = 'text-[#f87171] font-bold text-[11px] leading-none';
+        }
+      });
+
+      selectDay(selectedDayIndex);
+    }
+
+    // Toggle region menu
+    function toggleRegionMenu() {
+      const dropdown = document.getElementById('region-dropdown');
+      const chevron = document.getElementById('region-chevron');
+      const isOpen = !dropdown.classList.contains('pointer-events-none');
+
+      if (isOpen) {
+        dropdown.classList.add('opacity-0', 'pointer-events-none', '-translate-y-1');
+        chevron.classList.remove('rotate-180');
+      } else {
+        dropdown.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-1');
+        chevron.classList.add('rotate-180');
+      }
+    }
+
+    // Switch region
+    function changeRegion(region) {
+      currentRegion = region;
+      document.getElementById('current-region-label').textContent = region;
+      
+      // Update dot indicators
+      ['us-east', 'eu-west', 'sa-east'].forEach(r => {
+        const dot = document.getElementById(`dot-${r}`);
+        if (r === region) {
+          dot.classList.remove('bg-transparent');
+          dot.classList.add('bg-blue-500');
+        } else {
+          dot.classList.add('bg-transparent');
+          dot.classList.remove('bg-blue-500');
+        }
+      });
+
+      toggleRegionMenu();
+      updateChart();
+    }
+
+    // Close region dropdown on click outside
+    window.addEventListener('click', (e) => {
+      const btn = document.getElementById('region-btn');
+      const dropdown = document.getElementById('region-dropdown');
+      if (btn && dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add('opacity-0', 'pointer-events-none', '-translate-y-1');
+        document.getElementById('region-chevron').classList.remove('rotate-180');
+      }
+    });
+
+    // Simulate order surge with smooth wave elevation
+    function simulateOrderSurge() {
+      regionalData[currentRegion].days.forEach(d => {
+        d.orders = Math.round(d.orders * 1.25);
+        d.y = Math.max(25, d.y - 18);
+        d.arrow = 'up';
+      });
+      updateChart();
+    }
+
+    // Reset back to original values
+    function resetData() {
+      regionalData['us-east'].days = [
+        { day: 'Lun', arrow: 'up', orders: 380, x: 50, y: 85, aov: 45, target: true },
+        { day: 'Mar', arrow: 'up', orders: 420, x: 150, y: 70, aov: 45, target: true },
+        { day: 'Mié', arrow: 'up', orders: 490, x: 250, y: 40, aov: 45, target: true },
+        { day: 'Jue', arrow: 'down', orders: 310, x: 350, y: 110, aov: 45, target: false },
+        { day: 'Vie', arrow: 'up', orders: 460, x: 450, y: 55, aov: 45, target: true },
+        { day: 'Sáb', arrow: 'down', orders: 210, x: 550, y: 155, aov: 45, target: false },
+        { day: 'Dom', arrow: 'down', orders: 180, x: 650, y: 170, aov: 45, target: false }
+      ];
+      currentRegion = 'us-east';
+      document.getElementById('current-region-label').textContent = 'us-east';
+      selectedDayIndex = 2;
+      updateChart();
+    }
+
+    // Initialize layout
+    window.addEventListener('DOMContentLoaded', () => {
+      updateChart();
+    });
+  </script>
+</body>
+</html>
