@@ -80,6 +80,11 @@ function parsePriceContent(content) {
     let ath = parseNum(athLine[col]);
     let atl = parseNum(atlLine[col]);
 
+    // EARTH has no usable price cells in this sheet (all empty -> parseNum = 0),
+    // so its market benchmark is injected here on purpose. The trailing-zero
+    // prune below only drops invalid 0-price rows; it cannot fabricate data for
+    // a symbol the sheet does not track, so this patch is NOT redundant with it.
+    // The value matches the DEFAULT_MARKET_PRICES benchmark used by the app.
     if (symbol === 'EARTH' && (!avg || avg === 0)) {
       avg = 0.004608;
       med = 0.004608;
@@ -103,6 +108,9 @@ function parsePriceContent(content) {
     if (!dt) continue;
     symbols.forEach(({ col, symbol }) => {
       let val = parseNum(row[col]);
+      // Same intentional EARTH benchmark injection, applied to history points:
+      // without it every EARTH point would be 0 and the trailing prune would
+      // empty its whole history, killing the EARTH price layer in the app.
       if (symbol === 'EARTH' && (!val || val === 0)) {
         val = 0.004608;
       }
@@ -114,6 +122,25 @@ function parsePriceContent(content) {
       }
     });
   }
+
+  // Prune invalid points from the newest end of the history. Rows are still in
+  // sheet order here (newest first), so the newest end is the head of the array.
+  // The sheet keeps an "in progress" row whose price cells are still empty
+  // (parseNum -> 0); a price of 0 is never a valid quote, so drop every leading
+  // row without a positive price BEFORE reversing into chronological order.
+  Object.keys(stats).forEach(sym => {
+    const hist = stats[sym].history;
+    let firstValid = 0;
+    while (
+      firstValid < hist.length &&
+      !(typeof hist[firstValid].price === 'number' && hist[firstValid].price > 0)
+    ) {
+      firstValid++;
+    }
+    if (firstValid > 0) {
+      stats[sym].history = hist.slice(firstValid);
+    }
+  });
 
   // Reverse history so it is chronological (oldest to newest)
   Object.keys(stats).forEach(sym => {
@@ -183,6 +210,14 @@ function run() {
   console.log('Fetching 1d Price from Google Sheets...');
   const csv1d = fetchCsv(GIDS.price1d);
   const data1d = parsePriceContent(csv1d);
+  // parsePriceContent returns null on an empty/redirected payload (e.g. a 302
+  // login page instead of CSV); guard like data7d/data30d below instead of
+  // throwing TypeError. data1d is the backbone of the dataset, so abort without
+  // touching the existing ronin_pools.json rather than writing garbage.
+  if (!data1d) {
+    console.error('Failed to parse 1d Price CSV (empty or redirected payload). Aborting; ronin_pools.json left untouched.');
+    process.exit(1);
+  }
   console.log('Found', data1d.symbols.length, 'symbols in 1d Price.');
 
   console.log('Fetching 7d Price from Google Sheets...');

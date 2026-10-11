@@ -21,7 +21,7 @@ build/
 # Runtime & database files
 **/server/data/
 Craft-Companion/server/data/
-data/
+/server/data/
 *.db
 *.db-shm
 *.db-wal
@@ -51,6 +51,8 @@ Game Data - Google Drive.html
 sheet.html
 *.zip
 Craft-Companion/.git_backup
+# duplicate of client/public/data/factories.json (unreferenced)
+/Craft-Companion/data/factories.json
 Creator kit/
 creator_kit/
 dashboard-app/

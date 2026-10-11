@@ -100,7 +100,8 @@ test('same factory with mastery applied', () => {
   const cycle = calculateFactoryCycle(baseRow, prices, {
     proficiencies: [{ symbol: 'MUD', claimedLevel: 10 }],
   });
-  assert.equal(Number(cycle.input1PerCycle.toFixed(3)), 4.735);
+  // Yield-bonus model: inputs = amount / (yield/100); mastery 10 => 105.25 => 5 / 1.0525 = 4.751
+  assert.equal(Number(cycle.input1PerCycle.toFixed(3)), Number((5 / 1.0525).toFixed(3)));
 });
 
 test('multiple factories multiply cycle output and profit', () => {

@@ -1,5 +1,5 @@
 import type { CraftworldHomePayload, CraftworldPriceItem } from '../types';
-import { getCachedRoninPools, type RoninPoolsDataset } from './roninPoolsService';
+import { getCachedRoninPools, getLatestPoolPrice, type RoninPoolsDataset } from './roninPoolsService';
 
 export type LivePriceResult = {
   symbol: string;
@@ -16,8 +16,7 @@ export async function fetchLiveTokenPrice(symbol: string): Promise<LivePriceResu
   const normalized = symbol.trim().toUpperCase();
   const pool = getCachedRoninPools()?.resources?.[normalized];
   if (pool) {
-    const h = pool.price1d?.history;
-    const price = h && h.length > 0 ? h[h.length - 1].price : (pool.price1d?.average || 0);
+    const price = getLatestPoolPrice(pool);
     if (price > 0) {
       return {
         symbol: normalized,
@@ -120,8 +119,7 @@ export function extractPriceMap(
   const pools = poolsDataset || getCachedRoninPools();
   if (pools?.resources) {
     for (const [sym, item] of Object.entries(pools.resources)) {
-      const h = item.price1d?.history;
-      const latest = h && h.length > 0 ? h[h.length - 1].price : (item.price1d?.average || 0);
+      const latest = getLatestPoolPrice(item);
       if (latest > 0) {
         map[sym.toUpperCase()] = latest;
       }

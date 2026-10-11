@@ -26,6 +26,7 @@ export interface TradingOpportunity {
   actionRecommendation: string;
   ingredients?: ArbitrageIngredient[];
   cycleTimeMinutes?: number;
+  outputAmount?: number; // Units of output produced per craft cycle (CRAFT_ARBITRAGE only)
   timestamp: number;
 }
 

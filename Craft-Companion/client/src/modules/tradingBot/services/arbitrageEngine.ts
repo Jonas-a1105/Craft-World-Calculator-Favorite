@@ -14,7 +14,7 @@ export interface ArbitrageAnalysisResult {
   isProfitable: boolean;
 }
 
-const MARKETPLACE_TAX_RATE = 0.05; // 5% fee on selling
+export const MARKETPLACE_TAX_RATE = 0.05; // 5% fee on selling
 
 /**
  * Calculates industrial crafting arbitrage for a given factory row and price map
@@ -113,7 +113,7 @@ export function scanCraftArbitrageOpportunities(
     const tier = score >= 85 ? 'S' : score >= 70 ? 'A' : 'B';
 
     opportunities.push({
-      id: `arbitrage-${sym}-${Date.now()}`,
+      id: `arbitrage-${sym}`,
       symbol: analysis.symbol,
       name: analysis.name,
       type: 'CRAFT_ARBITRAGE',
@@ -126,6 +126,7 @@ export function scanCraftArbitrageOpportunities(
       potentialProfitCoin: analysis.netProfitCoin,
       ingredients: analysis.ingredients,
       cycleTimeMinutes: analysis.cycleTimeMinutes,
+      outputAmount: row.output_amount || 1,
       reason: `Fabricar ${analysis.symbol} cuesta ${analysis.costToCraftCoin.toLocaleString()} COIN en insumos y se vende neto a ${analysis.netRevenueCoin.toLocaleString()} COIN.`,
       actionRecommendation: `Comprar insumos en el mercado y producir ${analysis.symbol} (+${analysis.marginPercent}% margen neto).`,
       timestamp: Date.now(),

@@ -77,6 +77,28 @@ export function getCachedResourcePool(symbol: string): PoolResourceItem | null {
 }
 
 /**
+ * Returns the most recent valid (price > 0) quote from the 1d history.
+ *
+ * The Google Sheet source keeps an "in progress" row whose price cells are
+ * still empty, which the ETL ingests as a trailing `price: 0` point. Reading
+ * just the last point makes callers discard the whole Katana layer (their
+ * `price > 0` guard fails), so this scans from the end for the first valid
+ * point and falls back to the period average when none exists.
+ */
+export function getLatestPoolPrice(item: PoolResourceItem): number {
+  const history = item.price1d?.history;
+  if (history && history.length > 0) {
+    for (let i = history.length - 1; i >= 0; i--) {
+      const price = history[i]?.price;
+      if (typeof price === 'number' && price > 0) {
+        return price;
+      }
+    }
+  }
+  return item.price1d?.average || 0;
+}
+
+/**
  * Builds real SVG chart series from Ronin Katana pool timestamps and prices
  */
 export function buildRealChartSeries(

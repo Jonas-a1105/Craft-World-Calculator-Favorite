@@ -10,6 +10,7 @@ import {
 } from 'solar-icon-set';
 import { ResourceIcon } from '../../../components/GameIcon';
 import { RESOURCE_METADATA } from '../../baseCost/data/baseCostCatalog';
+import { MARKETPLACE_TAX_RATE } from '../services/arbitrageEngine';
 import type { TradingOpportunity } from '../types';
 
 interface ArbitrageCalculatorModalProps {
@@ -45,29 +46,54 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
   if (!isOpen || !opportunity) return null;
 
   const isCraft = opportunity.type === 'CRAFT_ARBITRAGE';
-  const unitPrice = opportunity.currentPrice;
+  // Sell-side opportunities (spikes, watchlist hits above target) liquidate
+  // existing inventory at the elevated current price; everything else buys
+  // at the current price expecting a bounce toward the reference price.
+  const isSellSide =
+    opportunity.type === 'SPIKE_SELL' ||
+    (opportunity.type === 'WATCHLIST_HIT' && opportunity.priceDeltaPercent > 0);
 
   // Calculation parameters
   const unitsToCraftOrBuy = batchCount;
-  const grossSellRevenue = unitsToCraftOrBuy * unitPrice;
-  const marketplaceFee = grossSellRevenue * 0.05; // 5% marketplace fee
-  const netRevenueAfterFee = grossSellRevenue - marketplaceFee;
+  // Whole recipe crafts needed to cover the requested batch: each craft
+  // yields outputAmount units (legacy opportunities without it yield 1).
+  const craftsNeeded = Math.ceil(unitsToCraftOrBuy / (opportunity.outputAmount || 1));
 
+  let grossSellRevenue = 0;
   let totalCost = 0;
-  if (isCraft && opportunity.ingredients && opportunity.ingredients.length > 0) {
-    const singleCraftCost = opportunity.ingredients.reduce(
-      (sum, ing) => sum + ing.totalCostCoin,
-      0
-    );
-    totalCost = singleCraftCost * unitsToCraftOrBuy;
+
+  if (isCraft) {
+    // CRAFT_ARBITRAGE: every crafted unit sells at the market sell price
+    // (referencePrice); inputs are paid per whole recipe craft.
+    const sellPrice = opportunity.referencePrice;
+    grossSellRevenue = unitsToCraftOrBuy * sellPrice;
+    if (opportunity.ingredients && opportunity.ingredients.length > 0) {
+      const singleCraftCost = opportunity.ingredients.reduce(
+        (sum, ing) => sum + ing.totalCostCoin,
+        0
+      );
+      totalCost = singleCraftCost * craftsNeeded;
+    } else {
+      // Defensive fallback: currentPrice carries the per-craft input cost.
+      totalCost = opportunity.currentPrice * craftsNeeded;
+    }
+  } else if (isSellSide) {
+    // SPIKE_SELL model: sell existing inventory at the elevated current
+    // price; the inventory cost basis is the normal reference price.
+    grossSellRevenue = unitsToCraftOrBuy * opportunity.currentPrice;
+    totalCost = unitsToCraftOrBuy * opportunity.referencePrice;
   } else {
-    totalCost = unitsToCraftOrBuy * unitPrice;
+    // DIP_BUY (and below-target watchlist hits): buy at the discounted
+    // current price, sell the bounce at the reference price.
+    grossSellRevenue = unitsToCraftOrBuy * opportunity.referencePrice;
+    totalCost = unitsToCraftOrBuy * opportunity.currentPrice;
   }
 
+  const marketplaceFee = grossSellRevenue * MARKETPLACE_TAX_RATE; // marketplace commission
+  const netRevenueAfterFee = grossSellRevenue - marketplaceFee;
+
   // Net Profit
-  const netProfit = isCraft
-    ? netRevenueAfterFee - totalCost
-    : netRevenueAfterFee * (opportunity.potentialMarginPercent / 100);
+  const netProfit = netRevenueAfterFee - totalCost;
 
   const roiPercent = totalCost > 0 ? (netProfit / totalCost) * 100 : 0;
 
@@ -78,7 +104,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
       `💰 Costo Total Inversión: ${totalCost.toLocaleString(undefined, { maximumFractionDigits: 2 })} COIN`,
       `🏦 Ingreso Venta Bruta: ${grossSellRevenue.toLocaleString(undefined, { maximumFractionDigits: 2 })} COIN`,
       `📉 Tarifa Mercado (5%): -${marketplaceFee.toLocaleString(undefined, { maximumFractionDigits: 2 })} COIN`,
-      `🚀 Ganancia Neta Estimada: +${netProfit.toLocaleString(undefined, { maximumFractionDigits: 2 })} COIN (${roiPercent.toFixed(1)}% ROI)`,
+      `🚀 Ganancia Neta Estimada: ${netProfit >= 0 ? '+' : ''}${netProfit.toLocaleString(undefined, { maximumFractionDigits: 2 })} COIN (${roiPercent.toFixed(1)}% ROI)`,
       `⚡ Calculado en Craft Companion Trading Bot`,
     ].join('\n');
 
@@ -183,7 +209,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
               </div>
               <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
                 {opportunity.ingredients.map((ing) => {
-                  const totalIngQty = ing.qtyNeeded * unitsToCraftOrBuy;
+                  const totalIngQty = ing.qtyNeeded * craftsNeeded;
                   const totalIngCost = totalIngQty * ing.marketPriceCoin;
                   return (
                     <div
@@ -238,7 +264,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
             <div>
               <div className="text-[11px] text-zinc-400 font-medium">Retorno estimado (ROI)</div>
               <div className="text-sm sm:text-base font-bold text-emerald-400 mt-0.5">
-                +{roiPercent.toFixed(1)}% ROI
+                {netProfit >= 0 ? '+' : ''}{roiPercent.toFixed(1)}% ROI
               </div>
             </div>
           </div>
@@ -254,7 +280,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
                   Ganancia neta limpia
                 </div>
                 <div className="text-xl sm:text-2xl font-bold text-white">
-                  +{netProfit.toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
+                  {netProfit >= 0 ? '+' : ''}{netProfit.toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
                   <span className="text-xs text-emerald-400 font-semibold">COIN</span>
                 </div>
               </div>

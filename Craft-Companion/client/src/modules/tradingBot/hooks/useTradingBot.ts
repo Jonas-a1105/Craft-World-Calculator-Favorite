@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/queries/useCraftworldQueries';
-import { fetchRoninPoolsData, type RoninPoolsDataset } from '../../../services/roninPoolsService';
+import { fetchRoninPoolsData, getLatestPoolPrice, type RoninPoolsDataset } from '../../../services/roninPoolsService';
 import { DEFAULT_MARKET_PRICES } from '../../../services/priceService';
 import type { MarketPriceItem } from '../../prices/types';
 import type {
@@ -78,8 +78,7 @@ export function useTradingBot() {
     // 2. Katana V3 live pool dataset
     if (poolsDataset?.resources) {
       for (const [sym, item] of Object.entries(poolsDataset.resources)) {
-        const h = item.price1d?.history;
-        const price = h && h.length > 0 ? h[h.length - 1].price : (item.price1d?.average || 0);
+        const price = getLatestPoolPrice(item);
         if (price > 0) {
           map.set(sym.toUpperCase(), {
             referenceSymbol: sym.toUpperCase(),
@@ -253,7 +252,7 @@ export function useTradingBot() {
   }, []);
 
   return {
-    loading: isHomeLoading && marketPrices.length === 0,
+    loading: isHomeLoading && !home,
     isFactoriesLoading,
     opportunities: filteredOpportunities,
     rawOpportunities,
