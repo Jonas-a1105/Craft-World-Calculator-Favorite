@@ -1,5 +1,5 @@
 import type { CraftworldHomePayload, CraftworldPriceItem } from '../types';
-import { getCachedRoninPools, getLatestPoolPrice, type RoninPoolsDataset } from './roninPoolsService';
+import { getCachedRoninPools, getLatestPoolPrice, isPoolLiquid, type RoninPoolsDataset } from './roninPoolsService';
 
 export type LivePriceResult = {
   symbol: string;
@@ -119,6 +119,7 @@ export function extractPriceMap(
   const pools = poolsDataset || getCachedRoninPools();
   if (pools?.resources) {
     for (const [sym, item] of Object.entries(pools.resources)) {
+      if (!isPoolLiquid(item)) continue; // dust pools: price is noise, not market
       const latest = getLatestPoolPrice(item);
       if (latest > 0) {
         map[sym.toUpperCase()] = latest;
@@ -136,4 +137,21 @@ export function extractPriceMap(
   }
 
   return map;
+}
+
+/** A game priceList older than this is considered stale (its prices may differ from the live game). */
+export const PRICE_LIST_STALE_MS = 2 * 60 * 60 * 1000; // 2 hours
+
+/**
+ * Game priceList freshness, based on the game's own lastSyncedAt timestamp
+ * (NOT the client query time — a cached server response can look "fresh"
+ * client-side while carrying days-old game prices).
+ */
+export function getPriceListInfo(
+  home?: CraftworldHomePayload | null,
+): { syncedAt: string | null; isStale: boolean } {
+  const syncedAt = home?.priceList?.lastSyncedAt ?? null;
+  if (!syncedAt) return { syncedAt: null, isStale: true };
+  const age = Date.now() - new Date(syncedAt).getTime();
+  return { syncedAt, isStale: !Number.isFinite(age) || age > PRICE_LIST_STALE_MS };
 }

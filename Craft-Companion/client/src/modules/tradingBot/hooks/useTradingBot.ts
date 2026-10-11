@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/queries/useCraftworldQueries';
-import { fetchRoninPoolsData, getLatestPoolPrice, type RoninPoolsDataset } from '../../../services/roninPoolsService';
+import { fetchRoninPoolsData, getLatestPoolPrice, isPoolLiquid, type RoninPoolsDataset } from '../../../services/roninPoolsService';
 import { DEFAULT_MARKET_PRICES } from '../../../services/priceService';
 import type { MarketPriceItem } from '../../prices/types';
 import type {
@@ -78,6 +78,7 @@ export function useTradingBot() {
     // 2. Katana V3 live pool dataset
     if (poolsDataset?.resources) {
       for (const [sym, item] of Object.entries(poolsDataset.resources)) {
+        if (!isPoolLiquid(item)) continue; // dust pools: price is noise, not market
         const price = getLatestPoolPrice(item);
         if (price > 0) {
           map.set(sym.toUpperCase(), {

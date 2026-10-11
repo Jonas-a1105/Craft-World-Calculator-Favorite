@@ -9,6 +9,8 @@ import {
 interface BaseCostHeaderProps {
   secondsAgo: number;
   freshnessColor: string;
+  priceListInfo: { syncedAt: string | null; isStale: boolean };
+  isPricesError: boolean;
   justImported: boolean;
   onImport: () => void;
   onMaxLevels: () => void;
@@ -19,6 +21,8 @@ interface BaseCostHeaderProps {
 export const BaseCostHeader: React.FC<BaseCostHeaderProps> = ({
   secondsAgo,
   freshnessColor,
+  priceListInfo,
+  isPricesError,
   justImported,
   onImport,
   onMaxLevels,
@@ -38,6 +42,20 @@ export const BaseCostHeader: React.FC<BaseCostHeaderProps> = ({
           <span className="font-semibold text-slate-200">{secondsAgo}s</span>
         </div>
       </div>
+
+      {/* Game priceList staleness warning — never serve stale prices silently */}
+      {(priceListInfo.isStale || isPricesError) && (
+        <div className="flex items-center justify-center gap-2 w-full max-w-2xl mx-auto px-3 py-2 rounded-2xl bg-amber-500/10 border-none text-[11px] sm:text-xs font-mono text-amber-300 shadow-md">
+          <span>⚠</span>
+          <span className="text-center leading-relaxed">
+            {priceListInfo.syncedAt
+              ? `Precios del juego desactualizados (última sync: ${new Date(priceListInfo.syncedAt).toLocaleString()}) — pueden diferir del juego.`
+              : isPricesError
+                ? 'Sin precios del juego (error de sesión) — usando benchmark + DEX. Inicia sesión para sincronizar.'
+                : 'Sin precios del juego (sin sesión activa) — usando benchmark + DEX.'}
+          </span>
+        </div>
+      )}
 
       {/* Centered Description */}
       <p className="text-xs sm:text-sm text-slate-400 max-w-2xl font-sans leading-relaxed text-center px-2">

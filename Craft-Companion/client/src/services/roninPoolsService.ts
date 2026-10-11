@@ -99,6 +99,18 @@ export function getLatestPoolPrice(item: PoolResourceItem): number {
 }
 
 /**
+ * Pools with average liquidity below this threshold are dust: their price is
+ * noise from a dead market (e.g. PAINT ~56), not a usable market signal.
+ * Liquid pools (STEAM ~3.8k, HEAT ~69k, WATER ~8.5M) are real signals.
+ */
+export const MIN_POOL_LIQUIDITY = 1000;
+
+export function isPoolLiquid(item: PoolResourceItem): boolean {
+  const liquidity = item?.liquidity?.average ?? 0;
+  return typeof liquidity === 'number' && Number.isFinite(liquidity) && liquidity >= MIN_POOL_LIQUIDITY;
+}
+
+/**
  * Builds real SVG chart series from Ronin Katana pool timestamps and prices
  */
 export function buildRealChartSeries(

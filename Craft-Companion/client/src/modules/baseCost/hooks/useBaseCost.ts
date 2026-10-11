@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useCraftworldHomeQuery } from '../../../services/queries/useCraftworldQueries';
-import { extractPriceMap } from '../../../services/priceService';
+import { extractPriceMap, getPriceListInfo } from '../../../services/priceService';
 import { fetchRoninPoolsData, type RoninPoolsDataset } from '../../../services/roninPoolsService';
 import {
   ALL_BASE_COST_TOKENS,
@@ -179,6 +179,9 @@ export function useBaseCost() {
   const prices = useMemo(() => {
     return extractPriceMap(home, poolsDataset);
   }, [home, poolsDataset]);
+
+  // Game priceList freshness (the game's own timestamp, not the client query time)
+  const priceListInfo = useMemo(() => getPriceListInfo(home), [home]);
 
   // Freshness calculation (seconds since last update)
   const [secondsAgo, setSecondsAgo] = useState(0);
@@ -385,6 +388,7 @@ export function useBaseCost() {
     isPricesError,
     secondsAgo,
     freshnessColor,
+    priceListInfo,
     justImported,
     search,
     setSearch,

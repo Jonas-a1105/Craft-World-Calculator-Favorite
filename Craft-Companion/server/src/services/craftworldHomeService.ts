@@ -1,4 +1,5 @@
 import {
+  ExternalApiError,
   getExternalProfile,
   getExternalCraftWorld,
   getExternalMasterpieces,
@@ -54,9 +55,11 @@ export async function fetchAndCacheHomeData(
     getExternalPurchases(accessToken).catch(
       (err) => (console.warn('[HomeService] Purchases fetch failed:', getErrorMessage(err)), null),
     ),
-    getExternalPriceList(accessToken).catch(
-      (err) => (console.warn('[HomeService] PriceList fetch failed:', getErrorMessage(err)), null),
-    ),
+    getExternalPriceList(accessToken).catch((err) => {
+      const code = err instanceof ExternalApiError ? ` (code=${err.code}, status=${err.status})` : '';
+      console.warn('[HomeService] PriceList fetch failed:', getErrorMessage(err) + code);
+      return null;
+    }),
     getExternalDynoProductionCycle(accessToken).catch(
       (err) => (console.warn('[HomeService] DynoCycle fetch failed:', getErrorMessage(err)), null),
     ),
@@ -80,6 +83,7 @@ export async function fetchAndCacheHomeData(
     inventory: inventory || cachedHome.inventory,
     purchases: purchases || cachedHome.purchases,
     priceList: priceList || cachedHome.priceList,
+    priceListStatus: priceList ? 'live' : cachedHome.priceList ? 'cache' : 'missing',
     dynoCycle: dynoCycle || cachedHome.dynoCycle,
     serverTime: new Date().toISOString(),
     lastSyncedAt: new Date().toISOString(),

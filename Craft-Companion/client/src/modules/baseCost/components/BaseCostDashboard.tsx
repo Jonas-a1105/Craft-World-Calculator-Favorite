@@ -15,6 +15,8 @@ export const BaseCostDashboard: React.FC = () => {
     isPricesLoading,
     secondsAgo,
     freshnessColor,
+    priceListInfo,
+    isPricesError,
     justImported,
     search,
     setSearch,
@@ -56,6 +58,8 @@ export const BaseCostDashboard: React.FC = () => {
         <BaseCostHeader
           secondsAgo={secondsAgo}
           freshnessColor={freshnessColor}
+          priceListInfo={priceListInfo}
+          isPricesError={isPricesError}
           justImported={justImported}
           onImport={importFromPriceTable}
           onMaxLevels={setMaxAllLevels}

@@ -19,6 +19,7 @@ export interface CraftworldPriceItem {
 export interface CraftworldPriceList {
   baseSymbol?: string;
   prices?: CraftworldPriceItem[];
+  lastSyncedAt?: string;
 }
 
 export interface CraftworldResourceBalance {
