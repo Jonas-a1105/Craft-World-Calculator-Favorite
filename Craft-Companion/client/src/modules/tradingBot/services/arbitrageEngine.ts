@@ -1,4 +1,5 @@
 import type { FactoryDataRow } from '../../../services/craftworldCalculations';
+import { applyMasteryInputReduction, type ProficiencyItem } from '../../../services/masteryModifiers';
 import type { ArbitrageIngredient, TradingOpportunity } from '../types';
 
 export interface ArbitrageAnalysisResult {
@@ -22,6 +23,7 @@ export const MARKETPLACE_TAX_RATE = 0.05; // 5% fee on selling
 export function calculateCraftArbitrage(
   factoryRow: FactoryDataRow,
   priceMap: Record<string, number>,
+  proficiencies: ProficiencyItem[] = [],
 ): ArbitrageAnalysisResult | null {
   const outputSymbol = factoryRow.output_token?.toUpperCase();
   if (!outputSymbol || (factoryRow.output_amount || 0) <= 0) {
@@ -40,11 +42,12 @@ export function calculateCraftArbitrage(
   if (factoryRow.input_token_1 && (factoryRow.input_amount_1 || 0) > 0) {
     const sym1 = factoryRow.input_token_1.toUpperCase();
     const p1 = priceMap[sym1] || 0;
-    const cost1 = factoryRow.input_amount_1 * p1;
+    const qty1 = applyMasteryInputReduction(factoryRow.input_amount_1, outputSymbol, proficiencies);
+    const cost1 = qty1 * p1;
     totalInputCostCoin += cost1;
     ingredients.push({
       symbol: factoryRow.input_token_1,
-      qtyNeeded: factoryRow.input_amount_1,
+      qtyNeeded: qty1,
       marketPriceCoin: p1,
       totalCostCoin: cost1,
     });
@@ -54,11 +57,12 @@ export function calculateCraftArbitrage(
   if (factoryRow.input_token_2 && (factoryRow.input_amount_2 || 0) > 0) {
     const sym2 = factoryRow.input_token_2.toUpperCase();
     const p2 = priceMap[sym2] || 0;
-    const cost2 = factoryRow.input_amount_2 * p2;
+    const qty2 = applyMasteryInputReduction(factoryRow.input_amount_2, outputSymbol, proficiencies);
+    const cost2 = qty2 * p2;
     totalInputCostCoin += cost2;
     ingredients.push({
       symbol: factoryRow.input_token_2,
-      qtyNeeded: factoryRow.input_amount_2,
+      qtyNeeded: qty2,
       marketPriceCoin: p2,
       totalCostCoin: cost2,
     });
@@ -95,6 +99,7 @@ export function scanCraftArbitrageOpportunities(
   factoryRows: FactoryDataRow[],
   priceMap: Record<string, number>,
   minMarginPercent = 15,
+  proficiencies: ProficiencyItem[] = [],
 ): TradingOpportunity[] {
   const seenOutputs = new Set<string>();
   const opportunities: TradingOpportunity[] = [];
@@ -103,7 +108,7 @@ export function scanCraftArbitrageOpportunities(
     const sym = row.output_token?.toUpperCase();
     if (!sym || seenOutputs.has(sym)) continue;
 
-    const analysis = calculateCraftArbitrage(row, priceMap);
+    const analysis = calculateCraftArbitrage(row, priceMap, proficiencies);
     if (!analysis || analysis.marginPercent < minMarginPercent) continue;
 
     seenOutputs.add(sym);

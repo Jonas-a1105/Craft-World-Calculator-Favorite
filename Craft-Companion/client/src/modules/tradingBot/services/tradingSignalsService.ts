@@ -3,6 +3,7 @@ import type { FactoryDataRow } from '../../../services/craftworldCalculations';
 import type { RoninPoolsDataset } from '../../../services/roninPoolsService';
 import { calculatePriceChanges } from '../../profitability/services/pricesAndProfitabilityService';
 import { scanCraftArbitrageOpportunities } from './arbitrageEngine';
+import type { ProficiencyItem } from '../../../services/masteryModifiers';
 import type {
   TradingOpportunity,
   WatchlistRule,
@@ -15,6 +16,7 @@ export interface GenerateOpportunitiesParams {
   factoryRows?: FactoryDataRow[];
   poolsDataset?: RoninPoolsDataset | null;
   watchlist?: WatchlistRule[];
+  proficiencies?: ProficiencyItem[];
 }
 
 /**
@@ -25,6 +27,7 @@ export function generateTradingOpportunities({
   factoryRows = [],
   poolsDataset,
   watchlist = [],
+  proficiencies = [],
 }: GenerateOpportunitiesParams): TradingOpportunity[] {
   const opportunities: TradingOpportunity[] = [];
 
@@ -95,7 +98,7 @@ export function generateTradingOpportunities({
 
   // 2. Scan Craft Arbitrage (Make vs Buy)
   if (factoryRows.length > 0) {
-    const arbitrageOpps = scanCraftArbitrageOpportunities(factoryRows, priceMap, 15);
+    const arbitrageOpps = scanCraftArbitrageOpportunities(factoryRows, priceMap, 15, proficiencies);
     opportunities.push(...arbitrageOpps);
   }
 

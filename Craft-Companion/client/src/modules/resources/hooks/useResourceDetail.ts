@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../../utils/i18n';
 import { useCraftworldHomeQuery } from '../../../services/queries/useCraftworldQueries';
-import { extractPriceMap } from '../../../services/priceService';
+import { extractPriceMap, DEFAULT_MARKET_PRICES } from '../../../services/priceService';
 import type { Timeframe } from '../types';
 import {
   generateChartSeries,
@@ -61,7 +61,7 @@ export function useResourceDetail() {
     if (prices[symbol] !== undefined && prices[symbol] > 0) {
       return prices[symbol];
     }
-    return 0.0045;
+    return DEFAULT_MARKET_PRICES.EARTH;
   }, [homeData, symbol, poolItem, prices]);
 
   const chartSeries = useMemo(() => {

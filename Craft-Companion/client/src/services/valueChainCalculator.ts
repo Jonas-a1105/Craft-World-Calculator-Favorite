@@ -1,5 +1,6 @@
 import { FactoryDataRow } from './factoryData';
 import { getMasteryInputReductionPercent, ProficiencyItem } from './masteryModifiers';
+import { DEFAULT_MARKET_PRICES } from './priceService';
 
 export type ChainStep = {
   stepIndex: number;
@@ -44,10 +45,7 @@ export function computeValueChain(
 ): ValueChainAnalysis | null {
   const normalizedTarget = targetToken.toUpperCase();
   const basePriceMap: Record<string, number> = {
-    COIN: 1,
-    EARTH: 0.00394,
-    WATER: 0.00394,
-    FIRE: 0.00394,
+    ...DEFAULT_MARKET_PRICES,
     ...prices,
   };
 
@@ -112,14 +110,14 @@ export function computeValueChain(
     if (row.input_token_1) {
       const input1 = row.input_token_1.toUpperCase();
       const rawInputAmt = row.input_amount_1 * runsNeeded;
-      const inputAmt = rawInputAmt * (1 - masteryDiscountPercent / 100);
+      const inputAmt = rawInputAmt / (1 + masteryDiscountPercent / 100);
       demand[input1] = (demand[input1] || 0) + inputAmt;
     }
 
     if (row.input_token_2) {
       const input2 = row.input_token_2.toUpperCase();
       const rawInputAmt = row.input_amount_2 * runsNeeded;
-      const inputAmt = rawInputAmt * (1 - masteryDiscountPercent / 100);
+      const inputAmt = rawInputAmt / (1 + masteryDiscountPercent / 100);
       demand[input2] = (demand[input2] || 0) + inputAmt;
     }
   }
@@ -144,10 +142,10 @@ export function computeValueChain(
     const masteryDiscountPercent = getMasteryInputReductionPercent(row.token, proficiencies);
 
     const input1Token = row.input_token_1 ? row.input_token_1.toUpperCase() : '';
-    const input1AmtPerDay = row.input_amount_1 * runsPerDay * (1 - masteryDiscountPercent / 100);
+    const input1AmtPerDay = row.input_amount_1 * runsPerDay / (1 + masteryDiscountPercent / 100);
 
     const input2Token = row.input_token_2 ? row.input_token_2.toUpperCase() : '';
-    const input2AmtPerDay = row.input_amount_2 * runsPerDay * (1 - masteryDiscountPercent / 100);
+    const input2AmtPerDay = row.input_amount_2 * runsPerDay / (1 + masteryDiscountPercent / 100);
 
     const outputPrice = (basePriceMap[token] || 0) * 0.95;
     const input1Price = basePriceMap[input1Token] || 0;
@@ -168,7 +166,7 @@ export function computeValueChain(
     cumulativeProfitDay += netProfitPerDay;
 
     const baseRawCostDay = Object.entries(rawMaterialsNeeded).reduce((acc, [rawTok, amt]) => {
-      return acc + amt * (basePriceMap[rawTok] || 0.00394) * 0.95;
+      return acc + amt * (basePriceMap[rawTok] || DEFAULT_MARKET_PRICES.EARTH) * 0.95;
     }, 0);
 
     const valueMultiplier = baseRawCostDay > 0 ? (cumulativeProfitDay / baseRawCostDay) * 100 : 100;
@@ -197,7 +195,7 @@ export function computeValueChain(
   }
 
   const rawOpportunityCostDay = Object.entries(rawMaterialsNeeded).reduce((acc, [rawTok, amt]) => {
-    return acc + amt * (basePriceMap[rawTok] || 0.00394) * 0.95;
+    return acc + amt * (basePriceMap[rawTok] || DEFAULT_MARKET_PRICES.EARTH) * 0.95;
   }, 0);
 
   const finalStep = steps[steps.length - 1];

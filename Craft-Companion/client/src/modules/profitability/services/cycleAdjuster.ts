@@ -10,6 +10,7 @@ import {
 } from '../../../services/masteryModifiers';
 import { formatNumber } from '../../../utils/formatters';
 import { getWorkshopSpeedBoostPercent } from '../../../services/workshopModifiers';
+import { DEFAULT_MARKET_PRICES } from '../../../services/priceService';
 import {
   calculateBoosterMultiplier,
   calculateWorkerReductionFactor,
@@ -138,11 +139,11 @@ export function getAdjustedCycle({
           ? applyMasteryInputReduction(amt, tok, context.proficiencies || [])
           : amt;
 
-        const finalAmtPerUnit = adjustedAmt * (1 - parentMasteryRed / 100);
+        const finalAmtPerUnit = adjustedAmt / (1 + parentMasteryRed / 100);
         const p =
           typeof prices[tok] === 'number' && prices[tok] > 0
             ? prices[tok]
-            : 0.00394;
+            : DEFAULT_MARKET_PRICES[tok] ?? DEFAULT_MARKET_PRICES.EARTH;
         rawCostPerOutput += finalAmtPerUnit * p;
         rawTextParts.push(
           `${tok} (${formatNumber(finalAmtPerUnit * baseCycle.outputPerCycle, 1)})`,

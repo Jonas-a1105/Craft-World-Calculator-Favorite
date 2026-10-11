@@ -113,8 +113,9 @@ export function useTradingBot() {
       factoryRows: factoryRows || [],
       poolsDataset,
       watchlist,
+      proficiencies: home?.craft?.proficiencies || [],
     });
-  }, [marketPrices, factoryRows, poolsDataset, watchlist]);
+  }, [marketPrices, factoryRows, poolsDataset, watchlist, home]);
 
   // Filter and sort opportunities
   const filteredOpportunities = useMemo(() => {

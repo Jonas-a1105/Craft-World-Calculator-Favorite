@@ -4,6 +4,7 @@ import {
   type ValueChainAnalysis,
 } from '../../../services/valueChainCalculator';
 import type { ProficiencyItem } from '../../../services/masteryModifiers';
+import { DEFAULT_MARKET_PRICES } from '../../../services/priceService';
 import type { CraftworldHomePayload, CraftworldPriceItem } from '../../../types';
 import type { FeaturedTarget, ValueChainMode } from '../types';
 
@@ -21,10 +22,10 @@ export const FEATURED_TARGETS: FeaturedTarget[] = [
 ];
 
 export const DEFAULT_BASE_PRICES: Record<string, number> = {
-  COIN: 1,
-  EARTH: 0.00394,
-  WATER: 0.00394,
-  FIRE: 0.00394,
+  COIN: DEFAULT_MARKET_PRICES.COIN,
+  EARTH: DEFAULT_MARKET_PRICES.EARTH,
+  WATER: DEFAULT_MARKET_PRICES.WATER,
+  FIRE: DEFAULT_MARKET_PRICES.FIRE,
 };
 
 export function extractValueChainPrices(home?: CraftworldHomePayload | null): Record<string, number> {
