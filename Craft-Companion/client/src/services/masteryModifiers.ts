@@ -8,16 +8,16 @@ export type ProficiencyItem = {
 };
 
 const YIELD_BONUS_BY_LEVEL: Record<number, number> = {
-  1: 102.0,
-  2: 102.7,
-  3: 103.3,
-  4: 103.7,
-  5: 104.2,
-  6: 104.4,
-  7: 104.6,
-  8: 104.8,
-  9: 105.0,
-  10: 105.3,
+  1: 102.04,
+  2: 102.86,
+  3: 103.29,
+  4: 103.72,
+  5: 104.15,
+  6: 104.37,
+  7: 104.59,
+  8: 104.81,
+  9: 105.03,
+  10: 105.25,
 };
 
 function normalizeSymbol(symbol?: string) {
@@ -64,6 +64,7 @@ export function applyMasteryInputReduction(
   const inputAmount = Number(amount || 0);
   if (!Number.isFinite(inputAmount) || inputAmount <= 0) return 0;
 
-  const reductionPercent = getMasteryInputReductionPercent(symbol, proficiencies);
-  return inputAmount * (1 - reductionPercent / 100);
+  const yieldBonus = getMasteryYieldBonusPercent(symbol, proficiencies);
+  const mult = yieldBonus > 0 ? yieldBonus / 100 : 1;
+  return inputAmount / mult;
 }

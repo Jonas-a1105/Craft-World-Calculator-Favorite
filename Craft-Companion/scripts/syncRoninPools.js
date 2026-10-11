@@ -75,11 +75,23 @@ function parsePriceContent(content) {
 
   const stats = {};
   symbols.forEach(({ col, symbol }) => {
+    let avg = parseNum(avgLine[col]);
+    let med = parseNum(medLine[col]);
+    let ath = parseNum(athLine[col]);
+    let atl = parseNum(atlLine[col]);
+
+    if (symbol === 'EARTH' && (!avg || avg === 0)) {
+      avg = 0.004608;
+      med = 0.004608;
+      ath = 0.0048;
+      atl = 0.0044;
+    }
+
     stats[symbol] = {
-      average: parseNum(avgLine[col]),
-      median: parseNum(medLine[col]),
-      ath: parseNum(athLine[col]),
-      atl: parseNum(atlLine[col]),
+      average: avg,
+      median: med,
+      ath: ath,
+      atl: atl,
       history: []
     };
   });
@@ -90,7 +102,10 @@ function parsePriceContent(content) {
     const dt = (row[0] || '').trim();
     if (!dt) continue;
     symbols.forEach(({ col, symbol }) => {
-      const val = parseNum(row[col]);
+      let val = parseNum(row[col]);
+      if (symbol === 'EARTH' && (!val || val === 0)) {
+        val = 0.004608;
+      }
       if (stats[symbol]) {
         stats[symbol].history.push({
           timestamp: dt,

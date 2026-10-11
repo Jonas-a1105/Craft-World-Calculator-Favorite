@@ -46,7 +46,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-[32px] bg-[#1c1c22] p-12 text-center text-slate-500 font-mono text-xs shadow-xl shadow-black/25">
+      <div className="rounded-[32px] bg-[#18181c] p-12 text-center text-slate-500 font-mono text-xs shadow-md border-none">
         No se encontraron recursos que coincidan con los filtros de búsqueda o estrategia.
       </div>
     );
@@ -80,7 +80,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
           return (
             <div
               key={row.token}
-              className="flex flex-col justify-between rounded-[28px] sm:rounded-[32px] bg-[#1c1c22] hover:bg-[#212128] p-5 shadow-xl shadow-black/25 transition-all duration-200 border-none select-none relative group"
+              className="flex flex-col justify-between rounded-[28px] sm:rounded-[32px] bg-[#18181c] hover:bg-[#202026] p-5 shadow-md transition-all duration-200 border-none select-none relative group"
             >
               <div className="space-y-3.5">
                 {/* 1. Top Bar: Icon, Name, Category & Selectors */}
@@ -360,7 +360,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
         return (
           <div
             key={row.token}
-            className="flex flex-col justify-between rounded-[28px] sm:rounded-[32px] bg-[#1c1c22] p-4 sm:p-5 shadow-xl shadow-black/25 hover:bg-[#212128] transition-all duration-200 group border-none select-none relative hover:z-20 focus-within:z-30"
+            className="flex flex-col justify-between rounded-[28px] sm:rounded-[32px] bg-[#18181c] hover:bg-[#202026] p-4 sm:p-5 shadow-md transition-all duration-200 group border-none select-none relative hover:z-20 focus-within:z-30"
           >
             {/* Top Bar: Icon, Name, Category & Selectors */}
             <div className="flex items-center justify-between gap-3 border-b border-white/5 pb-2.5">

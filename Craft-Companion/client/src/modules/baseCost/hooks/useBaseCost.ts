@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useCraftworldHomeQuery } from '../../../services/queries/useCraftworldQueries';
 import { extractPriceMap } from '../../../services/priceService';
-import { fetchRoninPoolsData } from '../../../services/roninPoolsService';
+import { fetchRoninPoolsData, type RoninPoolsDataset } from '../../../services/roninPoolsService';
 import {
   ALL_BASE_COST_TOKENS,
   BASE_COST_CATEGORIES,
@@ -27,6 +27,9 @@ const STORAGE_KEYS = {
   buySlippagePct: 'cw:buy-slippage-pct',
   sellSlippage: 'cw:sell-slippage',
   sellSlippagePct: 'cw:sell-slippage-pct',
+  marketFee: 'cw:market-fee',
+  marketFeePct: 'cw:market-fee-pct',
+  masteryMode: 'cw:bc-mastery-mode',
 };
 
 function getInitialLevels(): Record<string, number> {
@@ -52,6 +55,7 @@ export function useBaseCost() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryKey>('all');
   const [strategyFilter, setStrategyFilter] = useState<'all' | 'craft' | 'buy'>('all');
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
+  const [poolsDataset, setPoolsDataset] = useState<RoninPoolsDataset | null>(null);
 
   // Levels & Masteries
   const [levels, setLevels] = useState<Record<string, number>>(() => {
@@ -80,7 +84,10 @@ export function useBaseCost() {
     let buySlippagePct = 3;
     let sellSlippage = false;
     let sellSlippagePct = 3;
+    let marketFee = true;
+    let marketFeePct = 5;
     let powerPricePer100k = 0;
+    let masteryMode: 'individual' | 'chain' = 'individual';
 
     if (typeof window !== 'undefined') {
       try {
@@ -96,8 +103,19 @@ export function useBaseCost() {
         const rawSellPct = localStorage.getItem(STORAGE_KEYS.sellSlippagePct);
         if (rawSellPct !== null) sellSlippagePct = parseFloat(rawSellPct) || 3;
 
+        const rawFee = localStorage.getItem(STORAGE_KEYS.marketFee);
+        if (rawFee !== null) marketFee = rawFee === 'true';
+
+        const rawFeePct = localStorage.getItem(STORAGE_KEYS.marketFeePct);
+        if (rawFeePct !== null) marketFeePct = parseFloat(rawFeePct) || 5;
+
         const rawPower = localStorage.getItem(STORAGE_KEYS.powerCost);
         if (rawPower !== null) powerPricePer100k = parseFloat(rawPower) || 0;
+
+        const rawMode = localStorage.getItem(STORAGE_KEYS.masteryMode);
+        if (rawMode === 'chain' || rawMode === 'individual') {
+          masteryMode = rawMode;
+        }
       } catch {}
     }
 
@@ -106,7 +124,10 @@ export function useBaseCost() {
       buySlippagePct,
       sellSlippage,
       sellSlippagePct,
+      marketFee,
+      marketFeePct,
       powerPricePer100k,
+      masteryMode,
     };
   });
 
@@ -114,9 +135,22 @@ export function useBaseCost() {
   const { data: home, isLoading: isPricesLoading, isError: isPricesError, dataUpdatedAt } =
     useCraftworldHomeQuery();
 
-  // Load pool data as additional fallback
+  // Load live Katana V3 pool dataset periodically
   useEffect(() => {
-    fetchRoninPoolsData();
+    let mounted = true;
+    const loadPools = () => {
+      fetchRoninPoolsData().then((data) => {
+        if (mounted && data) {
+          setPoolsDataset(data);
+        }
+      });
+    };
+    loadPools();
+    const interval = setInterval(loadPools, 10000); // Auto-refresh DEX pools every 10s
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   // Save changes to localStorage
@@ -132,16 +166,19 @@ export function useBaseCost() {
       localStorage.setItem(STORAGE_KEYS.buySlippagePct, String(settings.buySlippagePct));
       localStorage.setItem(STORAGE_KEYS.sellSlippage, String(settings.sellSlippage));
       localStorage.setItem(STORAGE_KEYS.sellSlippagePct, String(settings.sellSlippagePct));
+      localStorage.setItem(STORAGE_KEYS.marketFee, String(settings.marketFee ?? true));
+      localStorage.setItem(STORAGE_KEYS.marketFeePct, String(settings.marketFeePct ?? 5));
       localStorage.setItem(STORAGE_KEYS.powerCost, String(settings.powerPricePer100k));
+      localStorage.setItem(STORAGE_KEYS.masteryMode, settings.masteryMode ?? 'individual');
     } catch (err) {
       console.warn('Failed saving base cost state to localStorage', err);
     }
   }, [levels, masteries, settings]);
 
-  // Price dictionary
+  // Price dictionary: Unifies live Katana V3 DEX rates with Home game quotes
   const prices = useMemo(() => {
-    return extractPriceMap(home);
-  }, [home]);
+    return extractPriceMap(home, poolsDataset);
+  }, [home, poolsDataset]);
 
   // Freshness calculation (seconds since last update)
   const [secondsAgo, setSecondsAgo] = useState(0);

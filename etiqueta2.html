@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cabecera de Tarjeta Integrada con Colinas hacia Abajo - Showcase Completo</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* ========================================================
+       RECORRIDO DE COLINAS HACIA ABAJO (NUBE INVERTIDA BANNER)
+       Corte suave con 4 colinas simétricas colgando hacia adentro.
+       ======================================================== */
+    .banner-cloud-hills {
+      clip-path: url(#bannerHillsClip);
+    }
+
+    /* ========================================================
+       ANIMACIONES DE VIDEOJUEGO
+       ======================================================== */
+
+    /* 1. RGB Chroma Flow (Arcoíris continuo) */
+    @keyframes chromaFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .anim-rainbow {
+      background: linear-gradient(90deg, #ff007f, #ff3b30, #ff9500, #ffcc00, #34c759, #00c7be, #5856d6, #ff007f);
+      background-size: 300% 100%;
+      animation: chromaFlow 4s linear infinite;
+    }
+
+    /* 2. Flujo de Lava Ígnea */
+    @keyframes lavaFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .anim-lava {
+      background: linear-gradient(135deg, #dc2626, #ea580c, #f59e0b, #facc15, #dc2626);
+      background-size: 250% 250%;
+      animation: lavaFlow 2.8s ease infinite;
+    }
+
+    /* 3. Synthwave Neón Cyberpunk */
+    .anim-cyber {
+      background: linear-gradient(135deg, #ec4899, #8b5cf6, #3b82f6, #06b6d4, #ec4899);
+      background-size: 250% 250%;
+      animation: chromaFlow 3.5s ease infinite;
+    }
+
+    /* 4. Oro Divino / Legendario */
+    .anim-gold {
+      background: linear-gradient(135deg, #b45309, #d97706, #fbbf24, #fef08a, #b45309);
+      background-size: 250% 250%;
+      animation: lavaFlow 2.6s ease infinite;
+    }
+
+    /* 5. Veneno Biohazard Radioactivo */
+    .anim-toxic {
+      background: linear-gradient(135deg, #3f6212, #65a30d, #a3e635, #10b981, #3f6212);
+      background-size: 250% 250%;
+      animation: lavaFlow 3s ease infinite;
+    }
+
+    /* 6. Tormenta Glacial */
+    .anim-frost {
+      background: linear-gradient(135deg, #0284c7, #38bdf8, #e0f2fe, #06b6d4, #0284c7);
+      background-size: 250% 250%;
+      animation: chromaFlow 3.2s ease infinite;
+    }
+
+    /* 7. Holo Shine (Haz de luz diagonal de cartas legendarias) */
+    @keyframes holoSweep {
+      0% { transform: translateX(-180%) rotate(25deg); opacity: 0; }
+      15% { opacity: 1; }
+      35% { transform: translateX(250%) rotate(25deg); opacity: 1; }
+      40%, 100% { opacity: 0; transform: translateX(250%) rotate(25deg); }
+    }
+    .holo-shine {
+      position: relative;
+      overflow: hidden;
+    }
+    .holo-shine::after {
+      content: '';
+      position: absolute;
+      top: -70%;
+      left: -30%;
+      width: 45%;
+      height: 240%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+      animation: holoSweep 3.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      pointer-events: none;
+    }
+
+    /* Acelerar el destello al pasar el cursor sobre la tarjeta */
+    .group:hover .holo-shine::after {
+      animation-duration: 1.4s;
+    }
+  </style>
+</head>
+<body class="bg-neutral-950 text-neutral-100 min-h-screen py-12 px-4 sm:px-6 lg:px-8 font-sans antialiased selection:bg-yellow-400 selection:text-black">
+
+  <!-- SVG Global Defs: Recorte de Colinas de Nube Invertidas para el Banner -->
+  <svg width="0" height="0" class="absolute pointer-events-none">
+    <defs>
+      <clipPath id="bannerHillsClip" clipPathUnits="objectBoundingBox">
+        <path d="M 0 0 L 1 0 L 1 0.720 C 0.955 1.000, 0.795 1.000, 0.750 0.720 C 0.705 1.000, 0.545 1.000, 0.500 0.720 C 0.455 1.000, 0.295 1.000, 0.250 0.720 C 0.205 1.000, 0.045 1.000, 0.000 0.720 Z" />
+      </clipPath>
+    </defs>
+  </svg>
+
+  <div class="max-w-7xl mx-auto space-y-16">
+    
+    <!-- Encabezado Principal -->
+    <header class="text-center space-y-3">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black bg-gradient-to-r from-pink-500 via-amber-400 to-cyan-400 text-black tracking-wider uppercase shadow-xl shadow-pink-500/10">
+        <span>⚡ CABECERA INTEGRADA COMPLETA</span>
+        <span>•</span>
+        <span>COLINAS HACIA ABAJO</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white">
+        Banners con Colinas Redondeadas hacia Abajo
+      </h1>
+      <p class="text-neutral-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+        El diseño de cabecera completa que cruza de borde a borde de la tarjeta con su terminación ondulada de nube al revés. Disponible en <strong>animaciones gamer en vivo (Arcoíris, Lava, Cyberpunk)</strong>, <strong>gradientes vibrantes</strong> y un <strong>catálogo completo de colores fijos sólidos</strong>.
+      </p>
+    </header>
+
+    <!-- ========================================================
+         SECCIÓN 1: EDICIONES ESPECIALES ANIMADAS & ARCOÍRIS
+         ======================================================== -->
+    <section class="space-y-6">
+      <div class="border-b border-neutral-800 pb-3 flex items-center justify-between">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+            <span>🌈</span>
+            <span>1. Animaciones Gamer & Arcoíris en Vivo</span>
+          </h2>
+          <p class="text-xs text-neutral-400">Fondos en movimiento continuo con destello holográfico de cartas coleccionables.</p>
+        </div>
+        <span class="text-xs font-mono px-2.5 py-1 rounded-full bg-neutral-800 text-yellow-400 font-bold">Animado 60FPS</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+
+        <!-- 1. ARCOÍRIS CHROMA RGB ANIMADO -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1 hover:border-neutral-700 group">
+          <!-- Banner con colinas hacia abajo -->
+          <div class="banner-cloud-hills anim-rainbow holo-shine text-white pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center relative z-10">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                <span>🌈</span> EDICIÓN CHROMA
+              </span>
+              <span class="font-mono font-black text-xs bg-black/30 px-2.5 py-0.5 rounded-full drop-shadow">RGB</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3 group-hover:scale-105 transition-transform">
+              🗡️
+            </div>
+            <h3 class="font-bold text-base text-white">Filo Primordial</h3>
+            <p class="text-xs text-neutral-400 mt-1">Espectro cromático continuo que recorre toda la cabecera.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Rareza</span>
+              <span class="text-xs font-black text-pink-400">Mítica ★★★</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. LAVA VOLCÁNICA EN LLAMAS -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1 hover:border-neutral-700 group">
+          <div class="banner-cloud-hills anim-lava holo-shine text-white pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center relative z-10">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5 text-black drop-shadow-[0_1px_1px_rgba(255,255,255,0.4)]">
+                <span>🔥</span> ONDA DE FUEGO
+              </span>
+              <span class="font-mono font-black text-xs bg-black/20 text-black px-2.5 py-0.5 rounded-full">10x</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3 group-hover:scale-105 transition-transform">
+              🌋
+            </div>
+            <h3 class="font-bold text-base text-white">Magma Fundido</h3>
+            <p class="text-xs text-neutral-400 mt-1">Flujo ardiente de brasas rojas, naranjas y amarillas.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Multiplicador</span>
+              <span class="text-xs font-mono font-bold text-amber-400">x10 CRIT</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. CYBERPUNK SYNTHWAVE NEÓN -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1 hover:border-neutral-700 group">
+          <div class="banner-cloud-hills anim-cyber holo-shine text-white pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center relative z-10">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                <span>⚡</span> PROTOCOLO NEO
+              </span>
+              <span class="font-mono font-black text-xs bg-black/30 px-2.5 py-0.5 rounded-full drop-shadow">MAX</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3 group-hover:scale-105 transition-transform">
+              🔮
+            </div>
+            <h3 class="font-bold text-base text-white">Núcleo Cuántico</h3>
+            <p class="text-xs text-neutral-400 mt-1">Pulso fluido entre fucsia, violeta profundo y cian eléctrico.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Energía</span>
+              <span class="text-xs font-mono font-bold text-cyan-400">+500 PWR</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. ORO LEGENDARIO PULSANTE -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1 hover:border-neutral-700 group">
+          <div class="banner-cloud-hills anim-gold holo-shine text-amber-950 pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center relative z-10">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5 drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)]">
+                <span>👑</span> ESTADO VIP
+              </span>
+              <span class="font-mono font-black text-xs bg-amber-950/20 px-2.5 py-0.5 rounded-full">TIER 1</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3 group-hover:scale-105 transition-transform">
+              🏆
+            </div>
+            <h3 class="font-bold text-base text-white">Copa Sagrada</h3>
+            <p class="text-xs text-neutral-400 mt-1">Reflejo dorado puro con barrido constante de luz.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Categoría</span>
+              <span class="text-xs font-bold text-yellow-400">Legendario</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. VENENO BIOHAZARD RADIOACTIVO -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1 hover:border-neutral-700 group">
+          <div class="banner-cloud-hills anim-toxic holo-shine text-lime-950 pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center relative z-10">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5 drop-shadow-[0_1px_1px_rgba(255,255,255,0.5)]">
+                <span>☣️</span> PLAGA TÓXICA
+              </span>
+              <span class="font-mono font-black text-xs bg-lime-950/20 px-2.5 py-0.5 rounded-full">NIVEL 5</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3 group-hover:scale-105 transition-transform">
+              🧪
+            </div>
+            <h3 class="font-bold text-base text-white">Vial Radioactivo</h3>
+            <p class="text-xs text-neutral-400 mt-1">Verde biohazard palpitante con daño residual.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Efecto</span>
+              <span class="text-xs font-bold text-lime-400">Corrosivo</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. TORMENTA GLACIAL -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1 hover:border-neutral-700 group">
+          <div class="banner-cloud-hills anim-frost holo-shine text-sky-950 pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center relative z-10">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5 drop-shadow-[0_1px_1px_rgba(255,255,255,0.5)]">
+                <span>❄️</span> ESCARCHA ZERO
+              </span>
+              <span class="font-mono font-black text-xs bg-sky-950/20 px-2.5 py-0.5 rounded-full">-273°C</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3 group-hover:scale-105 transition-transform">
+              🧊
+            </div>
+            <h3 class="font-bold text-base text-white">Cristal Glacial</h3>
+            <p class="text-xs text-neutral-400 mt-1">Azul ártico en movimiento con efecto de congelación.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Efecto</span>
+              <span class="text-xs font-bold text-cyan-400">Ralentiza 80%</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SECCIÓN 2: GRADIENTES ESTÁTICOS VIBRANTES
+         ======================================================== -->
+    <section class="space-y-6">
+      <div class="border-b border-neutral-800 pb-3 flex items-center justify-between">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+            <span>✨</span>
+            <span>2. Gradientes Bicolor & Elementales</span>
+          </h2>
+          <p class="text-xs text-neutral-400">Degradados de alta saturación con destello reflectante diagonal.</p>
+        </div>
+        <span class="text-xs font-mono px-2.5 py-1 rounded-full bg-neutral-800 text-neutral-300 font-bold">Gradientes</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+
+        <!-- Gradiente Fuego Carmesí -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1 group">
+          <div class="banner-cloud-hills bg-gradient-to-r from-red-600 via-rose-500 to-amber-500 holo-shine text-white pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                <span>🔥</span> SUPER RACHA
+              </span>
+              <span class="font-mono font-black text-xs bg-black/25 px-2.5 py-0.5 rounded-full">5x</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3">☄️</div>
+            <h3 class="font-bold text-base text-white">Cometa Carmesí</h3>
+            <p class="text-xs text-neutral-400 mt-1">De rojo volcán a destello ámbar.</p>
+          </div>
+        </div>
+
+        <!-- Gradiente Veneno Ácido -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1 group">
+          <div class="banner-cloud-hills bg-gradient-to-r from-lime-400 via-emerald-400 to-teal-500 holo-shine text-lime-950 pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5 drop-shadow-[0_1px_1px_rgba(255,255,255,0.4)]">
+                <span>☣️</span> TÓXICO BIO
+              </span>
+              <span class="font-mono font-black text-xs bg-lime-950/20 px-2.5 py-0.5 rounded-full">+45</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3">🍄</div>
+            <h3 class="font-bold text-base text-white">Esporas Venenosas</h3>
+            <p class="text-xs text-neutral-400 mt-1">Verde lima brillante hacia turquesa profundo.</p>
+          </div>
+        </div>
+
+        <!-- Gradiente Vacío Arcano -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1 group">
+          <div class="banner-cloud-hills bg-gradient-to-r from-purple-600 via-fuchsia-500 to-pink-500 holo-shine text-white pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                <span>✨</span> ARCANO
+              </span>
+              <span class="font-mono font-black text-xs bg-black/25 px-2.5 py-0.5 rounded-full">x3</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3">🌌</div>
+            <h3 class="font-bold text-base text-white">Nebulosa Cósmica</h3>
+            <p class="text-xs text-neutral-400 mt-1">Violeta espacial fundido con rosa neón.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SECCIÓN 3: CATÁLOGO COMPLETO DE COLORES FIJOS / SÓLIDOS
+         ======================================================== -->
+    <section class="space-y-6">
+      <div class="border-b border-neutral-800 pb-3 flex items-center justify-between">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+            <span>🎨</span>
+            <span>3. Catálogo Extendido de Colores Fijos (Sólidos Planos)</span>
+          </h2>
+          <p class="text-xs text-neutral-400">
+            Sin gradientes, sin bordes y 100% planos. Incluye los 3 del diseño original y todos los colores adicionales.
+          </p>
+        </div>
+        <span class="text-xs font-mono px-2.5 py-1 rounded-full bg-neutral-800 text-yellow-400 font-bold">12 Colores Planos</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+        <!-- 1. AMARILLO SOLAR (Diseño Original) -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="banner-cloud-hills bg-[#FACC15] text-black pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5">⚡ SUPER RACHA</span>
+              <span class="font-mono font-black text-xs bg-black/15 px-2.5 py-0.5 rounded-full">5x</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-24 rounded-2xl bg-neutral-950 flex items-center justify-center text-3xl mb-2">🛡️</div>
+            <span class="text-[10px] font-mono font-bold text-yellow-400 uppercase">#FACC15</span>
+            <h4 class="font-bold text-sm text-white">Amarillo Solar</h4>
+            <div class="mt-3 pt-2.5 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Estado</span>
+              <span class="text-xs font-bold text-yellow-400">Activo</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. VERDE ESMERALDA (Diseño Original) -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="banner-cloud-hills bg-[#10B981] text-black pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5">🌿 RAREZA TIER S</span>
+              <span class="font-mono font-black text-xs bg-black/15 px-2.5 py-0.5 rounded-full">+12</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-24 rounded-2xl bg-neutral-950 flex items-center justify-center text-3xl mb-2">🌱</div>
+            <span class="text-[10px] font-mono font-bold text-emerald-400 uppercase">#10B981</span>
+            <h4 class="font-bold text-sm text-white">Verde Esmeralda</h4>
+            <div class="mt-3 pt-2.5 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Estado</span>
+              <span class="text-xs font-bold text-emerald-400">Disponible</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. ROJO FURIA (Diseño Original) -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="banner-cloud-hills bg-[#EF4444] text-white pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5">🔥 OFERTA CALIENTE</span>
+              <span class="font-mono font-black text-xs bg-white/20 px-2.5 py-0.5 rounded-full">-50%</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-24 rounded-2xl bg-neutral-950 flex items-center justify-center text-3xl mb-2">🌋</div>
+            <span class="text-[10px] font-mono font-bold text-red-400 uppercase">#EF4444</span>
+            <h4 class="font-bold text-sm text-white">Rojo Furia</h4>
+            <div class="mt-3 pt-2.5 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Estado</span>
+              <span class="text-xs font-bold text-red-400">Limitado</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. NARANJA VOLCÁN -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="banner-cloud-hills bg-[#F97316] text-white pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5">💥 DAÑO CRÍTICO</span>
+              <span class="font-mono font-black text-xs bg-black/20 px-2.5 py-0.5 rounded-full">3x</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-24 rounded-2xl bg-neutral-950 flex items-center justify-center text-3xl mb-2">☄️</div>
+            <span class="text-[10px] font-mono font-bold text-orange-400 uppercase">#F97316</span>
+            <h4 class="font-bold text-sm text-white">Naranja Volcán</h4>
+            <div class="mt-3 pt-2.5 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Poder</span>
+              <span class="text-xs font-bold text-orange-400">+120 DMG</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. AZUL CIAN GÉLIDO -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="banner-cloud-hills bg-[#06B6D4] text-black pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5">❄️ ESCARCHA PURA</span>
+              <span class="font-mono font-black text-xs bg-black/15 px-2.5 py-0.5 rounded-full">COLD</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-24 rounded-2xl bg-neutral-950 flex items-center justify-center text-3xl mb-2">🧊</div>
+            <span class="text-[10px] font-mono font-bold text-cyan-400 uppercase">#06B6D4</span>
+            <h4 class="font-bold text-sm text-white">Cian Gélido</h4>
+            <div class="mt-3 pt-2.5 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Poder</span>
+              <span class="text-xs font-bold text-cyan-400">Inmoviliza</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. PÚRPURA MÍSTICO -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="banner-cloud-hills bg-[#A855F7] text-white pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5">🔮 REINO VACÍO</span>
+              <span class="font-mono font-black text-xs bg-white/20 px-2.5 py-0.5 rounded-full">NOVA</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-24 rounded-2xl bg-neutral-950 flex items-center justify-center text-3xl mb-2">🌌</div>
+            <span class="text-[10px] font-mono font-bold text-purple-400 uppercase">#A855F7</span>
+            <h4 class="font-bold text-sm text-white">Púrpura Místico</h4>
+            <div class="mt-3 pt-2.5 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Poder</span>
+              <span class="text-xs font-bold text-purple-400">+90 Maná</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. VERDE LIMA NEÓN -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="banner-cloud-hills bg-[#84CC16] text-black pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5">⚡ TURBO VELOCIDAD</span>
+              <span class="font-mono font-black text-xs bg-black/15 px-2.5 py-0.5 rounded-full">+200</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-24 rounded-2xl bg-neutral-950 flex items-center justify-center text-3xl mb-2">🏎️</div>
+            <span class="text-[10px] font-mono font-bold text-lime-400 uppercase">#84CC16</span>
+            <h4 class="font-bold text-sm text-white">Verde Lima</h4>
+            <div class="mt-3 pt-2.5 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Poder</span>
+              <span class="text-xs font-bold text-lime-400">+150 SPD</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8. ROSA NEÓN / MAGENTA -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="banner-cloud-hills bg-[#EC4899] text-white pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5">💎 EDICIÓN RARA</span>
+              <span class="font-mono font-black text-xs bg-white/20 px-2.5 py-0.5 rounded-full">DROP</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-24 rounded-2xl bg-neutral-950 flex items-center justify-center text-3xl mb-2">🌸</div>
+            <span class="text-[10px] font-mono font-bold text-pink-400 uppercase">#EC4899</span>
+            <h4 class="font-bold text-sm text-white">Rosa Neón</h4>
+            <div class="mt-3 pt-2.5 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Poder</span>
+              <span class="text-xs font-bold text-pink-400">Probabilidad x2</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 9. AZUL REY / COBALTO -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="banner-cloud-hills bg-[#2563EB] text-white pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5">🌊 FUERZA MAREA</span>
+              <span class="font-mono font-black text-xs bg-white/20 px-2.5 py-0.5 rounded-full">TIER A</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-24 rounded-2xl bg-neutral-950 flex items-center justify-center text-3xl mb-2">🔱</div>
+            <span class="text-[10px] font-mono font-bold text-blue-400 uppercase">#2563EB</span>
+            <h4 class="font-bold text-sm text-white">Azul Rey</h4>
+            <div class="mt-3 pt-2.5 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Poder</span>
+              <span class="text-xs font-bold text-blue-400">Escudo +40%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 10. ÍNDIGO NOCTURNO -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="banner-cloud-hills bg-[#6366F1] text-white pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5">🌙 MANTO SOMBRA</span>
+              <span class="font-mono font-black text-xs bg-white/20 px-2.5 py-0.5 rounded-full">STEALTH</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-24 rounded-2xl bg-neutral-950 flex items-center justify-center text-3xl mb-2">🗡️</div>
+            <span class="text-[10px] font-mono font-bold text-indigo-400 uppercase">#6366F1</span>
+            <h4 class="font-bold text-sm text-white">Índigo Nocturno</h4>
+            <div class="mt-3 pt-2.5 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Poder</span>
+              <span class="text-xs font-bold text-indigo-400">Sigilo 15s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 11. GRIS GRAFITO TÁCTICO -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="banner-cloud-hills bg-[#4B5563] text-white pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5">⚙️ BLINDAJE TÁCTICO</span>
+              <span class="font-mono font-black text-xs bg-black/25 px-2.5 py-0.5 rounded-full">BASE</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-24 rounded-2xl bg-neutral-950 flex items-center justify-center text-3xl mb-2">🛡️</div>
+            <span class="text-[10px] font-mono font-bold text-neutral-400 uppercase">#4B5563</span>
+            <h4 class="font-bold text-sm text-white">Grafito Táctico</h4>
+            <div class="mt-3 pt-2.5 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Poder</span>
+              <span class="text-xs font-bold text-neutral-400">Armadura +100</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 12. BLANCO MONOCROMO LIMPIO -->
+        <div class="relative bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="banner-cloud-hills bg-white text-black pt-3.5 pb-5 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase flex items-center gap-1.5">⚪ EDICIÓN MONO</span>
+              <span class="font-mono font-black text-xs bg-black/15 text-black px-2.5 py-0.5 rounded-full">01</span>
+            </div>
+          </div>
+          <div class="p-5 pt-3">
+            <div class="h-24 rounded-2xl bg-neutral-950 flex items-center justify-center text-3xl mb-2">⭐</div>
+            <span class="text-[10px] font-mono font-bold text-neutral-200 uppercase">#FFFFFF</span>
+            <h4 class="font-bold text-sm text-white">Blanco Minimal</h4>
+            <div class="mt-3 pt-2.5 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Poder</span>
+              <span class="text-xs font-bold text-white">Puro</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================
+         CÓDIGO DE INTEGRACIÓN RÁPIDA
+         ======================================================== -->
+    <div class="bg-neutral-900/90 rounded-3xl p-6 sm:p-8 border border-neutral-800 space-y-4">
+      <h3 class="font-black text-lg text-white flex items-center gap-2">
+        <span>📋</span>
+        <span>Estructura de la Cabecera para reutilizar en tus proyectos</span>
+      </h3>
+      <p class="text-xs text-neutral-400 leading-relaxed">
+        El truco de este diseño es que el contenedor superior utiliza <code class="text-yellow-400 font-mono">.banner-cloud-hills</code> (un <code class="text-yellow-400 font-mono">clip-path</code> SVG con unidades proporcionales de 0 a 1). Esto hace que <strong>cualquier clase que le pongas al banner</strong> (<code class="text-yellow-400 font-mono">bg-[#FACC15]</code>, <code class="text-yellow-400 font-mono">anim-rainbow</code>, <code class="text-yellow-400 font-mono">bg-gradient-...</code>) adopte la silueta de las colinas de nube hacia abajo de forma 100% responsiva y automática.
+      </p>
+
+      <pre class="bg-neutral-950 p-4 rounded-2xl text-[11px] font-mono text-neutral-300 overflow-x-auto border border-neutral-800">
+&lt;!-- Tarjeta con Cabecera Integrada y Colinas hacia Abajo --&gt;
+&lt;div class="relative w-72 bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden text-white"&gt;
+
+  &lt;!-- BANNER SUPERIOR CON CORTE ONDULADO --&gt;
+  &lt;!-- Puedes cambiar 'anim-rainbow' por 'bg-[#FACC15]', 'bg-[#10B981]', etc. --&gt;
+  &lt;div class="banner-cloud-hills anim-rainbow holo-shine pt-3.5 pb-5 px-5 text-white"&gt;
+    &lt;div class="flex justify-between items-center"&gt;
+      &lt;span class="font-black text-xs uppercase tracking-wider"&gt;⚡ SUPER RACHA&lt;/span&gt;
+      &lt;span class="font-mono font-black text-xs bg-black/25 px-2.5 py-0.5 rounded-full"&gt;5x&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- CONTENIDO DE LA TARJETA --&gt;
+  &lt;div class="p-5 pt-3"&gt;
+    &lt;!-- Imagen, título, descripción y precio... --&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+    </div>
+
+  </div>
+
+</body>
+</html>

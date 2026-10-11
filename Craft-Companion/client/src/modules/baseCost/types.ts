@@ -59,7 +59,10 @@ export interface BaseCostSettings {
   buySlippagePct: number;
   sellSlippage: boolean;
   sellSlippagePct: number;
+  marketFee?: boolean;
+  marketFeePct?: number;
   powerPricePer100k: number;
+  masteryMode?: 'individual' | 'chain';
 }
 
 export type OptimalStrategy =

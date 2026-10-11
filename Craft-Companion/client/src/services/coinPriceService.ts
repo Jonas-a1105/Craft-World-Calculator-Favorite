@@ -173,8 +173,8 @@ export function useCoinLivePrice() {
     queryKey: ['coin-live-market-price'],
     queryFn: fetchCoinMarketData,
     initialData: getCachedCoinData,
-    refetchInterval: 30000, // Refresh every 30s
-    staleTime: 15000,
+    refetchInterval: 5000, // Refresh every 5 seconds (ultra-fast live ticker)
+    staleTime: 3000,
     retry: 1,
   });
 }

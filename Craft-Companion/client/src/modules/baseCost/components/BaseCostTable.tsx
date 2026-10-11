@@ -26,7 +26,7 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
   onMaxMasteries,
 }) => {
   return (
-    <div className="w-full rounded-3xl bg-[#18181c] shadow-2xl overflow-hidden ring-1 ring-white/10">
+    <div className="w-full rounded-3xl bg-[#18181c] shadow-md overflow-hidden border-none">
       {/* Table Subheader */}
       <div className="flex flex-wrap items-center justify-between px-4 py-3 bg-[#141417]">
         <span className="text-xs font-mono uppercase tracking-widest text-slate-400 font-semibold">

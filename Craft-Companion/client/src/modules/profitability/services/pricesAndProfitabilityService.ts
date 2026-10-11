@@ -10,6 +10,7 @@ import {
   buildRecipeTree,
   flattenRecipeToBaseResources,
 } from '../../../services/craftworldCalculations';
+import { DEFAULT_MARKET_PRICES } from '../../../services/priceService';
 import type {
   FactoryRowConfig,
   FactoryTableRow,
@@ -90,7 +91,9 @@ export function computeFactoryTableRow({
   };
 
   // Prices
-  const rawPriceCoin = typeof prices[norm] === 'number' && prices[norm] > 0 ? prices[norm] : 0.00394;
+  const rawPriceCoin = typeof prices[norm] === 'number' && prices[norm] > 0
+    ? prices[norm]
+    : (DEFAULT_MARKET_PRICES[norm] ?? 0.004608);
   const priceCoin = rawPriceCoin;
   const priceUsd = priceCoin * (coinUsdPrice > 0 ? coinUsdPrice : 0.0002105);
 
@@ -127,21 +130,23 @@ export function computeFactoryTableRow({
     Object.entries(baseReqs).forEach(([tok, amt]) => {
       if (tok !== norm) {
         const adjustedAmt = applyMasteryInputReduction(amt, tok, dummyProficiency);
-        const finalAmt = adjustedAmt * (1 - parentMasteryRed / 100);
-        const p = (prices[tok] || 0.00394) * buySlippageMult;
+        const finalAmt = parentMasteryRed > 0 ? adjustedAmt / (1 + parentMasteryRed / 100) : adjustedAmt;
+        const p = (prices[tok] ?? DEFAULT_MARKET_PRICES[tok] ?? 0.004608) * buySlippageMult;
         singleCycleInputCost += finalAmt * activeRow.output_amount * p;
       }
     });
   } else {
     // Market input supply
     if (activeRow.input_token_1 && activeRow.input_amount_1 > 0) {
+      const sym1 = activeRow.input_token_1.toUpperCase();
       const adj1 = applyMasteryInputReduction(activeRow.input_amount_1, norm, dummyProficiency);
-      const p1 = (prices[activeRow.input_token_1.toUpperCase()] || 0.00394) * buySlippageMult;
+      const p1 = (prices[sym1] ?? DEFAULT_MARKET_PRICES[sym1] ?? 0.004608) * buySlippageMult;
       singleCycleInputCost += adj1 * p1;
     }
     if (activeRow.input_token_2 && activeRow.input_amount_2 > 0) {
+      const sym2 = activeRow.input_token_2.toUpperCase();
       const adj2 = applyMasteryInputReduction(activeRow.input_amount_2, norm, dummyProficiency);
-      const p2 = (prices[activeRow.input_token_2.toUpperCase()] || 0.00394) * buySlippageMult;
+      const p2 = (prices[sym2] ?? DEFAULT_MARKET_PRICES[sym2] ?? 0.004608) * buySlippageMult;
       singleCycleInputCost += adj2 * p2;
     }
   }

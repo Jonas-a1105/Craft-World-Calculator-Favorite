@@ -80,7 +80,7 @@ export const BaseCostDashboard: React.FC = () => {
 
         {/* Resource Cards View */}
         {isPricesLoading && filteredRows.length === 0 ? (
-          <div className="rounded-[32px] bg-[#18181c] p-12 text-center text-slate-400 font-mono text-xs flex flex-col items-center justify-center gap-3">
+          <div className="rounded-[32px] bg-[#18181c] p-12 text-center text-slate-400 font-mono text-xs flex flex-col items-center justify-center gap-3 shadow-md border-none">
             <div className="w-8 h-8 rounded-full border-2 border-amber-500/20 border-t-amber-500 animate-spin" />
             <span>Sincronizando cotizaciones en vivo de la red Ronin...</span>
           </div>

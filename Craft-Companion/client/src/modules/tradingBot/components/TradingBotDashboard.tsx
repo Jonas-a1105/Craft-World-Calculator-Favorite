@@ -100,7 +100,7 @@ export const TradingBotDashboard: React.FC = () => {
       />
 
       {/* Control Topbar: Compact, sleek and 100% responsive */}
-      <div className="bg-[#141416] p-3 sm:p-4 rounded-[28px] sm:rounded-[32px] border-none shadow-xl space-y-3 lg:space-y-0 lg:flex lg:items-center lg:justify-between lg:gap-4">
+      <div className="bg-[#18181b] p-3 sm:p-3.5 rounded-[24px] sm:rounded-[28px] border-none shadow-md space-y-3 lg:space-y-0 lg:flex lg:items-center lg:justify-between lg:gap-4">
         {/* Filter Category Tabs: Horizontal scroll on mobile, flex on desktop */}
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 scroll-smooth shrink-0">
           {filterTabs.map((tab) => {
@@ -112,8 +112,8 @@ export const TradingBotDashboard: React.FC = () => {
                 onClick={() => setFilter(tab.id)}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap border-none cursor-pointer shrink-0 ${
                   isActive
-                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-black shadow-md shadow-orange-500/20 active:scale-95'
-                    : 'bg-[#1c1c20] text-zinc-400 hover:text-white hover:bg-zinc-800'
+                    ? 'bg-amber-500 hover:bg-amber-400 text-black shadow-sm active:scale-95'
+                    : 'bg-[#141417] text-zinc-400 hover:text-white hover:bg-zinc-800'
                 }`}
               >
                 {tab.icon}
@@ -143,7 +143,7 @@ export const TradingBotDashboard: React.FC = () => {
               placeholder="Buscar recurso..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#1c1c20] border-none rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500/50 shadow-inner font-medium"
+              className="w-full bg-[#141417] border-none rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500/50 shadow-inner font-medium"
             />
           </div>
 
@@ -151,7 +151,7 @@ export const TradingBotDashboard: React.FC = () => {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="bg-[#1c1c20] border-none rounded-xl px-3 py-1.5 text-xs font-bold text-zinc-300 focus:outline-none focus:ring-1 focus:ring-amber-500/50 shadow-inner cursor-pointer shrink-0"
+            className="bg-[#141417] border-none rounded-xl px-3 py-1.5 text-xs font-bold text-zinc-300 focus:outline-none focus:ring-1 focus:ring-amber-500/50 shadow-inner cursor-pointer shrink-0"
           >
             <option value="SCORE">Mayor Score</option>
             <option value="MARGIN">Mayor Margen %</option>
@@ -162,7 +162,7 @@ export const TradingBotDashboard: React.FC = () => {
 
       {/* Opportunities Feed Grid */}
       {opportunities.length === 0 ? (
-        <div className="bg-[#141416] border-none rounded-[32px] p-10 text-center space-y-3.5 shadow-xl">
+        <div className="bg-[#18181b] border-none rounded-[32px] p-10 text-center space-y-3.5 shadow-xl">
           <div className="w-14 h-14 rounded-2xl bg-[#1c1c20] text-zinc-500 flex items-center justify-center mx-auto">
             <MagniferLinear size={24} />
           </div>
@@ -178,17 +178,18 @@ export const TradingBotDashboard: React.FC = () => {
               setFilter('ALL');
               setSearchQuery('');
             }}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-black text-xs font-bold transition-all shadow-md shadow-orange-500/20 cursor-pointer border-none"
+            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shadow-sm cursor-pointer border-none"
           >
             Restablecer Filtros
           </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-          {opportunities.map((opp) => (
+          {opportunities.map((opp, index) => (
             <OpportunityFeedCard
               key={opp.id}
               opportunity={opp}
+              rank={index < 3 ? index + 1 : undefined}
               onSimulate={openCalculator}
               onSendDiscord={handleSendOpportunityToDiscord}
             />

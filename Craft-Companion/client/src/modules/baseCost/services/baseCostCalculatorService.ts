@@ -32,6 +32,7 @@ export function calcBaseResources(
   masteries: Record<string, number>,
   factoriesMap: Record<string, FactoryLevelConfig[]> = FACTORIES_DATA,
   visited = new Set<string>(),
+  forcedMastery?: number,
 ): BaseResourceDecomposition {
   const norm = token.toUpperCase();
 
@@ -50,7 +51,10 @@ export function calcBaseResources(
   const f = fList.find((x) => x.level === curLvl) ?? fList[0];
   if (!f || f.output <= 0) return { ...EMPTY_DECOMPOSITION };
 
-  const mLevel = Math.min(10, Math.max(0, masteries[norm] ?? 0));
+  const mLevel = Math.min(
+    10,
+    Math.max(0, forcedMastery !== undefined ? forcedMastery : (masteries[norm] ?? 0)),
+  );
   const mult = MASTERY_MULTIPLIERS[mLevel] ?? 1;
   const nextVisited = new Set(visited).add(norm);
 
@@ -69,6 +73,7 @@ export function calcBaseResources(
       masteries,
       factoriesMap,
       nextVisited,
+      forcedMastery,
     );
     res.earth += sub.earth * ratio;
     res.water += sub.water * ratio;
@@ -101,15 +106,25 @@ export function calculateBaseCostRow(
     icon: `/assets/resources/${norm.charAt(0) + norm.slice(1).toLowerCase()}.png`,
   };
 
-  const decomp = calcBaseResources(norm, levels, masteries, factoriesMap);
   const curLevel = levels[norm] ?? 1;
   const maxLevel = getMaxFactoryLevel(norm);
   const mastery = Math.min(10, Math.max(0, masteries[norm] ?? 0));
+  const forcedMastery = settings.masteryMode === 'chain' ? mastery : undefined;
+
+  const decomp = calcBaseResources(
+    norm,
+    levels,
+    masteries,
+    factoriesMap,
+    new Set(),
+    forcedMastery,
+  );
 
   const buyMult = settings.buySlippage ? 1 + settings.buySlippagePct / 100 : 1;
   const sellMult = settings.sellSlippage
     ? 1 - settings.sellSlippagePct / 100
     : 1;
+  const feeMult = settings.marketFee ? 1 - (settings.marketFeePct ?? 5) / 100 : 1;
 
   const earthPrice = prices.EARTH ?? 0;
   const waterPrice = prices.WATER ?? 0;
@@ -129,7 +144,7 @@ export function calculateBaseCostRow(
   const totalCost = baseCost + powerCoin;
 
   const tokenPrice = prices[norm] ?? 0;
-  const sellPrice = tokenPrice * sellMult;
+  const sellPrice = tokenPrice * sellMult * feeMult;
   const profit = sellPrice - totalCost;
 
   const marginPct =
@@ -177,7 +192,14 @@ export function calculateBaseCostRow(
         const totalMarketCost = amountPerUnit * inpMarketPrice;
 
         // Calculate cost to craft this component from its elemental base
-        const inpDecomp = calcBaseResources(inpSym, levels, masteries, factoriesMap);
+        const inpDecomp = calcBaseResources(
+          inpSym,
+          levels,
+          masteries,
+          factoriesMap,
+          new Set(),
+          forcedMastery,
+        );
         const inpRawBaseCost =
           inpDecomp.earth * earthPrice +
           inpDecomp.water * waterPrice +

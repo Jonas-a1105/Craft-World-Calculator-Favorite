@@ -30,6 +30,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import Splash from './pages/Splash';
 import TradingBot from './pages/TradingBot';
+import { fetchRoninPoolsData } from './services/roninPoolsService';
 
 export default function App() {
   const { config: sileoConfig } = useSileoConfig();
@@ -57,6 +58,9 @@ export default function App() {
       document.documentElement.style.setProperty('--navbar-bg', savedTheme === 'light' ? '#ffffff' : '#141415');
     }
     document.documentElement.style.setProperty('--bg-solid-override', solidColor);
+
+    // Preload Katana V3 pools into global memory cache
+    fetchRoninPoolsData().catch(() => {});
   }, []);
 
   return (

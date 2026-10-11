@@ -58,8 +58,8 @@ export const BaseCostLevelSelector: React.FC<BaseCostLevelSelectorProps> = ({
         onClick={() => setIsOpen((prev) => !prev)}
         className={`group/lvl flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-mono transition-all border-none outline-none cursor-pointer shadow-sm active:scale-95 ${
           isOpen
-            ? 'bg-[#22222a] text-white'
-            : 'bg-[#131316] hover:bg-[#1c1c22] text-slate-200'
+            ? 'bg-[#202026] text-white'
+            : 'bg-[#131316] hover:bg-[#202026] text-slate-200'
         }`}
         title={`Nivel ${curLevel} de ${maxLevel} (Click para cambiar)`}
         aria-expanded={isOpen}
@@ -76,7 +76,7 @@ export const BaseCostLevelSelector: React.FC<BaseCostLevelSelectorProps> = ({
 
       {/* Custom Designed Level Selection Window */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 z-50 w-64 p-3 rounded-2xl bg-[#16161c] shadow-2xl shadow-black/95 border-none animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 top-full mt-2 z-50 w-64 p-3 rounded-2xl bg-[#18181c] shadow-md border-none animate-in fade-in zoom-in-95 duration-150">
           {/* Header */}
           <div className="flex items-center justify-between pb-2 border-b border-white/5">
             <div>
@@ -123,7 +123,7 @@ export const BaseCostLevelSelector: React.FC<BaseCostLevelSelectorProps> = ({
               className={`py-1 px-2 rounded-xl text-[11px] font-mono font-semibold transition-colors border-none cursor-pointer ${
                 curLevel === 1
                   ? 'bg-amber-400 text-black font-bold'
-                  : 'bg-[#1c1c22] text-slate-300 hover:bg-[#262630] hover:text-white'
+                  : 'bg-[#141417] text-slate-300 hover:bg-[#202026] hover:text-white'
               }`}
             >
               Nivel Min (1)
@@ -137,7 +137,7 @@ export const BaseCostLevelSelector: React.FC<BaseCostLevelSelectorProps> = ({
               className={`py-1 px-2 rounded-xl text-[11px] font-mono font-semibold transition-colors border-none cursor-pointer ${
                 curLevel === maxLevel
                   ? 'bg-amber-400 text-black font-bold'
-                  : 'bg-[#1c1c22] text-slate-300 hover:bg-[#262630] hover:text-white'
+                  : 'bg-[#141417] text-slate-300 hover:bg-[#202026] hover:text-white'
               }`}
             >
               Nivel Max ({maxLevel})

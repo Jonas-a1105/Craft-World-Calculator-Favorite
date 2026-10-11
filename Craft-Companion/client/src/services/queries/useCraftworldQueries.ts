@@ -25,7 +25,8 @@ export function useCraftworldHomeQuery() {
         return null;
       }
     },
-    staleTime: 60 * 1000,
+    staleTime: 15 * 1000,
+    refetchInterval: 30 * 1000, // Background refresh every 30s
   });
 }
 

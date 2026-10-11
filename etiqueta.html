@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Etiquetas Integradas en Tarjetas (No Flotantes • Nube Invertida)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-neutral-950 text-neutral-100 min-h-screen py-12 px-4 sm:px-6 lg:px-8 font-sans antialiased">
+
+  <div class="max-w-6xl mx-auto space-y-16">
+    
+    <!-- Encabezado -->
+    <header class="text-center space-y-3">
+      <span class="inline-block px-3 py-1 rounded-full text-xs font-black bg-[#FACC15] text-black tracking-wider uppercase">
+        Diseño Integrado • No Flotante • Nube con Colinas al Revés • Colores Sólidos
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-white">
+        Etiquetas Incrustadas en la Misma Tarjeta
+      </h1>
+      <p class="text-neutral-400 max-w-2xl mx-auto text-sm sm:text-base">
+        La etiqueta ya no flota por fuera ni sobresale: ahora <strong>nace y forma parte de la estructura de la tarjeta</strong>. Su límite interno dibuja las colinas redondeadas de una nube invertida, en colores sólidos y sin bordes.
+      </p>
+    </header>
+
+    <!-- SECCIÓN 1: ESQUINA SUPERIOR IZQUIERDA INTEGRADA (CORNER MOLDED) -->
+    <section class="space-y-6">
+      <div class="border-b border-neutral-800 pb-3 flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-extrabold text-white">1. Esquina Superior Izquierda Fundida (Corner Integrado)</h2>
+          <p class="text-xs text-neutral-400">
+            El bloque de color se funde con el borde redondeado de la tarjeta en <code class="text-yellow-400 font-mono">top-0 left-0</code>. Sus ondas hacia adentro son colinas de nube al revés.
+          </p>
+        </div>
+        <span class="text-xs font-mono text-neutral-500">6 Colores Sólidos</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+
+        <!-- 1. AMARILLO SÓLIDO (#FACC15) -->
+        <div class="relative bg-neutral-900 border border-neutral-800/80 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <!-- PARCHE DE ESQUINA INTEGRADO CON NUBE INVERTIDA -->
+          <div class="absolute top-0 left-0 select-none">
+            <div class="relative">
+              <svg viewBox="0 0 130 65" class="w-36 h-auto text-[#FACC15]" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <!-- El borde exterior se alinea con la esquina; el interior son colinas de nube colgando -->
+                <path d="M 0 0 L 125 0 C 122 13 111 20 98 21 C 85 22 79 13 67 17 C 54 21 47 42 33 44 C 20 46 13 34 0 42 Z"/>
+              </svg>
+              <!-- Texto dentro de la propia esquina -->
+              <span class="absolute top-2.5 left-4 font-black text-xs text-black tracking-tight flex items-center gap-1">
+                <span>🔥</span> 5X
+              </span>
+            </div>
+          </div>
+
+          <div class="p-5 pt-14">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3">
+              🗡️
+            </div>
+            <span class="text-[11px] font-bold uppercase text-yellow-400 tracking-wider">Amarillo Sólido</span>
+            <h3 class="font-bold text-base text-white mt-0.5">Espada Solar</h3>
+            <p class="text-xs text-neutral-400 mt-1">Multiplicador por racha continua.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Precio</span>
+              <span class="font-mono font-bold text-yellow-400">$18.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. NARANJA SÓLIDO (#F97316) -->
+        <div class="relative bg-neutral-900 border border-neutral-800/80 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="absolute top-0 left-0 select-none">
+            <div class="relative">
+              <svg viewBox="0 0 130 65" class="w-36 h-auto text-[#F97316]" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 0 0 L 125 0 C 122 13 111 20 98 21 C 85 22 79 13 67 17 C 54 21 47 42 33 44 C 20 46 13 34 0 42 Z"/>
+              </svg>
+              <span class="absolute top-2.5 left-4 font-black text-[11px] text-white tracking-tight flex items-center gap-1">
+                <span>🔥</span> HOT
+              </span>
+            </div>
+          </div>
+
+          <div class="p-5 pt-14">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3">
+              ☄️
+            </div>
+            <span class="text-[11px] font-bold uppercase text-orange-400 tracking-wider">Naranja Sólido</span>
+            <h3 class="font-bold text-base text-white mt-0.5">Meteorito Ígneo</h3>
+            <p class="text-xs text-neutral-400 mt-1">Ítem en demanda activa.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Precio</span>
+              <span class="font-mono font-bold text-orange-400">$25.50</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. ROJO SÓLIDO (#EF4444) -->
+        <div class="relative bg-neutral-900 border border-neutral-800/80 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="absolute top-0 left-0 select-none">
+            <div class="relative">
+              <svg viewBox="0 0 130 65" class="w-36 h-auto text-[#EF4444]" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 0 0 L 125 0 C 122 13 111 20 98 21 C 85 22 79 13 67 17 C 54 21 47 42 33 44 C 20 46 13 34 0 42 Z"/>
+              </svg>
+              <span class="absolute top-2.5 left-4 font-black text-xs text-white tracking-tighter">
+                10x
+              </span>
+            </div>
+          </div>
+
+          <div class="p-5 pt-14">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3">
+              🌋
+            </div>
+            <span class="text-[11px] font-bold uppercase text-red-400 tracking-wider">Rojo Sólido</span>
+            <h3 class="font-bold text-base text-white mt-0.5">Magma Furioso</h3>
+            <p class="text-xs text-neutral-400 mt-1">Multiplicador crítico x10.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Precio</span>
+              <span class="font-mono font-bold text-red-400">$32.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. ESMERALDA SÓLIDO (#10B981) -->
+        <div class="relative bg-neutral-900 border border-neutral-800/80 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="absolute top-0 left-0 select-none">
+            <div class="relative">
+              <svg viewBox="0 0 130 65" class="w-36 h-auto text-[#10B981]" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 0 0 L 125 0 C 122 13 111 20 98 21 C 85 22 79 13 67 17 C 54 21 47 42 33 44 C 20 46 13 34 0 42 Z"/>
+              </svg>
+              <span class="absolute top-2.5 left-4 font-black text-xs text-black tracking-tight">
+                S+
+              </span>
+            </div>
+          </div>
+
+          <div class="p-5 pt-14">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3">
+              🧪
+            </div>
+            <span class="text-[11px] font-bold uppercase text-emerald-400 tracking-wider">Esmeralda Sólido</span>
+            <h3 class="font-bold text-base text-white mt-0.5">Elixir de Jade</h3>
+            <p class="text-xs text-neutral-400 mt-1">Calidad élite sin límites.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Precio</span>
+              <span class="font-mono font-bold text-emerald-400">$14.20</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. CIAN SÓLIDO (#06B6D4) -->
+        <div class="relative bg-neutral-900 border border-neutral-800/80 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="absolute top-0 left-0 select-none">
+            <div class="relative">
+              <svg viewBox="0 0 130 65" class="w-36 h-auto text-[#06B6D4]" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 0 0 L 125 0 C 122 13 111 20 98 21 C 85 22 79 13 67 17 C 54 21 47 42 33 44 C 20 46 13 34 0 42 Z"/>
+              </svg>
+              <span class="absolute top-2.5 left-4 font-black text-[11px] text-black tracking-tight">
+                MAX
+              </span>
+            </div>
+          </div>
+
+          <div class="p-5 pt-14">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3">
+              ❄️
+            </div>
+            <span class="text-[11px] font-bold uppercase text-cyan-400 tracking-wider">Cian Sólido</span>
+            <h3 class="font-bold text-base text-white mt-0.5">Escarcha Cero</h3>
+            <p class="text-xs text-neutral-400 mt-1">Efecto gélido persistente.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Precio</span>
+              <span class="font-mono font-bold text-cyan-400">$21.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. PÚRPURA SÓLIDO (#A855F7) -->
+        <div class="relative bg-neutral-900 border border-neutral-800/80 rounded-3xl overflow-hidden shadow-2xl transition-all duration-200 hover:-translate-y-1">
+          <div class="absolute top-0 left-0 select-none">
+            <div class="relative">
+              <svg viewBox="0 0 130 65" class="w-36 h-auto text-[#A855F7]" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 0 0 L 125 0 C 122 13 111 20 98 21 C 85 22 79 13 67 17 C 54 21 47 42 33 44 C 20 46 13 34 0 42 Z"/>
+              </svg>
+              <span class="absolute top-2.5 left-4 font-black text-[10px] text-white tracking-tight">
+                NEW
+              </span>
+            </div>
+          </div>
+
+          <div class="p-5 pt-14">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3">
+              🔮
+            </div>
+            <span class="text-[11px] font-bold uppercase text-purple-400 tracking-wider">Púrpura Sólido</span>
+            <h3 class="font-bold text-base text-white mt-0.5">Orbe del Vacío</h3>
+            <p class="text-xs text-neutral-400 mt-1">Multiplica la generación de maná.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Precio</span>
+              <span class="font-mono font-bold text-purple-400">$29.99</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: CABECERA COMPLETA CON COLINAS DE NUBE COLGANTES -->
+    <section class="space-y-6">
+      <div class="border-b border-neutral-800 pb-3 flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-extrabold text-white">2. Cabecera Integrada (Banner con Colinas hacia Abajo)</h2>
+          <p class="text-xs text-neutral-400">
+            Toda la zona superior es de color sólido y su línea divisoria con la tarjeta son colinas redondeadas cayendo hacia adentro.
+          </p>
+        </div>
+        <span class="text-xs font-mono text-neutral-500">Borde Ondulado</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+
+        <!-- CABECERA AMARILLA -->
+        <div class="relative bg-neutral-900 border border-neutral-800/80 rounded-3xl overflow-hidden shadow-2xl">
+          <!-- Banner con colinas colgantes -->
+          <div class="relative bg-[#FACC15] text-black pt-3 pb-3 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase">⚡ SUPER RACHA</span>
+              <span class="font-mono font-bold text-xs bg-black/15 px-2 py-0.5 rounded-full">5x</span>
+            </div>
+            <!-- Divisor con colinas de nube colgando hacia abajo -->
+            <div class="absolute -bottom-3.5 left-0 right-0 leading-none overflow-hidden">
+              <svg viewBox="0 0 260 20" class="w-full h-4 text-[#FACC15]" fill="currentColor" preserveAspectRatio="none">
+                <path d="M 0 0 L 260 0 L 260 4 C 240 4 235 18 215 18 C 195 18 190 5 170 5 C 150 5 145 19 125 19 C 105 19 100 5 80 5 C 60 5 55 18 35 18 C 18 18 12 4 0 4 Z"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="p-5 pt-7">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3">
+              🛡️
+            </div>
+            <h3 class="font-bold text-base text-white">Baluarte Dorado</h3>
+            <p class="text-xs text-neutral-400 mt-1">Defensa potenciada por 45 minutos.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Estado</span>
+              <span class="text-xs font-bold text-yellow-400">Activo</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CABECERA ESMERALDA -->
+        <div class="relative bg-neutral-900 border border-neutral-800/80 rounded-3xl overflow-hidden shadow-2xl">
+          <div class="relative bg-[#10B981] text-black pt-3 pb-3 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase">🌿 RAREZA TIER S</span>
+              <span class="font-mono font-bold text-xs bg-black/15 px-2 py-0.5 rounded-full">+12</span>
+            </div>
+            <div class="absolute -bottom-3.5 left-0 right-0 leading-none overflow-hidden">
+              <svg viewBox="0 0 260 20" class="w-full h-4 text-[#10B981]" fill="currentColor" preserveAspectRatio="none">
+                <path d="M 0 0 L 260 0 L 260 4 C 240 4 235 18 215 18 C 195 18 190 5 170 5 C 150 5 145 19 125 19 C 105 19 100 5 80 5 C 60 5 55 18 35 18 C 18 18 12 4 0 4 Z"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="p-5 pt-7">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3">
+              🌱
+            </div>
+            <h3 class="font-bold text-base text-white">Semilla Mágica</h3>
+            <p class="text-xs text-neutral-400 mt-1">Cosecha instantánea sin tiempo de espera.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Estado</span>
+              <span class="text-xs font-bold text-emerald-400">Disponible</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CABECERA ROJA -->
+        <div class="relative bg-neutral-900 border border-neutral-800/80 rounded-3xl overflow-hidden shadow-2xl">
+          <div class="relative bg-[#EF4444] text-white pt-3 pb-3 px-5">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-xs tracking-wider uppercase">🔥 OFERTA CALIENTE</span>
+              <span class="font-mono font-bold text-xs bg-white/20 px-2 py-0.5 rounded-full">-50%</span>
+            </div>
+            <div class="absolute -bottom-3.5 left-0 right-0 leading-none overflow-hidden">
+              <svg viewBox="0 0 260 20" class="w-full h-4 text-[#EF4444]" fill="currentColor" preserveAspectRatio="none">
+                <path d="M 0 0 L 260 0 L 260 4 C 240 4 235 18 215 18 C 195 18 190 5 170 5 C 150 5 145 19 125 19 C 105 19 100 5 80 5 C 60 5 55 18 35 18 C 18 18 12 4 0 4 Z"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="p-5 pt-7">
+            <div class="h-28 rounded-2xl bg-neutral-950 flex items-center justify-center text-4xl mb-3">
+              🌋
+            </div>
+            <h3 class="font-bold text-base text-white">Armadura Carmesí</h3>
+            <p class="text-xs text-neutral-400 mt-1">Resistencia máxima contra fuego.</p>
+            <div class="mt-4 pt-3 border-t border-neutral-800/80 flex justify-between items-center">
+              <span class="text-xs text-neutral-500">Estado</span>
+              <span class="text-xs font-bold text-red-400">Limitado</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CÓDIGO DE INTEGRACIÓN RÁPIDA -->
+    <div class="bg-neutral-900/80 rounded-3xl p-6 border border-neutral-800 space-y-3">
+      <h3 class="font-bold text-base text-white">¿Por qué este diseño NO es flotante?</h3>
+      <p class="text-xs text-neutral-400 leading-relaxed">
+        • La tarjeta contiene <code class="text-yellow-400 font-mono">relative overflow-hidden</code>.<br>
+        • El elemento de la etiqueta se coloca en <code class="text-yellow-400 font-mono">absolute top-0 left-0</code>: esto hace que comparta exactamente las esquinas redondeadas naturales de la tarjeta.<br>
+        • Solo el <strong>borde interior</strong> que da hacia el contenido tiene la silueta de las colinas de nube hacia abajo, logrando que parezca una pieza tallada directamente dentro de la tarjeta.
+      </p>
+    </div>
+
+  </div>
+
+</body>
+</html>

@@ -21,7 +21,7 @@ export const BaseCostSummaryCards: React.FC<BaseCostSummaryCardsProps> = ({ stat
       {elements.map((el) => (
         <div
           key={el.token}
-          className="rounded-2xl bg-[#141228] p-3 shadow-lg flex items-center justify-between group hover:bg-[#191732] transition-colors"
+          className="rounded-2xl bg-[#18181c] hover:bg-[#202026] p-3 shadow-md flex items-center justify-between group transition-colors border-none"
         >
           <div className="flex items-center gap-2.5">
             <img
@@ -41,7 +41,7 @@ export const BaseCostSummaryCards: React.FC<BaseCostSummaryCardsProps> = ({ stat
       ))}
 
       {/* Overview KPI Card: Profitable ratio */}
-      <div className="rounded-2xl bg-[#141228] p-3 shadow-lg flex flex-col justify-center">
+      <div className="rounded-2xl bg-[#18181c] p-3 shadow-md flex flex-col justify-center border-none">
         <div className="text-[11px] font-medium text-slate-400 mb-1">Rentabilidad Global</div>
         <div className="flex items-center gap-2">
           <span className="font-mono text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">

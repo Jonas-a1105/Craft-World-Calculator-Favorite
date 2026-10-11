@@ -73,14 +73,10 @@ export const DiscordWebhookModal: React.FC<DiscordWebhookModalProps> = ({
       className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200"
     >
       <div className="relative w-full max-w-lg bg-[#18181b] border-none rounded-[32px] p-6 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 my-auto">
-        {/* Glow ambient background accents (Blue & Orange only) */}
-        <div className="absolute top-0 right-0 w-44 h-44 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-44 h-44 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
-
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-3 shrink-0">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0">
+            <div className="w-11 h-11 rounded-2xl bg-[#5865F2] text-white flex items-center justify-center shadow-sm shrink-0">
               <ChatDotsBoldDuotone size={22} />
             </div>
             <div>
@@ -121,7 +117,7 @@ export const DiscordWebhookModal: React.FC<DiscordWebhookModalProps> = ({
                 type="button"
                 onClick={onTestWebhook}
                 disabled={webhookStatus.loading || !webhookUrl.trim()}
-                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 disabled:opacity-40 cursor-pointer border-none active:scale-98"
+                className="px-4 py-2.5 rounded-xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm disabled:opacity-40 cursor-pointer border-none active:scale-98"
               >
                 <Plain2BoldDuotone size={14} className={webhookStatus.loading ? 'animate-pulse' : ''} />
                 <span>{webhookStatus.loading ? 'Enviando...' : 'Probar'}</span>
@@ -161,7 +157,7 @@ export const DiscordWebhookModal: React.FC<DiscordWebhookModalProps> = ({
                 onClick={() => setDiscordAlertsEnabled(!discordAlertsEnabled)}
                 className={`w-12 h-6 rounded-full transition-colors p-1 cursor-pointer flex items-center border-none ${
                   discordAlertsEnabled
-                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 justify-end'
+                    ? 'bg-[#5865F2] justify-end'
                     : 'bg-zinc-700 justify-start'
                 }`}
               >
@@ -233,7 +229,7 @@ export const DiscordWebhookModal: React.FC<DiscordWebhookModalProps> = ({
           <button
             type="button"
             onClick={handleSave}
-            className="py-2.5 px-6 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black font-extrabold text-xs transition-all shadow-md shadow-orange-500/20 cursor-pointer border-none active:scale-98"
+            className="py-2.5 px-6 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition-all shadow-sm cursor-pointer border-none active:scale-98"
           >
             Guardar Configuración
           </button>

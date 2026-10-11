@@ -7,8 +7,8 @@ export default {
       colors: {
         oled: {
           canvas: '#141415',
-          card: '#1c1c20',
-          cardInner: '#151518',
+          card: '#18181c',
+          cardInner: '#141417',
           pill: '#202024',
           pillHover: '#29292f',
           wire: '#38383e',

@@ -60,10 +60,10 @@ export const BaseCostMasterySelector: React.FC<BaseCostMasterySelectorProps> = (
         onClick={() => setIsOpen((prev) => !prev)}
         className={`group/mast flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-mono transition-all border-none outline-none cursor-pointer shadow-sm active:scale-95 ${
           isOpen
-            ? 'bg-[#22222a] text-white'
+            ? 'bg-[#202026] text-white'
             : mastery > 0
             ? 'bg-purple-500/20 text-purple-300 font-bold'
-            : 'bg-[#131316] hover:bg-[#1c1c22] text-slate-300'
+            : 'bg-[#131316] hover:bg-[#202026] text-slate-300'
         }`}
         title={`Maestría ${mastery} (+${curBonusPct}% bono de reducción)`}
         aria-expanded={isOpen}
@@ -79,7 +79,7 @@ export const BaseCostMasterySelector: React.FC<BaseCostMasterySelectorProps> = (
 
       {/* Custom Designed Mastery Window */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 z-50 w-56 p-3 rounded-2xl bg-[#16161c] shadow-2xl shadow-black/95 border-none animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 top-full mt-2 z-50 w-56 p-3 rounded-2xl bg-[#18181c] shadow-md border-none animate-in fade-in zoom-in-95 duration-150">
           {/* Header */}
           <div className="flex items-center justify-between pb-2 border-b border-white/5">
             <div>
@@ -95,7 +95,7 @@ export const BaseCostMasterySelector: React.FC<BaseCostMasterySelectorProps> = (
             <button
               type="button"
               onClick={() => handleSelect(0)}
-              className="text-[10px] font-mono px-2 py-0.5 rounded-lg bg-[#22222a] hover:bg-[#2c2c36] text-slate-400 hover:text-white transition-colors border-none cursor-pointer"
+              className="text-[10px] font-mono px-2 py-0.5 rounded-lg bg-[#202026] hover:bg-[#2c2c36] text-slate-400 hover:text-white transition-colors border-none cursor-pointer"
             >
               Reset
             </button>
@@ -109,7 +109,7 @@ export const BaseCostMasterySelector: React.FC<BaseCostMasterySelectorProps> = (
               className={`py-1 px-2 rounded-xl text-[11px] font-mono font-semibold transition-colors border-none cursor-pointer ${
                 mastery === 0
                   ? 'bg-purple-600 text-white font-bold'
-                  : 'bg-[#1c1c22] text-slate-300 hover:bg-[#262630] hover:text-white'
+                  : 'bg-[#141417] text-slate-300 hover:bg-[#202026] hover:text-white'
               }`}
             >
               M0 (0%)
@@ -120,7 +120,7 @@ export const BaseCostMasterySelector: React.FC<BaseCostMasterySelectorProps> = (
               className={`py-1 px-2 rounded-xl text-[11px] font-mono font-semibold transition-colors border-none cursor-pointer ${
                 mastery === 10
                   ? 'bg-purple-600 text-white font-bold'
-                  : 'bg-[#1c1c22] text-slate-300 hover:bg-[#262630] hover:text-white'
+                  : 'bg-[#141417] text-slate-300 hover:bg-[#202026] hover:text-white'
               }`}
             >
               M10 (+5.25%)

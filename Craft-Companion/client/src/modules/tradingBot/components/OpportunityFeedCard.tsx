@@ -7,18 +7,25 @@ import {
   CheckCircleBold,
   BoltBoldDuotone,
   BoxBold,
+  CrownBold,
+  FireBold,
+  StarBold,
 } from 'solar-icon-set';
 import { ResourceIcon } from '../../../components/GameIcon';
+import { formatCoin } from '../../baseCost/services/baseCostCalculatorService';
+import { RESOURCE_METADATA } from '../../baseCost/data/baseCostCatalog';
 import type { TradingOpportunity } from '../types';
 
 interface OpportunityFeedCardProps {
   opportunity: TradingOpportunity;
+  rank?: number;
   onSimulate: (opp: TradingOpportunity) => void;
   onSendDiscord: (opp: TradingOpportunity) => Promise<{ success: boolean; message: string }>;
 }
 
 export const OpportunityFeedCard: React.FC<OpportunityFeedCardProps> = ({
   opportunity,
+  rank,
   onSimulate,
   onSendDiscord,
 }) => {
@@ -57,11 +64,11 @@ export const OpportunityFeedCard: React.FC<OpportunityFeedCardProps> = ({
   const getTierBadge = () => {
     switch (opportunity.tier) {
       case 'S':
-        return 'bg-gradient-to-r from-amber-400 to-yellow-500 text-black font-extrabold shadow-sm';
+        return 'bg-amber-500/15 text-amber-300 font-bold';
       case 'A':
-        return 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold shadow-sm';
+        return 'bg-blue-500/15 text-cyan-300 font-semibold';
       case 'B':
-        return 'bg-[#27272a] text-zinc-300 font-semibold';
+        return 'bg-zinc-800 text-zinc-300 font-medium';
     }
   };
 
@@ -82,33 +89,86 @@ export const OpportunityFeedCard: React.FC<OpportunityFeedCardProps> = ({
     }
   };
 
+  const displayName =
+    RESOURCE_METADATA[opportunity.symbol?.toUpperCase()]?.name ||
+    RESOURCE_METADATA[opportunity.name?.toUpperCase()]?.name ||
+    (opportunity.name ? opportunity.name.charAt(0).toUpperCase() + opportunity.name.slice(1).toLowerCase() : '');
+
+  const getRankConfig = () => {
+    switch (rank) {
+      case 1:
+        return {
+          fill: '#EF4444',
+          label: '1',
+          icon: <CrownBold size={13} className="text-amber-200 shrink-0" />,
+        };
+      case 2:
+        return {
+          fill: '#F97316',
+          label: '2',
+          icon: <FireBold size={13} className="text-yellow-200 shrink-0" />,
+        };
+      case 3:
+        return {
+          fill: '#F59E0B',
+          label: '3',
+          icon: <StarBold size={13} className="text-amber-100 shrink-0" />,
+        };
+      default:
+        return null;
+    }
+  };
+
+  const rankConfig = getRankConfig();
+
   return (
-    <div className="bg-[#141416] hover:bg-[#18181c] transition-all duration-300 rounded-[32px] p-5 sm:p-6 border-none shadow-xl flex flex-col justify-between group relative overflow-hidden">
-      {/* Subtle warm glow on Tier S */}
-      {opportunity.tier === 'S' && (
-        <div className="absolute top-0 right-0 w-36 h-36 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="flex flex-col justify-between rounded-[28px] sm:rounded-[32px] bg-[#18181c] hover:bg-[#202026] p-4 sm:p-5 shadow-md transition-all duration-200 group border-none select-none relative overflow-hidden">
+      {/* Top Left Organic Pronounced Wave Ribbon Badge for Top 3 */}
+      {rankConfig && (
+        <div className="absolute top-0 left-0 z-20 pointer-events-none select-none">
+          <div className="relative">
+            <svg
+              width="108"
+              height="34"
+              viewBox="0 0 134 42"
+              fill="none"
+              className="drop-shadow-sm"
+            >
+              <path
+                d="M 0 0 L 0 30 C 10 35, 24 40, 38 40 C 52 40, 65 24, 76 11 C 85 2, 95 13, 108 14 C 118 15, 126 6, 134 0 Z"
+                fill={rankConfig.fill}
+              />
+            </svg>
+            <div className="absolute top-1.5 left-2.5 flex items-center gap-1.5 text-white font-black text-[11px] font-sans">
+              {rankConfig.icon}
+              <span className="leading-none font-black tracking-wide">{rankConfig.label}</span>
+            </div>
+          </div>
+        </div>
       )}
 
       <div>
-        {/* Top Header: Resource Logo & Game Font Title */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
+        {/* Top Header: Resource Logo, Name, Tier & Score */}
+        <div
+          className={`flex items-center justify-between gap-3 border-b border-white/5 pb-2.5 ${
+            rankConfig ? 'pt-2 sm:pt-2.5' : ''
+          }`}
+        >
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             {/* Resource Icon Avatar */}
-            <div className="w-12 h-12 rounded-2xl bg-[#1c1c20] flex items-center justify-center p-2 shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-              <ResourceIcon
-                symbol={opportunity.symbol}
-                size={32}
-                className="w-8 h-8 object-contain drop-shadow"
-              />
-            </div>
+            <ResourceIcon
+              symbol={opportunity.symbol}
+              size={34}
+              className="drop-shadow shrink-0"
+            />
 
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base sm:text-lg font-game font-impostor text-white tracking-wider uppercase">
-                  {opportunity.name}
-                </h3>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono text-sm font-bold text-slate-100 truncate">
+                  {displayName}
+                </span>
                 <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] tracking-wide uppercase ${getTierBadge()}`}
+                  className={`px-1.5 py-0.2 rounded text-[10px] font-mono uppercase font-semibold tracking-wider ${getTierBadge()}`}
                 >
                   Tier {opportunity.tier}
                 </span>
@@ -126,35 +186,32 @@ export const OpportunityFeedCard: React.FC<OpportunityFeedCardProps> = ({
 
           {/* Opportunity Score Pill */}
           <div className="text-right shrink-0">
-            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[#1c1c20] shadow-sm">
-              <span className="text-[10px] text-zinc-400 font-bold uppercase">Score</span>
-              <span className="text-xs font-black text-amber-400">
+            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-xl bg-[#141417] shadow-inner font-mono">
+              <span className="text-[10px] text-slate-400 font-semibold uppercase">Score</span>
+              <span className="text-xs font-bold text-amber-400">
                 {opportunity.score}
               </span>
-              <span className="text-[10px] text-zinc-500 font-semibold">/100</span>
+              <span className="text-[10px] text-slate-500">/100</span>
             </div>
           </div>
         </div>
 
-        {/* Financial Metrics Strip: Natural text casing, no aggressive uppercase */}
-        <div className="grid grid-cols-3 gap-2 mt-4 p-3 rounded-2xl bg-[#18181c] shadow-inner">
+        {/* Financial Metrics Strip: Identical format to BaseCost */}
+        <div className="grid grid-cols-3 items-center gap-2 mt-3.5 p-3 rounded-2xl bg-[#141417] shadow-inner font-mono text-xs">
           <div>
-            <div className="text-[11px] text-zinc-400 font-medium">Precio actual</div>
-            <div className="text-xs font-bold text-white mt-0.5">
-              {opportunity.currentPrice.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 4,
-              })}{' '}
-              <span className="text-[10px] text-amber-400 font-normal">COIN</span>
+            <div className="text-[10px] text-slate-400 uppercase tracking-tight">Precio actual</div>
+            <div className="font-semibold text-slate-200 flex items-center gap-1 mt-0.5 tabular-nums">
+              <span>{formatCoin(opportunity.currentPrice)}</span>
+              <ResourceIcon symbol="COIN" size={12} />
             </div>
           </div>
 
-          <div>
-            <div className="text-[11px] text-zinc-400 font-medium">
+          <div className="text-center">
+            <div className="text-[10px] text-slate-400 uppercase tracking-tight">
               {opportunity.type === 'CRAFT_ARBITRAGE' ? 'Margen neto' : 'Descuento'}
             </div>
             <div
-              className={`text-xs font-bold mt-0.5 ${
+              className={`font-semibold mt-0.5 tabular-nums ${
                 opportunity.potentialMarginPercent >= 0 ? 'text-emerald-400' : 'text-rose-400'
               }`}
             >
@@ -163,21 +220,21 @@ export const OpportunityFeedCard: React.FC<OpportunityFeedCardProps> = ({
             </div>
           </div>
 
-          <div>
-            <div className="text-[11px] text-zinc-400 font-medium">Ganancia por lote</div>
-            <div className="text-xs font-bold text-emerald-400 mt-0.5">
-              +{opportunity.potentialProfitCoin.toLocaleString()}{' '}
-              <span className="text-[10px] text-zinc-400 font-normal">COIN</span>
+          <div className="text-right">
+            <div className="text-[10px] text-slate-400 uppercase tracking-tight">Ganancia lote</div>
+            <div className="font-bold text-emerald-400 flex items-center justify-end gap-1 mt-0.5 tabular-nums">
+              <span>+{formatCoin(opportunity.potentialProfitCoin)}</span>
+              <ResourceIcon symbol="COIN" size={12} />
             </div>
           </div>
         </div>
 
         {/* Tactical Recommendation */}
         <div className="mt-3 space-y-1">
-          <p className="text-xs text-zinc-300 font-normal leading-relaxed">
+          <p className="text-xs text-slate-300 font-normal leading-relaxed">
             {opportunity.reason}
           </p>
-          <div className="text-[11px] text-amber-400 font-medium flex items-center gap-1.5">
+          <div className="text-[11px] text-amber-400 font-mono font-medium flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
             <span className="line-clamp-1">{opportunity.actionRecommendation}</span>
           </div>
@@ -185,8 +242,8 @@ export const OpportunityFeedCard: React.FC<OpportunityFeedCardProps> = ({
 
         {/* Ingredients preview for Craft Arbitrage */}
         {opportunity.ingredients && opportunity.ingredients.length > 0 && (
-          <div className="mt-3 pt-2.5 border-t border-zinc-800/60">
-            <div className="flex items-center gap-1.5 text-[10px] text-zinc-400 font-semibold mb-1.5">
+          <div className="mt-3 pt-2.5 border-t border-white/5">
+            <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-semibold mb-1.5 font-mono uppercase">
               <BoxBold size={12} className="text-amber-400" />
               Insumos requeridos:
             </div>
@@ -194,7 +251,7 @@ export const OpportunityFeedCard: React.FC<OpportunityFeedCardProps> = ({
               {opportunity.ingredients.map((ing) => (
                 <span
                   key={ing.symbol}
-                  className="px-2 py-0.5 rounded-xl bg-[#1c1c20] text-zinc-300 text-[10px] font-medium flex items-center gap-1.5 shadow-sm"
+                  className="px-2 py-0.5 rounded-xl bg-[#141417] text-slate-300 text-[10px] font-mono font-medium flex items-center gap-1.5 shadow-sm"
                 >
                   <ResourceIcon symbol={ing.symbol} size={14} className="w-3.5 h-3.5 object-contain" />
                   <span className="text-amber-400 font-bold">{ing.qtyNeeded}x</span>
@@ -207,12 +264,12 @@ export const OpportunityFeedCard: React.FC<OpportunityFeedCardProps> = ({
       </div>
 
       {/* Action Footer Buttons */}
-      <div className="mt-4 pt-3 border-t border-zinc-800/60 flex items-center gap-2">
+      <div className="mt-4 pt-2.5 border-t border-white/5 flex items-center gap-2">
         {/* Simulate button */}
         <button
           type="button"
           onClick={() => onSimulate(opportunity)}
-          className="flex-1 py-2 px-3 rounded-2xl bg-[#1c1c20] hover:bg-zinc-800 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 border-none shadow-md cursor-pointer hover:shadow-lg active:scale-98"
+          className="flex-1 py-2 px-3 rounded-2xl bg-[#141417] hover:bg-zinc-800 text-white font-semibold text-xs transition-all flex items-center justify-center gap-1.5 border-none shadow-sm cursor-pointer hover:shadow active:scale-98"
         >
           <CalculatorBoldDuotone size={15} className="text-amber-400" />
           <span>Simular Inversión</span>
@@ -224,7 +281,7 @@ export const OpportunityFeedCard: React.FC<OpportunityFeedCardProps> = ({
           onClick={handleDiscordClick}
           disabled={isSendingDiscord}
           title="Notificar a canal de Discord"
-          className="py-2 px-3 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 border-none shadow-md shadow-blue-500/20 cursor-pointer disabled:opacity-50 active:scale-98"
+          className="py-2 px-3 rounded-2xl bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold text-xs transition-all flex items-center justify-center gap-1.5 border-none shadow-sm cursor-pointer disabled:opacity-50 active:scale-98"
         >
           <Plain2BoldDuotone size={13} className={isSendingDiscord ? 'animate-pulse' : ''} />
           <span>{discordFeedback || (isSendingDiscord ? 'Enviando...' : 'Discord')}</span>
@@ -233,3 +290,4 @@ export const OpportunityFeedCard: React.FC<OpportunityFeedCardProps> = ({
     </div>
   );
 };
+

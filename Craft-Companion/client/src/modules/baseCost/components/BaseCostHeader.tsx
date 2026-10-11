@@ -32,7 +32,7 @@ export const BaseCostHeader: React.FC<BaseCostHeaderProps> = ({
         <h1 className="font-game text-xl sm:text-2xl md:text-3xl text-white tracking-wide uppercase drop-shadow-md">
           Base Cost Calculator
         </h1>
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#18181c] text-[11px] font-mono shadow-sm">
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#18181c] text-[11px] font-mono shadow-md border-none">
           <span className={`inline-block w-2 h-2 rounded-full ${freshnessColor} animate-pulse`} />
           <span className="text-slate-400">upd</span>
           <span className="font-semibold text-slate-200">{secondsAgo}s</span>
@@ -51,10 +51,10 @@ export const BaseCostHeader: React.FC<BaseCostHeaderProps> = ({
         <button
           onClick={onImport}
           title="Copiar niveles de fábrica y maestrías desde la tabla de precios"
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all shadow-md active:scale-95 ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all shadow-md active:scale-95 border-none cursor-pointer ${
             justImported
               ? 'bg-emerald-500/20 text-emerald-300 font-semibold'
-              : 'bg-[#18181c] text-amber-400 hover:bg-[#222228] hover:text-amber-300'
+              : 'bg-[#18181c] text-amber-400 hover:bg-[#202026] hover:text-amber-300'
           }`}
         >
           {justImported ? (
@@ -74,7 +74,7 @@ export const BaseCostHeader: React.FC<BaseCostHeaderProps> = ({
         <button
           onClick={onMaxLevels}
           title="Ajustar todas las fábricas a su nivel máximo disponible"
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-[#18181c] text-slate-300 hover:bg-[#222228] hover:text-white transition-all shadow-sm active:scale-95"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-[#18181c] text-slate-300 hover:bg-[#202026] hover:text-white transition-all shadow-md active:scale-95 border-none cursor-pointer"
         >
           <DoubleAltArrowUpBoldDuotone size={16} className="text-amber-400" />
           <span>Max Niveles</span>
@@ -84,7 +84,7 @@ export const BaseCostHeader: React.FC<BaseCostHeaderProps> = ({
         <button
           onClick={onMaxMasteries}
           title="Ajustar todas las maestrías al nivel 10 (+5.25% rendimiento)"
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-[#18181c] text-slate-300 hover:bg-[#222228] hover:text-white transition-all shadow-sm active:scale-95"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-[#18181c] text-slate-300 hover:bg-[#202026] hover:text-white transition-all shadow-md active:scale-95 border-none cursor-pointer"
         >
           <DoubleAltArrowUpBoldDuotone size={16} className="text-purple-400" />
           <span>Max Maestrías</span>
@@ -94,7 +94,7 @@ export const BaseCostHeader: React.FC<BaseCostHeaderProps> = ({
         <button
           onClick={onResetAll}
           title="Restablecer todas las fábricas a Nivel 1 y Maestrías a 0"
-          className="flex items-center justify-center p-2 rounded-xl bg-[#18181c] text-slate-400 hover:bg-rose-500/10 hover:text-rose-300 transition-all shadow-sm active:scale-95"
+          className="flex items-center justify-center p-2 rounded-xl bg-[#18181c] text-slate-400 hover:bg-rose-500/10 hover:text-rose-300 transition-all shadow-md active:scale-95 border-none cursor-pointer"
         >
           <RestartBoldDuotone size={16} />
         </button>

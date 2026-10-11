@@ -66,6 +66,10 @@ export async function fetchRoninPoolsData(): Promise<RoninPoolsDataset | null> {
   return fetchPromise;
 }
 
+export function getCachedRoninPools(): RoninPoolsDataset | null {
+  return cachedPools;
+}
+
 export function getCachedResourcePool(symbol: string): PoolResourceItem | null {
   if (!cachedPools || !cachedPools.resources) return null;
   const upper = symbol.toUpperCase();

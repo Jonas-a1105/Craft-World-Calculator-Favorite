@@ -75,14 +75,10 @@ export const WatchlistManagerModal: React.FC<WatchlistManagerModalProps> = ({
       className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200"
     >
       <div className="relative w-full max-w-lg bg-[#18181b] border-none rounded-[32px] p-6 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 my-auto">
-        {/* Glow ambient background accents (Orange and Blue only) */}
-        <div className="absolute top-0 right-0 w-44 h-44 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-44 h-44 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-3 shrink-0">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 text-black flex items-center justify-center shadow-lg shadow-orange-500/20 shrink-0">
+            <div className="w-11 h-11 rounded-2xl bg-amber-500 text-black flex items-center justify-center shadow-sm shrink-0">
               <BellBingBoldDuotone size={22} />
             </div>
             <div>
@@ -172,7 +168,7 @@ export const WatchlistManagerModal: React.FC<WatchlistManagerModalProps> = ({
             <button
               type="submit"
               disabled={!symbol.trim() || !targetValue}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black font-extrabold text-xs transition-all shadow-md shadow-orange-500/20 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer border-none active:scale-98"
+              className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer border-none active:scale-98"
             >
               + Guardar Alerta en Watchlist
             </button>

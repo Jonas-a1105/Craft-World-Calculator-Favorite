@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/queries/useCraftworldQueries';
 import { fetchRoninPoolsData, type RoninPoolsDataset } from '../../../services/roninPoolsService';
+import { DEFAULT_MARKET_PRICES } from '../../../services/priceService';
 import type { MarketPriceItem } from '../../prices/types';
 import type {
   TradingOpportunity,
@@ -63,17 +64,47 @@ export function useTradingBot() {
     };
   }, []);
 
-  // Market prices from home query
+  // Market prices unifying Katana V3 pools and home query
   const marketPrices: MarketPriceItem[] = useMemo(() => {
-    if (!home?.priceList?.prices) return [];
-    return home.priceList.prices
-      .filter((p): p is typeof p & { referenceSymbol: string } => Boolean(p.referenceSymbol))
-      .map((p) => ({
-        referenceSymbol: p.referenceSymbol,
-        amount: p.amount ?? 0,
-        recommendation: p.recommendation ?? '',
-      }));
-  }, [home]);
+    const map = new Map<string, MarketPriceItem>();
+
+    // 1. Katana V3 benchmark
+    for (const [sym, amt] of Object.entries(DEFAULT_MARKET_PRICES)) {
+      if (sym !== 'COIN') {
+        map.set(sym, { referenceSymbol: sym, amount: amt, recommendation: 'NEUTRAL' });
+      }
+    }
+
+    // 2. Katana V3 live pool dataset
+    if (poolsDataset?.resources) {
+      for (const [sym, item] of Object.entries(poolsDataset.resources)) {
+        const h = item.price1d?.history;
+        const price = h && h.length > 0 ? h[h.length - 1].price : (item.price1d?.average || 0);
+        if (price > 0) {
+          map.set(sym.toUpperCase(), {
+            referenceSymbol: sym.toUpperCase(),
+            amount: price,
+            recommendation: 'NEUTRAL',
+          });
+        }
+      }
+    }
+
+    // 3. Home prices
+    if (home?.priceList?.prices && Array.isArray(home.priceList.prices)) {
+      for (const p of home.priceList.prices) {
+        if (p.referenceSymbol && typeof p.amount === 'number' && p.amount > 0) {
+          map.set(p.referenceSymbol.toUpperCase(), {
+            referenceSymbol: p.referenceSymbol.toUpperCase(),
+            amount: p.amount,
+            recommendation: p.recommendation || 'NEUTRAL',
+          });
+        }
+      }
+    }
+
+    return Array.from(map.values());
+  }, [home, poolsDataset]);
 
   // Generate raw opportunities whenever inputs change
   const rawOpportunities = useMemo(() => {
