@@ -48,7 +48,7 @@ export const CalculatorOutputCard: React.FC<CalculatorOutputCardProps> = ({
                   {formatCycleMinutes(cycle.runtimeMinutes)}
                 </strong>
                 {isBoosted && (
-                  <span className="text-zinc-500 font-mono text-[11px] ml-1.5">
+                  <span className="text-zinc-400 font-mono text-[11px] ml-1.5">
                     ({language === 'es' ? 'base: ' : 'base: '}
                     {cycle.row.duration_raw || `${baseMinutes}m`})
                   </span>
@@ -79,7 +79,7 @@ export const CalculatorOutputCard: React.FC<CalculatorOutputCardProps> = ({
               return (
                 <span
                   key={idx}
-                  className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border ${colorClass}`}
+                  className={`text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full border ${colorClass}`}
                   title={m.detail}
                 >
                   {m.label}
@@ -91,7 +91,7 @@ export const CalculatorOutputCard: React.FC<CalculatorOutputCardProps> = ({
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-center">
           <div className="resource-item-badge p-2.5">
-            <span className="text-[10px] text-slate-400 block font-bold">
+            <span className="text-[11px] text-slate-400 block font-bold">
               {language === 'es' ? 'Por Ciclo' : 'Per Cycle'}
             </span>
             <span className="text-sm font-black text-emerald-400 flex items-center justify-center gap-1">
@@ -100,7 +100,7 @@ export const CalculatorOutputCard: React.FC<CalculatorOutputCardProps> = ({
             </span>
           </div>
           <div className="resource-item-badge p-2.5">
-            <span className="text-[10px] text-slate-400 block font-bold">
+            <span className="text-[11px] text-slate-400 block font-bold">
               {language === 'es' ? 'Por Día' : 'Per Day'}
             </span>
             <span className="text-sm font-black text-emerald-400 flex items-center justify-center gap-1">
@@ -109,26 +109,26 @@ export const CalculatorOutputCard: React.FC<CalculatorOutputCardProps> = ({
             </span>
           </div>
           <div className="resource-item-badge p-2.5">
-            <span className="text-[10px] text-slate-400 block font-bold">
+            <span className="text-[11px] text-slate-400 block font-bold">
               {language === 'es' ? 'Energía / Ciclo' : 'Power / Cycle'}
             </span>
             <span className="text-sm font-black text-amber-400 font-mono">
               {powerCost > 0 ? (
                 <span>⚡ {powerCost >= 1000 ? `${(powerCost / 1000).toFixed(0)}k` : powerCost}</span>
               ) : (
-                <span className="text-slate-500">0 ⚡</span>
+                <span className="text-slate-400">0 ⚡</span>
               )}
             </span>
           </div>
           <div className="resource-item-badge p-2.5">
-            <span className="text-[10px] text-slate-400 block font-bold">
+            <span className="text-[11px] text-slate-400 block font-bold">
               {language === 'es' ? 'XP / Ciclo' : 'XP / Cycle'}
             </span>
             <span className="text-sm font-black text-purple-400 font-mono">
               {totalXp > 0 ? (
                 <span>★ {totalXp >= 1000000 ? `${(totalXp / 1000000).toFixed(1)}M` : totalXp >= 1000 ? `${(totalXp / 1000).toFixed(0)}k` : totalXp}</span>
               ) : (
-                <span className="text-slate-500">—</span>
+                <span className="text-slate-400">—</span>
               )}
             </span>
           </div>

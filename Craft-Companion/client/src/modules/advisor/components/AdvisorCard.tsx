@@ -1,6 +1,8 @@
 import React from 'react';
 import { FactoryIcon, ResourceIcon } from '../../../components/GameIcon';
+import { getFactoryDisplayLevel } from '../../../services/craftworldCalculations';
 import { formatNumber } from '../../../utils/formatters';
+import { TermTooltip } from '../../../components/TermTooltip';
 import type { UpgradeRecommendation } from '../types';
 
 interface AdvisorCardProps {
@@ -10,10 +12,10 @@ interface AdvisorCardProps {
 
 export const AdvisorCard: React.FC<AdvisorCardProps> = ({ rec, language }) => {
   return (
-    <div className="p-5 sm:p-6 rounded-[28px] sm:rounded-[32px] bg-[#18181b] hover:bg-[#1f1f23] transition-all border-none shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-5">
+    <div className="p-5 sm:p-6 rounded-[28px] sm:rounded-[32px] bg-oled-card hover:bg-[#1f1f23] transition-all border-none shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-5">
       {/* Left: Icon + Factory Info + Level progression + Reason */}
       <div className="flex items-start sm:items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#141416] flex items-center justify-center flex-shrink-0 shadow-inner">
+        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-oled-cardInner flex items-center justify-center flex-shrink-0 shadow-inner">
           <FactoryIcon symbol={rec.row.token} size={36} />
         </div>
 
@@ -24,8 +26,8 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({ rec, language }) => {
             </h3>
 
             {/* Level Progression Pill */}
-            <span className="px-2.5 py-1 rounded-full bg-[#141416] text-zinc-200 text-xs font-mono font-bold">
-              Nv. {rec.row.level} ➔ Nv. {rec.row.level + 1}
+            <span className="px-2.5 py-1 rounded-full bg-oled-cardInner text-zinc-200 text-xs font-mono font-bold">
+              Nv. {getFactoryDisplayLevel(rec.row.level)} ➔ Nv. {getFactoryDisplayLevel(rec.row.level + 1)}
             </span>
 
             {/* Payback Days Badge */}
@@ -40,6 +42,9 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({ rec, language }) => {
                     ? `Retorno en ${formatNumber(rec.paybackDays, 1)} días`
                     : `ROI in ${formatNumber(rec.paybackDays, 1)} days`}
                 </span>
+                <TermTooltip term="payback">
+                  {language === 'es' ? '¿qué significa?' : 'what does this mean?'}
+                </TermTooltip>
               </span>
             )}
 
@@ -60,8 +65,8 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({ rec, language }) => {
       {/* Right: Metrics Block */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:flex lg:items-center gap-3 sm:gap-4 lg:gap-6 pt-3 lg:pt-0 border-t border-white/[0.04] lg:border-t-0 text-left lg:text-right flex-shrink-0">
         {/* Ganancia Extra / Día */}
-        <div className="bg-[#141416] lg:bg-transparent p-3 lg:p-0 rounded-2xl lg:rounded-none">
-          <span className="text-[10px] text-zinc-500 block uppercase font-bold tracking-wider">
+        <div className="bg-oled-cardInner lg:bg-transparent p-3 lg:p-0 rounded-2xl lg:rounded-none">
+          <span className="text-[11px] text-zinc-400 block uppercase font-bold tracking-wider">
             {language === 'es' ? 'Ganancia extra / día' : 'Extra profit / day'}
           </span>
           <div className="font-mono font-black text-sm sm:text-base flex items-baseline lg:justify-end">
@@ -74,8 +79,8 @@ export const AdvisorCard: React.FC<AdvisorCardProps> = ({ rec, language }) => {
 
         {/* Costo de Mejora */}
         {rec.upgradeCost !== null && (
-          <div className="bg-[#141416] lg:bg-transparent p-3 lg:p-0 rounded-2xl lg:rounded-none">
-            <span className="text-[10px] text-zinc-500 block uppercase font-bold tracking-wider">
+          <div className="bg-oled-cardInner lg:bg-transparent p-3 lg:p-0 rounded-2xl lg:rounded-none">
+            <span className="text-[11px] text-zinc-400 block uppercase font-bold tracking-wider">
               {language === 'es' ? 'Costo mejora' : 'Upgrade cost'}
             </span>
             <div className="font-mono font-bold text-xs sm:text-sm text-zinc-200 flex items-center lg:justify-end gap-1.5 mt-0.5">

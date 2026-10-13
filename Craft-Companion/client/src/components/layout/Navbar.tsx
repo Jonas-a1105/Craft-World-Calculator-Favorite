@@ -1,4 +1,5 @@
 import { NavbarBrand, NavbarUserDropdown, CoinPriceTicker, useNavbar } from './nav';
+import { NotificationQuickBell } from './nav/components/NotificationQuickBell';
 
 export const Navbar = () => {
   const navbarState = useNavbar();
@@ -20,8 +21,11 @@ export const Navbar = () => {
           <CoinPriceTicker />
         </div>
 
-        {/* RIGHT: Relink Button, Player Profile Avatar & Dropdown */}
-        <NavbarUserDropdown {...navbarState} />
+        {/* RIGHT: Quick cycle-alert mute bell, Relink Button, Player Profile Avatar & Dropdown */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <NotificationQuickBell />
+          <NavbarUserDropdown {...navbarState} />
+        </div>
       </div>
     </nav>
   );

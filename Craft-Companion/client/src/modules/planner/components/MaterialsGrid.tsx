@@ -15,7 +15,7 @@ export const MaterialsGrid: React.FC<MaterialsGridProps> = ({
 }) => {
   if (filteredMaterialEntries.length === 0) {
     return (
-      <div className="rounded-[32px] bg-[#18181b] border border-zinc-800/80 p-12 text-center text-zinc-500 space-y-3 shadow-xl">
+      <div className="rounded-[32px] bg-oled-card border border-zinc-800/80 p-12 text-center text-zinc-400 space-y-3 shadow-xl">
         <div className="w-14 h-14 rounded-2xl bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center mx-auto text-emerald-400">
           <CheckCircleBold className="w-7 h-7" />
         </div>

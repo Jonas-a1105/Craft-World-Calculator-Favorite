@@ -9,6 +9,7 @@ import {
   TuningBoldDuotone,
 } from 'solar-icon-set';
 import type { TradingBotConfig } from '../types';
+import { useModalA11y } from '../../../hooks/useModalA11y';
 
 interface DiscordWebhookModalProps {
   config: TradingBotConfig;
@@ -35,6 +36,7 @@ export const DiscordWebhookModal: React.FC<DiscordWebhookModalProps> = ({
   const [discordAlertsEnabled, setDiscordAlertsEnabled] = useState(config.discordAlertsEnabled);
   const [minScoreThreshold, setMinScoreThreshold] = useState(config.minScoreThreshold);
   const [autoScanIntervalSec, setAutoScanIntervalSec] = useState(config.autoScanIntervalSec);
+  const dialogRef = useModalA11y(isOpen);
 
   // Close on Escape & Lock body scroll
   useEffect(() => {
@@ -72,7 +74,13 @@ export const DiscordWebhookModal: React.FC<DiscordWebhookModalProps> = ({
       }}
       className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200"
     >
-      <div className="relative w-full max-w-lg bg-[#18181b] border-none rounded-[32px] p-6 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 my-auto">
+      <div
+        ref={dialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        className="relative w-full max-w-lg bg-oled-card border-none rounded-[32px] p-6 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 my-auto"
+      >
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-3 shrink-0">
           <div className="flex items-center gap-3.5">
@@ -101,7 +109,7 @@ export const DiscordWebhookModal: React.FC<DiscordWebhookModalProps> = ({
         {/* Scrollable Modal Content */}
         <div className="overflow-y-auto space-y-4 pr-1 py-1">
           {/* Webhook Input Card */}
-          <div className="space-y-2 bg-[#141416] p-4 rounded-2xl shadow-inner">
+          <div className="space-y-2 bg-oled-cardInner p-4 rounded-2xl shadow-inner">
             <label className="text-xs font-semibold text-zinc-300 block">
               Discord Webhook URL
             </label>
@@ -111,7 +119,7 @@ export const DiscordWebhookModal: React.FC<DiscordWebhookModalProps> = ({
                 placeholder="https://discord.com/api/webhooks/..."
                 value={webhookUrl}
                 onChange={(e) => setWebhookUrl(e.target.value)}
-                className="flex-1 bg-[#18181b] border-none rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono shadow-inner"
+                className="flex-1 bg-oled-card border-none rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono shadow-inner"
               />
               <button
                 type="button"
@@ -144,7 +152,7 @@ export const DiscordWebhookModal: React.FC<DiscordWebhookModalProps> = ({
           </div>
 
           {/* Alert Automation Controls */}
-          <div className="p-4 rounded-2xl bg-[#141416] space-y-3 shadow-inner">
+          <div className="p-4 rounded-2xl bg-oled-cardInner space-y-3 shadow-inner">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs font-bold text-white">Alertas automáticas</div>
@@ -174,7 +182,7 @@ export const DiscordWebhookModal: React.FC<DiscordWebhookModalProps> = ({
                 <select
                   value={minScoreThreshold}
                   onChange={(e) => setMinScoreThreshold(Number(e.target.value))}
-                  className="w-full bg-[#18181b] border-none rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer shadow-inner font-semibold"
+                  className="w-full bg-oled-card border-none rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer shadow-inner font-semibold"
                 >
                   <option value={0}>Todos los scores (&gt;= 0)</option>
                   <option value={70}>Score &gt;= 70 (Tier B o superior)</option>
@@ -191,7 +199,7 @@ export const DiscordWebhookModal: React.FC<DiscordWebhookModalProps> = ({
                 <select
                   value={autoScanIntervalSec}
                   onChange={(e) => setAutoScanIntervalSec(Number(e.target.value))}
-                  className="w-full bg-[#18181b] border-none rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer shadow-inner font-semibold"
+                  className="w-full bg-oled-card border-none rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer shadow-inner font-semibold"
                 >
                   <option value={30}>Cada 30 segundos</option>
                   <option value={60}>Cada 1 minuto (Recomendado)</option>
@@ -203,7 +211,7 @@ export const DiscordWebhookModal: React.FC<DiscordWebhookModalProps> = ({
           </div>
 
           {/* Discord Setup Guide */}
-          <div className="p-3.5 rounded-2xl bg-[#141416] space-y-1 text-xs text-zinc-400 shadow-inner">
+          <div className="p-3.5 rounded-2xl bg-oled-cardInner space-y-1 text-xs text-zinc-400 shadow-inner">
             <div className="font-bold text-blue-400 flex items-center gap-1.5 text-[11px]">
               <TuningBoldDuotone size={14} />
               ¿Cómo obtener el webhook de tu canal?
@@ -222,7 +230,7 @@ export const DiscordWebhookModal: React.FC<DiscordWebhookModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="py-2.5 px-5 rounded-2xl bg-[#141416] hover:bg-zinc-800 text-zinc-300 text-xs font-bold transition-all cursor-pointer border-none"
+            className="py-2.5 px-5 rounded-2xl bg-oled-cardInner hover:bg-zinc-800 text-zinc-300 text-xs font-bold transition-all cursor-pointer border-none"
           >
             Cancelar
           </button>

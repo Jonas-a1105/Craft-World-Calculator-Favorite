@@ -61,7 +61,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
   };
 
   return (
-    <div className="p-5 rounded-3xl bg-[#1c1c22] shadow-xl shadow-black/25 space-y-4 border-none outline-none select-none">
+    <div className="p-5 rounded-3xl bg-oled-850 shadow-xl shadow-black/25 space-y-4 border-none outline-none select-none">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-white/5 pb-3">
         <div>
@@ -77,7 +77,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
 
         {/* Grand Total Coin */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-[#131316] font-mono shadow-inner">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-oled-cardInner font-mono shadow-inner">
             <span className="text-xs text-slate-400 font-medium">{isEs ? 'Total:' : 'Total:'}</span>
             <span className="text-sm font-bold text-amber-300">
               {formatCoin(totalCoin)}
@@ -109,7 +109,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
 
       {/* Content */}
       {items.length === 0 ? (
-        <div className="p-6 text-center rounded-2xl bg-[#131316]">
+        <div className="p-6 text-center rounded-2xl bg-oled-cardInner">
           <p className="text-xs font-mono text-slate-400 flex items-center justify-center gap-1.5">
             <span>
               {isEs
@@ -138,7 +138,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
               {consolidated.map((c) => (
                 <div
                   key={c.token}
-                  className="p-2.5 rounded-2xl bg-[#131316] flex items-center justify-between gap-2 font-mono shadow-sm"
+                  className="p-2.5 rounded-2xl bg-oled-cardInner flex items-center justify-between gap-2 font-mono shadow-sm"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <ResourceIcon symbol={c.token} size={20} />
@@ -146,13 +146,13 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
                       <span className="text-xs font-bold text-white block truncate">
                         {formatAmount(c.totalAmount)}
                       </span>
-                      <span className="text-[10px] text-slate-400 block uppercase truncate">
+                      <span className="text-[11px] text-slate-400 block uppercase truncate">
                         {c.token}
                       </span>
                     </div>
                   </div>
                   <div className="text-right shrink-0 flex items-center gap-1">
-                    <span className="text-[10px] text-amber-300 font-bold block">
+                    <span className="text-[11px] text-amber-300 font-bold block">
                       {formatCoin(c.totalCostCoin)}
                     </span>
                     <ResourceIcon symbol="COIN" size={11} />
@@ -171,7 +171,7 @@ export const ShoppingListSection: React.FC<ShoppingListSectionProps> = ({
               {items.map((it) => (
                 <div
                   key={it.token}
-                  className="px-2.5 py-1 rounded-xl bg-[#131316] flex items-center gap-2 text-xs font-mono"
+                  className="px-2.5 py-1 rounded-xl bg-oled-cardInner flex items-center gap-2 text-xs font-mono"
                 >
                   <ResourceIcon symbol={it.token} size={15} />
                   <span className="text-white font-bold">{it.name}</span>

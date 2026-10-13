@@ -43,7 +43,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
   const isEs = language === 'es';
 
   return (
-    <div className="rounded-[32px] bg-[#18181b] hover:bg-[#1c1c20] p-5 shadow-xl transition-all duration-200 border-none select-none flex flex-col justify-between space-y-4">
+    <div className="rounded-[32px] bg-oled-card hover:bg-oled-850 p-5 shadow-xl transition-all duration-200 border-none select-none flex flex-col justify-between space-y-4">
       {/* 1. Header: Stage # + Icon + Title + Stage Badge + Status */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5 min-w-0">
@@ -62,12 +62,12 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
                 {symbol}
               </h3>
               {isTarget && (
-                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 uppercase">
+                <span className="text-[11px] font-black px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 uppercase">
                   {isEs ? 'Meta Final' : 'Final Goal'}
                 </span>
               )}
               {isRawElement && (
-                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 uppercase">
+                <span className="text-[11px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 uppercase">
                   {isEs ? 'Materia Base' : 'Raw Base'}
                 </span>
               )}
@@ -140,7 +140,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
       {/* 3. Quantities Grid Subarea */}
       <div className="bg-zinc-800/50 rounded-2xl p-3 grid grid-cols-3 gap-2 text-center text-xs">
         <div>
-          <span className="text-[10px] text-zinc-500 uppercase font-bold block">
+          <span className="text-[11px] text-zinc-400 uppercase font-bold block">
             {isEs ? 'Requerido' : 'Required'}
           </span>
           <span className="font-extrabold text-white font-mono mt-0.5 block">
@@ -149,7 +149,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
         </div>
 
         <div>
-          <span className="text-[10px] text-zinc-500 uppercase font-bold block">
+          <span className="text-[11px] text-zinc-400 uppercase font-bold block">
             {isEs ? 'En Almacén' : 'In Stock'}
           </span>
           <span className="font-extrabold text-zinc-300 font-mono mt-0.5 block">
@@ -158,7 +158,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
         </div>
 
         <div>
-          <span className="text-[10px] text-zinc-500 uppercase font-bold block">
+          <span className="text-[11px] text-zinc-400 uppercase font-bold block">
             {isEs ? 'Faltantes' : 'Missing'}
           </span>
           <span
@@ -240,7 +240,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
                 <img src="/assets/resources/Coin.png" alt="COIN" className="w-3 h-3 object-contain inline-block" />
               </span>
             </div>
-            <p className="text-[10px] text-zinc-400 font-medium italic pt-0.5">
+            <p className="text-[11px] text-zinc-400 font-medium italic pt-0.5">
               {isEs
                 ? `Vender ${inputSymbol} te da más COIN de lo que cuesta comprar ${symbol} terminado. ¡Ganas dinero sin esperar el crafteo!`
                 : `Selling ${inputSymbol} yields more COIN than buying finished ${symbol}. Save time and bank profit!`}
@@ -268,7 +268,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
                 <img src="/assets/resources/Coin.png" alt="COIN" className="w-3 h-3 object-contain inline-block" />
               </span>
             </div>
-            <p className="text-[10px] text-zinc-400 font-medium italic pt-0.5">
+            <p className="text-[11px] text-zinc-400 font-medium italic pt-0.5">
               {isEs
                 ? `No vendas ${inputSymbol}; transfórmalo en tu fábrica para evitar pagar sobreprecio en el mercado.`
                 : `Don't sell ${inputSymbol}; transform it in your factory to avoid paying market premium.`}
@@ -291,7 +291,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({
         {/* Direct Insumos consumed chips */}
         {directInputs && directInputs.length > 0 && (
           <div className="pt-1.5 border-t border-white/[0.04] flex flex-wrap items-center gap-1.5">
-            <span className="text-[10px] text-zinc-500 font-bold uppercase shrink-0">
+            <span className="text-[11px] text-zinc-400 font-bold uppercase shrink-0">
               {factoryName ? `${factoryName}:` : isEs ? 'Consume:' : 'Requires:'}
             </span>
             {directInputs.map((inp) => (

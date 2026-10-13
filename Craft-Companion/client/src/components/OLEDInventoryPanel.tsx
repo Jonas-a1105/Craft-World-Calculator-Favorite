@@ -137,7 +137,7 @@ export default function OLEDInventoryPanel({ inventory }: { inventory: ResourceA
           >
             {language === 'es' ? 'RESUMEN DE INVENTARIO' : 'INVENTORY SUMMARY'}
           </h1>
-          <span className="text-[10px] bg-white/10 text-gray-300 font-bold px-3 py-1 rounded-[16px] uppercase tracking-wider">
+          <span className="text-[11px] bg-white/10 text-gray-300 font-bold px-3 py-1 rounded-[16px] uppercase tracking-wider">
             OLED FLAT
           </span>
         </div>
@@ -230,7 +230,7 @@ export default function OLEDInventoryPanel({ inventory }: { inventory: ResourceA
       {/* Footer */}
       <div className="w-full px-6 sm:px-8 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
         <div className="text-left flex flex-col">
-          <span className="text-[9px] uppercase tracking-widest text-gray-500 font-bold leading-none">
+          <span className="text-[11px] uppercase tracking-widest text-gray-500 font-bold leading-none">
             {language === 'es' ? 'Inventario Activo' : 'Active Inventory'}
           </span>
           <div className="text-[12px] text-gray-300 font-medium mt-1">

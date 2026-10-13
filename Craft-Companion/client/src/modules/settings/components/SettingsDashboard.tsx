@@ -12,8 +12,6 @@ export const SettingsDashboard: React.FC = () => {
     user,
     status,
     clearStatus,
-    isDarkMode,
-    handleThemeToggle,
     solidBg,
     handleSolidBgToggle,
     solidColor,
@@ -46,8 +44,6 @@ export const SettingsDashboard: React.FC = () => {
 
       {/* 2. CARD: APARIENCIA & PANTALLA & IDIOMA */}
       <SettingsAppearanceCard
-        isDarkMode={isDarkMode}
-        onToggleTheme={handleThemeToggle}
         solidBg={solidBg}
         onToggleSolidBg={handleSolidBgToggle}
         solidColor={solidColor}

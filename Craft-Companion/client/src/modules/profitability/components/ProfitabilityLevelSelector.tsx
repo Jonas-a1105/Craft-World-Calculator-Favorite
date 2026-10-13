@@ -72,7 +72,7 @@ export const ProfitabilityLevelSelector: React.FC<ProfitabilityLevelSelectorProp
       <button
         type="button"
         onClick={onMaxLevel}
-        className={`w-6 h-6 rounded-full text-[10px] font-black flex items-center justify-center transition-all border-none outline-none cursor-pointer active:scale-95 ${
+        className={`w-6 h-6 rounded-full text-[11px] font-black flex items-center justify-center transition-all border-none outline-none cursor-pointer active:scale-95 ${
           level >= maxLevel
             ? 'bg-amber-500 text-black shadow-md shadow-amber-500/20'
             : 'bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-300 hover:text-white'
@@ -84,7 +84,7 @@ export const ProfitabilityLevelSelector: React.FC<ProfitabilityLevelSelectorProp
 
       {/* Styled Popover Window */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-56 bg-[#18181c]/95 backdrop-blur-xl rounded-2xl p-2.5 shadow-[0_10px_35px_rgba(0,0,0,0.6)] z-50 animate-in fade-in zoom-in-95 duration-150 border border-white/5 space-y-2">
+        <div className="absolute right-0 top-full mt-2 w-56 bg-oled-card/95 backdrop-blur-xl rounded-2xl p-2.5 shadow-[0_10px_35px_rgba(0,0,0,0.6)] z-50 animate-in fade-in zoom-in-95 duration-150 border border-white/5 space-y-2">
           {/* Quick Header */}
           <div className="flex items-center justify-between px-1 text-[11px] font-bold text-zinc-400 border-b border-zinc-800/60 pb-1.5">
             <span>Seleccionar Nivel</span>
@@ -94,7 +94,7 @@ export const ProfitabilityLevelSelector: React.FC<ProfitabilityLevelSelectorProp
                 onMaxLevel();
                 setIsOpen(false);
               }}
-              className="text-amber-400 hover:text-amber-300 font-extrabold text-[10px]"
+              className="text-amber-400 hover:text-amber-300 font-extrabold text-[11px]"
             >
               MAX (Lv. {maxLevel})
             </button>

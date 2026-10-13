@@ -43,14 +43,14 @@ export const OnchainTab: React.FC<OnchainTabProps> = ({
               <span>{language === 'es' ? 'Wallets Vinculadas' : 'Linked Wallets'}</span>
             </span>
           }
-          className="rounded-[32px] bg-[#18181b]"
+          className="rounded-[32px] bg-oled-card"
         >
           {onchain.wallets?.length ? (
             <div className="space-y-2.5">
               {onchain.wallets.map((w, i) => (
                 <div
                   key={w.address || i}
-                  className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2.5 px-4 flex items-center justify-between transition-all select-none shadow-md text-xs"
+                  className="bg-oled-pill hover:bg-[#28282e] rounded-full p-2.5 px-4 flex items-center justify-between transition-all select-none shadow-md text-xs"
                 >
                   <div className="min-w-0 pr-2">
                     <div className="flex items-center gap-2">
@@ -58,12 +58,12 @@ export const OnchainTab: React.FC<OnchainTabProps> = ({
                         {w.address.slice(0, 6)}...{w.address.slice(-4)}
                       </span>
                       {w.primary && (
-                        <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded-full border-none shrink-0">
+                        <span className="bg-emerald-500/20 text-emerald-400 text-[11px] font-black px-2 py-0.5 rounded-full border-none shrink-0">
                           PRINCIPAL
                         </span>
                       )}
                     </div>
-                    <span className="text-[10px] text-slate-400 block mt-0.5 truncate">
+                    <span className="text-[11px] text-slate-400 block mt-0.5 truncate">
                       {w.type} {w.provider ? `(${w.provider})` : ''}
                     </span>
                   </div>
@@ -99,12 +99,12 @@ export const OnchainTab: React.FC<OnchainTabProps> = ({
           }
           action={
             onchain.resourcesOnChain?.length ? (
-              <span className="text-[10px] text-slate-400 font-mono bg-white/5 px-2.5 py-0.5 rounded-full">
+              <span className="text-[11px] text-slate-400 font-mono bg-white/5 px-2.5 py-0.5 rounded-full">
                 {onchain.resourcesOnChain.length} {language === 'es' ? 'tipos' : 'types'}
               </span>
             ) : undefined
           }
-          className="rounded-[32px] bg-[#18181b]"
+          className="rounded-[32px] bg-oled-card"
         >
           {onchain.resourcesOnChain?.length ? (
             <div className="max-h-[250px] sm:max-h-[270px] overflow-y-auto pr-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 hover:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.1)_transparent]">
@@ -114,10 +114,10 @@ export const OnchainTab: React.FC<OnchainTabProps> = ({
                   return (
                     <div
                       key={r.symbol || i}
-                      className="group bg-[#202024] hover:bg-[#28282e] rounded-full p-2 sm:p-2.5 pr-3 sm:pr-3.5 flex items-center justify-between transition-all duration-200 select-none shadow-md hover:scale-[1.015]"
+                      className="group bg-oled-pill hover:bg-[#28282e] rounded-full p-2 sm:p-2.5 pr-3 sm:pr-3.5 flex items-center justify-between transition-all duration-200 select-none shadow-md hover:scale-[1.015]"
                     >
                       <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                        <div className="w-10 h-10 rounded-full bg-[#151518] flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
+                        <div className="w-10 h-10 rounded-full bg-oled-cardInner flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
                           <ResourceIcon symbol={r.symbol} size={22} />
                         </div>
 
@@ -125,7 +125,7 @@ export const OnchainTab: React.FC<OnchainTabProps> = ({
                           <h4 className="text-xs sm:text-sm font-bold text-white tracking-tight leading-tight truncate">
                             {r.symbol}
                           </h4>
-                          <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium leading-tight mt-0.5 truncate">
+                          <p className="text-[11px] sm:text-[11px] text-slate-400 font-medium leading-tight mt-0.5 truncate">
                             {hasStock
                               ? language === 'es'
                                 ? `${formatNumber(Number(r.amount))} en wallet`

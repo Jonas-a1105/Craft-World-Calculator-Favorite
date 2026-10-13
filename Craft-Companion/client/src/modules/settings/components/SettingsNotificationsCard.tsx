@@ -23,6 +23,15 @@ import {
   notifyAction,
   notifyPromise,
 } from '../../../utils/sileoNotifications';
+import {
+  useNotificationPrefs,
+  setNotificationPref,
+  snoozeNotifications,
+  snoozeNotificationsUntilEndOfDay,
+  clearSnooze,
+  isSnoozed,
+  getSnoozeRemainingMs,
+} from '../../../services/notificationPrefs';
 
 export interface SettingsNotificationsCardProps {
   notificationsEnabled: boolean;
@@ -43,7 +52,7 @@ const POSITIONS: { id: SileoPosition; labelEs: string; labelEn: string }[] = [
 ];
 
 const FILLS: { id: string; labelEs: string; labelEn: string; bg: string }[] = [
-  { id: '#18181b', labelEs: 'Obsidiana', labelEn: 'Obsidian', bg: 'bg-[#18181b]' },
+  { id: '#18181b', labelEs: 'Obsidiana', labelEn: 'Obsidian', bg: 'bg-oled-card' },
   { id: '#0f172a', labelEs: 'Pizarra', labelEn: 'Slate', bg: 'bg-[#0f172a]' },
   { id: '#064e3b', labelEs: 'Esmeralda', labelEn: 'Emerald', bg: 'bg-[#064e3b]' },
   { id: '#ffffff', labelEs: 'Blanco', labelEn: 'White', bg: 'bg-white' },
@@ -64,6 +73,10 @@ export const SettingsNotificationsCard: React.FC<SettingsNotificationsCardProps>
   language,
 }) => {
   const { config, updateConfig } = useSileoConfig();
+  const prefs = useNotificationPrefs();
+  const snoozed = isSnoozed(prefs);
+  const snoozeRemainingMs = getSnoozeRemainingMs(prefs);
+  const snoozeRemainingMin = Math.ceil(snoozeRemainingMs / 60000);
 
   const handleTestSuccess = () => {
     notifySuccess(
@@ -151,7 +164,7 @@ export const SettingsNotificationsCard: React.FC<SettingsNotificationsCardProps>
           {language === 'es' ? 'Alertas de Fábricas y Navegador' : 'Factory & Browser Alerts'}
         </span>
 
-        <div className="bg-[#18181b] rounded-[32px] shadow-xl overflow-hidden">
+        <div className="bg-oled-card rounded-[32px] shadow-xl overflow-hidden">
           {/* Row 1: Factory Cycle Toggle */}
           <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3.5 min-w-0">
@@ -174,7 +187,7 @@ export const SettingsNotificationsCard: React.FC<SettingsNotificationsCardProps>
               type="button"
               onClick={() => onToggleNotifications(!notificationsEnabled)}
               className={`w-12 h-7 rounded-full transition-colors duration-200 p-0.5 flex items-center cursor-pointer flex-shrink-0 ${
-                notificationsEnabled ? 'bg-emerald-500' : 'bg-[#27272a]'
+                notificationsEnabled ? 'bg-emerald-500' : 'bg-oled-pill'
               }`}
             >
               <div
@@ -248,10 +261,188 @@ export const SettingsNotificationsCard: React.FC<SettingsNotificationsCardProps>
             <button
               type="button"
               onClick={onTestNotification}
-              className="px-4 py-2 rounded-full bg-[#27272e] hover:bg-[#32323a] text-zinc-100 hover:text-white text-xs font-semibold cursor-pointer transition-all active:scale-95 flex-shrink-0 shadow-sm"
+              className="px-4 py-2 rounded-full bg-oled-pill hover:bg-oled-pillHover text-zinc-100 hover:text-white text-xs font-semibold cursor-pointer transition-all active:scale-95 flex-shrink-0 shadow-sm"
             >
               {language === 'es' ? 'Probar' : 'Test'}
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 1.5: Granular alert channels (QW4) */}
+      <div className="space-y-2">
+        <span className="text-[11px] font-bold text-zinc-400 tracking-wider uppercase px-4 block">
+          {language === 'es' ? 'Canales de Alerta (por separado)' : 'Alert Channels (separate)'}
+        </span>
+
+        <div className="bg-oled-card rounded-[32px] shadow-xl overflow-hidden">
+          {/* Sound channel */}
+          <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <span className="text-xs font-bold text-white block truncate">
+                {language === 'es' ? 'Campana Sonora' : 'Sound Chime'}
+              </span>
+              <span className="text-[11px] text-zinc-400 block truncate mt-0.5">
+                {language === 'es' ? 'Tono al completar un ciclo' : 'Tone when a cycle finishes'}
+              </span>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={prefs.sound}
+              aria-label={language === 'es' ? 'Campana sonora' : 'Sound chime'}
+              onClick={() => setNotificationPref('sound', !prefs.sound)}
+              className={`w-12 h-7 rounded-full transition-colors duration-200 p-0.5 flex items-center cursor-pointer flex-shrink-0 ${
+                prefs.sound ? 'bg-emerald-500' : 'bg-oled-pill'
+              }`}
+            >
+              <div
+                className={`w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-200 ${
+                  prefs.sound ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+
+          <div className="h-px bg-white/[0.04]" />
+
+          {/* In-app toast channel */}
+          <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <span className="text-xs font-bold text-white block truncate">
+                {language === 'es' ? 'Toast en Pantalla' : 'In-App Toast'}
+              </span>
+              <span className="text-[11px] text-zinc-400 block truncate mt-0.5">
+                {language === 'es'
+                  ? 'Aviso discreto dentro de la app'
+                  : 'Discreet alert inside the app'}
+              </span>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={prefs.toast}
+              aria-label={language === 'es' ? 'Toast en pantalla' : 'In-app toast'}
+              onClick={() => setNotificationPref('toast', !prefs.toast)}
+              className={`w-12 h-7 rounded-full transition-colors duration-200 p-0.5 flex items-center cursor-pointer flex-shrink-0 ${
+                prefs.toast ? 'bg-emerald-500' : 'bg-oled-pill'
+              }`}
+            >
+              <div
+                className={`w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-200 ${
+                  prefs.toast ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+
+          <div className="h-px bg-white/[0.04]" />
+
+          {/* Browser push channel */}
+          <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <span className="text-xs font-bold text-white block truncate">
+                {language === 'es' ? 'Notificación Push' : 'Browser Push'}
+              </span>
+              <span className="text-[11px] text-zinc-400 block truncate mt-0.5">
+                {language === 'es'
+                  ? 'Aviso del sistema aunque estés en otra pestaña'
+                  : 'System alert even on another tab'}
+              </span>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={prefs.push}
+              aria-label={language === 'es' ? 'Notificación push' : 'Browser push'}
+              onClick={() => setNotificationPref('push', !prefs.push)}
+              className={`w-12 h-7 rounded-full transition-colors duration-200 p-0.5 flex items-center cursor-pointer flex-shrink-0 ${
+                prefs.push ? 'bg-emerald-500' : 'bg-oled-pill'
+              }`}
+            >
+              <div
+                className={`w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-200 ${
+                  prefs.push ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+
+          <div className="h-px bg-white/[0.04]" />
+
+          {/* Volume slider */}
+          <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <span className="text-xs font-bold text-white block truncate">
+                {language === 'es' ? 'Volumen de la Campana' : 'Chime Volume'}
+              </span>
+              <div className="flex items-center gap-3 mt-2">
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={10}
+                  value={Math.round(prefs.volume * 100)}
+                  onChange={(e) =>
+                    setNotificationPref('volume', Number(e.target.value) / 100)
+                  }
+                  aria-label={language === 'es' ? 'Volumen de la campana' : 'Chime volume'}
+                  className="flex-1 accent-emerald-500 h-1.5 bg-oled-pill rounded-full appearance-none cursor-pointer"
+                />
+                <span className="text-[11px] font-mono text-zinc-300 w-10 text-right shrink-0">
+                  {Math.round(prefs.volume * 100)}%
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="h-px bg-white/[0.04]" />
+
+          {/* Snooze controls */}
+          <div className="p-4 sm:p-5 flex flex-col gap-3">
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <span className="text-xs font-bold text-white block truncate">
+                  {language === 'es' ? 'Silencio Programado' : 'Scheduled Silence'}
+                </span>
+                <span className="text-[11px] text-zinc-400 block truncate mt-0.5">
+                  {snoozed
+                    ? language === 'es'
+                      ? `Sonido y push en pausa — ${snoozeRemainingMin >= 60 ? `${Math.floor(snoozeRemainingMin / 60)}h ${snoozeRemainingMin % 60}min` : `${snoozeRemainingMin}min`} restantes`
+                      : `Sound & push paused — ${snoozeRemainingMin >= 60 ? `${Math.floor(snoozeRemainingMin / 60)}h ${snoozeRemainingMin % 60}m` : `${snoozeRemainingMin}m`} left`
+                    : language === 'es'
+                      ? 'Pausa sonido y push; el toast in-app sigue llegando'
+                      : 'Pause sound & push; in-app toast still arrives'}
+                </span>
+              </div>
+              {snoozed && (
+                <button
+                  type="button"
+                  onClick={clearSnooze}
+                  className="px-4 py-2 rounded-full bg-emerald-500/15 text-emerald-300 text-xs font-semibold cursor-pointer transition-colors hover:bg-emerald-500/25 flex-shrink-0"
+                >
+                  {language === 'es' ? 'Reactivar' : 'Resume'}
+                </button>
+              )}
+            </div>
+            {!snoozed && (
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => snoozeNotifications(60)}
+                  className="px-4 py-2 rounded-full bg-oled-pill hover:bg-oled-pillHover text-zinc-100 text-xs font-semibold cursor-pointer transition-all active:scale-95 flex-shrink-0"
+                >
+                  {language === 'es' ? 'Silenciar 1 hora' : 'Mute 1 hour'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => snoozeNotificationsUntilEndOfDay()}
+                  className="px-4 py-2 rounded-full bg-oled-pill hover:bg-oled-pillHover text-zinc-100 text-xs font-semibold cursor-pointer transition-all active:scale-95 flex-shrink-0"
+                >
+                  {language === 'es' ? 'Silenciar hasta mañana' : 'Mute until tomorrow'}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -264,13 +455,13 @@ export const SettingsNotificationsCard: React.FC<SettingsNotificationsCardProps>
               ? 'Librería Sileo Toasts (Físicas y Modos)'
               : 'Sileo Toast Engine (Physics & Modes)'}
           </span>
-          <span className="text-[10px] text-emerald-400 font-mono font-semibold flex items-center gap-1">
+          <span className="text-[11px] text-emerald-400 font-mono font-semibold flex items-center gap-1">
             <MagicStick3Bold className="w-3.5 h-3.5" />
             <span>Gooey Spring Morphing</span>
           </span>
         </div>
 
-        <div className="bg-[#18181b] rounded-[32px] shadow-xl p-5 space-y-6">
+        <div className="bg-oled-card rounded-[32px] shadow-xl p-5 space-y-6">
           {/* Position Selector */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
@@ -292,7 +483,7 @@ export const SettingsNotificationsCard: React.FC<SettingsNotificationsCardProps>
                     className={`py-2 px-3 rounded-2xl text-xs font-medium transition-all text-center flex items-center justify-center gap-1.5 ${
                       active
                         ? 'bg-emerald-500 text-zinc-950 font-bold shadow-md shadow-emerald-500/20'
-                        : 'bg-[#27272a]/70 hover:bg-[#27272a] text-zinc-300 hover:text-white'
+                        : 'bg-oled-pill/70 hover:bg-oled-pill text-zinc-300 hover:text-white'
                     }`}
                   >
                     <span>{language === 'es' ? pos.labelEs : pos.labelEn}</span>
@@ -320,7 +511,7 @@ export const SettingsNotificationsCard: React.FC<SettingsNotificationsCardProps>
                     className={`py-2 rounded-xl text-xs font-semibold capitalize transition-all ${
                       config.theme === t
                         ? 'bg-white text-zinc-950 shadow-md font-bold'
-                        : 'bg-[#27272a]/70 hover:bg-[#27272a] text-zinc-400 hover:text-white'
+                        : 'bg-oled-pill/70 hover:bg-oled-pill text-zinc-400 hover:text-white'
                     }`}
                   >
                     {t}
@@ -343,7 +534,7 @@ export const SettingsNotificationsCard: React.FC<SettingsNotificationsCardProps>
                     className={`py-2 rounded-xl text-xs font-semibold transition-all ${
                       config.roundness === opt.value
                         ? 'bg-emerald-500 text-zinc-950 font-bold shadow-md'
-                        : 'bg-[#27272a]/70 hover:bg-[#27272a] text-zinc-400 hover:text-white'
+                        : 'bg-oled-pill/70 hover:bg-oled-pill text-zinc-400 hover:text-white'
                     }`}
                   >
                     {opt.value}px
@@ -373,8 +564,8 @@ export const SettingsNotificationsCard: React.FC<SettingsNotificationsCardProps>
                     onClick={() => updateConfig({ fill: f.id })}
                     className={`py-2.5 px-3 rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
                       active
-                        ? 'ring-2 ring-emerald-400 bg-[#27272a] text-white shadow-md'
-                        : 'bg-[#202024] text-zinc-400 hover:text-white hover:bg-[#27272a]/60'
+                        ? 'ring-2 ring-emerald-400 bg-oled-pill text-white shadow-md'
+                        : 'bg-oled-pill text-zinc-400 hover:text-white hover:bg-oled-pill/60'
                     }`}
                     title={language === 'es' ? f.labelEs : f.labelEn}
                   >
@@ -389,7 +580,7 @@ export const SettingsNotificationsCard: React.FC<SettingsNotificationsCardProps>
           <div className="h-px bg-white/[0.04]" />
 
           {/* Autopilot Mode */}
-          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#202024]">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-oled-pill">
             <div className="min-w-0 pr-4">
               <span className="text-xs font-bold text-white block">
                 {language === 'es' ? 'Modo Autopilot' : 'Autopilot Mode'}
@@ -404,7 +595,7 @@ export const SettingsNotificationsCard: React.FC<SettingsNotificationsCardProps>
               type="button"
               onClick={() => updateConfig({ autopilot: !config.autopilot })}
               className={`w-12 h-7 rounded-full transition-colors p-0.5 flex items-center cursor-pointer flex-shrink-0 ${
-                config.autopilot ? 'bg-emerald-500' : 'bg-[#27272a]'
+                config.autopilot ? 'bg-emerald-500' : 'bg-oled-pill'
               }`}
             >
               <div
@@ -428,7 +619,7 @@ export const SettingsNotificationsCard: React.FC<SettingsNotificationsCardProps>
                     : 'Live Sileo Playground (All Modes)'}
                 </span>
               </label>
-              <span className="text-[10px] text-zinc-500">
+              <span className="text-[11px] text-zinc-400">
                 {language === 'es' ? 'Clic para disparar' : 'Click to trigger'}
               </span>
             </div>

@@ -55,7 +55,7 @@ export const CustomPlantLevelSelect: React.FC<CustomPlantLevelSelectProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-2xl bg-[#131316] hover:bg-[#1a1a20] active:bg-[#202028] transition-all border-none outline-none cursor-pointer shadow-inner"
+        className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-2xl bg-oled-cardInner hover:bg-[#1a1a20] active:bg-[#202028] transition-all border-none outline-none cursor-pointer shadow-inner"
         aria-expanded={isOpen}
       >
         <div className="flex items-center gap-2 min-w-0 font-mono text-xs">

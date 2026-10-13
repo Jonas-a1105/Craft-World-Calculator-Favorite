@@ -11,7 +11,8 @@
     "build": "npm run build --workspace server && npm run build --workspace client",
     "start": "node server/dist/index.js",
     "format": "prettier --write .",
-    "sync:gamedata": "node scripts/syncGameData.js"
+    "sync:gamedata": "node scripts/syncGameData.js",
+    "sync:gameconfig": "node scripts/buildGameConfigSnapshot.mjs --live"
   },
   "devDependencies": {
     "concurrently": "^9.0.1",

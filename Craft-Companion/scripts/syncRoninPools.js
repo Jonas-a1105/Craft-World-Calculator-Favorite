@@ -3,7 +3,7 @@
  * Source: https://docs.google.com/spreadsheets/d/1Vc-kQFi2cPaKj6IbG_FI78V6oDqdNKfRUXdXIzoirc0/
  */
 
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -19,7 +19,9 @@ const GIDS = {
 
 function fetchCsv(gid) {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
-  return execSync(`curl.exe -s -L "${url}"`, { maxBuffer: 15 * 1024 * 1024 }).toString('utf8');
+  // execFileSync (sin shell): los argumentos no se interpolan en una cadena de
+  // comando, eliminando el riesgo de inyección aunque la URL fuera maliciosa.
+  return execFileSync('curl.exe', ['-s', '-L', url], { maxBuffer: 15 * 1024 * 1024 }).toString('utf8');
 }
 
 function parseCsvLine(line) {

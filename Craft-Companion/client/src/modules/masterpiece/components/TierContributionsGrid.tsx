@@ -47,7 +47,7 @@ export const TierContributionsGrid: React.FC<TierContributionsGridProps> = ({
                 className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border-none ${
                   isSelected
                     ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                    : 'bg-[#22222a] text-slate-300 hover:text-white hover:bg-[#2c2c36]'
+                    : 'bg-oled-pill text-slate-300 hover:text-white hover:bg-oled-pillHover'
                 }`}
               >
                 {tier}
@@ -64,13 +64,13 @@ export const TierContributionsGrid: React.FC<TierContributionsGridProps> = ({
           return (
             <div
               key={item.symbol}
-              className={`p-4 rounded-3xl bg-[#1c1c22] hover:bg-[#23232b] transition-all border-none shadow-xl shadow-black/25 space-y-3.5 outline-none select-none ${
+              className={`p-4 rounded-3xl bg-oled-850 hover:bg-[#23232b] transition-all border-none shadow-xl shadow-black/25 space-y-3.5 outline-none select-none ${
                 isComplete ? 'bg-[#1c221e]' : ''
               }`}
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-full bg-[#131316] flex items-center justify-center shrink-0 shadow-inner">
+                  <div className="w-10 h-10 rounded-full bg-oled-cardInner flex items-center justify-center shrink-0 shadow-inner">
                     <ResourceIcon symbol={item.symbol} size={24} />
                   </div>
                   <div className="min-w-0">
@@ -87,7 +87,7 @@ export const TierContributionsGrid: React.FC<TierContributionsGridProps> = ({
                   className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-lg ${
                     isComplete
                       ? 'bg-emerald-500/20 text-emerald-300'
-                      : 'bg-[#131316] text-slate-200'
+                      : 'bg-oled-cardInner text-slate-200'
                   }`}
                 >
                   {item.percent}%
@@ -95,7 +95,7 @@ export const TierContributionsGrid: React.FC<TierContributionsGridProps> = ({
               </div>
 
               {/* Progress fraction and bar */}
-              <div className="space-y-1.5 p-2.5 rounded-2xl bg-[#131316]">
+              <div className="space-y-1.5 p-2.5 rounded-2xl bg-oled-cardInner">
                 <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-slate-400 text-[11px]">
                     {isEs ? 'Aportado:' : 'Contributed:'}
@@ -151,7 +151,7 @@ export const TierContributionsGrid: React.FC<TierContributionsGridProps> = ({
                     const val = parseInt(e.target.value, 10);
                     onUpdateContribution(item.symbol, isNaN(val) ? 0 : val);
                   }}
-                  className="w-20 px-2.5 py-1 rounded-xl bg-[#131316] text-right font-mono text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-amber-500/50 border-none shadow-inner"
+                  className="w-20 px-2.5 py-1 rounded-xl bg-oled-cardInner text-right font-mono text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-amber-500/50 border-none shadow-inner"
                 />
               </div>
             </div>

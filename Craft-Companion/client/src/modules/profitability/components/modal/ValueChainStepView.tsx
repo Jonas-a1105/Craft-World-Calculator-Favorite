@@ -4,6 +4,7 @@ import type { FactorySummary } from '../../types';
 import { useTranslation } from '../../../../utils/i18n';
 import { formatNumber } from '../../../../utils/formatters';
 import { ResourceIcon, FactoryIcon } from '../../../../components/GameIcon';
+import { getFactoryDisplayLevel } from '../../../../services/craftworldCalculations';
 
 export interface ValueChainStepViewProps {
   summary: FactorySummary;
@@ -30,8 +31,8 @@ export const ValueChainStepView: React.FC<ValueChainStepViewProps> = ({
     <div className="flex-1 overflow-y-auto min-h-0 modal-custom-scroll pr-1.5 space-y-4">
       {/* Summary Metrics Banner */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-[#141416] p-4 rounded-[28px] border-none">
-          <span className="text-[10px] font-bold text-zinc-400 uppercase block">
+        <div className="bg-oled-cardInner p-4 rounded-[28px] border-none">
+          <span className="text-[11px] font-bold text-zinc-400 uppercase block">
             {language === 'es' ? 'Insumos Base Diarios' : 'Daily Base Inputs'}
           </span>
           <div className="mt-1 flex items-center gap-1.5 text-sm font-bold text-white">
@@ -44,8 +45,8 @@ export const ValueChainStepView: React.FC<ValueChainStepViewProps> = ({
           </div>
         </div>
 
-        <div className="bg-[#141416] p-4 rounded-[28px] border-none">
-          <span className="text-[10px] font-bold text-zinc-400 uppercase block">
+        <div className="bg-oled-cardInner p-4 rounded-[28px] border-none">
+          <span className="text-[11px] font-bold text-zinc-400 uppercase block">
             {language === 'es' ? 'Venta Cruda (Tierra)' : 'Raw Sale (Earth)'}
           </span>
           <div className="mt-1 text-sm font-bold text-amber-400">
@@ -53,8 +54,8 @@ export const ValueChainStepView: React.FC<ValueChainStepViewProps> = ({
           </div>
         </div>
 
-        <div className="bg-[#141416] p-4 rounded-[28px] border-none">
-          <span className="text-[10px] font-bold text-zinc-400 uppercase block">
+        <div className="bg-oled-cardInner p-4 rounded-[28px] border-none">
+          <span className="text-[11px] font-bold text-zinc-400 uppercase block">
             {language === 'es'
               ? `Venta Procesada (${summary.token})`
               : `Processed Sale (${summary.token})`}
@@ -65,7 +66,7 @@ export const ValueChainStepView: React.FC<ValueChainStepViewProps> = ({
         </div>
 
         <div className="bg-emerald-500/10 p-4 rounded-[28px] border-none">
-          <span className="text-[10px] font-bold text-emerald-400 uppercase block">
+          <span className="text-[11px] font-bold text-emerald-400 uppercase block">
             {language === 'es' ? 'Ganancia Extra Neta' : 'Net Extra Profit'}
           </span>
           <div className="mt-1 text-sm font-black text-emerald-300">
@@ -85,11 +86,11 @@ export const ValueChainStepView: React.FC<ValueChainStepViewProps> = ({
           {analysis.steps.map((st, idx) => (
             <div
               key={st.token}
-              className="bg-[#141416] p-5 rounded-[28px] border-none relative flex flex-col justify-between"
+              className="bg-oled-cardInner p-5 rounded-[28px] border-none relative flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
+                  <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
                     {language === 'es' ? `Paso #${idx + 1}` : `Step #${idx + 1}`}
                   </span>
                   <span className="text-xs text-zinc-400 font-mono">
@@ -102,7 +103,7 @@ export const ValueChainStepView: React.FC<ValueChainStepViewProps> = ({
                   <div>
                     <h5 className="font-bold text-white text-sm">{st.token}</h5>
                     <span className="text-[11px] text-zinc-400">
-                      Nv. {st.factoryLevel}
+                      Nv. {getFactoryDisplayLevel(st.factoryLevel)}
                     </span>
                   </div>
                 </div>

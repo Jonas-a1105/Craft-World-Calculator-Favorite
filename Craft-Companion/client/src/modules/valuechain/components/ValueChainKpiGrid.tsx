@@ -26,7 +26,7 @@ export const ValueChainKpiGrid: React.FC<ValueChainKpiGridProps> = ({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Raw Insumos Required */}
-      <div className="bg-[#1c1c20] p-5 rounded-3xl border-none shadow-xl">
+      <div className="bg-oled-850 p-5 rounded-3xl border-none shadow-xl">
         <div className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
           <ArchiveBoldDuotone className="w-4 h-4 text-slate-400" />
           <span>{language === 'es' ? 'Insumos Iniciales Usados' : 'Initial Inputs Used'}</span>
@@ -47,7 +47,7 @@ export const ValueChainKpiGrid: React.FC<ValueChainKpiGridProps> = ({
             </span>
           )}
         </div>
-        <div className="text-[11px] text-slate-500 mt-2">
+        <div className="text-[11px] text-slate-400 mt-2">
           {language === 'es'
             ? 'Consumo total de tus parcelas por día'
             : 'Total daily consumption from your plots'}
@@ -55,7 +55,7 @@ export const ValueChainKpiGrid: React.FC<ValueChainKpiGridProps> = ({
       </div>
 
       {/* Raw Opportunity Value */}
-      <div className="bg-[#1c1c20] p-5 rounded-3xl border-none shadow-xl">
+      <div className="bg-oled-850 p-5 rounded-3xl border-none shadow-xl">
         <div className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
           <DollarBoldDuotone className="w-4 h-4 text-amber-400" />
           <span>{language === 'es' ? 'Valor Vendiéndolo Crudo' : 'Raw Sale Opportunity'}</span>
@@ -64,7 +64,7 @@ export const ValueChainKpiGrid: React.FC<ValueChainKpiGridProps> = ({
           {formatNumber(analysis.rawOpportunityCostDay)}{' '}
           <span className="text-xs font-bold text-amber-500/80">COIN/día</span>
         </div>
-        <div className="text-[11px] text-slate-500 mt-2">
+        <div className="text-[11px] text-slate-400 mt-2">
           {language === 'es'
             ? 'Lo que obtendrías si vendieras la Tierra sin procesar'
             : 'Revenue if selling raw earth directly'}
@@ -72,7 +72,7 @@ export const ValueChainKpiGrid: React.FC<ValueChainKpiGridProps> = ({
       </div>
 
       {/* Processed Output Revenue */}
-      <div className="bg-[#1c1c20] p-5 rounded-3xl border-none shadow-xl">
+      <div className="bg-oled-850 p-5 rounded-3xl border-none shadow-xl">
         <div className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
           <Rocket2BoldDuotone className="w-4 h-4 text-cyan-400" />
           <span>{language === 'es' ? 'Valor Vendiéndolo Procesado' : 'Processed Output Value'}</span>
@@ -81,7 +81,7 @@ export const ValueChainKpiGrid: React.FC<ValueChainKpiGridProps> = ({
           {formatNumber(analysis.finalOutputValueDay)}{' '}
           <span className="text-xs font-bold text-cyan-500/80">COIN/día</span>
         </div>
-        <div className="text-[11px] text-slate-500 mt-2">
+        <div className="text-[11px] text-slate-400 mt-2">
           {language === 'es'
             ? `Venta total del producto final ${selectedToken} (Nvl ${selectedLevel})`
             : `Total sale of finished product ${selectedToken} (Lvl ${selectedLevel})`}

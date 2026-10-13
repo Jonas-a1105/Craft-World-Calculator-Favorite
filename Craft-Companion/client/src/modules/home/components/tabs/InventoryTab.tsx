@@ -42,7 +42,7 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReautho
               <span>{language === 'es' ? 'Huevos y Cofres' : 'Eggs & Chests'}</span>
             </span>
           }
-          className="rounded-[32px] bg-[#18181b] shadow-xl border-none"
+          className="rounded-[32px] bg-oled-card shadow-xl border-none"
         >
           <div className="space-y-4 text-xs">
             <div>
@@ -51,7 +51,7 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReautho
                   {language === 'es' ? 'Huevos' : 'Eggs'}
                 </span>
                 {inventory.eggs?.length ? (
-                  <span className="text-[10px] text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded-full">
                     {totalEggs} total
                   </span>
                 ) : null}
@@ -62,7 +62,7 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReautho
                   {inventory.eggs.map((e, i) => (
                     <div
                       key={i}
-                      className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2 px-3 flex items-center justify-between transition-colors shadow-sm"
+                      className="bg-oled-pill hover:bg-[#28282e] rounded-full p-2 px-3 flex items-center justify-between transition-colors shadow-sm"
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <BoxBoldDuotone className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -87,7 +87,7 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReautho
                   {language === 'es' ? 'Cofres' : 'Chests'}
                 </span>
                 {inventory.chests?.length ? (
-                  <span className="text-[10px] text-amber-400 font-mono bg-amber-500/10 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] text-amber-400 font-mono bg-amber-500/10 px-2 py-0.5 rounded-full">
                     {totalChests} total
                   </span>
                 ) : null}
@@ -98,7 +98,7 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReautho
                   {inventory.chests.map((c, i) => (
                     <div
                       key={i}
-                      className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2 px-3 flex items-center justify-between transition-colors shadow-sm"
+                      className="bg-oled-pill hover:bg-[#28282e] rounded-full p-2 px-3 flex items-center justify-between transition-colors shadow-sm"
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <GiftBoldDuotone className="w-4 h-4 text-amber-400 shrink-0" />
@@ -129,22 +129,22 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReautho
           }
           action={
             inventory.factoryInventory?.length ? (
-              <span className="text-[10px] text-slate-400 font-mono bg-white/5 px-2 py-0.5 rounded-full">
+              <span className="text-[11px] text-slate-400 font-mono bg-white/5 px-2 py-0.5 rounded-full">
                 {inventory.factoryInventory.length} {language === 'es' ? 'fábricas' : 'factories'}
               </span>
             ) : undefined
           }
-          className="rounded-[32px] bg-[#18181b] shadow-xl border-none"
+          className="rounded-[32px] bg-oled-card shadow-xl border-none"
         >
           {inventory.factoryInventory?.length ? (
             <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 hover:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.1)_transparent]">
               {inventory.factoryInventory.map((f, i) => (
                 <div
                   key={f.id || i}
-                  className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2 px-3.5 flex justify-between items-center text-xs transition-colors shadow-sm"
+                  className="bg-oled-pill hover:bg-[#28282e] rounded-full p-2 px-3.5 flex justify-between items-center text-xs transition-colors shadow-sm"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-8 h-8 rounded-full bg-[#151518] flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-oled-cardInner flex items-center justify-center shrink-0">
                       <FactoryIcon symbol={f.definitionId} size={20} />
                     </div>
                     <span className="text-slate-200 font-bold truncate">{f.definitionId}</span>
@@ -172,19 +172,19 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({ inventory, onReautho
           }
           action={
             inventory.availableBoosters?.length ? (
-              <span className="text-[10px] text-cyan-400 font-mono bg-cyan-500/10 px-2 py-0.5 rounded-full">
+              <span className="text-[11px] text-cyan-400 font-mono bg-cyan-500/10 px-2 py-0.5 rounded-full">
                 {inventory.availableBoosters.length} {language === 'es' ? 'packs' : 'packs'}
               </span>
             ) : undefined
           }
-          className="rounded-[32px] bg-[#18181b] shadow-xl border-none"
+          className="rounded-[32px] bg-oled-card shadow-xl border-none"
         >
           {inventory.availableBoosters?.length ? (
             <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 hover:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.1)_transparent]">
               {inventory.availableBoosters.map((b, i) => (
                 <div
                   key={i}
-                  className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2 px-3.5 flex justify-between items-center text-xs transition-colors shadow-sm"
+                  className="bg-oled-pill hover:bg-[#28282e] rounded-full p-2 px-3.5 flex justify-between items-center text-xs transition-colors shadow-sm"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <BoltBoldDuotone className="w-4 h-4 text-cyan-400 shrink-0" />

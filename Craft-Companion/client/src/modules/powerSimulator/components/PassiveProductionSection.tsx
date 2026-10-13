@@ -47,7 +47,7 @@ export const PassiveProductionSection: React.FC<PassiveProductionSectionProps> =
         <h2 className="text-sm font-mono font-bold text-slate-300 tracking-wider uppercase">
           {isEs ? 'PRODUCCIÓN PASIVA' : 'PASSIVE PRODUCTION'}
         </h2>
-        <p className="text-xs font-mono text-slate-500 mt-0.5">
+        <p className="text-xs font-mono text-slate-400 mt-0.5">
           {isEs
             ? 'Plantas pasivas — sin costo de operación. Utilizadas como reducción gratuita en las secciones inferiores.'
             : 'Passive plants — no running cost. Used as a free offset in the sections below.'}
@@ -57,9 +57,9 @@ export const PassiveProductionSection: React.FC<PassiveProductionSectionProps> =
       {/* Grid of 2 Passive Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* AIRSTREAM CARD */}
-        <div className="p-4 rounded-3xl bg-[#1c1c22] shadow-xl shadow-black/25 space-y-3 border-none outline-none">
+        <div className="p-4 rounded-3xl bg-oled-850 shadow-xl shadow-black/25 space-y-3 border-none outline-none">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-[#131316] flex items-center justify-center p-1.5 shadow-inner shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-oled-cardInner flex items-center justify-center p-1.5 shadow-inner shrink-0">
               <ResourceIcon symbol="Airstream" size={26} />
             </div>
             <div className="min-w-0">
@@ -99,7 +99,7 @@ export const PassiveProductionSection: React.FC<PassiveProductionSectionProps> =
                     type="button"
                     onClick={() => onAirstreamCountChange(Math.max(1, airstream.count - 1))}
                     disabled={airstream.count <= 1}
-                    className="w-7 h-7 rounded-lg bg-[#131316] hover:bg-[#23232c] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
+                    className="w-7 h-7 rounded-lg bg-oled-cardInner hover:bg-[#23232c] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
                   >
                     -
                   </button>
@@ -110,18 +110,18 @@ export const PassiveProductionSection: React.FC<PassiveProductionSectionProps> =
                     type="button"
                     onClick={() => onAirstreamCountChange(Math.min(airMaxCount, airstream.count + 1))}
                     disabled={airstream.count >= airMaxCount}
-                    className="w-7 h-7 rounded-lg bg-[#131316] hover:bg-[#23232c] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
+                    className="w-7 h-7 rounded-lg bg-oled-cardInner hover:bg-[#23232c] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
                   >
                     +
                   </button>
-                  <span className="text-[10px] font-mono text-slate-500 ml-1">
+                  <span className="text-[11px] font-mono text-slate-400 ml-1">
                     / {airMaxCount} {isEs ? 'máx' : 'max'}
                   </span>
                 </div>
               </div>
 
               <div className="text-right">
-                <span className="text-[10px] font-mono text-slate-500 block">
+                <span className="text-[11px] font-mono text-slate-400 block">
                   {isEs ? 'Energía por hora' : 'Power per hour'}
                 </span>
                 <span className="text-base font-mono font-black text-[#38BDF8]">
@@ -133,9 +133,9 @@ export const PassiveProductionSection: React.FC<PassiveProductionSectionProps> =
         </div>
 
         {/* SUNFORGE CARD */}
-        <div className="p-4 rounded-3xl bg-[#1c1c22] shadow-xl shadow-black/25 space-y-3 border-none outline-none">
+        <div className="p-4 rounded-3xl bg-oled-850 shadow-xl shadow-black/25 space-y-3 border-none outline-none">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-[#131316] flex items-center justify-center p-1.5 shadow-inner shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-oled-cardInner flex items-center justify-center p-1.5 shadow-inner shrink-0">
               <ResourceIcon symbol="Sunforge" size={26} />
             </div>
             <div className="min-w-0">
@@ -175,7 +175,7 @@ export const PassiveProductionSection: React.FC<PassiveProductionSectionProps> =
                     type="button"
                     onClick={() => onSunforgeCountChange(Math.max(1, sunforge.count - 1))}
                     disabled={sunforge.count <= 1}
-                    className="w-7 h-7 rounded-lg bg-[#131316] hover:bg-[#23232c] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
+                    className="w-7 h-7 rounded-lg bg-oled-cardInner hover:bg-[#23232c] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
                   >
                     -
                   </button>
@@ -186,18 +186,18 @@ export const PassiveProductionSection: React.FC<PassiveProductionSectionProps> =
                     type="button"
                     onClick={() => onSunforgeCountChange(Math.min(sunMaxCount, sunforge.count + 1))}
                     disabled={sunforge.count >= sunMaxCount}
-                    className="w-7 h-7 rounded-lg bg-[#131316] hover:bg-[#23232c] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
+                    className="w-7 h-7 rounded-lg bg-oled-cardInner hover:bg-[#23232c] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
                   >
                     +
                   </button>
-                  <span className="text-[10px] font-mono text-slate-500 ml-1">
+                  <span className="text-[11px] font-mono text-slate-400 ml-1">
                     / {sunMaxCount} {isEs ? 'máx' : 'max'}
                   </span>
                 </div>
               </div>
 
               <div className="text-right">
-                <span className="text-[10px] font-mono text-slate-500 block">
+                <span className="text-[11px] font-mono text-slate-400 block">
                   {isEs ? 'Energía por hora' : 'Power per hour'}
                 </span>
                 <span className="text-base font-mono font-black text-[#38BDF8]">

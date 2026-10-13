@@ -38,7 +38,7 @@ export const ProfitabilityMobileCard: React.FC<ProfitabilityMobileCardProps> = (
   const isLoss = row.profitPerHour < 0;
 
   return (
-    <div className="w-full bg-[#18181b] rounded-[32px] p-5 shadow-xl space-y-4 select-none">
+    <div className="w-full bg-oled-card rounded-[32px] p-5 shadow-xl space-y-4 select-none">
       {/* Card Header: Avatar + Token + Star + Price + 24h Change */}
       <div className="flex items-center justify-between gap-3">
         <div
@@ -63,7 +63,7 @@ export const ProfitabilityMobileCard: React.FC<ProfitabilityMobileCardProps> = (
                 />
               )}
             </div>
-            <p className="text-[11px] text-zinc-500 capitalize truncate">
+            <p className="text-[11px] text-zinc-400 capitalize truncate">
               {row.category}
             </p>
           </div>
@@ -76,12 +76,12 @@ export const ProfitabilityMobileCard: React.FC<ProfitabilityMobileCardProps> = (
               {formatNumber(row.priceCoin, row.priceCoin < 1 ? 4 : 2)} COIN
             </div>
             <div
-              className={`text-[10px] font-semibold tabular-nums ${
+              className={`text-[11px] font-semibold tabular-nums ${
                 row.change24h > 0
                   ? 'text-emerald-400'
                   : row.change24h < 0
                     ? 'text-rose-400'
-                    : 'text-zinc-500'
+                    : 'text-zinc-400'
               }`}
             >
               {row.change24h > 0 ? '▲ ' : row.change24h < 0 ? '▼ ' : ''}
@@ -95,7 +95,7 @@ export const ProfitabilityMobileCard: React.FC<ProfitabilityMobileCardProps> = (
             className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
               isFavorite
                 ? 'bg-amber-500/20 text-amber-400'
-                : 'bg-zinc-800 text-zinc-500 hover:text-white'
+                : 'bg-zinc-800 text-zinc-400 hover:text-white'
             }`}
           >
             ★
@@ -144,7 +144,7 @@ export const ProfitabilityMobileCard: React.FC<ProfitabilityMobileCardProps> = (
             <button
               type="button"
               onClick={onSetMaxLevel}
-              className={`w-6 h-6 rounded-full text-[10px] font-black flex items-center justify-center transition-colors ${
+              className={`w-6 h-6 rounded-full text-[11px] font-black flex items-center justify-center transition-colors ${
                 row.level >= row.maxLevel
                   ? 'bg-amber-500 text-black'
                   : 'bg-zinc-700 text-zinc-300 hover:text-white'
@@ -162,7 +162,7 @@ export const ProfitabilityMobileCard: React.FC<ProfitabilityMobileCardProps> = (
               {isEs ? 'Maestría' : 'Mastery'}
             </span>
             {row.masteryReductionPercent > 0 && (
-              <span className="text-[9px] text-emerald-400 font-bold block">
+              <span className="text-[11px] text-emerald-400 font-bold block">
                 +{row.masteryReductionPercent.toFixed(2)}%
               </span>
             )}
@@ -209,7 +209,7 @@ export const ProfitabilityMobileCard: React.FC<ProfitabilityMobileCardProps> = (
       {/* Card Footer: Power & Net Profit Summary */}
       <div className="bg-black/30 p-3 rounded-2xl flex items-center justify-between">
         <div>
-          <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider block">
+          <span className="text-[11px] text-zinc-400 uppercase font-bold tracking-wider block">
             {isEs ? 'Consumo de Energía' : 'Power Consumption'}
           </span>
           <span className="text-xs font-bold text-zinc-300 tabular-nums">
@@ -218,7 +218,7 @@ export const ProfitabilityMobileCard: React.FC<ProfitabilityMobileCardProps> = (
         </div>
 
         <div className="text-right">
-          <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider block">
+          <span className="text-[11px] text-zinc-400 uppercase font-bold tracking-wider block">
             {isEs ? 'Ganancia / Hora' : 'Profit / Hour'}
           </span>
           {isActive ? (
@@ -238,7 +238,7 @@ export const ProfitabilityMobileCard: React.FC<ProfitabilityMobileCardProps> = (
               <span className="text-amber-400 text-xs">🪙</span>
             </div>
           ) : (
-            <span className="text-xs font-bold text-zinc-600">-</span>
+            <span className="text-xs font-bold text-zinc-400">-</span>
           )}
         </div>
       </div>

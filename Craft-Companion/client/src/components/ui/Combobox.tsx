@@ -86,7 +86,7 @@ export function Combobox<T extends string | number = string | number>({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`w-full flex items-center justify-between gap-2.5 bg-[#202024] hover:bg-[#28282e] text-white text-xs font-bold px-4 py-2.5 rounded-full border-none cursor-pointer transition-all focus:outline-none ${className}`}
+        className={`w-full flex items-center justify-between gap-2.5 bg-oled-pill hover:bg-[#28282e] text-white text-xs font-bold px-4 py-2.5 rounded-full border-none cursor-pointer transition-all focus:outline-none ${className}`}
       >
         <span className="truncate flex items-center gap-1.5">
           {selectedOption?.icon}
@@ -108,7 +108,7 @@ export function Combobox<T extends string | number = string | number>({
       {/* Floating Menu Popup */}
       {isOpen && (
         <div
-          className={`absolute top-full z-50 mt-1.5 bg-[#18181b] rounded-2xl shadow-2xl p-1.5 border border-white/[0.08] animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-64 overflow-hidden ${alignClasses} ${menuClassName}`}
+          className={`absolute top-full z-50 mt-1.5 bg-oled-card rounded-2xl shadow-2xl p-1.5 border border-white/[0.08] animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-64 overflow-hidden ${alignClasses} ${menuClassName}`}
           style={{
             boxShadow: '0 16px 40px -6px rgba(0, 0, 0, 0.85)',
           }}
@@ -127,14 +127,14 @@ export function Combobox<T extends string | number = string | number>({
                   }
                 }}
                 placeholder={searchPlaceholder}
-                className="w-full bg-[#121214] text-white text-xs px-3 py-1.5 rounded-xl border-none outline-none placeholder:text-zinc-500 focus:ring-1 focus:ring-sky-500/50"
+                className="w-full bg-[#121214] text-white text-xs px-3 py-1.5 rounded-xl border-none outline-none placeholder:text-zinc-400 focus:ring-1 focus:ring-sky-500/50"
                 autoFocus
               />
             </div>
           )}
           <div className="space-y-0.5 overflow-y-auto modal-custom-scroll flex-1 min-h-0">
             {filteredOptions.length === 0 ? (
-              <div className="p-3 text-center text-xs text-zinc-500">
+              <div className="p-3 text-center text-xs text-zinc-400">
                 Sin resultados
               </div>
             ) : (

@@ -3,6 +3,7 @@ import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/q
 import { useCoinLivePrice } from '../../../services/coinPriceService';
 import { fetchRoninPoolsData, type RoninPoolsDataset } from '../../../services/roninPoolsService';
 import { extractPriceMap } from '../../../services/priceService';
+import { DEFAULT_COIN_DATA } from '../../../services/coin/coinTypes';
 import { useAppStore } from '../../../store/useAppStore';
 import {
   aggregateAccountFactories,
@@ -69,12 +70,8 @@ export function useProfitabilityTable() {
     inputSupplyMode: 'market',
   });
 
-  // Sync default adBoost2x with account purchase state
-  useEffect(() => {
-    if (homeData?.purchases?.isNoAdsActive) {
-      setGlobalSettings((prev) => ({ ...prev, adBoost2x: true }));
-    }
-  }, [homeData?.purchases?.isNoAdsActive]);
+  // El paquete No-Ads NO acelera la producción (verificado en juego 2026-10-13);
+  // adBoost2x queda como simulación manual del usuario, desactivada por defecto.
 
   // Unique tokens catalog list
   const uniqueTokens = useMemo(() => {
@@ -364,7 +361,7 @@ export function useProfitabilityTable() {
 
   // Prices map from API or fallback
   const prices = useMemo(() => extractPriceMap(homeData), [homeData]);
-  const coinUsdPrice = coinData?.priceUsd || 0.0002105;
+  const coinUsdPrice = coinData?.priceUsd || DEFAULT_COIN_DATA.priceUsd;
 
   // Build full table rows
   const allTableRows = useMemo<FactoryTableRow[]>(() => {

@@ -32,7 +32,7 @@ export const PowerPacksSection: React.FC<PowerPacksSectionProps> = ({
           <h2 className="text-sm font-mono font-bold text-slate-300 tracking-wider uppercase">
             POWER PACKS
           </h2>
-          <p className="text-xs font-mono text-slate-500 mt-0.5">
+          <p className="text-xs font-mono text-slate-400 mt-0.5">
             {isEs
               ? 'Calcula tu costo diario estimado por cada 100k de Power utilizando Power Packs.'
               : 'Calculate your expected daily power cost per 100k Power with Power Packs.'}
@@ -44,7 +44,7 @@ export const PowerPacksSection: React.FC<PowerPacksSectionProps> = ({
           <span className="text-xs font-mono text-slate-400">
             {isEs ? 'Capacidad máxima' : 'Max capacity'}
           </span>
-          <div className="flex items-center gap-1 bg-[#131316] px-2.5 py-1.5 rounded-xl shadow-inner font-mono text-xs">
+          <div className="flex items-center gap-1 bg-oled-cardInner px-2.5 py-1.5 rounded-xl shadow-inner font-mono text-xs">
             <input
               type="number"
               min={100_000}
@@ -59,10 +59,10 @@ export const PowerPacksSection: React.FC<PowerPacksSectionProps> = ({
       </div>
 
       {/* 3 Pack Cards Container */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-[#1c1c22] shadow-xl shadow-black/25 space-y-4 border-none outline-none">
+      <div className="p-4 sm:p-5 rounded-3xl bg-oled-850 shadow-xl shadow-black/25 space-y-4 border-none outline-none">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* PACK +50% (FREE) */}
-          <div className="p-3.5 rounded-2xl bg-[#131316] shadow-inner space-y-2">
+          <div className="p-3.5 rounded-2xl bg-oled-cardInner shadow-inner space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-slate-300">
                 +50% pack / {isEs ? 'día' : 'day'}
@@ -72,7 +72,7 @@ export const PowerPacksSection: React.FC<PowerPacksSectionProps> = ({
                   type="button"
                   onClick={() => onPacks50Change(Math.max(0, packState.packs50PerDay - 1))}
                   disabled={packState.packs50PerDay <= 0}
-                  className="w-7 h-7 rounded-lg bg-[#1c1c22] hover:bg-[#282834] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
+                  className="w-7 h-7 rounded-lg bg-oled-850 hover:bg-[#282834] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
                 >
                   -
                 </button>
@@ -83,7 +83,7 @@ export const PowerPacksSection: React.FC<PowerPacksSectionProps> = ({
                   type="button"
                   onClick={() => onPacks50Change(Math.min(1, packState.packs50PerDay + 1))}
                   disabled={packState.packs50PerDay >= 1}
-                  className="w-7 h-7 rounded-lg bg-[#1c1c22] hover:bg-[#282834] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
+                  className="w-7 h-7 rounded-lg bg-oled-850 hover:bg-[#282834] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
                 >
                   +
                 </button>
@@ -98,7 +98,7 @@ export const PowerPacksSection: React.FC<PowerPacksSectionProps> = ({
           </div>
 
           {/* PACK +25% */}
-          <div className="p-3.5 rounded-2xl bg-[#131316] shadow-inner space-y-2">
+          <div className="p-3.5 rounded-2xl bg-oled-cardInner shadow-inner space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-slate-300">
                 +25% packs / {isEs ? 'día' : 'day'}
@@ -108,7 +108,7 @@ export const PowerPacksSection: React.FC<PowerPacksSectionProps> = ({
                   type="button"
                   onClick={() => onPacks25Change(Math.max(0, packState.packs25PerDay - 1))}
                   disabled={packState.packs25PerDay <= 0}
-                  className="w-7 h-7 rounded-lg bg-[#1c1c22] hover:bg-[#282834] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
+                  className="w-7 h-7 rounded-lg bg-oled-850 hover:bg-[#282834] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
                 >
                   -
                 </button>
@@ -118,7 +118,7 @@ export const PowerPacksSection: React.FC<PowerPacksSectionProps> = ({
                 <button
                   type="button"
                   onClick={() => onPacks25Change(packState.packs25PerDay + 1)}
-                  className="w-7 h-7 rounded-lg bg-[#1c1c22] hover:bg-[#282834] text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
+                  className="w-7 h-7 rounded-lg bg-oled-850 hover:bg-[#282834] text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
                 >
                   +
                 </button>
@@ -135,7 +135,7 @@ export const PowerPacksSection: React.FC<PowerPacksSectionProps> = ({
                 {Array.from({ length: packState.packs25PerDay }, (_, i) => (
                   <span
                     key={i}
-                    className="text-[10px] font-mono px-2 py-0.5 rounded-lg bg-[#1c1c24] text-indigo-300 font-semibold shadow-inner"
+                    className="text-[11px] font-mono px-2 py-0.5 rounded-lg bg-[#1c1c24] text-indigo-300 font-semibold shadow-inner"
                   >
                     #{i + 1}: {calculatePackStepCost(50, i + 1)} 🍃
                   </span>
@@ -145,7 +145,7 @@ export const PowerPacksSection: React.FC<PowerPacksSectionProps> = ({
           </div>
 
           {/* PACK +100% */}
-          <div className="p-3.5 rounded-2xl bg-[#131316] shadow-inner space-y-2">
+          <div className="p-3.5 rounded-2xl bg-oled-cardInner shadow-inner space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-slate-300">
                 +100% packs / {isEs ? 'día' : 'day'}
@@ -155,7 +155,7 @@ export const PowerPacksSection: React.FC<PowerPacksSectionProps> = ({
                   type="button"
                   onClick={() => onPacks100Change(Math.max(0, packState.packs100PerDay - 1))}
                   disabled={packState.packs100PerDay <= 0}
-                  className="w-7 h-7 rounded-lg bg-[#1c1c22] hover:bg-[#282834] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
+                  className="w-7 h-7 rounded-lg bg-oled-850 hover:bg-[#282834] disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
                 >
                   -
                 </button>
@@ -165,7 +165,7 @@ export const PowerPacksSection: React.FC<PowerPacksSectionProps> = ({
                 <button
                   type="button"
                   onClick={() => onPacks100Change(packState.packs100PerDay + 1)}
-                  className="w-7 h-7 rounded-lg bg-[#1c1c22] hover:bg-[#282834] text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
+                  className="w-7 h-7 rounded-lg bg-oled-850 hover:bg-[#282834] text-white font-mono font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none outline-none shadow-inner"
                 >
                   +
                 </button>
@@ -182,7 +182,7 @@ export const PowerPacksSection: React.FC<PowerPacksSectionProps> = ({
                 {Array.from({ length: packState.packs100PerDay }, (_, i) => (
                   <span
                     key={i}
-                    className="text-[10px] font-mono px-2 py-0.5 rounded-lg bg-[#1c1c24] text-indigo-300 font-semibold shadow-inner"
+                    className="text-[11px] font-mono px-2 py-0.5 rounded-lg bg-[#1c1c24] text-indigo-300 font-semibold shadow-inner"
                   >
                     #{i + 1}: {calculatePackStepCost(150, i + 1)} 🍃
                   </span>

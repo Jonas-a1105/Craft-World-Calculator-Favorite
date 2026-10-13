@@ -1,0 +1,490 @@
+{
+  "crafting": {
+    "currentRunLevel": 11,
+    "startedAt": "2026-10-12T12:35:24.302Z",
+    "claimedAt": "2026-10-12T12:35:24.989Z",
+    "unclaimedUnitsBeforeCurrentRun": 0,
+    "currentTimeReduction": 0
+  },
+  "factory": {
+    "definition": {
+      "displayName": "STEEL",
+      "experiencePerOutput": 100000,
+      "id": "STEEL",
+      "levels": [
+        {
+          "cost": [
+            {
+              "symbol": "COPPER",
+              "amount": 2,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 4.75,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 23760000.000000004,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "STEEL",
+              "amount": 3,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 4.617,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 22440000,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "STEEL",
+              "amount": 5,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 4.503,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 21450000,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "STEEL",
+              "amount": 8,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 4.4175,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 20625000,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "STEEL",
+              "amount": 11,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 4.3415,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 19965000,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "STEEL",
+              "amount": 15,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 4.275,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 19470000,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "STEEL",
+              "amount": 20,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 4.218,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 18975000,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "STEEL",
+              "amount": 26,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 4.161,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 18480000,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "STEEL",
+              "amount": 34,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 4.123,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 18150000,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "STEEL",
+              "amount": 44,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 4.0755,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 17820000,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "STEEL",
+              "amount": 56,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 4.0375,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 17556000,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "STEEL",
+              "amount": 72,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 4.009,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 17325000,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "STEEL",
+              "amount": 91,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 3.971,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 17127000,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "STEEL",
+              "amount": 115,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 3.9425,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 16929000,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "SCREWS",
+              "amount": 48,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 3.914,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 16731000.000000002,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "SCREWS",
+              "amount": 61,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 3.8855,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 16500000.000000002,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "SCREWS",
+              "amount": 76,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 3.8665,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 16335000.000000002,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "SCREWS",
+              "amount": 96,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 3.838,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 16170000.000000002,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "SCREWS",
+              "amount": 120,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 3.819,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 16005000.000000002,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        },
+        {
+          "cost": [
+            {
+              "symbol": "SCREWS",
+              "amount": 150,
+              "__typename": "Resource"
+            }
+          ],
+          "input": [
+            {
+              "symbol": "COPPER",
+              "amount": 3.8,
+              "__typename": "Resource"
+            }
+          ],
+          "millisecondsPerCompletion": 15840000.000000002,
+          "output": {
+            "symbol": "STEEL",
+            "amount": 1,
+            "__typename": "Resource"
+          },
+          "batteryCost": 5000
+        }
+      ]
+    },
+    "id": "06a3208d-a67e-7f9d-8000-18fa528b6e2a",
+    "level": 11,
+    "areaId": 5852030
+  },
+  "boosters": [
+    {
+      "boostValue": 0.5,
+      "endTime": "2026-10-13T00:35:25.522Z",
+      "startTime": "2026-10-01T11:52:17.404Z"
+    }
+  ],
+  "consumableBoosters": [],
+  "workerBoostIntervals": []
+}

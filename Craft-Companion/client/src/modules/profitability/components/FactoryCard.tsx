@@ -2,7 +2,9 @@ import React from 'react';
 import type { FactorySummary } from '../types';
 import { useTranslation } from '../../../utils/i18n';
 import { formatCompactNumber } from '../../../utils/formatters';
+import { formatRawBaseMaterials } from '../services/profitabilityFormatters';
 import { FactoryIcon } from '../../../components/GameIcon';
+import { getFactoryDisplayLevel } from '../../../services/craftworldCalculations';
 import { useAppStore } from '../../../store/useAppStore';
 
 export interface FactoryCardProps {
@@ -14,6 +16,9 @@ export const FactoryCard: React.FC<FactoryCardProps> = ({ summary, onSelect }) =
   const { language } = useTranslation();
   const isOwned = summary.ownedLevel !== null;
   const isLoss = summary.cycle.effectiveProfitPerDay < 0;
+  const rawBaseMaterialsText = summary.cycle.rawBaseMaterials
+    ? formatRawBaseMaterials(summary.cycle.rawBaseMaterials)
+    : undefined;
 
   const isFav = useAppStore((state) => state.isFavorite(summary.token));
   const toggleFavorite = useAppStore((state) => state.toggleFavorite);
@@ -21,7 +26,7 @@ export const FactoryCard: React.FC<FactoryCardProps> = ({ summary, onSelect }) =
   return (
     <div
       onClick={() => onSelect(summary.token)}
-      className={`bg-[#18181b] hover:bg-[#1f1f25] rounded-[32px] p-6 shadow-xl flex flex-col justify-between gap-5 transition-all duration-200 cursor-pointer group select-none border ${
+      className={`bg-oled-card hover:bg-[#1f1f25] rounded-[32px] p-6 shadow-xl flex flex-col justify-between gap-5 transition-all duration-200 cursor-pointer group select-none border ${
         isFav ? 'border-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.1)]' : 'border-zinc-800/60'
       }`}
     >
@@ -46,8 +51,8 @@ export const FactoryCard: React.FC<FactoryCardProps> = ({ summary, onSelect }) =
             <p className="text-xs text-zinc-400 truncate mt-0.5">
               {isOwned
                 ? language === 'es'
-                  ? `Nv. ${summary.ownedLevel} • En propiedad`
-                  : `Lv. ${summary.ownedLevel} • Owned`
+                  ? `Nv. ${getFactoryDisplayLevel(summary.ownedLevel)} • En propiedad`
+                  : `Lv. ${getFactoryDisplayLevel(summary.ownedLevel)} • Owned`
                 : language === 'es'
                   ? 'Fábrica Base • Nv. 1'
                   : 'Base Factory • Lv. 1'}
@@ -85,10 +90,10 @@ export const FactoryCard: React.FC<FactoryCardProps> = ({ summary, onSelect }) =
 
       {/* Description Paragraph */}
       <p className="text-xs text-zinc-400 leading-relaxed line-clamp-2 min-h-[34px]">
-        {summary.cycle.rawBaseMaterialsText
+        {rawBaseMaterialsText
           ? language === 'es'
-            ? `Requiere insumos: ${summary.cycle.rawBaseMaterialsText}. Genera ${summary.cycle.runsPerHour.toFixed(1)} ciclos/h.`
-            : `Inputs: ${summary.cycle.rawBaseMaterialsText}. Runs ${summary.cycle.runsPerHour.toFixed(1)} cycles/h.`
+            ? `Requiere insumos: ${rawBaseMaterialsText}. Genera ${summary.cycle.runsPerHour.toFixed(1)} ciclos/h.`
+            : `Inputs: ${rawBaseMaterialsText}. Runs ${summary.cycle.runsPerHour.toFixed(1)} cycles/h.`
           : language === 'es'
             ? `Extracción directa de ${summary.token}. Ciclo continuo de ${summary.cycle.runsPerHour.toFixed(1)} ejecuciones por hora.`
             : `Direct extraction of ${summary.token}. Produces continuously at ${summary.cycle.runsPerHour.toFixed(1)} cycles/h.`}
@@ -110,7 +115,7 @@ export const FactoryCard: React.FC<FactoryCardProps> = ({ summary, onSelect }) =
             return (
               <span
                 key={idx}
-                className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border ${colorClass}`}
+                className={`text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full border ${colorClass}`}
                 title={m.detail}
               >
                 {m.label}
@@ -131,7 +136,7 @@ export const FactoryCard: React.FC<FactoryCardProps> = ({ summary, onSelect }) =
             {summary.cycle.effectiveProfitPerHour > 0 ? '+' : ''}
             {formatCompactNumber(summary.cycle.effectiveProfitPerHour)}
           </span>
-          <span className="text-[10px] sm:text-[11px] text-zinc-400 font-medium block truncate mt-0.5">
+          <span className="text-[11px] sm:text-[11px] text-zinc-400 font-medium block truncate mt-0.5">
             {language === 'es' ? 'Ganancia/h' : 'Profit/h'}
           </span>
         </div>
@@ -145,7 +150,7 @@ export const FactoryCard: React.FC<FactoryCardProps> = ({ summary, onSelect }) =
             {summary.cycle.effectiveProfitPerDay > 0 ? '+' : ''}
             {formatCompactNumber(summary.cycle.effectiveProfitPerDay)}
           </span>
-          <span className="text-[10px] sm:text-[11px] text-zinc-400 font-medium block truncate mt-0.5">
+          <span className="text-[11px] sm:text-[11px] text-zinc-400 font-medium block truncate mt-0.5">
             {language === 'es' ? 'Ganancia/día' : 'Profit/day'}
           </span>
         </div>
@@ -154,7 +159,7 @@ export const FactoryCard: React.FC<FactoryCardProps> = ({ summary, onSelect }) =
           <span className="block font-bold text-xs sm:text-sm text-amber-400 truncate">
             {formatCompactNumber(summary.cycle.xpPerHour)}
           </span>
-          <span className="text-[10px] sm:text-[11px] text-zinc-400 font-medium block truncate mt-0.5">
+          <span className="text-[11px] sm:text-[11px] text-zinc-400 font-medium block truncate mt-0.5">
             {language === 'es' ? 'XP/h' : 'XP/h'}
           </span>
         </div>
@@ -172,7 +177,7 @@ export const FactoryCard: React.FC<FactoryCardProps> = ({ summary, onSelect }) =
               ? `${summary.cycle.marginPercent > 0 ? '+' : ''}${summary.cycle.marginPercent.toFixed(0)}%`
               : '100%'}
           </span>
-          <span className="text-[10px] sm:text-[11px] text-zinc-400 font-medium block truncate mt-0.5">
+          <span className="text-[11px] sm:text-[11px] text-zinc-400 font-medium block truncate mt-0.5">
             {language === 'es' ? 'Margen' : 'Margin'}
           </span>
         </div>

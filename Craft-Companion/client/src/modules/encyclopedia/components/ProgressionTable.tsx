@@ -13,7 +13,7 @@ export const ProgressionTable: React.FC<Props> = ({ levels }) => {
   return (
     <div className="space-y-3 mb-10 w-full min-w-0 max-w-full">
       {/* Legend */}
-      <div className="flex items-center justify-end gap-1.5 text-[10px] sm:text-[11px] text-slate-400 select-none font-mono">
+      <div className="flex items-center justify-end gap-1.5 text-[11px] sm:text-[11px] text-slate-400 select-none font-mono">
         <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block shrink-0"></span>
         <span className="text-emerald-400">
           {language === 'es'
@@ -23,7 +23,7 @@ export const ProgressionTable: React.FC<Props> = ({ levels }) => {
       </div>
 
       {/* Table container: completely rounded, no borders, soft background */}
-      <div className="w-full max-w-full overflow-x-auto rounded-[24px] sm:rounded-[28px] bg-[#18181c] shadow-2xl border-none">
+      <div className="w-full max-w-full overflow-x-auto rounded-[24px] sm:rounded-[28px] bg-oled-card shadow-2xl border-none">
         <table className="w-full min-w-[700px] text-left border-collapse border-none">
           <thead className="bg-white/[0.02] border-none text-[11px] uppercase tracking-wider text-slate-400 font-main">
             <tr>
@@ -69,7 +69,7 @@ export const ProgressionTable: React.FC<Props> = ({ levels }) => {
       </div>
 
       {/* Bottom footnote */}
-      <p className="text-[10px] sm:text-[11px] text-slate-500 font-mono px-2 select-none">
+      <p className="text-[11px] sm:text-[11px] text-slate-400 font-mono px-2 select-none">
         {language === 'es'
           ? 'Las filas resaltadas indican los niveles donde el coste de mejora cambia a un nuevo recurso.'
           : 'Highlighted rows mark levels where the upgrade cost switches to a new resource.'}

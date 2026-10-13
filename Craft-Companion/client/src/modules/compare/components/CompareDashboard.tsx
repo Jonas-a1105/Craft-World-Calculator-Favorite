@@ -56,7 +56,7 @@ export const CompareDashboard: React.FC = () => {
       />
 
       {/* Simulation Mode Toggle Bar */}
-      <div className="flex items-center justify-between bg-[#18181b] p-3 px-5 rounded-2xl shadow-md border-none">
+      <div className="flex items-center justify-between bg-oled-card p-3 px-5 rounded-2xl shadow-md border-none">
         <span className="text-xs text-zinc-400 font-medium">
           {language === 'es' ? 'Modo de Comparación:' : 'Comparison Mode:'}
         </span>
@@ -66,7 +66,7 @@ export const CompareDashboard: React.FC = () => {
           className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border-none shadow-sm ${
             withPlayerBonuses
               ? 'bg-emerald-500/20 text-emerald-300'
-              : 'bg-[#141416] text-zinc-400 hover:text-white'
+              : 'bg-oled-cardInner text-zinc-400 hover:text-white'
           }`}
         >
           {withPlayerBonuses ? (

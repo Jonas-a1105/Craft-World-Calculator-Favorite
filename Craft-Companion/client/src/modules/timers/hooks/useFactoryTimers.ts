@@ -70,14 +70,17 @@ export function useFactoryTimers() {
   }, [notifPermission, requestNotif]);
 
   const activeRuns = useMemo<ActiveRun[]>(() => {
-    return extractActiveRuns(homeData, factoryRows, language, now);
-  }, [homeData, factoryRows, language, now]);
+    // Reloj anclado al serverTime del payload: si el PC del usuario va
+    // adelantado/atrasado N minutos, los countdowns ya no se desvían N minutos.
+    return extractActiveRuns(homeData, factoryRows, language, now + serverOffset);
+  }, [homeData, factoryRows, language, now, serverOffset]);
 
   const readyCount = useMemo(() => {
+    const syncedNow = now + serverOffset;
     return activeRuns.filter((r) => {
       const runtimeSec = Math.max(1, Math.round(r.runtimeMinutes * 60));
       const startedMs = new Date(r.startedAt).getTime();
-      const elapsedSec = Math.max(0, Math.floor((now + serverOffset - startedMs) / 1000));
+      const elapsedSec = Math.max(0, Math.floor((syncedNow - startedMs) / 1000));
       return !r.isProducing && elapsedSec >= runtimeSec;
     }).length;
   }, [activeRuns, now, serverOffset]);

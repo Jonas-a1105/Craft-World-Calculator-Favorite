@@ -14,7 +14,7 @@ export const ValueChainTargetSelector: React.FC<ValueChainTargetSelectorProps> =
   language,
 }) => {
   return (
-    <div className="bg-[#1c1c20] p-4 rounded-3xl border-none">
+    <div className="bg-oled-850 p-4 rounded-3xl border-none">
       <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
         {language === 'es'
           ? 'Selecciona el Producto Terminado a Simular:'
@@ -31,12 +31,12 @@ export const ValueChainTargetSelector: React.FC<ValueChainTargetSelectorProps> =
               className={`flex flex-col items-center justify-center p-3 rounded-2xl border-none transition-all ${
                 isSelected
                   ? 'bg-gradient-to-b from-cyan-950/80 to-[#151518] text-white shadow-xl scale-105'
-                  : 'bg-[#151518] text-slate-400 hover:bg-[#202024] hover:text-slate-200'
+                  : 'bg-oled-cardInner text-slate-400 hover:bg-oled-pill hover:text-slate-200'
               }`}
             >
               <ResourceIcon symbol={t.token} className="w-8 h-8 mb-1.5 drop-shadow-md" />
               <span className="text-xs font-black tracking-tight">{t.token}</span>
-              <span className="text-[10px] opacity-75 font-medium">{t.label}</span>
+              <span className="text-[11px] opacity-75 font-medium">{t.label}</span>
             </button>
           );
         })}

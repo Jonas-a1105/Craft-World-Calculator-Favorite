@@ -3,8 +3,18 @@ import type { FactoryCycleResult } from '../../services/craftworldCalculations';
 import type { ValueChainAnalysis } from '../../services/valueChainCalculator';
 import type { WorkshopItem } from '../../services/workshopModifiers';
 import type { ProficiencyItem } from '../../services/masteryModifiers';
+import type { FactoryBoost } from '../../services/factoryBoostModifiers';
 
 export type FilterMode = 'all' | 'owned' | 'profitable' | 'loss';
+
+/**
+ * Material base puro requerido por ciclo (dato de dominio, sin formato de UI).
+ * El texto legible se construye en profitabilityFormatters (borde de la UI).
+ */
+export interface RawBaseMaterial {
+  token: string;
+  amountPerCycle: number;
+}
 
 export type SortByOption =
   | 'profit_hour'
@@ -22,7 +32,12 @@ export interface AdjustedCycleResult extends FactoryCycleResult {
   effectiveProfitPerCycle: number;
   effectiveProfitPerHour: number;
   effectiveProfitPerDay: number;
-  rawBaseMaterialsText?: string;
+  /**
+   * Materiales base requeridos por ciclo (modo self_crafted).
+   * Datos puros: el formateo a texto legible es responsabilidad de la
+   * capa de presentación (profitabilityFormatters).
+   */
+  rawBaseMaterials?: RawBaseMaterial[];
 }
 
 export type SimulationMode = 'base' | 'active_owned' | 'projected';
@@ -45,7 +60,7 @@ export interface FactorySummary {
 export interface ProfitabilityContext {
   workshop: WorkshopItem[];
   proficiencies: ProficiencyItem[];
-  activeBoosts: Array<{ boostValue: number }>;
+  activeBoosts: FactoryBoost[];
   manualBoostMultiplier?: number;
   workersPercent?: number;
 }

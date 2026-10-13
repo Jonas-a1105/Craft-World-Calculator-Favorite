@@ -10,7 +10,7 @@ import {
 
 interface CoinConverterTabProps {
   marketData?: CoinMarketData | null;
-  basePrice: number;
+  basePrice: number | null;
 }
 
 export const CoinConverterTab: React.FC<CoinConverterTabProps> = ({ marketData, basePrice }) => {
@@ -19,14 +19,17 @@ export const CoinConverterTab: React.FC<CoinConverterTabProps> = ({ marketData, 
   const [toCurrency, setToCurrency] = useState<EcosystemCurrency>('USD');
 
   const numericAmount = parseFloat(convertAmount) || 0;
+  const hasRates = Boolean(marketData && marketData.priceUsd > 0);
+  // Sin tasas reales no convertimos (nunca con un benchmark silencioso).
   const convertedResult = useMemo(() => {
+    if (!hasRates) return null;
     return convertEcosystemCurrency(numericAmount, fromCurrency, toCurrency, marketData);
-  }, [numericAmount, fromCurrency, toCurrency, marketData]);
+  }, [numericAmount, fromCurrency, toCurrency, marketData, hasRates]);
 
   const handleSwapCurrencies = () => {
     setFromCurrency(toCurrency);
     setToCurrency(fromCurrency);
-    if (convertedResult > 0) {
+    if (convertedResult != null && convertedResult > 0) {
       setConvertAmount(
         toCurrency === 'COIN'
           ? Math.round(convertedResult).toString()
@@ -38,21 +41,21 @@ export const CoinConverterTab: React.FC<CoinConverterTabProps> = ({ marketData, 
   };
 
   return (
-    <div className="bg-[#1c1c21] rounded-2xl p-4 sm:p-5 space-y-4 animate-in fade-in duration-150 overflow-hidden">
+    <div className="bg-oled-850 rounded-2xl p-4 sm:p-5 space-y-4 animate-in fade-in duration-150 overflow-hidden">
       {/* Top Header of Converter */}
       <div className="flex items-center justify-between">
         <span className="text-xs font-bold text-zinc-200 tracking-wide uppercase">
           Conversor del Ecosistema Ronin
         </span>
         <span className="text-[11px] text-zinc-400 font-mono">
-          1 COIN ≈ {formatCoinPrice(basePrice)}
+          1 COIN ≈ {basePrice != null ? formatCoinPrice(basePrice) : '—'}
         </span>
       </div>
 
       {/* Symmetrical Dual Conversion Cards */}
       <div className="flex flex-col sm:flex-row sm:items-stretch gap-2.5 sm:gap-3 w-full min-w-0">
         {/* Card De (From) */}
-        <div className="flex-1 w-full min-w-0 bg-[#141416] p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between gap-2.5 overflow-hidden">
+        <div className="flex-1 w-full min-w-0 bg-oled-cardInner p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between gap-2.5 overflow-hidden">
           <div className="flex items-center justify-between gap-2 min-w-0">
             <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider shrink-0 w-7">
               De:
@@ -94,7 +97,7 @@ export const CoinConverterTab: React.FC<CoinConverterTabProps> = ({ marketData, 
             type="button"
             onClick={handleSwapCurrencies}
             title="Invertir dirección de conversión"
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#24252e] hover:bg-[#2e303a] active:scale-95 text-amber-400 flex items-center justify-center transition-all cursor-pointer border-0 outline-none shadow-sm"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-oled-pill hover:bg-oled-pillHover active:scale-95 text-amber-400 flex items-center justify-center transition-all cursor-pointer border-0 outline-none shadow-sm"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -108,7 +111,7 @@ export const CoinConverterTab: React.FC<CoinConverterTabProps> = ({ marketData, 
         </div>
 
         {/* Card A (To) */}
-        <div className="flex-1 w-full min-w-0 bg-[#141416] p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between gap-2.5 overflow-hidden">
+        <div className="flex-1 w-full min-w-0 bg-oled-cardInner p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between gap-2.5 overflow-hidden">
           <div className="flex items-center justify-between gap-2 min-w-0">
             <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider shrink-0 w-7">
               A:
@@ -133,8 +136,12 @@ export const CoinConverterTab: React.FC<CoinConverterTabProps> = ({ marketData, 
               })}
             </div>
           </div>
-          <div className="w-full bg-transparent text-2xl sm:text-3xl font-mono font-bold text-amber-400 truncate flex items-center min-w-0 h-9 sm:h-10 leading-none">
-            {formatCurrencyAmount(convertedResult, toCurrency)}
+          <div
+            className={`w-full bg-transparent text-2xl sm:text-3xl font-mono font-bold truncate flex items-center min-w-0 h-9 sm:h-10 leading-none ${
+              convertedResult != null ? 'text-amber-400' : 'text-zinc-400'
+            }`}
+          >
+            {convertedResult != null ? formatCurrencyAmount(convertedResult, toCurrency) : '—'}
           </div>
         </div>
       </div>
@@ -144,7 +151,7 @@ export const CoinConverterTab: React.FC<CoinConverterTabProps> = ({ marketData, 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           {/* Quick Amount Presets */}
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] text-zinc-500 font-medium mr-1">Rápido:</span>
+            <span className="text-[11px] text-zinc-400 font-medium mr-1">Rápido:</span>
             {(fromCurrency === 'COIN'
               ? ['1000', '10000', '50000', '100000']
               : ['1', '10', '50', '100']
@@ -153,7 +160,7 @@ export const CoinConverterTab: React.FC<CoinConverterTabProps> = ({ marketData, 
                 key={preset}
                 type="button"
                 onClick={() => setConvertAmount(preset)}
-                className="px-2.5 py-1 rounded-lg bg-[#24252e] hover:bg-[#2d2f3a] text-xs font-mono font-medium text-zinc-300 hover:text-white transition-colors border-0 outline-none cursor-pointer"
+                className="px-2.5 py-1 rounded-lg bg-oled-pill hover:bg-oled-pillHover text-xs font-mono font-medium text-zinc-300 hover:text-white transition-colors border-0 outline-none cursor-pointer"
               >
                 +{Number(preset).toLocaleString('en-US')}
               </button>
@@ -161,7 +168,7 @@ export const CoinConverterTab: React.FC<CoinConverterTabProps> = ({ marketData, 
             <button
               type="button"
               onClick={() => setConvertAmount('0')}
-              className="px-2.5 py-1 rounded-lg bg-[#24252e] hover:bg-[#2d2f3a] text-xs font-mono font-medium text-zinc-400 hover:text-rose-400 transition-colors border-0 outline-none cursor-pointer"
+              className="px-2.5 py-1 rounded-lg bg-oled-pill hover:bg-oled-pillHover text-xs font-mono font-medium text-zinc-400 hover:text-rose-400 transition-colors border-0 outline-none cursor-pointer"
             >
               Limpiar
             </button>
@@ -170,12 +177,14 @@ export const CoinConverterTab: React.FC<CoinConverterTabProps> = ({ marketData, 
           {/* 1 RON Reference - Strictly Pinned to the Right */}
           <div className="text-xs font-mono text-zinc-400 flex items-center justify-end self-end sm:self-auto shrink-0 ml-auto">
             <span>1 RON ≈&nbsp;</span>
-            <span className="text-white font-semibold">
-              {(marketData?.ronInCoin ?? 295.03).toFixed(1)} COIN
+            <span className={`font-semibold ${hasRates ? 'text-white' : 'text-zinc-400'}`}>
+              {hasRates && marketData!.ronInCoin > 0 ? `${marketData!.ronInCoin.toFixed(1)} COIN` : '—'}
             </span>
-            <span className="text-zinc-500 ml-1.5">
-              (${marketData?.quotePriceUsd?.toFixed(4) ?? '0.0633'})
-            </span>
+            {hasRates && marketData!.quotePriceUsd > 0 && (
+              <span className="text-zinc-400 ml-1.5">
+                (${marketData!.quotePriceUsd.toFixed(4)})
+              </span>
+            )}
           </div>
         </div>
       </div>

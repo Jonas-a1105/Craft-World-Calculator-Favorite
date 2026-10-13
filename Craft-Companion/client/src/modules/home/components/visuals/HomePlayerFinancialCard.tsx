@@ -80,7 +80,7 @@ export const HomePlayerFinancialCard: React.FC<HomePlayerFinancialCardProps> = (
   };
 
   return (
-    <div className="w-full bg-[#18181b] rounded-[34px] p-5 sm:p-7 shadow-2xl relative overflow-hidden select-none border-none space-y-6">
+    <div className="w-full bg-oled-card rounded-[34px] p-5 sm:p-7 shadow-2xl relative overflow-hidden select-none border-none space-y-6">
       {/* Ambient Radial Depth Glows */}
       <div className="absolute -top-36 -left-36 w-96 h-96 bg-purple-900/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-36 -right-36 w-96 h-96 bg-fuchsia-900/10 rounded-full blur-3xl pointer-events-none" />
@@ -90,7 +90,7 @@ export const HomePlayerFinancialCard: React.FC<HomePlayerFinancialCardProps> = (
         <button
           type="button"
           onClick={() => setActiveCategory('factories')}
-          className={`category-ring ${activeCategory === 'factories' ? 'active' : ''} w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-[#141416] text-white shrink-0 cursor-pointer border-none shadow-sm transition-transform hover:scale-105`}
+          className={`category-ring ${activeCategory === 'factories' ? 'active' : ''} w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-oled-cardInner text-white shrink-0 cursor-pointer border-none shadow-sm transition-transform hover:scale-105`}
           title={isEs ? 'Fábricas' : 'Factories'}
         >
           <Buildings2BoldDuotone className="w-5 h-5 text-fuchsia-300" />
@@ -99,7 +99,7 @@ export const HomePlayerFinancialCard: React.FC<HomePlayerFinancialCardProps> = (
         <button
           type="button"
           onClick={() => setActiveCategory('mines')}
-          className={`category-ring ${activeCategory === 'mines' ? 'active' : ''} w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-[#141416] text-white shrink-0 cursor-pointer border-none shadow-sm transition-transform hover:scale-105`}
+          className={`category-ring ${activeCategory === 'mines' ? 'active' : ''} w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-oled-cardInner text-white shrink-0 cursor-pointer border-none shadow-sm transition-transform hover:scale-105`}
           title={isEs ? 'Minas & Energía' : 'Mines & Power'}
         >
           <BoltBoldDuotone className="w-5 h-5 text-fuchsia-300" />
@@ -108,7 +108,7 @@ export const HomePlayerFinancialCard: React.FC<HomePlayerFinancialCardProps> = (
         <button
           type="button"
           onClick={() => setActiveCategory('market')}
-          className={`category-ring ${activeCategory === 'market' ? 'active' : ''} w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-[#141416] text-white shrink-0 cursor-pointer border-none shadow-sm transition-transform hover:scale-105`}
+          className={`category-ring ${activeCategory === 'market' ? 'active' : ''} w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-oled-cardInner text-white shrink-0 cursor-pointer border-none shadow-sm transition-transform hover:scale-105`}
           title={isEs ? 'Mercado & Comercio' : 'Market & Trade'}
         >
           <ScaleBoldDuotone className="w-5 h-5 text-fuchsia-300" />
@@ -117,7 +117,7 @@ export const HomePlayerFinancialCard: React.FC<HomePlayerFinancialCardProps> = (
         <button
           type="button"
           onClick={() => setActiveCategory('passes')}
-          className={`category-ring ${activeCategory === 'passes' ? 'active' : ''} w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-[#141416] text-white shrink-0 cursor-pointer border-none shadow-sm transition-transform hover:scale-105`}
+          className={`category-ring ${activeCategory === 'passes' ? 'active' : ''} w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-oled-cardInner text-white shrink-0 cursor-pointer border-none shadow-sm transition-transform hover:scale-105`}
           title={isEs ? 'Pases & Masterpiece' : 'Passes & League'}
         >
           <CupStarBoldDuotone className="w-5 h-5 text-fuchsia-300" />
@@ -126,7 +126,7 @@ export const HomePlayerFinancialCard: React.FC<HomePlayerFinancialCardProps> = (
         <button
           type="button"
           onClick={() => setActiveCategory('wallet')}
-          className={`category-ring ${activeCategory === 'wallet' ? 'active' : ''} w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-[#141416] text-white shrink-0 cursor-pointer border-none shadow-sm transition-transform hover:scale-105`}
+          className={`category-ring ${activeCategory === 'wallet' ? 'active' : ''} w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-oled-cardInner text-white shrink-0 cursor-pointer border-none shadow-sm transition-transform hover:scale-105`}
           title={isEs ? 'Billetera Ronin' : 'Ronin Wallet'}
         >
           <WalletBoldDuotone className="w-5 h-5 text-fuchsia-300" />
@@ -183,7 +183,7 @@ export const HomePlayerFinancialCard: React.FC<HomePlayerFinancialCardProps> = (
           {/* Bottom: Cardholder Name & Balance */}
           <div className="relative z-10 flex items-end justify-between text-xs tracking-wider">
             <div>
-              <div className="text-[9px] font-semibold text-white/60 uppercase tracking-widest">
+              <div className="text-[11px] font-semibold text-white/60 uppercase tracking-widest">
                 {isEs ? 'Titular Craftworld' : 'Craftworld Holder'}
               </div>
               <div className="font-bold text-white text-xs sm:text-[13px] tracking-wide mt-0.5 drop-shadow-sm uppercase truncate max-w-[150px]">
@@ -191,7 +191,7 @@ export const HomePlayerFinancialCard: React.FC<HomePlayerFinancialCardProps> = (
               </div>
             </div>
             <div className="text-right">
-              <div className="text-[9px] font-semibold text-white/60 uppercase tracking-widest">
+              <div className="text-[11px] font-semibold text-white/60 uppercase tracking-widest">
                 {isEs ? 'Saldo disponible' : 'Available Balance'}
               </div>
               <div className="font-black text-white text-sm sm:text-base font-mono tracking-tight mt-0.5 drop-shadow-sm">
@@ -202,7 +202,7 @@ export const HomePlayerFinancialCard: React.FC<HomePlayerFinancialCardProps> = (
         </div>
 
         {/* Intelligent Insights Recommendation Card (from mockup) */}
-        <div className="bg-[#141416] rounded-[26px] p-5 sm:p-6 flex flex-col justify-between shadow-lg relative overflow-hidden border-none space-y-3">
+        <div className="bg-oled-cardInner rounded-[26px] p-5 sm:p-6 flex flex-col justify-between shadow-lg relative overflow-hidden border-none space-y-3">
           <div>
             {/* Header with Bulb Icon */}
             <div className="flex items-center gap-2 mb-2.5">
@@ -235,7 +235,7 @@ export const HomePlayerFinancialCard: React.FC<HomePlayerFinancialCardProps> = (
                 />
               ))}
             </div>
-            <div className="flex items-center justify-between text-[11px] text-zinc-500 mt-2 font-medium">
+            <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-2 font-medium">
               <span>{isEs ? `Paso ${insightIdx + 1} de 4` : `Step ${insightIdx + 1} of 4`}</span>
               <button
                 type="button"
@@ -257,7 +257,7 @@ export const HomePlayerFinancialCard: React.FC<HomePlayerFinancialCardProps> = (
           <h4 className="text-xs sm:text-sm font-bold text-white tracking-wide uppercase">
             {isEs ? 'Pases y Servicios de Cuenta' : 'Passes & Account Services'}
           </h4>
-          <span className="text-xs text-zinc-500 font-mono">
+          <span className="text-xs text-zinc-400 font-mono">
             {purchases?.crystalPass?.hasActivePass ? (isEs ? 'Pass Activo' : 'Active Pass') : (isEs ? 'Base 1x' : 'Base 1x')}
           </span>
         </div>
@@ -271,7 +271,7 @@ export const HomePlayerFinancialCard: React.FC<HomePlayerFinancialCardProps> = (
               </div>
               <div>
                 <h5 className="text-xs font-bold text-white">Crystal Pass</h5>
-                <p className="text-[10px] text-zinc-400">{isEs ? 'Pase de Temporada' : 'Season Pass'}</p>
+                <p className="text-[11px] text-zinc-400">{isEs ? 'Pase de Temporada' : 'Season Pass'}</p>
               </div>
             </div>
             <span className="text-[11px] font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-0.5 rounded-full font-mono">
@@ -287,7 +287,7 @@ export const HomePlayerFinancialCard: React.FC<HomePlayerFinancialCardProps> = (
               </div>
               <div>
                 <h5 className="text-xs font-bold text-white">Booster 2x</h5>
-                <p className="text-[10px] text-zinc-400">{isEs ? 'Velocidad de Producción' : 'Production Speed'}</p>
+                <p className="text-[11px] text-zinc-400">{isEs ? 'Velocidad de Producción' : 'Production Speed'}</p>
               </div>
             </div>
             <span className="text-[11px] font-bold text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-full font-mono">
@@ -303,7 +303,7 @@ export const HomePlayerFinancialCard: React.FC<HomePlayerFinancialCardProps> = (
               </div>
               <div>
                 <h5 className="text-xs font-bold text-white">No-Ads Perk</h5>
-                <p className="text-[10px] text-zinc-400">{isEs ? 'Multiplicador Permanente' : 'Permanent Multiplier'}</p>
+                <p className="text-[11px] text-zinc-400">{isEs ? 'Multiplicador Permanente' : 'Permanent Multiplier'}</p>
               </div>
             </div>
             <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full font-mono">

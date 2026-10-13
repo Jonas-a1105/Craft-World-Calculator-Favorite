@@ -35,7 +35,7 @@ export const GoalSelectorCard: React.FC<GoalSelectorCardProps> = ({
   const currentStock = userResources[targetToken] || 0;
 
   return (
-    <div className="bg-[#18181b] rounded-[32px] p-5 sm:p-7 shadow-xl border-none space-y-6 select-none">
+    <div className="bg-oled-card rounded-[32px] p-5 sm:p-7 shadow-xl border-none space-y-6 select-none">
       {/* 1. Header of Goal Card */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
         <div className="flex items-center gap-3">
@@ -191,7 +191,7 @@ export const GoalSelectorCard: React.FC<GoalSelectorCardProps> = ({
 
           <div className="flex items-center gap-4 bg-zinc-900/60 p-2.5 rounded-xl shrink-0 text-right justify-between md:justify-end">
             <div>
-              <span className="text-[10px] text-zinc-500 uppercase font-bold block">
+              <span className="text-[11px] text-zinc-400 uppercase font-bold block">
                 {isEs ? 'Valor Venta Meta' : 'Goal Market Value'}
               </span>
               <span className="text-xs font-mono font-extrabold text-white flex items-center gap-1 justify-end">
@@ -201,7 +201,7 @@ export const GoalSelectorCard: React.FC<GoalSelectorCardProps> = ({
             </div>
             <div className="w-[1px] h-7 bg-white/10" />
             <div>
-              <span className="text-[10px] text-zinc-500 uppercase font-bold block">
+              <span className="text-[11px] text-zinc-400 uppercase font-bold block">
                 {isEs ? 'Beneficio Arbitraje' : 'Arbitrage Profit'}
               </span>
               <span className="text-xs font-mono font-extrabold text-emerald-400 flex items-center gap-1 justify-end">
@@ -224,7 +224,7 @@ export const GoalSelectorCard: React.FC<GoalSelectorCardProps> = ({
             <span className="text-xl font-extrabold text-white font-mono">
               {kpiStats.totalTypes}
             </span>
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs text-zinc-400">
               {isEs ? 'etapas' : 'stages'}
             </span>
           </div>
@@ -268,7 +268,7 @@ export const GoalSelectorCard: React.FC<GoalSelectorCardProps> = ({
             >
               {formatNumber(kpiStats.totalMissingItems)}
             </span>
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs text-zinc-400">
               {isEs ? 'unidades' : 'units'}
             </span>
           </div>

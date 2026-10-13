@@ -1,77 +1,8 @@
-# Dependencies
 node_modules/
-.pnpm-store/
-
-# Production builds & caches
 dist/
 dist-tests/
-build/
-.vite/
-*.tsbuildinfo
-
-# Environment variables & secrets
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.*
-!.env.example
-
-# Runtime & database files
-**/server/data/
-Craft-Companion/server/data/
-/server/data/
-*.db
-*.db-shm
-*.db-wal
-*.sqlite
-*.bak
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# System & IDE files
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Temporary & scratch files
-.tempmediaStorage/
-.system_generated/
-*.tmp
-
-# Game data exports / caches
-Game Data - Google Drive_files/
-Game Data - Google Drive.html
-sheet.html
-*.zip
-Craft-Companion/.git_backup
-# duplicate of client/public/data/factories.json (unreferenced)
-/Craft-Companion/data/factories.json
-Creator kit/
-creator_kit/
-dashboard-app/
-*.txt
-/fondo.jpeg
-
-# Temporary video source files in root
-*.mp4
-!client/public/assets/*.mp4
-!Craft-Companion/client/public/assets/*.mp4
-/splash1.json
-/Craft-Companion/splash1.json
-!client/public/assets/splash1.json
-!Craft-Companion/client/public/assets/splash1.json
-
-# Temporary root reference images
-/*.png
-/*.jpg
-/*.jpeg
-/*.webp
-/*.avif
-
+.mimosa/
+server-boot.log
+*.local

@@ -15,7 +15,7 @@ export function useDockPhysics(language: string) {
   const dockReflectionRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
-  const slotRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const slotRefs = useRef<(HTMLElement | null)[]>([]);
   const coreRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const [tooltipText, setTooltipText] = useState<string>('');

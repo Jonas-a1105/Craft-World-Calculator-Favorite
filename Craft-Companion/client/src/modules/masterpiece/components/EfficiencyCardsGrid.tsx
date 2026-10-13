@@ -23,7 +23,7 @@ export const EfficiencyCardsGrid: React.FC<EfficiencyCardsGridProps> = ({
 
   if (!items || items.length === 0) {
     return (
-      <div className="p-8 text-center rounded-2xl bg-[#151518]">
+      <div className="p-8 text-center rounded-2xl bg-oled-cardInner">
         <p className="text-xs font-mono text-slate-400">
           {isEs
             ? 'No se encontraron recursos que coincidan con la búsqueda.'

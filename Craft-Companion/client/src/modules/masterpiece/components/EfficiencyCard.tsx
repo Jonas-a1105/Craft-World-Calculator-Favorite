@@ -52,7 +52,7 @@ export const EfficiencyCard: React.FC<EfficiencyCardProps> = ({
 
   return (
     <div
-      className={`p-4 rounded-3xl bg-[#1c1c22] hover:bg-[#23232b] transition-all shadow-xl shadow-black/25 space-y-3.5 border-none outline-none select-none relative ${
+      className={`p-4 rounded-3xl bg-oled-850 hover:bg-[#23232b] transition-all shadow-xl shadow-black/25 space-y-3.5 border-none outline-none select-none relative ${
         isTopRank ? 'pt-5' : ''
       }`}
     >
@@ -70,11 +70,11 @@ export const EfficiencyCard: React.FC<EfficiencyCardProps> = ({
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-3 min-w-0">
           <div className="relative shrink-0">
-            <div className="w-10 h-10 rounded-full bg-[#131316] flex items-center justify-center shrink-0 shadow-inner">
+            <div className="w-10 h-10 rounded-full bg-oled-cardInner flex items-center justify-center shrink-0 shadow-inner">
               <ResourceIcon symbol={item.symbol} size={24} />
             </div>
             {!isTopRank && (
-              <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full text-[10px] font-mono font-bold flex items-center justify-center shadow-md bg-[#131316] text-slate-300 ring-1 ring-white/10">
+              <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full text-[11px] font-mono font-bold flex items-center justify-center shadow-md bg-oled-cardInner text-slate-300 ring-1 ring-white/10">
                 {item.rank}
               </span>
             )}
@@ -98,17 +98,17 @@ export const EfficiencyCard: React.FC<EfficiencyCardProps> = ({
                 ? 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/40 shadow-sm shadow-emerald-500/10'
                 : isGoodRank
                   ? 'bg-amber-500/15 text-amber-300 ring-1 ring-amber-500/30'
-                  : 'bg-[#131316] text-slate-200'
+                  : 'bg-oled-cardInner text-slate-200'
             }`}
           >
             {formatValue(item.efficiency)}{' '}
-            <span className="text-[10px] font-normal opacity-80">cr/COIN</span>
+            <span className="text-[11px] font-normal opacity-80">cr/COIN</span>
           </span>
         </div>
       </div>
 
       {/* Desired Quantity Stepper / Input */}
-      <div className="flex items-center justify-between gap-2 px-3 py-1.5 rounded-2xl bg-[#131316]">
+      <div className="flex items-center justify-between gap-2 px-3 py-1.5 rounded-2xl bg-oled-cardInner">
         <span className="text-[10.5px] font-mono font-medium text-slate-400">
           {isEs ? 'Cantidad deseada:' : 'Desired quantity:'}
         </span>
@@ -140,7 +140,7 @@ export const EfficiencyCard: React.FC<EfficiencyCardProps> = ({
           >
             +
           </button>
-          <span className="text-[10px] font-mono text-slate-400 ml-0.5">
+          <span className="text-[11px] font-mono text-slate-400 ml-0.5">
             {isEs ? 'uds' : 'units'}
           </span>
         </div>
@@ -160,13 +160,13 @@ export const EfficiencyCard: React.FC<EfficiencyCardProps> = ({
       {/* Metrics 2x2 Grid inside the card */}
       <div className="grid grid-cols-2 gap-2 pt-1 border-t border-white/5 text-xs font-mono">
         {/* Crowns */}
-        <div className="p-2.5 rounded-2xl bg-[#131316] space-y-0.5">
+        <div className="p-2.5 rounded-2xl bg-oled-cardInner space-y-0.5">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-slate-400 block font-medium">
+            <span className="text-[11px] text-slate-400 block font-medium">
               {isEs ? 'Coronas Totales' : 'Total Crowns'}
             </span>
             {units > 1 && (
-              <span className="text-[9px] text-slate-400">
+              <span className="text-[11px] text-slate-400">
                 ×{units}
               </span>
             )}
@@ -177,14 +177,14 @@ export const EfficiencyCard: React.FC<EfficiencyCardProps> = ({
         </div>
 
         {/* Power + Multiplier */}
-        <div className="p-2.5 rounded-2xl bg-[#131316] space-y-0.5 flex items-center justify-between">
+        <div className="p-2.5 rounded-2xl bg-oled-cardInner space-y-0.5 flex items-center justify-between">
           <div>
             <div className="flex items-center gap-1">
-              <span className="text-[10px] text-slate-400 block font-medium">
+              <span className="text-[11px] text-slate-400 block font-medium">
                 {isEs ? 'Power Total' : 'Total Power'}
               </span>
               {units > 1 && (
-                <span className="text-[9px] text-slate-400">
+                <span className="text-[11px] text-slate-400">
                   ×{units}
                 </span>
               )}
@@ -197,7 +197,7 @@ export const EfficiencyCard: React.FC<EfficiencyCardProps> = ({
             type="button"
             onClick={cycleMultiplier}
             title="Cambiar tramo (1x, 2x, 4x, 8x)"
-            className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-colors border-none ${
+            className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-colors border-none ${
               item.multiplier > 1
                 ? 'bg-amber-500 text-slate-950 shadow-sm'
                 : 'bg-[#26262e] text-slate-300 hover:text-white hover:bg-[#32323e]'
@@ -208,31 +208,31 @@ export const EfficiencyCard: React.FC<EfficiencyCardProps> = ({
         </div>
 
         {/* Market Price */}
-        <div className="p-2.5 rounded-2xl bg-[#131316] space-y-0.5">
-          <span className="text-[10px] text-slate-400 block font-medium">
+        <div className="p-2.5 rounded-2xl bg-oled-cardInner space-y-0.5">
+          <span className="text-[11px] text-slate-400 block font-medium">
             {isEs ? 'Precio Mercado' : 'Market Price'}
           </span>
           <span className="text-slate-200 font-bold">
             {formatValue(item.marketPrice, true)}{' '}
-            <span className="text-[9px] text-slate-400 font-normal">{baseSymbol}</span>
+            <span className="text-[11px] text-slate-400 font-normal">{baseSymbol}</span>
           </span>
         </div>
 
         {/* Total Cost */}
-        <div className="p-2.5 rounded-2xl bg-[#131316] space-y-0.5">
+        <div className="p-2.5 rounded-2xl bg-oled-cardInner space-y-0.5">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-slate-400 block font-medium">
+            <span className="text-[11px] text-slate-400 block font-medium">
               {isEs ? 'Costo Total' : 'Total Cost'}
             </span>
             {units > 1 && (
-              <span className="text-[9px] text-slate-400">
+              <span className="text-[11px] text-slate-400">
                 ×{units}
               </span>
             )}
           </div>
           <span className="text-slate-200 font-bold">
             {formatValue(item.totalCost, true)}{' '}
-            <span className="text-[9px] text-slate-400 font-normal">{baseSymbol}</span>
+            <span className="text-[11px] text-slate-400 font-normal">{baseSymbol}</span>
           </span>
         </div>
       </div>

@@ -10,10 +10,10 @@ export const PrivacyPolicy: React.FC = () => {
   useDocumentTitle(isEs ? 'Política de Privacidad' : 'Privacy Policy');
 
   return (
-    <div className="min-h-screen bg-[#141415] text-zinc-300 font-main py-12 px-4 sm:px-6 lg:px-8 selection:bg-amber-400/20 selection:text-amber-300">
+    <div className="min-h-screen bg-oled-canvas text-zinc-300 font-main py-12 px-4 sm:px-6 lg:px-8 selection:bg-amber-400/20 selection:text-amber-300">
       <div className="max-w-4xl mx-auto route-view">
         {/* Top Navigation */}
-        <div className="bg-[#1c1c20] rounded-2xl px-5 py-3.5 flex items-center justify-between mb-8 shadow-md border-0">
+        <div className="bg-oled-850 rounded-2xl px-5 py-3.5 flex items-center justify-between mb-8 shadow-md border-0">
           <Link
             to="/"
             className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-amber-400 transition-colors"
@@ -30,7 +30,7 @@ export const PrivacyPolicy: React.FC = () => {
 
         {/* Header */}
         <div className="mb-10 text-left">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#1c1c20] text-amber-400 text-xs font-mono font-semibold uppercase mb-4 border-0">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-oled-850 text-amber-400 text-xs font-mono font-semibold uppercase mb-4 border-0">
             {isEs ? 'Legal & Cumplimiento' : 'Legal & Compliance'}
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
@@ -45,7 +45,7 @@ export const PrivacyPolicy: React.FC = () => {
 
         {/* Content Body */}
         <div className="space-y-6 text-sm sm:text-base leading-relaxed text-zinc-300 text-left">
-          <section className="bg-[#1c1c20] rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
+          <section className="bg-oled-850 rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
             <h2 className="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2">
               <span className="text-amber-400 font-mono text-base">01.</span>
               <span>{isEs ? 'Información que recopilamos' : 'Information We Collect'}</span>
@@ -77,7 +77,7 @@ export const PrivacyPolicy: React.FC = () => {
             </ul>
           </section>
 
-          <section className="bg-[#1c1c20] rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
+          <section className="bg-oled-850 rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
             <h2 className="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2">
               <span className="text-amber-400 font-mono text-base">02.</span>
               <span>{isEs ? 'Uso de Cookies y Tecnologías Similares' : 'Cookies and Storage Technologies'}</span>
@@ -94,7 +94,7 @@ export const PrivacyPolicy: React.FC = () => {
             </p>
           </section>
 
-          <section className="bg-[#1c1c20] rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
+          <section className="bg-oled-850 rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
             <h2 className="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2">
               <span className="text-amber-400 font-mono text-base">03.</span>
               <span>{isEs ? 'Seguridad de tus Credenciales' : 'Security of Your Credentials'}</span>
@@ -106,7 +106,7 @@ export const PrivacyPolicy: React.FC = () => {
             </p>
           </section>
 
-          <section className="bg-[#1c1c20] rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
+          <section className="bg-oled-850 rounded-2xl p-6 sm:p-8 border-0 shadow-xl">
             <h2 className="text-lg sm:text-xl font-bold text-white mb-3 flex items-center gap-2">
               <span className="text-amber-400 font-mono text-base">04.</span>
               <span>{isEs ? 'Derechos del Usuario' : 'User Rights'}</span>
@@ -125,7 +125,7 @@ export const PrivacyPolicy: React.FC = () => {
         </div>
 
         {/* Footer Link */}
-        <div className="mt-12 text-center text-xs text-zinc-500">
+        <div className="mt-12 text-center text-xs text-zinc-400">
           Craft Companion © {new Date().getFullYear()} —{' '}
           <Link to="/terms" className="text-zinc-400 hover:text-amber-400 underline underline-offset-4 transition-colors">
             {isEs ? 'Ver Términos y Condiciones' : 'View Terms of Service'}

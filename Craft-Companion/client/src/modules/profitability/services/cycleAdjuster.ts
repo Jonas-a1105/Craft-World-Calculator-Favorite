@@ -5,10 +5,9 @@ import {
   flattenRecipeToBaseResources,
 } from '../../../services/craftworldCalculations';
 import {
-  applyMasteryInputReduction,
+  getMasteryInputFactor,
   getMasteryInputReductionPercent,
 } from '../../../services/masteryModifiers';
-import { formatNumber } from '../../../utils/formatters';
 import { getWorkshopSpeedBoostPercent } from '../../../services/workshopModifiers';
 import { DEFAULT_MARKET_PRICES } from '../../../services/priceService';
 import {
@@ -21,6 +20,7 @@ import type {
   FilterMode,
   InputSupplyMode,
   ProfitabilityContext,
+  RawBaseMaterial,
   SortByOption,
   SimulationMode,
   ModifierBadgeInfo,
@@ -124,30 +124,31 @@ export function getAdjustedCycle({
 
   if (inputSupplyMode === 'self_crafted') {
     const tree = buildRecipeTree(allRows, row.token, 1, row.level);
-    const baseReqs = flattenRecipeToBaseResources(tree, {});
-
-    const parentMasteryRed = useMastery
-      ? getMasteryInputReductionPercent(row.token, context.proficiencies || [])
-      : 0;
+    // Cada nodo del árbol descuenta sus insumos con SU maestría (factor oficial
+    // inputDiscountFactor). Los materiales base (EARTH/WATER/FIRE) no tienen
+    // maestría y quedan intactos. Sin dobles divisiones.
+    const baseReqs = flattenRecipeToBaseResources(
+      tree,
+      {},
+      useMastery
+        ? (token) => getMasteryInputFactor(token, context.proficiencies || [])
+        : undefined,
+    );
 
     let rawCostPerOutput = 0;
-    const rawTextParts: string[] = [];
+    const rawBaseMaterials: RawBaseMaterial[] = [];
 
     Object.entries(baseReqs).forEach(([tok, amt]) => {
       if (tok !== row.token) {
-        const adjustedAmt = useMastery
-          ? applyMasteryInputReduction(amt, tok, context.proficiencies || [])
-          : amt;
-
-        const finalAmtPerUnit = adjustedAmt / (1 + parentMasteryRed / 100);
         const p =
           typeof prices[tok] === 'number' && prices[tok] > 0
             ? prices[tok]
             : DEFAULT_MARKET_PRICES[tok] ?? DEFAULT_MARKET_PRICES.EARTH;
-        rawCostPerOutput += finalAmtPerUnit * p;
-        rawTextParts.push(
-          `${tok} (${formatNumber(finalAmtPerUnit * baseCycle.outputPerCycle, 1)})`,
-        );
+        rawCostPerOutput += amt * p;
+        rawBaseMaterials.push({
+          token: tok,
+          amountPerCycle: amt * baseCycle.outputPerCycle,
+        });
       }
     });
 
@@ -164,7 +165,7 @@ export function getAdjustedCycle({
       effectiveProfitPerCycle,
       effectiveProfitPerHour,
       effectiveProfitPerDay,
-      rawBaseMaterialsText: rawTextParts.join(', '),
+      rawBaseMaterials,
     };
   }
 
@@ -186,7 +187,7 @@ export function buildFactorySummaries({
   inputSupplyMode,
   useMastery,
   simulationMode = 'projected',
-  isNoAdsActive = false,
+  isNoAdsActive: _isNoAdsActive = false,
 }: {
   rows: FactoryDataRow[];
   ownedMap: Map<string, number>;
@@ -196,6 +197,7 @@ export function buildFactorySummaries({
   inputSupplyMode: InputSupplyMode;
   useMastery: boolean;
   simulationMode?: SimulationMode;
+  /** @deprecated No-Ads no acelera fábricas (verificado en juego 2026-10-13); se ignora. */
   isNoAdsActive?: boolean;
 }): FactorySummary[] {
   let uniqueTokens = Array.from(new Set(rows.map((r) => r.token)));
@@ -235,7 +237,7 @@ export function buildFactorySummaries({
       targetLevel = ownedLevel || 1;
       const plotDetail = plotFactoriesMap?.get(token.toUpperCase());
 
-      const boostMult = calculateBoosterMultiplier(plotDetail?.boosters || [], isNoAdsActive);
+      const boostMult = calculateBoosterMultiplier(plotDetail?.boosters || []);
       const manualBoost = boostMult > 0 ? 1 / boostMult : 1;
       const workerRed = calculateWorkerReductionFactor(
         plotDetail?.craftingReduction,

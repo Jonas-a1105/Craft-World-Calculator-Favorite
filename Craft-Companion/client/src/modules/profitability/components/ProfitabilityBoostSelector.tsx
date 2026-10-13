@@ -60,7 +60,7 @@ export const ProfitabilityBoostSelector: React.FC<ProfitabilityBoostSelectorProp
 
       {/* Styled Popover Window (Rounded 2xl, Backdrop blur, Clean App Tokens, Zero harsh borders) */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-44 bg-[#18181c]/95 backdrop-blur-xl rounded-2xl p-1.5 shadow-[0_10px_35px_rgba(0,0,0,0.6)] z-50 animate-in fade-in zoom-in-95 duration-150 border border-white/5">
+        <div className="absolute right-0 top-full mt-2 w-44 bg-oled-card/95 backdrop-blur-xl rounded-2xl p-1.5 shadow-[0_10px_35px_rgba(0,0,0,0.6)] z-50 animate-in fade-in zoom-in-95 duration-150 border border-white/5">
           <div className="space-y-1">
             {options.map((opt) => {
               const isSelected = boost === opt.id;
@@ -88,8 +88,8 @@ export const ProfitabilityBoostSelector: React.FC<ProfitabilityBoostSelectorProp
                       <span>{opt.label}</span>
                     </div>
                     <div
-                      className={`text-[10px] ${
-                        isSelected ? 'text-black/80 font-medium' : 'text-zinc-500'
+                      className={`text-[11px] ${
+                        isSelected ? 'text-black/80 font-medium' : 'text-zinc-400'
                       }`}
                     >
                       {opt.desc}

@@ -1,5 +1,5 @@
 import { describe, it } from 'node:test';
-import assert from 'node:assert';
+import * as assert from 'node:assert';
 import {
   generateTradingOpportunities,
   filterOpportunities,
@@ -32,20 +32,20 @@ describe('Trading Bot - Opportunity & Arbitrage Engine', () => {
     upgrade_amount: 10,
   };
 
-  it('calculates craft arbitrage accurately with 5% marketplace commission', () => {
+  it('calculates craft arbitrage accurately with the official 2.5% marketplace tax', () => {
     const priceMap = {
       WOOD: 5,
       PAPERWRAP: 30,
     };
 
     const result = calculateCraftArbitrage(mockFactoryRow, priceMap);
-    assert.ok(result !== null);
+    assert.ok(result, 'arbitrage result must exist');
     assert.strictEqual(result.symbol, 'Paperwrap');
     assert.strictEqual(result.costToCraftCoin, 10);
     assert.strictEqual(result.marketSellPriceCoin, 30);
-    assert.strictEqual(result.netRevenueCoin, 28.5); // 30 * 0.95
-    assert.strictEqual(result.netProfitCoin, 18.5); // 28.5 - 10
-    assert.strictEqual(result.marginPercent, 185); // (18.5 / 10) * 100
+    assert.strictEqual(result.netRevenueCoin, 29.25); // 30 * 0.975 (tradeInputTaxRate oficial)
+    assert.strictEqual(result.netProfitCoin, 19.25); // 29.25 - 10
+    assert.strictEqual(result.marginPercent, 192.5); // (19.25 / 10) * 100
     assert.strictEqual(result.isProfitable, true);
   });
 

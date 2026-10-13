@@ -1048,6 +1048,45 @@ html.light .popular-card-inner {
   animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* ============================================================
+   REDUCED MOTION (QW5) — respeto global a prefers-reduced-motion
+   Neutraliza los loops visuales ambientales; los loops rAF
+   (marquee, físicas del dock) se apagan desde JS con el hook
+   usePrefersReducedMotion.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .animate-ping,
+  .animate-pulse,
+  .animate-spin,
+  .animate-fadeIn,
+  .animate-flame-flicker,
+  .animate-logo-breathing,
+  .animate-streak-shine,
+  .route-view,
+  .flat-pulse-effect,
+  .popular-card-beam,
+  .popular-card-beam-glow {
+    animation: none !important;
+  }
+
+  .popular-card-beam,
+  .popular-card-beam-glow {
+    display: none !important;
+  }
+
+  .scroll-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .transition-all,
+  .transition-colors,
+  .transition-opacity,
+  .transition-transform,
+  .route-view {
+    transition-duration: 0.01ms !important;
+  }
+}
+
 
 
 

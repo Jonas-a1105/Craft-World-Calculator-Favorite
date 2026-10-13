@@ -54,7 +54,7 @@ export const EmpireLandPlotsList: React.FC<EmpireLandPlotsListProps> = ({
             return (
               <div
                 key={plot.id || idx}
-                className="bg-[#18181b] hover:bg-zinc-800/70 p-4 sm:p-5 rounded-2xl shadow-md flex flex-col justify-between space-y-3 transition-colors border-none"
+                className="bg-oled-card hover:bg-zinc-800/70 p-4 sm:p-5 rounded-2xl shadow-md flex flex-col justify-between space-y-3 transition-colors border-none"
               >
                 {/* 1. Plot Header: Name + Areas + Unlocked Badge */}
                 <div className="flex justify-between items-start gap-2">
@@ -62,11 +62,11 @@ export const EmpireLandPlotsList: React.FC<EmpireLandPlotsListProps> = ({
                     <h4 className="font-extrabold text-white text-sm truncate">
                       {formatPlotName(plot.name || '', language)}
                     </h4>
-                    <p className="text-[10px] text-zinc-400 font-mono mt-0.5 truncate">
+                    <p className="text-[11px] text-zinc-400 font-mono mt-0.5 truncate">
                       {plot.name} • {areas.length} {isEs ? 'áreas' : 'areas'}
                     </p>
                   </div>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/15 text-emerald-400 shrink-0 flex items-center gap-1">
+                  <span className="text-[11px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/15 text-emerald-400 shrink-0 flex items-center gap-1">
                     <CheckCircleBold className="w-3 h-3 shrink-0" />
                     <span>{isEs ? 'Desbloqueada' : 'Unlocked'}</span>
                   </span>
@@ -75,7 +75,7 @@ export const EmpireLandPlotsList: React.FC<EmpireLandPlotsListProps> = ({
                 {/* 2. Blueprint Strip (If applied) */}
                 {plot.appliedBlueprint && (
                   <div className="bg-zinc-800/60 rounded-xl px-2.5 py-1.5 flex items-center justify-between text-xs shadow-inner">
-                    <span className="text-zinc-400 text-[10px] flex items-center gap-1.5 font-medium">
+                    <span className="text-zinc-400 text-[11px] flex items-center gap-1.5 font-medium">
                       <DocumentTextBoldDuotone size={13} className="text-amber-400" />
                       <span>{isEs ? 'Plano aplicado:' : 'Blueprint:'}</span>
                     </span>
@@ -91,7 +91,7 @@ export const EmpireLandPlotsList: React.FC<EmpireLandPlotsListProps> = ({
 
                 {/* 3. Installed Factories Chips */}
                 <div className="pt-0.5 space-y-1.5">
-                  <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wide block">
+                  <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wide block">
                     {isEs ? 'Fábricas instaladas:' : 'Installed factories:'}{' '}
                     <span className="text-zinc-200 font-mono">({allPlotFactories.length})</span>
                   </span>
@@ -110,7 +110,7 @@ export const EmpireLandPlotsList: React.FC<EmpireLandPlotsListProps> = ({
                       ))}
                     </div>
                   ) : (
-                    <span className="text-[11px] text-zinc-500 italic block">
+                    <span className="text-[11px] text-zinc-400 italic block">
                       {isEs ? 'Sin fábricas instaladas' : 'No installed factories'}
                     </span>
                   )}

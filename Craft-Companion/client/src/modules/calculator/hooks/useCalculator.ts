@@ -10,6 +10,10 @@ import {
 } from '../../../services/craftworldCalculations';
 import { extractPriceMap } from '../../../services/priceService';
 import { useCraftworldHomeQuery, useFactoryDataQuery } from '../../../services/queries/useCraftworldQueries';
+import {
+  calculateBoosterMultiplier,
+  collectUniqueActiveBoosters,
+} from '../../timers/services/factoryTimersService';
 import { useAppStore } from '../../../store/useAppStore';
 import {
   extractUniqueTokens,
@@ -34,7 +38,6 @@ export function useCalculator() {
   const [simulationMode, setSimulationMode] = useState<SimulationMode>('active_owned');
 
   const plotFactoriesMap = useMemo(() => extractPlotFactoriesMap(home), [home]);
-  const isNoAdsActive = Boolean(home?.purchases?.isNoAdsActive);
   const homeData = useMemo(() => {
     const rawHome = home as any;
     return {
@@ -94,7 +97,9 @@ export function useCalculator() {
     }
 
     if (simulationMode === 'active_owned') {
-      let activeBoost = isNoAdsActive ? 2 : 1;
+      // No-Ads no acelera fábricas (verificado en juego 2026-10-13): el boost solo
+      // viene del booster real de la instancia.
+      let activeBoost = 1;
       if (activePlotDetail?.boosters && activePlotDetail.boosters.length > 0) {
         const hasActiveBooster = activePlotDetail.boosters.some((b) => (b.boostValue || 0) > 0);
         if (hasActiveBooster) {
@@ -152,13 +157,14 @@ export function useCalculator() {
       };
     }
 
-    // projected mode:
-    const activeBoost = isNoAdsActive ? 2 : 1;
+    // projected mode: boosters reales activos de la cuenta (No-Ads no acelera).
+    const boostFactor = calculateBoosterMultiplier(collectUniqueActiveBoosters(home));
+    const activeBoost = boostFactor > 0 && boostFactor < 1 ? 1 / boostFactor : 1;
     if (activeBoost > 1) {
       mods.push({
         type: 'booster',
-        label: '⚡ Sin Anuncios (x2)',
-        detail: language === 'es' ? 'Booster global de cuenta' : 'Global account booster',
+        label: `⚡ Booster x${activeBoost % 1 === 0 ? activeBoost : activeBoost.toFixed(1)}`,
+        detail: language === 'es' ? 'Booster activo de tu cuenta' : 'Active account booster',
       });
     }
 
@@ -188,7 +194,7 @@ export function useCalculator() {
       } as RuntimeContext,
       modifiers: mods,
     };
-  }, [simulationMode, isNoAdsActive, activePlotDetail, selectedToken, homeData, language]);
+  }, [simulationMode, activePlotDetail, selectedToken, homeData, language]);
 
   const cycle: FactoryCycleResult | null = useMemo(() => {
     return currentRow ? calculateFactoryCycle(currentRow, prices, context) : null;

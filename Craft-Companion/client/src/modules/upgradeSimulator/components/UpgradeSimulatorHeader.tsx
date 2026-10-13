@@ -32,7 +32,7 @@ export const UpgradeSimulatorHeader: React.FC<UpgradeSimulatorHeaderProps> = ({
       </p>
 
       {/* Facilities Count Pill */}
-      <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#1c1c22] text-slate-300 text-xs font-mono font-medium shadow-inner">
+      <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-oled-850 text-slate-300 text-xs font-mono font-medium shadow-inner">
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
         <span>
           {totalFacilities} {isEs ? 'fábricas y minas verificadas' : 'verified factories & mines'}

@@ -43,7 +43,7 @@ export const PricesItemRow: React.FC<PricesItemRowProps> = ({ item }) => {
   return (
     <div
       onClick={handleRowClick}
-      className={`p-3.5 flex items-center justify-between rounded-2xl bg-[#151518] hover:bg-[#1a1b20] transition-all duration-150 cursor-pointer border-none select-none ${
+      className={`p-3.5 flex items-center justify-between rounded-2xl bg-oled-cardInner hover:bg-[#1a1b20] transition-all duration-150 cursor-pointer border-none select-none ${
         isFav ? 'shadow-[0_0_15px_rgba(245,158,11,0.08)] bg-amber-500/5' : ''
       }`}
     >
@@ -65,12 +65,12 @@ export const PricesItemRow: React.FC<PricesItemRowProps> = ({ item }) => {
             {item.referenceSymbol}
           </span>
           {pool && pool.price1d.ath > 0 ? (
-            <span className="text-[10px] text-zinc-400 font-mono flex items-center gap-1">
+            <span className="text-[11px] text-zinc-400 font-mono flex items-center gap-1">
               <span>24h:</span>
               <span className="text-zinc-300 font-semibold">{formatNumber(pool.price1d.median)}</span>
             </span>
           ) : (
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
+            <span className="text-[11px] text-slate-400 uppercase font-bold tracking-wider">
               Ref. Price
             </span>
           )}
@@ -83,7 +83,7 @@ export const PricesItemRow: React.FC<PricesItemRowProps> = ({ item }) => {
         </span>
         <div className="flex items-center justify-end gap-1.5 mt-0.5">
           {pool && pool.liquidity.average > 0 && (
-            <span className="text-[9px] font-mono text-purple-300 bg-[#1e1f25] px-1.5 py-0.5 rounded-md">
+            <span className="text-[11px] font-mono text-purple-300 bg-[#1e1f25] px-1.5 py-0.5 rounded-md">
               {formatCompact(pool.liquidity.average)} u
             </span>
           )}

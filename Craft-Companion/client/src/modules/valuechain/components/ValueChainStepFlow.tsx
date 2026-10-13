@@ -14,7 +14,7 @@ export const ValueChainStepFlow: React.FC<ValueChainStepFlowProps> = ({
   language,
 }) => {
   return (
-    <div className="bg-[#1c1c20] p-6 rounded-3xl border-none shadow-2xl">
+    <div className="bg-oled-850 p-6 rounded-3xl border-none shadow-2xl">
       <h2 className="text-lg font-extrabold text-white mb-6 flex items-center gap-2">
         <LeafBoldDuotone className="w-5 h-5 text-emerald-400" />
         <span>
@@ -26,10 +26,10 @@ export const ValueChainStepFlow: React.FC<ValueChainStepFlowProps> = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 relative">
         {/* Step 0: Raw Harvest Card */}
-        <div className="bg-[#151518] p-5 rounded-2xl border-none shadow-lg relative flex flex-col justify-between">
+        <div className="bg-oled-cardInner p-5 rounded-2xl border-none shadow-lg relative flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-black text-emerald-400 uppercase tracking-wider bg-emerald-950 px-2 py-0.5 rounded-full border-none">
+              <span className="text-[11px] font-black text-emerald-400 uppercase tracking-wider bg-emerald-950 px-2 py-0.5 rounded-full border-none">
                 {language === 'es' ? 'Paso #0 — Inicio' : 'Step #0 — Start'}
               </span>
               <span className="text-xs font-bold text-emerald-400">
@@ -72,11 +72,11 @@ export const ValueChainStepFlow: React.FC<ValueChainStepFlowProps> = ({
         {analysis.steps.map((st) => (
           <div
             key={st.token}
-            className="bg-[#151518] border-none transition-all p-5 rounded-2xl shadow-lg flex flex-col justify-between group"
+            className="bg-oled-cardInner border-none transition-all p-5 rounded-2xl shadow-lg flex flex-col justify-between group"
           >
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-black text-cyan-400 uppercase tracking-wider bg-cyan-950 px-2 py-0.5 rounded-full border-none">
+                <span className="text-[11px] font-black text-cyan-400 uppercase tracking-wider bg-cyan-950 px-2 py-0.5 rounded-full border-none">
                   {language === 'es' ? `Paso #${st.stepIndex}` : `Step #${st.stepIndex}`}
                 </span>
                 <span className="text-xs font-bold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded-full border-none">

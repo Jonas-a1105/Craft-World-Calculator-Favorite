@@ -44,7 +44,7 @@ export const SimulationModeSelector: React.FC<SimulationModeSelectorProps> = ({
   ];
 
   return (
-    <div className="bg-[#18181b] rounded-[28px] sm:rounded-[32px] p-2.5 sm:p-3 shadow-xl border border-white/[0.04]">
+    <div className="bg-oled-card rounded-[28px] sm:rounded-[32px] p-2.5 sm:p-3 shadow-xl border border-white/[0.04]">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
         {modes.map((m) => {
           const isActive = simulationMode === m.id;
@@ -56,7 +56,7 @@ export const SimulationModeSelector: React.FC<SimulationModeSelectorProps> = ({
               className={`p-3 sm:p-3.5 rounded-2xl text-left transition-all duration-200 cursor-pointer select-none flex items-start gap-3 relative ${
                 isActive
                   ? 'bg-[#222227] ring-2 ring-emerald-400/80 shadow-lg'
-                  : 'bg-[#141416] hover:bg-[#1c1c20] text-zinc-400 hover:text-white border border-transparent'
+                  : 'bg-oled-cardInner hover:bg-oled-850 text-zinc-400 hover:text-white border border-transparent'
               }`}
             >
               <span className="text-xl sm:text-2xl flex-shrink-0 mt-0.5">{m.icon}</span>
@@ -70,12 +70,12 @@ export const SimulationModeSelector: React.FC<SimulationModeSelectorProps> = ({
                     {m.title}
                   </h4>
                   {m.badge && (
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold flex-shrink-0">
+                    <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold flex-shrink-0">
                       {m.badge}
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-zinc-500 truncate mt-0.5">
+                <p className="text-[11px] text-zinc-400 truncate mt-0.5">
                   {m.subtitle}
                 </p>
               </div>

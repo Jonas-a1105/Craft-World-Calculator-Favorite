@@ -24,7 +24,7 @@ const variantStyles: Record<BadgeVariant, string> = {
   success: 'bg-emerald-500/20 text-emerald-400',
   warning: 'bg-amber-500/20 text-amber-400',
   danger: 'bg-red-500/20 text-red-400',
-  neutral: 'bg-[#202024] text-slate-300',
+  neutral: 'bg-oled-pill text-slate-300',
   info: 'bg-sky-500/20 text-sky-400',
 };
 

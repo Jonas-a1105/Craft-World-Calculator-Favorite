@@ -46,7 +46,7 @@ export const CalculatorFinancialCard: React.FC<CalculatorFinancialCardProps> = (
 
         <div className="grid grid-cols-2 gap-2 text-center pt-2 border-none">
           <div className="resource-item-badge p-2.5">
-            <span className="text-[10px] text-slate-400 block font-bold">
+            <span className="text-[11px] text-slate-400 block font-bold">
               {language === 'es' ? 'Ganancia / Hora' : 'Profit / Hour'}
             </span>
             <span className="text-sm font-black text-cyan-400">
@@ -54,7 +54,7 @@ export const CalculatorFinancialCard: React.FC<CalculatorFinancialCardProps> = (
             </span>
           </div>
           <div className="resource-item-badge p-2.5">
-            <span className="text-[10px] text-slate-400 block font-bold">
+            <span className="text-[11px] text-slate-400 block font-bold">
               {language === 'es' ? 'Ganancia / Día' : 'Profit / Day'}
             </span>
             <span className="text-sm font-black text-emerald-400">

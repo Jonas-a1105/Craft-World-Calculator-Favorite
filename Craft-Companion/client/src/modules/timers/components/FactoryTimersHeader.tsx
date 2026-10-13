@@ -56,8 +56,8 @@ export const FactoryTimersHeader: React.FC<FactoryTimersHeaderProps> = ({
             onClick={onToggleNotification}
             className={`relative w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-md ${
               notifPermission === 'granted'
-                ? 'bg-[#18181b] hover:bg-[#222226] text-white'
-                : 'bg-[#18181b] hover:bg-[#222226] text-zinc-400'
+                ? 'bg-oled-card hover:bg-oled-pill text-white'
+                : 'bg-oled-card hover:bg-oled-pill text-zinc-400'
             }`}
             title={
               notifPermission === 'granted'
@@ -72,11 +72,11 @@ export const FactoryTimersHeader: React.FC<FactoryTimersHeaderProps> = ({
             <BellBold className="w-5 h-5 shrink-0" />
 
             {notifPermission === 'granted' ? (
-              <span className="absolute -top-1 -right-1 flex items-center justify-center text-emerald-400 bg-[#18181b] rounded-full shadow-sm">
+              <span className="absolute -top-1 -right-1 flex items-center justify-center text-emerald-400 bg-oled-card rounded-full shadow-sm">
                 <CheckCircleBold className="w-4 h-4 shrink-0" />
               </span>
             ) : (
-              <span className="absolute -top-1 -right-1 flex items-center justify-center text-rose-400 bg-[#18181b] rounded-full shadow-sm">
+              <span className="absolute -top-1 -right-1 flex items-center justify-center text-rose-400 bg-oled-card rounded-full shadow-sm">
                 <CloseCircleBold className="w-4 h-4 shrink-0" />
               </span>
             )}

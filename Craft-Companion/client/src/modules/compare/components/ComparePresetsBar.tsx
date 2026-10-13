@@ -18,7 +18,7 @@ export const ComparePresetsBar: React.FC<ComparePresetsBarProps> = ({
       <button
         type="button"
         onClick={onCompareNextLevel}
-        className="px-3.5 py-1.5 rounded-full bg-[#18181b] hover:bg-[#222226] text-xs font-bold text-zinc-300 hover:text-white transition-all cursor-pointer border-none shadow-md flex items-center gap-1.5"
+        className="px-3.5 py-1.5 rounded-full bg-oled-card hover:bg-oled-pill text-xs font-bold text-zinc-300 hover:text-white transition-all cursor-pointer border-none shadow-md flex items-center gap-1.5"
       >
         <svg
           className="w-3.5 h-3.5 text-sky-400"
@@ -43,7 +43,7 @@ export const ComparePresetsBar: React.FC<ComparePresetsBarProps> = ({
       <button
         type="button"
         onClick={onCompareMaxLevel}
-        className="px-3.5 py-1.5 rounded-full bg-[#18181b] hover:bg-[#222226] text-xs font-bold text-zinc-300 hover:text-white transition-all cursor-pointer border-none shadow-md flex items-center gap-1.5"
+        className="px-3.5 py-1.5 rounded-full bg-oled-card hover:bg-oled-pill text-xs font-bold text-zinc-300 hover:text-white transition-all cursor-pointer border-none shadow-md flex items-center gap-1.5"
       >
         <svg
           className="w-3.5 h-3.5 text-amber-400"
@@ -68,7 +68,7 @@ export const ComparePresetsBar: React.FC<ComparePresetsBarProps> = ({
       <button
         type="button"
         onClick={onSwap}
-        className="px-3.5 py-1.5 rounded-full bg-[#18181b] hover:bg-[#222226] text-xs font-bold text-zinc-300 hover:text-white transition-all cursor-pointer border-none shadow-md flex items-center gap-1.5"
+        className="px-3.5 py-1.5 rounded-full bg-oled-card hover:bg-oled-pill text-xs font-bold text-zinc-300 hover:text-white transition-all cursor-pointer border-none shadow-md flex items-center gap-1.5"
       >
         <svg
           className="w-3.5 h-3.5 text-emerald-400"

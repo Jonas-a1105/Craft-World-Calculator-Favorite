@@ -18,8 +18,8 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   return (
     <div
-      className={`bg-[#18181c] rounded-3xl p-5 md:p-6 transition-all duration-200 relative overflow-hidden shadow-md border-none ${
-        hoverable ? 'hover:bg-[#202026]' : ''
+      className={`bg-oled-card rounded-3xl p-5 md:p-6 transition-all duration-200 relative overflow-hidden shadow-md border-none ${
+        hoverable ? 'hover:bg-oled-pillHover' : ''
       } ${className}`}
       {...props}
     >

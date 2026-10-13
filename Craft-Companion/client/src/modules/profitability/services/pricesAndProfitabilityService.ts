@@ -2,6 +2,7 @@ import type { FactoryDataRow } from '../../../services/factoryData';
 import type { RoninPoolsDataset } from '../../../services/roninPoolsService';
 import { getResourceCategory } from './accountAggregator';
 import {
+  getMasteryInputFactorByLevel,
   getMasteryInputReductionPercent,
   applyMasteryInputReduction,
   type ProficiencyItem,
@@ -10,7 +11,13 @@ import {
   buildRecipeTree,
   flattenRecipeToBaseResources,
 } from '../../../services/craftworldCalculations';
-import { DEFAULT_MARKET_PRICES } from '../../../services/priceService';
+import {
+  getBuyCostMultiplier,
+  getSellRevenueMultiplier,
+} from '../../../services/gameConfig';
+import { DEFAULT_MARKET_PRICES, FALLBACK_RESOURCE_PRICE } from '../../../services/priceService';
+import { DEFAULT_COIN_DATA } from '../../../services/coin/coinTypes';
+import { marginPercentOnRevenue } from '../../../services/financial/pricingService';
 import type {
   FactoryRowConfig,
   FactoryTableRow,
@@ -93,20 +100,25 @@ export function computeFactoryTableRow({
   // Prices
   const rawPriceCoin = typeof prices[norm] === 'number' && prices[norm] > 0
     ? prices[norm]
-    : (DEFAULT_MARKET_PRICES[norm] ?? 0.004608);
+    : (DEFAULT_MARKET_PRICES[norm] ?? FALLBACK_RESOURCE_PRICE);
   const priceCoin = rawPriceCoin;
-  const priceUsd = priceCoin * (coinUsdPrice > 0 ? coinUsdPrice : 0.0002105);
+  const priceUsd = priceCoin * (coinUsdPrice > 0 ? coinUsdPrice : DEFAULT_COIN_DATA.priceUsd);
 
   const { change1h, change24h } = calculatePriceChanges(norm, priceCoin, poolsDataset);
 
+  // CORRECCIÓN BUG-007: Separar claramente boost manual (config) y automático (settings)
+  // Si el usuario tiene config.boost='x2' se aplica 2x. Si settings.adBoost2x es true, también 2x.
+  // Ambos no se multiplican (máximo 2x, no 4x).
   // Speed calculations: Duration & Runs per hour
+  // Física oficial: workshop y workers REDUCEN el tiempo (×(1−p)), no lo dividen
+  // (÷(1+p)). El booster ×2 sí es multiplicador de velocidad (duración /2).
   const baseDurationMin = Math.max(0.001, activeRow.duration_min);
-  const workshopMult = config.workshopPercent > 0 ? 1 + config.workshopPercent / 100 : 1;
-  const workerMult = config.workerPercent > 0 ? 1 + config.workerPercent / 100 : 1;
+  const workshopFactor = config.workshopPercent > 0 ? 1 - config.workshopPercent / 100 : 1;
+  const workerFactor = config.workerPercent > 0 ? 1 - config.workerPercent / 100 : 1;
   const boostMult = config.boost === 'x2' || settings.adBoost2x ? 2 : 1;
 
   // Final adjusted cycle duration in minutes
-  const adjustedDurationMin = baseDurationMin / (workshopMult * workerMult * boostMult);
+  const adjustedDurationMin = (baseDurationMin * workshopFactor * workerFactor) / boostMult;
   const runsPerHour = adjustedDurationMin > 0 ? 60 / adjustedDurationMin : 0;
 
   // Slippage multipliers
@@ -124,35 +136,41 @@ export function computeFactoryTableRow({
 
   if (settings.inputSupplyMode === 'self_crafted') {
     const tree = buildRecipeTree(allRows, norm, 1, activeLevel);
-    const baseReqs = flattenRecipeToBaseResources(tree, {});
-    const parentMasteryRed = masteryReductionPercent;
-
+    // Maestría aplicada UNA vez por nodo (factor oficial inputDiscountFactor):
+    // la maestría del producto que se craftea en cada nodo descuenta SUS insumos.
+    const baseReqs = flattenRecipeToBaseResources(tree, {}, () =>
+      getMasteryInputFactorByLevel(config.masteryLevel),
+    );
+    if (!baseReqs || Object.keys(baseReqs).length === 0 || tree?.circular || tree?.missingRecipe) {
+      console.warn('Advertencia: Datos de receta inválidos o circulares para', norm, '- usando precios directos');
+    }
     Object.entries(baseReqs).forEach(([tok, amt]) => {
       if (tok !== norm) {
-        const adjustedAmt = applyMasteryInputReduction(amt, tok, dummyProficiency);
-        const finalAmt = parentMasteryRed > 0 ? adjustedAmt / (1 + parentMasteryRed / 100) : adjustedAmt;
-        const p = (prices[tok] ?? DEFAULT_MARKET_PRICES[tok] ?? 0.004608) * buySlippageMult;
-        singleCycleInputCost += finalAmt * activeRow.output_amount * p;
+        // Materiales base autoporducidos: coste de oportunidad a precio de
+        // mercado (no pagan tax porque no pasan por el exchange).
+        const p = (prices[tok] ?? DEFAULT_MARKET_PRICES[tok] ?? FALLBACK_RESOURCE_PRICE) * buySlippageMult;
+        singleCycleInputCost += amt * activeRow.output_amount * p;
       }
     });
   } else {
-    // Market input supply
+    // Market input supply: comprar en el exchange paga el 2,5% de trade input tax.
+    const buyMult = buySlippageMult * getBuyCostMultiplier();
     if (activeRow.input_token_1 && activeRow.input_amount_1 > 0) {
       const sym1 = activeRow.input_token_1.toUpperCase();
       const adj1 = applyMasteryInputReduction(activeRow.input_amount_1, norm, dummyProficiency);
-      const p1 = (prices[sym1] ?? DEFAULT_MARKET_PRICES[sym1] ?? 0.004608) * buySlippageMult;
+      const p1 = (prices[sym1] ?? DEFAULT_MARKET_PRICES[sym1] ?? FALLBACK_RESOURCE_PRICE) * buyMult;
       singleCycleInputCost += adj1 * p1;
     }
     if (activeRow.input_token_2 && activeRow.input_amount_2 > 0) {
       const sym2 = activeRow.input_token_2.toUpperCase();
       const adj2 = applyMasteryInputReduction(activeRow.input_amount_2, norm, dummyProficiency);
-      const p2 = (prices[sym2] ?? DEFAULT_MARKET_PRICES[sym2] ?? 0.004608) * buySlippageMult;
+      const p2 = (prices[sym2] ?? DEFAULT_MARKET_PRICES[sym2] ?? FALLBACK_RESOURCE_PRICE) * buyMult;
       singleCycleInputCost += adj2 * p2;
     }
   }
 
-  // Revenue & output
-  const outputPrice = priceCoin * sellSlippageMult;
+  // Revenue & output: vender en el exchange cobra el trade input tax (2,5%).
+  const outputPrice = priceCoin * sellSlippageMult * getSellRevenueMultiplier();
   const singleCycleRevenue = activeRow.output_amount * outputPrice;
   const singleCycleProfit = singleCycleRevenue - singleCycleInputCost;
 
@@ -173,8 +191,7 @@ export function computeFactoryTableRow({
     count > 0 ? singleCycleProfit * runsPerHour * count - powerCostCoinPerHour : 0;
   const profitPerDay = profitPerHour * 24;
 
-  const marginPercent =
-    grossRevenuePerHour > 0 ? ((grossRevenuePerHour - inputCostPerHour) / grossRevenuePerHour) * 100 : null;
+  const marginPercent = marginPercentOnRevenue(grossRevenuePerHour, inputCostPerHour);
 
   const isOwned = accountBaseline.count > 0;
   const isModified =

@@ -1,6 +1,6 @@
 import React from 'react';
 import type { BaseCostSummaryStats } from '../types';
-import { formatCoin } from '../services/baseCostCalculatorService';
+import { formatCoin } from '../services/baseCostFormatters';
 
 interface BaseCostSummaryCardsProps {
   stats: BaseCostSummaryStats;
@@ -21,7 +21,7 @@ export const BaseCostSummaryCards: React.FC<BaseCostSummaryCardsProps> = ({ stat
       {elements.map((el) => (
         <div
           key={el.token}
-          className="rounded-2xl bg-[#18181c] hover:bg-[#202026] p-3 shadow-md flex items-center justify-between group transition-colors border-none"
+          className="rounded-2xl bg-oled-card hover:bg-oled-pillHover p-3 shadow-md flex items-center justify-between group transition-colors border-none"
         >
           <div className="flex items-center gap-2.5">
             <img
@@ -33,7 +33,7 @@ export const BaseCostSummaryCards: React.FC<BaseCostSummaryCardsProps> = ({ stat
             <div>
               <div className="text-[11px] font-medium text-slate-400">{el.name}</div>
               <div className="font-mono text-xs font-semibold text-slate-200">
-                {formatCoin(el.price)} <span className="text-[10px] text-amber-400 font-normal">COIN</span>
+                {formatCoin(el.price)} <span className="text-[11px] text-amber-400 font-normal">COIN</span>
               </div>
             </div>
           </div>
@@ -41,7 +41,7 @@ export const BaseCostSummaryCards: React.FC<BaseCostSummaryCardsProps> = ({ stat
       ))}
 
       {/* Overview KPI Card: Profitable ratio */}
-      <div className="rounded-2xl bg-[#18181c] p-3 shadow-md flex flex-col justify-center border-none">
+      <div className="rounded-2xl bg-oled-card p-3 shadow-md flex flex-col justify-center border-none">
         <div className="text-[11px] font-medium text-slate-400 mb-1">Rentabilidad Global</div>
         <div className="flex items-center gap-2">
           <span className="font-mono text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
@@ -50,7 +50,7 @@ export const BaseCostSummaryCards: React.FC<BaseCostSummaryCardsProps> = ({ stat
           <span className="font-mono text-xs font-semibold text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded-md">
             -{stats.unprofitableCount}
           </span>
-          <span className="text-[10px] text-slate-500 font-mono ml-auto">
+          <span className="text-[11px] text-slate-400 font-mono ml-auto">
             {stats.totalTracked} total
           </span>
         </div>

@@ -108,14 +108,14 @@ export const ResourceRequirementBadge: React.FC<ResourceRequirementBadgeProps> =
         className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl transition-all cursor-pointer select-none border-none outline-none shadow-inner ${
           showPopover
             ? 'bg-[#22222c] ring-1 ring-amber-400/60 shadow-md shadow-amber-500/15'
-            : 'bg-[#131316] hover:bg-[#1a1a20] active:scale-95'
+            : 'bg-oled-cardInner hover:bg-[#1a1a20] active:scale-95'
         }`}
       >
         <ResourceIcon symbol={resource.token} size={16} />
         <span className="text-xs font-mono font-bold text-white">
           {formatResourceAmount(resource.amount)}
         </span>
-        <span className="text-[10px] text-slate-400 font-mono uppercase">
+        <span className="text-[11px] text-slate-400 font-mono uppercase">
           {resource.token}
         </span>
       </button>
@@ -145,7 +145,7 @@ export const ResourceRequirementBadge: React.FC<ResourceRequirementBadgeProps> =
                 <span className="text-xs font-bold text-white block uppercase tracking-tight truncate">
                   {resource.token}
                 </span>
-                <span className="text-[10px] text-slate-400 font-mono block">
+                <span className="text-[11px] text-slate-400 font-mono block">
                   {isEs ? 'Recurso Requerido' : 'Required Resource'}
                 </span>
               </div>
@@ -155,7 +155,7 @@ export const ResourceRequirementBadge: React.FC<ResourceRequirementBadgeProps> =
             <div className="space-y-1.5 font-mono text-xs">
               {/* Exact Required Amount */}
               <div className="flex items-center justify-between text-slate-300">
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[11px] text-slate-400">
                   {isEs ? 'Cantidad total:' : 'Total quantity:'}
                 </span>
                 <span className="font-bold text-white">
@@ -165,7 +165,7 @@ export const ResourceRequirementBadge: React.FC<ResourceRequirementBadgeProps> =
 
               {/* Unit Market Price */}
               <div className="flex items-center justify-between text-slate-300">
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[11px] text-slate-400">
                   {isEs ? 'Precio unitario:' : 'Unit price:'}
                 </span>
                 <div className="flex items-center gap-1 font-bold text-slate-200">
@@ -176,7 +176,7 @@ export const ResourceRequirementBadge: React.FC<ResourceRequirementBadgeProps> =
 
               {/* Total Cost */}
               <div className="flex items-center justify-between pt-1.5 border-t border-white/5">
-                <span className="text-[10px] text-amber-300 font-semibold">
+                <span className="text-[11px] text-amber-300 font-semibold">
                   {isEs ? 'Valor total:' : 'Total value:'}
                 </span>
                 <div className="flex items-center gap-1 font-bold text-amber-300">

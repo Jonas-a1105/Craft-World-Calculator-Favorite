@@ -12,7 +12,7 @@ export const CompareVerdictCard: React.FC<CompareVerdictCardProps> = ({
   language,
 }) => {
   return (
-    <div className="bg-[#18181b] rounded-[28px] sm:rounded-[32px] p-5 sm:p-6 shadow-xl border-none space-y-4">
+    <div className="bg-oled-card rounded-[28px] sm:rounded-[32px] p-5 sm:p-6 shadow-xl border-none space-y-4">
       <div className="flex items-center gap-2.5">
         <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-xs">
           VS
@@ -35,8 +35,8 @@ export const CompareVerdictCard: React.FC<CompareVerdictCardProps> = ({
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
         {/* Metric 1: Profit Diff */}
-        <div className="bg-[#141416] rounded-[22px] p-3.5 space-y-1">
-          <span className="text-[10px] uppercase font-bold text-zinc-500 block">
+        <div className="bg-oled-cardInner rounded-[22px] p-3.5 space-y-1">
+          <span className="text-[11px] uppercase font-bold text-zinc-400 block">
             {language === 'es' ? 'Diferencia de Ganancia' : 'Profit Difference'}
           </span>
           <div className="font-mono font-extrabold text-base flex items-baseline">
@@ -62,8 +62,8 @@ export const CompareVerdictCard: React.FC<CompareVerdictCardProps> = ({
         </div>
 
         {/* Metric 2: Output Diff */}
-        <div className="bg-[#141416] rounded-[22px] p-3.5 space-y-1">
-          <span className="text-[10px] uppercase font-bold text-zinc-500 block">
+        <div className="bg-oled-cardInner rounded-[22px] p-3.5 space-y-1">
+          <span className="text-[11px] uppercase font-bold text-zinc-400 block">
             {language === 'es' ? 'Volumen de Producción' : 'Production Volume'}
           </span>
           <div className="font-mono font-extrabold text-base text-zinc-200">
@@ -76,8 +76,8 @@ export const CompareVerdictCard: React.FC<CompareVerdictCardProps> = ({
         </div>
 
         {/* Metric 3: XP Diff */}
-        <div className="bg-[#141416] rounded-[22px] p-3.5 space-y-1">
-          <span className="text-[10px] uppercase font-bold text-zinc-500 block">
+        <div className="bg-oled-cardInner rounded-[22px] p-3.5 space-y-1">
+          <span className="text-[11px] uppercase font-bold text-zinc-400 block">
             {language === 'es' ? 'Experiencia (XP)' : 'Experience (XP)'}
           </span>
           <div className="font-mono font-extrabold text-base text-amber-300">

@@ -57,7 +57,7 @@ export default function Dropdown<T extends string | number = string | number>({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between gap-2.5 rounded-xl border-none bg-[#151518] hover:bg-[#202024] px-3.5 py-2.5 text-left text-sm text-white focus:outline-none transition-colors"
+        className="w-full flex items-center justify-between gap-2.5 rounded-xl border-none bg-oled-cardInner hover:bg-oled-pill px-3.5 py-2.5 text-left text-sm text-white focus:outline-none transition-colors"
       >
         <div className="flex items-center gap-2 min-w-0">
           {selectedOption?.image && (
@@ -102,7 +102,7 @@ export default function Dropdown<T extends string | number = string | number>({
                 placeholder={language === 'es' ? 'Buscar...' : 'Search...'}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#151518] border-none rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none transition-colors"
+                className="w-full bg-oled-cardInner border-none rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none transition-colors"
               />
             </div>
           )}
@@ -139,7 +139,7 @@ export default function Dropdown<T extends string | number = string | number>({
                 );
               })
             ) : (
-              <div className="px-3 py-4 text-xs text-center text-slate-500">
+              <div className="px-3 py-4 text-xs text-center text-slate-400">
                 {language === 'es' ? 'No se encontraron resultados.' : 'No results found.'}
               </div>
             )}

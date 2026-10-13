@@ -10,6 +10,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string().default('file:../data/craftcompanion.db'),
   CRAFTWORLD_BASE_URL: z.string().url().default('https://craft-world.gg'),
   CRAFTWORLD_EXTERNAL_API_BASE: z.string().url().default('https://craft-world.gg/api/2/external'),
+  CRAFTWORLD_GRAPHQL_URL: z.string().url().default('https://craft-world.gg/graphql'),
   CRAFTWORLD_OAUTH_CLIENT_ID: z.string().default(''),
   CRAFTWORLD_OAUTH_CLIENT_SECRET: z.string().default(''),
   CRAFTWORLD_OAUTH_REDIRECT_URI: z.string().default(''),

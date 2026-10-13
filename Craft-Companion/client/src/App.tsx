@@ -4,6 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './services/queryClient';
 import { LanguageProvider } from './utils/i18n';
 import ProtectedRoute from './components/ProtectedRoute';
+import { ModuleErrorBoundary } from './components/ModuleErrorBoundary';
 import { Toaster } from 'sileo';
 import { useSileoConfig } from './utils/sileoNotifications';
 import NotFound from './pages/NotFound';
@@ -32,30 +33,35 @@ import Splash from './pages/Splash';
 import TradingBot from './pages/TradingBot';
 import { fetchRoninPoolsData } from './services/roninPoolsService';
 
+// Ruta protegida = sesión válida + aislamiento de errores por módulo (QW3):
+// un crash de render en una sección no tumba todo el árbol de la app.
+const P = ({ children }: { children: React.ReactNode }) => (
+  <ProtectedRoute>
+    <ModuleErrorBoundary>{children}</ModuleErrorBoundary>
+  </ProtectedRoute>
+);
+
 export default function App() {
   const { config: sileoConfig } = useSileoConfig();
 
   useEffect(() => {
-    // Initialize Theme (Dark by default, Light if chosen)
-    const savedTheme = localStorage.getItem('craftworld.theme') || 'dark';
-    if (savedTheme === 'light') {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
-      document.documentElement.setAttribute('data-theme', 'light');
-    } else {
-      document.documentElement.classList.remove('light');
-      document.documentElement.classList.add('dark');
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
+    // Theme: dark OLED only (LP3 — the broken light-mode toggle was removed;
+    // force dark for anyone with a legacy 'light' value saved).
+    document.documentElement.classList.add('dark');
+    document.documentElement.classList.remove('light');
+    document.documentElement.setAttribute('data-theme', 'dark');
+    try {
+      localStorage.setItem('craftworld.theme', 'dark');
+    } catch {}
 
     const isSolid = localStorage.getItem('craftworld.solidBackground') === 'true';
-    const solidColor = localStorage.getItem('craftworld.solidBackgroundColor') || (savedTheme === 'light' ? '#f3f4f6' : '#141415');
+    const solidColor = localStorage.getItem('craftworld.solidBackgroundColor') || '#141415';
     if (isSolid) {
       document.body.classList.add('solid-bg');
       document.documentElement.style.setProperty('--navbar-bg', solidColor);
     } else {
       document.body.classList.remove('solid-bg');
-      document.documentElement.style.setProperty('--navbar-bg', savedTheme === 'light' ? '#ffffff' : '#141415');
+      document.documentElement.style.setProperty('--navbar-bg', '#141415');
     }
     document.documentElement.style.setProperty('--bg-solid-override', solidColor);
 
@@ -83,74 +89,74 @@ export default function App() {
           <Route
             path="/home"
             element={
-              <ProtectedRoute>
+              <P>
                 <MyHome />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/empire-dashboard"
             element={
-              <ProtectedRoute>
+              <P>
                 <EmpireDashboard />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/resource-planner"
             element={
-              <ProtectedRoute>
+              <P>
                 <ResourcePlanner />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/profitability"
             element={
-              <ProtectedRoute>
+              <P>
                 <Profitability />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route path="/calculator" element={<Navigate to="/profitability" replace />} />
           <Route
             path="/inventory-value"
             element={
-              <ProtectedRoute>
+              <P>
                 <InventoryValue />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/upgrade-advisor"
             element={
-              <ProtectedRoute>
+              <P>
                 <UpgradeAdvisor />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/upgrade-simulator"
             element={
-              <ProtectedRoute>
+              <P>
                 <UpgradeSimulator />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/power-simulator"
             element={
-              <ProtectedRoute>
+              <P>
                 <PowerSimulator />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/base-cost"
             element={
-              <ProtectedRoute>
+              <P>
                 <BaseCost />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
@@ -160,81 +166,81 @@ export default function App() {
           <Route
             path="/compare"
             element={
-              <ProtectedRoute>
+              <P>
                 <FactoryCompare />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/timers"
             element={
-              <ProtectedRoute>
+              <P>
                 <FactoryTimers />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/settings"
             element={
-              <ProtectedRoute>
+              <P>
                 <Settings />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/value-chain-map"
             element={
-              <ProtectedRoute>
+              <P>
                 <ValueChainMap />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/prices"
             element={
-              <ProtectedRoute>
+              <P>
                 <Prices />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/trading-bot"
             element={
-              <ProtectedRoute>
+              <P>
                 <TradingBot />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/resource/:symbol"
             element={
-              <ProtectedRoute>
+              <P>
                 <ResourceDetail />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/encyclopedia"
             element={
-              <ProtectedRoute>
+              <P>
                 <Encyclopedia mode="encyclopedia" />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/encyclopedia/events"
             element={
-              <ProtectedRoute>
+              <P>
                 <Encyclopedia mode="events" />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route
             path="/masterpiece"
             element={
-              <ProtectedRoute>
+              <P>
                 <Masterpiece />
-              </ProtectedRoute>
+              </P>
             }
           />
           <Route path="/events" element={<Navigate to="/encyclopedia/events" replace />} />

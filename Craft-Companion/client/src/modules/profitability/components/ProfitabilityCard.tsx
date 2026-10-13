@@ -44,7 +44,7 @@ export const ProfitabilityCard: React.FC<ProfitabilityCardProps> = ({
 
   return (
     <div
-      className={`w-full bg-[#18181b] hover:bg-[#1c1c20] rounded-[32px] p-5 sm:p-6 shadow-xl flex flex-col justify-between gap-4 transition-all duration-200 border-none select-none ${
+      className={`w-full bg-oled-card hover:bg-oled-850 rounded-[32px] p-5 sm:p-6 shadow-xl flex flex-col justify-between gap-4 transition-all duration-200 border-none select-none ${
         isFavorite ? 'ring-1 ring-amber-500/40 shadow-[0_0_25px_rgba(245,158,11,0.08)]' : ''
       }`}
     >
@@ -79,7 +79,7 @@ export const ProfitabilityCard: React.FC<ProfitabilityCardProps> = ({
                 {row.category}
               </span>
               {row.isOwned && (
-                <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full font-semibold">
+                <span className="text-[11px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full font-semibold">
                   {isEs ? `Nv. ${row.accountLevel}` : `Lv. ${row.accountLevel}`}
                 </span>
               )}
@@ -96,7 +96,7 @@ export const ProfitabilityCard: React.FC<ProfitabilityCardProps> = ({
             </div>
 
             {/* Price Deltas: 1H and 24H (Full fidelity matching reference table!) */}
-            <div className="flex items-center justify-end gap-1.5 mt-0.5 text-[10px] sm:text-[11px] font-bold tabular-nums">
+            <div className="flex items-center justify-end gap-1.5 mt-0.5 text-[11px] sm:text-[11px] font-bold tabular-nums">
               {/* 1h Delta */}
               <span
                 className={`px-1 rounded ${
@@ -104,7 +104,7 @@ export const ProfitabilityCard: React.FC<ProfitabilityCardProps> = ({
                     ? 'text-emerald-400'
                     : row.change1h < 0
                       ? 'text-rose-400'
-                      : 'text-zinc-500'
+                      : 'text-zinc-400'
                 }`}
                 title="Variación en 1 hora"
               >
@@ -119,7 +119,7 @@ export const ProfitabilityCard: React.FC<ProfitabilityCardProps> = ({
                     ? 'text-emerald-400'
                     : row.change24h < 0
                       ? 'text-rose-400'
-                      : 'text-zinc-500'
+                      : 'text-zinc-400'
                 }`}
                 title="Variación en 24 horas"
               >
@@ -136,11 +136,11 @@ export const ProfitabilityCard: React.FC<ProfitabilityCardProps> = ({
             className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
               isFavorite
                 ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
-                : 'bg-zinc-800/80 text-zinc-500 hover:text-white hover:bg-zinc-700/80'
+                : 'bg-zinc-800/80 text-zinc-400 hover:text-white hover:bg-zinc-700/80'
             }`}
             title={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
           >
-            <StarBold className={`w-4 h-4 ${isFavorite ? 'text-amber-400' : 'text-zinc-500'}`} />
+            <StarBold className={`w-4 h-4 ${isFavorite ? 'text-amber-400' : 'text-zinc-400'}`} />
           </button>
         </div>
       </div>
@@ -194,7 +194,7 @@ export const ProfitabilityCard: React.FC<ProfitabilityCardProps> = ({
               {isEs ? 'Maestría' : 'Mastery'}
             </span>
             {row.masteryReductionPercent > 0 && (
-              <span className="text-[10px] text-emerald-400 font-extrabold block">
+              <span className="text-[11px] text-emerald-400 font-extrabold block">
                 +{row.masteryReductionPercent.toFixed(2)}%
               </span>
             )}
@@ -256,7 +256,7 @@ export const ProfitabilityCard: React.FC<ProfitabilityCardProps> = ({
       {/* 4. Bottom Metrics Container: Power Consumption & Net Hourly Profit */}
       <div className="bg-zinc-800/50 rounded-2xl p-3 sm:p-3.5 flex items-center justify-between gap-3">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block">
             {isEs ? 'Consumo de Energía' : 'Power Consumption'}
           </span>
           <span className="text-xs sm:text-sm font-extrabold text-zinc-300 tabular-nums block mt-0.5">
@@ -265,7 +265,7 @@ export const ProfitabilityCard: React.FC<ProfitabilityCardProps> = ({
         </div>
 
         <div className="text-right">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block">
             {isEs ? 'Ganancia / Hora' : 'Profit / Hour'}
           </span>
           {isActive ? (
@@ -285,7 +285,7 @@ export const ProfitabilityCard: React.FC<ProfitabilityCardProps> = ({
               <img src="/assets/resources/Coin.png" alt="COIN" className="w-4 h-4 object-contain inline-block" />
             </div>
           ) : (
-            <span className="text-xs font-bold text-zinc-600 block mt-0.5">-</span>
+            <span className="text-xs font-bold text-zinc-400 block mt-0.5">-</span>
           )}
         </div>
       </div>

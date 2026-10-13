@@ -2,6 +2,8 @@ import React, { useMemo } from 'react';
 import { SkeletonDashboardPage } from '../../../components/Skeleton';
 import { useProfitabilityTable } from '../hooks/useProfitabilityTable';
 import { PricesAndProfitabilityHeader } from './PricesAndProfitabilityHeader';
+import { PriceTrustBanner } from '../../../components/PriceTrustBanner';
+import { AnalyticsHubTabs } from '../../../components/AnalyticsHubTabs';
 import { CategoryTabsBar } from './CategoryTabsBar';
 import { ProfitabilityCard } from './ProfitabilityCard';
 import { ProfitabilitySummaryFooter } from './ProfitabilitySummaryFooter';
@@ -133,6 +135,9 @@ export const ProfitabilityDashboard: React.FC = () => {
 
   return (
     <div className="w-full max-w-[1280px] mx-auto space-y-6 pb-28 px-2 sm:px-4">
+      {/* Cross-module hub tabs: Profit / Advisor / Base Cost (LP7) */}
+      <AnalyticsHubTabs />
+
       {/* 1. Header with title & organized global simulation settings */}
       <PricesAndProfitabilityHeader
         settings={globalSettings}
@@ -142,6 +147,9 @@ export const ProfitabilityDashboard: React.FC = () => {
         hasActiveAccount={hasAnyAccountFactories}
         onResetAccount={resetToAccountData}
       />
+
+      {/* Global price-freshness trust signal (QW2) */}
+      <PriceTrustBanner />
 
       {/* 2. Category filter tabs & search input */}
       <CategoryTabsBar

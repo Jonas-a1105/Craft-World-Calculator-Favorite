@@ -22,7 +22,7 @@ export const LandingFaq: React.FC<LandingFaqProps> = ({ faq }) => {
         {/* Left Column: Title, Subtitle, Contact Information */}
         <div className="lg:col-span-5 text-left">
           {/* Top Pill Badge */}
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#1c1c20] text-xs font-medium text-zinc-300 mb-6 backdrop-blur-sm shadow-inner transition-transform hover:scale-105 border-0">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-oled-850 text-xs font-medium text-zinc-300 mb-6 backdrop-blur-sm shadow-inner transition-transform hover:scale-105 border-0">
             <span>{faq.badge}</span>
           </div>
 
@@ -78,7 +78,7 @@ export const LandingFaq: React.FC<LandingFaqProps> = ({ faq }) => {
             return (
               <div
                 key={item.id}
-                className="bg-[#1c1c20] hover:bg-[#222227] rounded-2xl p-4 sm:p-5 transition-colors border-0"
+                className="bg-oled-850 hover:bg-[#222227] rounded-2xl p-4 sm:p-5 transition-colors border-0"
               >
                 <button
                   type="button"

@@ -20,6 +20,10 @@ import {
   filterAndSortSummaries,
   getAdjustedCycle,
 } from '../services/cycleAdjuster';
+import {
+  calculateBoosterMultiplier,
+  collectUniqueActiveBoosters,
+} from '../../timers/services/factoryTimersService';
 
 export function useProfitability(): UseProfitabilityReturn {
   const { data: homeData, isLoading: isHomeLoading } = useCraftworldHomeQuery();
@@ -45,12 +49,14 @@ export function useProfitability(): UseProfitabilityReturn {
   const plotFactoriesMap = useMemo(() => extractPlotFactoriesMap(homeData), [homeData]);
   const isNoAdsActive = Boolean(homeData?.purchases?.isNoAdsActive);
 
+  // Modo proyectado: usar los boosters REALES activos de la cuenta (deduplicados).
+  // Antes inventaba activeBoosts 0.5 + manualBoost ×2 = ×4 fantasma.
   const context: ProfitabilityContext = useMemo(
     () => ({
       workshop: useWorkshop ? homeData?.craft?.workshop || [] : [],
       proficiencies: useMastery ? homeData?.craft?.proficiencies || [] : [],
-      activeBoosts: useBoosters ? [{ boostValue: 0.5 }] : [],
-      manualBoostMultiplier: useBoosters ? 2 : 1,
+      activeBoosts: useBoosters ? collectUniqueActiveBoosters(homeData) : [],
+      manualBoostMultiplier: 1,
     }),
     [useWorkshop, useMastery, useBoosters, homeData],
   );
@@ -130,11 +136,11 @@ export function useProfitability(): UseProfitabilityReturn {
       : simulationMode === 'active_owned'
         ? (() => {
             const plotDetail = plotFactoriesMap.get(modalSummary.token);
-            let plotBoost = isNoAdsActive ? 2 : 1;
-            if (plotDetail?.boosters && plotDetail.boosters.length > 0) {
-              const hasActiveBooster = plotDetail.boosters.some((b) => (b.boostValue || 0) > 0);
-              if (hasActiveBooster) plotBoost = Math.max(plotBoost, 2);
-            }
+            // Boost real vigente sobre la instancia (0,5 ⇒ duración a la mitad ⇒
+            // multiplicador de velocidad ×2). No-Ads no cuenta (no acelera nada).
+            const boostFactor = calculateBoosterMultiplier(plotDetail?.boosters || []);
+            let plotBoost = 1;
+            if (boostFactor > 0 && boostFactor < 1) plotBoost = 1 / boostFactor;
             let workersPct = 0;
             if (plotDetail?.workerBoostIntervals && plotDetail.workerBoostIntervals.length > 0) {
               const sumBonus = plotDetail.workerBoostIntervals.reduce(
@@ -154,8 +160,8 @@ export function useProfitability(): UseProfitabilityReturn {
         : {
             workshop: homeData?.craft?.workshop || [],
             proficiencies: homeData?.craft?.proficiencies || [],
-            activeBoosts: [],
-            manualBoostMultiplier: isNoAdsActive ? 2 : 1,
+            activeBoosts: collectUniqueActiveBoosters(homeData),
+            manualBoostMultiplier: 1,
           };
 
     let results = modalSummary.allRows.map((r) =>

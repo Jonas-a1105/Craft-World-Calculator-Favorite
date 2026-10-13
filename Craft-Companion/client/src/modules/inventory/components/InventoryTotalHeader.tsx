@@ -28,7 +28,7 @@ export const InventoryTotalHeader: React.FC<InventoryTotalHeaderProps> = ({
         </span>
       </div>
       <div className="pt-0.5">
-        <span className="bg-[#202024] px-3.5 py-1 rounded-full text-slate-300 font-bold text-xs">
+        <span className="bg-oled-pill px-3.5 py-1 rounded-full text-slate-300 font-bold text-xs">
           {resourceCount}{' '}
           {language === 'es' ? 'recursos distintos' : 'distinct resources'}
         </span>

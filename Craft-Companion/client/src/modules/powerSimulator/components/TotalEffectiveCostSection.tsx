@@ -38,7 +38,7 @@ export const TotalEffectiveCostSection: React.FC<TotalEffectiveCostSectionProps>
           <h2 className="text-sm font-mono font-bold text-slate-300 tracking-wider uppercase">
             {isEs ? 'COSTO EFECTIVO TOTAL / 100K POWER' : 'TOTAL EFFECTIVE COST / 100K POWER'}
           </h2>
-          <p className="text-xs font-mono text-slate-500 mt-0.5">
+          <p className="text-xs font-mono text-slate-400 mt-0.5">
             {isEs
               ? 'Tu costo promedio diario de energía, incluyendo Power Packs y Plantas Pasivas.'
               : 'Your average daily power cost, including Power Packs and Passive Plants.'}
@@ -46,7 +46,7 @@ export const TotalEffectiveCostSection: React.FC<TotalEffectiveCostSectionProps>
         </div>
 
         {/* Crystal Pass Toggle Pill */}
-        <label className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-[#1c1c22] hover:bg-[#23232c] transition-all cursor-pointer shadow-inner self-start sm:self-auto border-none">
+        <label className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-oled-850 hover:bg-[#23232c] transition-all cursor-pointer shadow-inner self-start sm:self-auto border-none">
           <input
             type="checkbox"
             checked={activateCrystalPass}
@@ -57,7 +57,7 @@ export const TotalEffectiveCostSection: React.FC<TotalEffectiveCostSectionProps>
             {isEs ? 'Activar tasa Crystal Pass' : 'Activate Crystal Pass rate'}
           </span>
           <span
-            className="text-[10px] text-slate-400 font-mono"
+            className="text-[11px] text-slate-400 font-mono"
             title={
               isEs
                 ? 'Los primeros 150 cristales diarios se cobran a tarifa con descuento ($14.99 / 30 días).'
@@ -70,7 +70,7 @@ export const TotalEffectiveCostSection: React.FC<TotalEffectiveCostSectionProps>
       </div>
 
       {/* Main Container */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-[#1c1c22] shadow-xl shadow-black/25 space-y-4 border-none outline-none">
+      <div className="p-4 sm:p-5 rounded-3xl bg-oled-850 shadow-xl shadow-black/25 space-y-4 border-none outline-none">
         {/* Combined Daily Power Bars */}
         <div className="space-y-2">
           <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider block">
@@ -84,7 +84,7 @@ export const TotalEffectiveCostSection: React.FC<TotalEffectiveCostSectionProps>
                 <span className="w-28 text-[11px] text-slate-300 font-medium shrink-0 truncate">
                   {isEs ? 'Pasiva (gratis)' : 'Passive (free)'}
                 </span>
-                <div className="flex-1 h-2 rounded-full bg-[#131316] overflow-hidden shadow-inner">
+                <div className="flex-1 h-2 rounded-full bg-oled-cardInner overflow-hidden shadow-inner">
                   <div
                     className="h-full rounded-full bg-emerald-400 transition-all duration-300"
                     style={{ width: `${Math.max(4, freeFraction * 100)}%` }}
@@ -102,7 +102,7 @@ export const TotalEffectiveCostSection: React.FC<TotalEffectiveCostSectionProps>
                 <span className="w-28 text-[11px] text-slate-300 font-medium shrink-0 truncate">
                   Power Packs
                 </span>
-                <div className="flex-1 h-2 rounded-full bg-[#131316] overflow-hidden shadow-inner">
+                <div className="flex-1 h-2 rounded-full bg-oled-cardInner overflow-hidden shadow-inner">
                   <div
                     className="h-full rounded-full bg-indigo-400 transition-all duration-300"
                     style={{ width: `${Math.max(4, paidFraction * 100)}%` }}
@@ -119,21 +119,21 @@ export const TotalEffectiveCostSection: React.FC<TotalEffectiveCostSectionProps>
         {/* 3 KPI Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-white/5 font-mono">
           {/* Total Power */}
-          <div className="p-3.5 rounded-2xl bg-[#131316] shadow-inner">
-            <span className="text-[10px] text-slate-400 uppercase tracking-tight block">
+          <div className="p-3.5 rounded-2xl bg-oled-cardInner shadow-inner">
+            <span className="text-[11px] text-slate-400 uppercase tracking-tight block">
               {isEs ? 'Energía total / día' : 'Total power / day'}
             </span>
             <div className="flex items-baseline gap-1 mt-0.5">
               <span className="text-lg font-black text-[#38BDF8]">
                 {formatPower(totalDailyPower)}
               </span>
-              <span className="text-xs text-slate-500">kW</span>
+              <span className="text-xs text-slate-400">kW</span>
             </div>
           </div>
 
           {/* Total Cost */}
-          <div className="p-3.5 rounded-2xl bg-[#131316] shadow-inner">
-            <span className="text-[10px] text-slate-400 uppercase tracking-tight block">
+          <div className="p-3.5 rounded-2xl bg-oled-cardInner shadow-inner">
+            <span className="text-[11px] text-slate-400 uppercase tracking-tight block">
               {isEs ? 'Costo total / día' : 'Total cost / day'}
             </span>
             <div className="flex items-center gap-1.5 mt-0.5">
@@ -150,8 +150,8 @@ export const TotalEffectiveCostSection: React.FC<TotalEffectiveCostSectionProps>
           </div>
 
           {/* Effective COIN / 100k */}
-          <div className="p-3.5 rounded-2xl bg-[#131316] ring-1 ring-rose-500/30 shadow-inner">
-            <span className="text-[10px] text-rose-400 uppercase font-bold tracking-tight block">
+          <div className="p-3.5 rounded-2xl bg-oled-cardInner ring-1 ring-rose-500/30 shadow-inner">
+            <span className="text-[11px] text-rose-400 uppercase font-bold tracking-tight block">
               {isEs ? 'Costo Efectivo / 100k' : 'Effective COIN / 100k'}
             </span>
             <div className="flex items-baseline gap-1 mt-0.5">

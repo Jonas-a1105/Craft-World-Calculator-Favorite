@@ -32,7 +32,7 @@ export const SettingsDataBackupCard: React.FC<SettingsDataBackupCardProps> = ({
         {language === 'es' ? 'Datos y Respaldo' : 'Data & Backup'}
       </span>
 
-      <div className="bg-[#18181b] rounded-[32px] shadow-xl overflow-hidden">
+      <div className="bg-oled-card rounded-[32px] shadow-xl overflow-hidden">
         {/* Row 1: Copy JSON */}
         <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3.5 min-w-0">
@@ -57,7 +57,7 @@ export const SettingsDataBackupCard: React.FC<SettingsDataBackupCardProps> = ({
             className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer flex-shrink-0 shadow-sm active:scale-95 ${
               copied
                 ? 'bg-emerald-500 text-black font-bold'
-                : 'bg-[#27272e] hover:bg-[#32323a] text-zinc-100 hover:text-white'
+                : 'bg-oled-pill hover:bg-oled-pillHover text-zinc-100 hover:text-white'
             }`}
           >
             {copied ? (
@@ -99,7 +99,7 @@ export const SettingsDataBackupCard: React.FC<SettingsDataBackupCardProps> = ({
           <button
             type="button"
             onClick={() => setShowImportBox(!showImportBox)}
-            className="px-4 py-2 rounded-full bg-[#27272e] hover:bg-[#32323a] text-zinc-100 hover:text-white text-xs font-semibold cursor-pointer transition-all active:scale-95 flex-shrink-0 shadow-sm"
+            className="px-4 py-2 rounded-full bg-oled-pill hover:bg-oled-pillHover text-zinc-100 hover:text-white text-xs font-semibold cursor-pointer transition-all active:scale-95 flex-shrink-0 shadow-sm"
           >
             {showImportBox
               ? language === 'es'
@@ -122,7 +122,7 @@ export const SettingsDataBackupCard: React.FC<SettingsDataBackupCardProps> = ({
                   ? 'Pega el código JSON de respaldo aquí...'
                   : 'Paste backup JSON code here...'
               }
-              className="w-full min-h-[90px] rounded-2xl bg-[#141416] p-3 font-mono text-xs text-emerald-400 focus:outline-none border-none resize-none"
+              className="w-full min-h-[90px] rounded-2xl bg-oled-cardInner p-3 font-mono text-xs text-emerald-400 focus:outline-none border-none resize-none"
             />
             <button
               type="button"

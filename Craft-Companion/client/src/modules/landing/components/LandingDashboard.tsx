@@ -25,7 +25,7 @@ export const LandingDashboard: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen w-full bg-[#141415] text-white flex flex-col font-main selection:bg-amber-400/20 selection:text-amber-300 relative overflow-x-hidden route-view">
+    <div className="min-h-screen w-full bg-oled-canvas text-white flex flex-col font-main selection:bg-amber-400/20 selection:text-amber-300 relative overflow-x-hidden route-view">
       {/* Top Floating Navbar */}
       <LandingNavbar
         content={content}
@@ -68,7 +68,7 @@ export const LandingDashboard: React.FC = () => {
         type="button"
         aria-label="Privacy and Cookie Preferences"
         onClick={() => setIsCookieModalOpen(true)}
-        className="fixed bottom-5 left-5 z-40 bg-[#1c1c20] hover:bg-[#24252e] text-zinc-300 hover:text-white border-0 outline-none px-3.5 py-2 rounded-full shadow-lg backdrop-blur-md text-xs font-medium flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer group"
+        className="fixed bottom-5 left-5 z-40 bg-oled-850 hover:bg-oled-pill text-zinc-300 hover:text-white border-0 outline-none px-3.5 py-2 rounded-full shadow-lg backdrop-blur-md text-xs font-medium flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer group"
         style={{ border: 'none', outline: 'none' }}
       >
         <svg

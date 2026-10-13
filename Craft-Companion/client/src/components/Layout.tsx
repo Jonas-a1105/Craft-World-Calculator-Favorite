@@ -5,6 +5,7 @@ import Footer from './layout/Footer';
 import { FloatingDock } from './layout/nav';
 import { useTranslation } from '../utils/i18n';
 import { useFactoryNotifications } from '../hooks/useFactoryNotifications';
+import { markModuleVisit } from '../services/visitTracker';
 
 export interface LayoutProps {
   children: React.ReactNode;
@@ -17,6 +18,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, fluid = false }) => {
 
   // Run background factory notifications safely in custom hook
   useFactoryNotifications(language);
+
+  // Registro ligero de módulos visitados (LP2 — alimenta el checklist de Home)
+  React.useEffect(() => {
+    markModuleVisit(location.pathname);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen flex flex-col font-main selection:bg-game-blue/30 selection:text-white relative">

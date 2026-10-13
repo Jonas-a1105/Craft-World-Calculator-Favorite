@@ -48,14 +48,14 @@ export const CraftTab: React.FC<CraftTabProps> = ({ craft, onReauthorize }) => {
             </span>
           }
           action={
-            <span className="text-[10px] text-cyan-400 font-mono bg-cyan-500/10 px-2 py-0.5 rounded-full">
+            <span className="text-[11px] text-cyan-400 font-mono bg-cyan-500/10 px-2 py-0.5 rounded-full">
               {powerPercent}% {language === 'es' ? 'disp.' : 'avail.'}
             </span>
           }
-          className="rounded-[32px] bg-[#18181b] shadow-xl border-none"
+          className="rounded-[32px] bg-oled-card shadow-xl border-none"
         >
           <div className="space-y-3">
-            <div className="bg-[#202024] rounded-[24px] p-4 space-y-2.5 shadow-sm">
+            <div className="bg-oled-pill rounded-[24px] p-4 space-y-2.5 shadow-sm">
               <div className="flex justify-between items-center text-xs">
                 <span className="text-slate-300 font-bold">
                   {language === 'es' ? 'Poder Disponible' : 'Available Power'}
@@ -64,7 +64,7 @@ export const CraftTab: React.FC<CraftTabProps> = ({ craft, onReauthorize }) => {
                   {formatNumber(powerAvail)} / {formatNumber(craft.power)}
                 </span>
               </div>
-              <div className="w-full bg-[#151518] rounded-full h-2.5 overflow-hidden">
+              <div className="w-full bg-oled-cardInner rounded-full h-2.5 overflow-hidden">
                 <div
                   className="bg-gradient-to-r from-cyan-500 to-blue-500 h-2.5 rounded-full transition-all duration-500"
                   style={{ width: `${powerPercent}%` }}
@@ -72,7 +72,7 @@ export const CraftTab: React.FC<CraftTabProps> = ({ craft, onReauthorize }) => {
               </div>
             </div>
 
-            <div className="bg-[#202024] hover:bg-[#28282e] rounded-full p-3 px-4 flex justify-between items-center text-xs transition-colors shadow-sm">
+            <div className="bg-oled-pill hover:bg-[#28282e] rounded-full p-3 px-4 flex justify-between items-center text-xs transition-colors shadow-sm">
               <span className="text-slate-300 font-semibold flex items-center gap-2">
                 <DumbbellBoldDuotone className="w-4 h-4 text-purple-400" />
                 <span>{language === 'es' ? 'Puntos de Habilidad' : 'Skill Points'}</span>
@@ -94,29 +94,29 @@ export const CraftTab: React.FC<CraftTabProps> = ({ craft, onReauthorize }) => {
           }
           action={
             totalVaults ? (
-              <span className="text-[10px] text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded-full">
+              <span className="text-[11px] text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded-full">
                 {unlockedVaults}/{totalVaults} {language === 'es' ? 'activas' : 'active'}
               </span>
             ) : undefined
           }
-          className="rounded-[32px] bg-[#18181b] shadow-xl border-none"
+          className="rounded-[32px] bg-oled-card shadow-xl border-none"
         >
           {craft.vaults?.length ? (
             <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 hover:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.1)_transparent]">
               {craft.vaults.map((v, i) => (
                 <div
                   key={v.symbol || i}
-                  className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2.5 px-3.5 flex justify-between items-center text-xs transition-colors shadow-sm"
+                  className="bg-oled-pill hover:bg-[#28282e] rounded-full p-2.5 px-3.5 flex justify-between items-center text-xs transition-colors shadow-sm"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-8 h-8 rounded-full bg-[#151518] flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-oled-cardInner flex items-center justify-center shrink-0">
                       <ResourceIcon symbol={v.symbol} size={20} />
                     </div>
                     <div className="min-w-0">
                       <span className="font-bold text-slate-200 block leading-tight truncate">
                         {v.symbol}
                       </span>
-                      <span className="text-[10px] text-slate-400 leading-tight block">
+                      <span className="text-[11px] text-slate-400 leading-tight block">
                         {v.isUnlocked
                           ? language === 'es'
                             ? 'Desbloqueado'
@@ -131,7 +131,7 @@ export const CraftTab: React.FC<CraftTabProps> = ({ craft, onReauthorize }) => {
                     <span className="text-emerald-400 font-black font-mono block">
                       {formatNumber(v.amount)}
                     </span>
-                    <span className="text-slate-500 text-[10px] font-mono block">
+                    <span className="text-slate-400 text-[11px] font-mono block">
                       / {formatNumber(v.capacity)}
                     </span>
                   </div>
@@ -153,22 +153,22 @@ export const CraftTab: React.FC<CraftTabProps> = ({ craft, onReauthorize }) => {
           }
           action={
             craft.workshop?.length ? (
-              <span className="text-[10px] text-amber-400 font-mono bg-amber-500/10 px-2 py-0.5 rounded-full">
+              <span className="text-[11px] text-amber-400 font-mono bg-amber-500/10 px-2 py-0.5 rounded-full">
                 {craft.workshop.length} {language === 'es' ? 'talleres' : 'workshops'}
               </span>
             ) : undefined
           }
-          className="rounded-[32px] bg-[#18181b] shadow-xl border-none"
+          className="rounded-[32px] bg-oled-card shadow-xl border-none"
         >
           {craft.workshop?.length ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[280px] overflow-y-auto pr-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 hover:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.1)_transparent]">
               {craft.workshop.map((w, i) => (
                 <div
                   key={w.symbol || i}
-                  className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2.5 px-3 flex items-center justify-between text-xs transition-colors shadow-sm"
+                  className="bg-oled-pill hover:bg-[#28282e] rounded-full p-2.5 px-3 flex items-center justify-between text-xs transition-colors shadow-sm"
                 >
                   <div className="flex items-center gap-2 min-w-0 pr-1.5">
-                    <div className="w-8 h-8 rounded-full bg-[#151518] flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-oled-cardInner flex items-center justify-center shrink-0">
                       <FactoryIcon symbol={w.symbol} size={20} />
                     </div>
                     <span className="text-slate-200 font-bold text-xs truncate">{w.symbol}</span>

@@ -46,7 +46,7 @@ export const SignInAccordionForm = ({
                 : 'Enter your UID or username (e.g. player)'
             }
             autoComplete="username"
-            className="w-full h-11 px-4 bg-[#151518] radius-moderado text-sm text-white placeholder-zinc-500 font-normal border border-white/[0.08] focus:border-emerald-500/60 focus:bg-[#1a1a1f] focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
+            className="w-full h-11 px-4 bg-oled-cardInner radius-moderado text-sm text-white placeholder-zinc-500 font-normal border border-white/[0.08] focus:border-emerald-500/60 focus:bg-[#1a1a1f] focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
           />
         </div>
       </div>

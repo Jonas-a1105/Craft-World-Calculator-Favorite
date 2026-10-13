@@ -33,7 +33,7 @@ export const EfficiencySection: React.FC<EfficiencySectionProps> = ({
             <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
               {isEs ? 'Eficiencia en Vivo' : 'Live Efficiency'}
             </h2>
-            <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-bold">
+            <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-bold">
               Crowns per COIN
             </span>
           </div>
@@ -57,7 +57,7 @@ export const EfficiencySection: React.FC<EfficiencySectionProps> = ({
               className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border-none ${
                 globalMultiplier === mult
                   ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                  : 'bg-[#22222a] text-slate-300 hover:text-white hover:bg-[#2c2c36]'
+                  : 'bg-oled-pill text-slate-300 hover:text-white hover:bg-oled-pillHover'
               }`}
             >
               {mult}x
@@ -82,12 +82,12 @@ export const EfficiencySection: React.FC<EfficiencySectionProps> = ({
                 ? 'Buscar recurso (ej. Hydrogen, Oil, Acid)...'
                 : 'Search resource (e.g. Hydrogen, Oil, Acid)...'
             }
-            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#1c1c22] text-xs font-sans text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-500/50 transition-all border-none shadow-lg shadow-black/25"
+            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-oled-850 text-xs font-sans text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-500/50 transition-all border-none shadow-lg shadow-black/25"
           />
         </div>
 
         {/* Power Price Input Setting */}
-        <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-[#1c1c22] shrink-0 border-none shadow-lg shadow-black/25">
+        <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-oled-850 shrink-0 border-none shadow-lg shadow-black/25">
           <div className="text-amber-400">
             <BoltLinear size={18} />
           </div>
@@ -103,7 +103,7 @@ export const EfficiencySection: React.FC<EfficiencySectionProps> = ({
               const val = parseFloat(e.target.value);
               onPowerPriceChange(isNaN(val) ? 0 : val);
             }}
-            className="w-16 px-2 py-0.5 rounded-lg bg-[#131316] text-right font-mono text-xs font-bold text-amber-300 focus:outline-none focus:ring-1 focus:ring-amber-500/50 border-none shadow-inner"
+            className="w-16 px-2 py-0.5 rounded-lg bg-oled-cardInner text-right font-mono text-xs font-bold text-amber-300 focus:outline-none focus:ring-1 focus:ring-amber-500/50 border-none shadow-inner"
           />
           <span className="text-[11px] font-mono text-slate-400 whitespace-nowrap font-medium">
             {baseSymbol} / 100k

@@ -80,6 +80,37 @@ export const ACTIVE_RESOURCES = new Set([
   'WATER',
   'WETNEST',
   'WIRE',
+  // Líneas de evento y minas del config oficial (AggregatedCraftWorldConfigurationQuery)
+  'BONESOUP',
+  'BOWL',
+  'BURGER',
+  'BURNTRICE',
+  'DANGO',
+  'DUMPLING',
+  'DYNODESSERT',
+  'DYNOFISH',
+  'FERTILIZER',
+  'FISHBONE',
+  'FUGU',
+  'LOBSTER',
+  'MAGICSHARD',
+  'MAGICSUPPLY',
+  'MEATBALL',
+  'MYSTICWEAPON',
+  'NINJASTAR',
+  'PANCAKE',
+  'PLUNGER',
+  'RAWRMEN',
+  'RAWRVIOLI',
+  'SASHIMI',
+  'SPOON',
+  'SUSHI',
+  'SWORD',
+  'TAPE',
+  'TARGET',
+  'TOYHAMMER',
+  'WAGYU',
+  'WORMS',
 ]);
 
 const csvPaths = [
@@ -379,35 +410,6 @@ function parseFactoryCsv(csv: string): FactoryDataRow[] {
   return rows;
 }
 
-function ensureBaseResourceRows(parsed: FactoryDataRow[]): FactoryDataRow[] {
-  const existingTokens = new Set(parsed.map((r) => r.token.toUpperCase()));
-  const baseTokens = ['EARTH', 'WATER', 'FIRE'];
-  const newRows: FactoryDataRow[] = [...parsed];
-
-  baseTokens.forEach((tok) => {
-    if (!existingTokens.has(tok)) {
-      for (let lvl = 1; lvl <= 40; lvl++) {
-        const outputAmount = Math.round(1500 * Math.pow(1.054, lvl - 1));
-        newRows.push({
-          token: tok,
-          level: lvl,
-          duration_min: 60,
-          output_token: tok,
-          output_amount: outputAmount,
-          input_token_1: '',
-          input_amount_1: 0,
-          input_token_2: '',
-          input_amount_2: 0,
-          upgrade_token: tok,
-          upgrade_amount: lvl * 500,
-        });
-      }
-    }
-  });
-
-  return newRows;
-}
-
 export async function loadFactoryData(): Promise<FactoryDataRow[]> {
   if (factoryDataCache) return factoryDataCache;
 
@@ -430,7 +432,7 @@ export async function loadFactoryData(): Promise<FactoryDataRow[]> {
           const raw = fs.readFileSync(p, 'utf8');
           const jsonData = JSON.parse(raw);
           if (Array.isArray(jsonData) && jsonData.length > 0) {
-            factoryDataCache = ensureBaseResourceRows(jsonData);
+            factoryDataCache = jsonData;
             return factoryDataCache;
           }
         }
@@ -446,7 +448,7 @@ export async function loadFactoryData(): Promise<FactoryDataRow[]> {
     if (jsonRes.ok) {
       const jsonData = await jsonRes.json();
       if (Array.isArray(jsonData) && jsonData.length > 0) {
-        factoryDataCache = ensureBaseResourceRows(jsonData);
+        factoryDataCache = jsonData;
         return factoryDataCache;
       }
     }
@@ -479,7 +481,7 @@ export async function loadFactoryData(): Promise<FactoryDataRow[]> {
         continue;
       }
 
-      factoryDataCache = ensureBaseResourceRows(parsed);
+      factoryDataCache = parsed;
       return factoryDataCache;
     } catch (error) {
       lastError = error;

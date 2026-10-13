@@ -59,7 +59,7 @@ export const EfficiencyTableRow: React.FC<EfficiencyTableRowProps> = ({
             <span className="font-semibold text-white block text-sm font-sans">
               {item.name}
             </span>
-            <span className="text-[10px] text-slate-400 font-mono">
+            <span className="text-[11px] text-slate-400 font-mono">
               {item.symbol}
             </span>
           </div>
@@ -79,7 +79,7 @@ export const EfficiencyTableRow: React.FC<EfficiencyTableRowProps> = ({
             type="button"
             onClick={cycleMultiplier}
             title="Click to cycle multiplier (1x, 2x, 4x, 8x)"
-            className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors ${
+            className={`px-1.5 py-0.5 rounded text-[11px] font-bold transition-colors ${
               item.multiplier > 1
                 ? 'bg-amber-500/20 text-amber-300'
                 : 'bg-white/5 text-slate-400 hover:text-white'
@@ -93,7 +93,7 @@ export const EfficiencyTableRow: React.FC<EfficiencyTableRowProps> = ({
       {/* Market Price */}
       <td className="py-3 px-3 text-right text-slate-300 whitespace-nowrap">
         {formatValue(item.marketPrice, true)}{' '}
-        <span className="text-[10px] text-slate-400">{baseSymbol}</span>
+        <span className="text-[11px] text-slate-400">{baseSymbol}</span>
       </td>
 
       {/* Total Crowns */}
@@ -104,7 +104,7 @@ export const EfficiencyTableRow: React.FC<EfficiencyTableRowProps> = ({
       {/* Total Cost */}
       <td className="py-3 px-3 text-right text-slate-300 whitespace-nowrap">
         {formatValue(item.totalCost, true)}{' '}
-        <span className="text-[10px] text-slate-400">{baseSymbol}</span>
+        <span className="text-[11px] text-slate-400">{baseSymbol}</span>
       </td>
 
       {/* Crowns / COIN (Efficiency) */}

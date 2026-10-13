@@ -2,6 +2,8 @@ import React from 'react';
 import type { AdjustedCycleResult, InputSupplyMode } from '../../types';
 import { useTranslation } from '../../../../utils/i18n';
 import { formatNumber, formatCompactNumber } from '../../../../utils/formatters';
+import { formatRawBaseMaterials } from '../../services/profitabilityFormatters';
+import { getFactoryDisplayLevel } from '../../../../services/craftworldCalculations';
 
 export interface LevelCardRowProps {
   cycle: AdjustedCycleResult;
@@ -21,8 +23,8 @@ export const LevelCardRow: React.FC<LevelCardRowProps> = ({
     <div
       className={`relative p-3.5 sm:p-4 rounded-[22px] transition-all ${
         isOwnedLevel
-          ? 'bg-[#141416] border-[3.5px] border-emerald-400 shadow-md'
-          : 'bg-[#141416] hover:bg-[#18181c] border-[3.5px] border-transparent shadow-md'
+          ? 'bg-oled-cardInner border-[3.5px] border-emerald-400 shadow-md'
+          : 'bg-oled-cardInner hover:bg-oled-card border-[3.5px] border-transparent shadow-md'
       }`}
     >
       {/* Solid Green Checkmark Badge at Top-Right Corner */}
@@ -51,11 +53,11 @@ export const LevelCardRow: React.FC<LevelCardRowProps> = ({
         {/* Left Block: Level ID, Badges, Time, XP */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 flex-shrink-0">
           <span className="font-extrabold text-white text-sm sm:text-base font-mono">
-            Nv. {c.row.level}
+            Nv. {getFactoryDisplayLevel(c.row.level)}
           </span>
 
           {isOwnedLevel && (
-            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold inline-flex items-center gap-1">
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-extrabold inline-flex items-center gap-1">
               <svg
                 className="w-3 h-3 text-emerald-400"
                 fill="currentColor"
@@ -97,9 +99,9 @@ export const LevelCardRow: React.FC<LevelCardRowProps> = ({
             </span>
           )}
 
-          <span className="text-zinc-400 text-xs font-mono bg-[#1c1c20] px-2.5 py-1 rounded-full flex items-center gap-1">
+          <span className="text-zinc-400 text-xs font-mono bg-oled-850 px-2.5 py-1 rounded-full flex items-center gap-1">
             <svg
-              className="w-3 h-3 text-zinc-500"
+              className="w-3 h-3 text-zinc-400"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -112,19 +114,19 @@ export const LevelCardRow: React.FC<LevelCardRowProps> = ({
           </span>
 
           {c.row.yield_percent !== undefined && (
-            <span className="text-cyan-400 text-xs font-mono font-bold bg-[#1c1c20] px-2.5 py-1 rounded-full flex items-center gap-1">
+            <span className="text-cyan-400 text-xs font-mono font-bold bg-oled-850 px-2.5 py-1 rounded-full flex items-center gap-1">
               {c.row.yield_percent}% {language === 'es' ? 'Rend.' : 'Yield'}
             </span>
           )}
 
           {c.row.power_cost ? (
-            <span className="text-amber-400 text-xs font-mono font-bold bg-[#1c1c20] px-2.5 py-1 rounded-full flex items-center gap-1">
+            <span className="text-amber-400 text-xs font-mono font-bold bg-oled-850 px-2.5 py-1 rounded-full flex items-center gap-1">
               ⚡ {c.row.power_cost >= 1000 ? `${(c.row.power_cost / 1000).toFixed(0)}k` : c.row.power_cost}
             </span>
           ) : null}
 
           {c.xpPerHour > 0 && (
-            <span className="text-purple-400 text-xs font-mono font-bold bg-[#1c1c20] px-2.5 py-1 rounded-full flex items-center gap-1">
+            <span className="text-purple-400 text-xs font-mono font-bold bg-oled-850 px-2.5 py-1 rounded-full flex items-center gap-1">
               ★ {formatCompactNumber(c.xpPerHour)} XP/h
             </span>
           )}
@@ -134,7 +136,7 @@ export const LevelCardRow: React.FC<LevelCardRowProps> = ({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 flex-1 lg:justify-end items-center text-xs">
           {/* Insumos */}
           <div className="bg-[#101012] lg:bg-transparent p-2 sm:p-2.5 lg:p-0 rounded-2xl lg:rounded-none">
-            <span className="text-[10px] uppercase font-bold text-zinc-500 block">
+            <span className="text-[11px] uppercase font-bold text-zinc-400 block">
               {language === 'es' ? 'Insumos' : 'Inputs'}
             </span>
             <div className="font-mono font-bold flex items-baseline">
@@ -143,10 +145,10 @@ export const LevelCardRow: React.FC<LevelCardRowProps> = ({
               </span>
               <span className="text-amber-400 font-semibold text-[11px] ml-1">COIN</span>
             </div>
-            <span className="text-[10px] text-zinc-500 truncate block max-w-[130px]">
+            <span className="text-[11px] text-zinc-400 truncate block max-w-[130px]">
               {c.effectiveInputCost > 0
-                ? inputSupplyMode === 'self_crafted' && c.rawBaseMaterialsText
-                  ? c.rawBaseMaterialsText
+                ? inputSupplyMode === 'self_crafted' && (c.rawBaseMaterials?.length ?? 0) > 0
+                  ? formatRawBaseMaterials(c.rawBaseMaterials ?? [])
                   : `${c.row.input_token_1 || ''} (${formatNumber(c.input1PerCycle, 1)})${c.row.input_token_2 ? ` + ${c.row.input_token_2}` : ''}`
                 : language === 'es'
                   ? 'Sin insumos'
@@ -156,21 +158,21 @@ export const LevelCardRow: React.FC<LevelCardRowProps> = ({
 
           {/* Output */}
           <div className="bg-[#101012] lg:bg-transparent p-2 sm:p-2.5 lg:p-0 rounded-2xl lg:rounded-none">
-            <span className="text-[10px] uppercase font-bold text-zinc-500 block">
+            <span className="text-[11px] uppercase font-bold text-zinc-400 block">
               {language === 'es' ? 'Output (Venta)' : 'Output'}
             </span>
             <div className="font-mono font-bold flex items-baseline">
               <span className="text-white">+{formatNumber(c.revenuePerCycle)}</span>
               <span className="text-amber-400 font-semibold text-[11px] ml-1">COIN</span>
             </div>
-            <span className="text-[10px] text-zinc-500 truncate block">
+            <span className="text-[11px] text-zinc-400 truncate block">
               {c.row.output_token} ({formatNumber(c.outputPerCycle, 1)})
             </span>
           </div>
 
           {/* Ganancia / Hora */}
           <div className="bg-[#101012] lg:bg-transparent p-2 sm:p-2.5 lg:p-0 rounded-2xl lg:rounded-none">
-            <span className="text-[10px] uppercase font-bold text-zinc-500 block">
+            <span className="text-[11px] uppercase font-bold text-zinc-400 block">
               {language === 'es' ? 'Ganancia / h' : 'Profit / h'}
             </span>
             <div className="font-mono font-bold text-xs sm:text-sm flex items-baseline">
@@ -184,7 +186,7 @@ export const LevelCardRow: React.FC<LevelCardRowProps> = ({
 
           {/* Ganancia / Día */}
           <div className="bg-[#101012] lg:bg-transparent p-2 sm:p-2.5 lg:p-0 rounded-2xl lg:rounded-none">
-            <span className="text-[10px] uppercase font-bold text-zinc-500 block">
+            <span className="text-[11px] uppercase font-bold text-zinc-400 block">
               {language === 'es' ? 'Ganancia / Día' : 'Profit / Day'}
             </span>
             <div className="font-mono font-bold text-xs sm:text-sm flex items-baseline">

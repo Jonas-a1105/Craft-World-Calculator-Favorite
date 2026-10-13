@@ -12,6 +12,7 @@ import { useAppStore } from '../../../store/useAppStore';
 import type { UseFactoryCompareReturn } from '../types';
 import { calculateComparisonVerdict } from '../services/compareService';
 import { extractPlotFactoriesMap } from '../../profitability/services/cycleAdjuster';
+import { getFactoryDisplayLevel } from '../../../services/craftworldCalculations';
 
 export function useFactoryCompare(): UseFactoryCompareReturn {
   const { data: home, isLoading: isHomeLoading } = useCraftworldHomeQuery();
@@ -85,7 +86,7 @@ export function useFactoryCompare(): UseFactoryCompareReturn {
   const levelOptions1 = useMemo(() => {
     return availableLevels1.map((lvl) => ({
       value: lvl,
-      label: `Nv. ${lvl}`,
+      label: `Nv. ${getFactoryDisplayLevel(lvl)}`,
     }));
   }, [availableLevels1]);
 
@@ -99,7 +100,7 @@ export function useFactoryCompare(): UseFactoryCompareReturn {
   const levelOptions2 = useMemo(() => {
     return availableLevels2.map((lvl) => ({
       value: lvl,
-      label: `Nv. ${lvl}`,
+      label: `Nv. ${getFactoryDisplayLevel(lvl)}`,
     }));
   }, [availableLevels2]);
 
@@ -123,7 +124,6 @@ export function useFactoryCompare(): UseFactoryCompareReturn {
     return {
       workshop: rawHome?.craft?.workshop || rawHome?.craftWorld?.workshop || [],
       proficiencies: rawHome?.craft?.proficiencies || rawHome?.craftWorld?.proficiencies || [],
-      activeBoostMultiplier: home?.purchases?.isNoAdsActive ? 2 : 1,
     };
   }, [withPlayerBonuses, home]);
 

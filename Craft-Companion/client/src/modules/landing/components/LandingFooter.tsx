@@ -9,7 +9,7 @@ interface LandingFooterProps {
 
 export const LandingFooter: React.FC<LandingFooterProps> = ({ footer, onOpenCookieModal }) => {
   return (
-    <footer className="w-full pt-16 pb-12 text-center relative z-20 bg-[#141415] border-0">
+    <footer className="w-full pt-16 pb-12 text-center relative z-20 bg-oled-canvas border-0">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col items-center">
         {/* Brand Badge */}
         <div className="inline-flex items-center gap-2.5 mb-8">
@@ -123,7 +123,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ footer, onOpenCook
         </div>
 
         {/* Divider & Copyright */}
-        <div className="w-full pt-8 text-xs text-zinc-500 flex flex-col sm:flex-row items-center justify-between gap-4 border-0">
+        <div className="w-full pt-8 text-xs text-zinc-400 flex flex-col sm:flex-row items-center justify-between gap-4 border-0">
           <span>{footer.copyright}</span>
           {onOpenCookieModal && (
             <button

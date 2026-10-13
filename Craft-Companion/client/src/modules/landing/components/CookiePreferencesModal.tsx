@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { LandingCookiesSection } from '../types';
+import { useModalA11y } from '../../../hooks/useModalA11y';
 
 export interface CookiePreferencesState {
   strictlyNecessary: boolean;
@@ -27,6 +28,7 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
   const [activeTab, setActiveTab] = useState<'strictly_necessary' | 'performance' | 'targeting'>('strictly_necessary');
   const [performanceEnabled, setPerformanceEnabled] = useState(false);
   const [targetingEnabled, setTargetingEnabled] = useState(false);
+  const dialogRef = useModalA11y(isOpen);
 
   // Load persisted preferences
   useEffect(() => {
@@ -111,7 +113,11 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative w-full max-w-[620px] bg-[#1c1c20] rounded-3xl p-6 sm:p-8 shadow-2xl text-left overflow-hidden border-0 route-view">
+      <div
+        ref={dialogRef}
+        tabIndex={-1}
+        className="relative w-full max-w-[620px] bg-oled-850 rounded-3xl p-6 sm:p-8 shadow-2xl text-left overflow-hidden border-0 route-view"
+      >
         {/* Header Section */}
         <div className="flex items-start justify-between gap-4 mb-2">
           <h2
@@ -147,8 +153,8 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
               onClick={() => setActiveTab('strictly_necessary')}
               className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm transition-all text-left cursor-pointer border-0 outline-none ${
                 activeTab === 'strictly_necessary'
-                  ? 'bg-[#24252e] text-amber-400 font-bold shadow-sm'
-                  : 'text-zinc-400 hover:text-white hover:bg-[#202024] font-medium'
+                  ? 'bg-oled-pill text-amber-400 font-bold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-oled-pill font-medium'
               }`}
             >
               <svg
@@ -171,8 +177,8 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
               onClick={() => setActiveTab('performance')}
               className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm transition-all text-left cursor-pointer border-0 outline-none ${
                 activeTab === 'performance'
-                  ? 'bg-[#24252e] text-amber-400 font-bold shadow-sm'
-                  : 'text-zinc-400 hover:text-white hover:bg-[#202024] font-medium'
+                  ? 'bg-oled-pill text-amber-400 font-bold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-oled-pill font-medium'
               }`}
             >
               <svg
@@ -197,8 +203,8 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
               onClick={() => setActiveTab('targeting')}
               className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm transition-all text-left cursor-pointer border-0 outline-none ${
                 activeTab === 'targeting'
-                  ? 'bg-[#24252e] text-amber-400 font-bold shadow-sm'
-                  : 'text-zinc-400 hover:text-white hover:bg-[#202024] font-medium'
+                  ? 'bg-oled-pill text-amber-400 font-bold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-oled-pill font-medium'
               }`}
             >
               <svg
@@ -217,7 +223,7 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
           </div>
 
           {/* Right Detail Card */}
-          <div className="sm:col-span-7 bg-[#151518] rounded-2xl p-4 sm:p-5 flex flex-col justify-between min-h-[160px] border-0">
+          <div className="sm:col-span-7 bg-oled-cardInner rounded-2xl p-4 sm:p-5 flex flex-col justify-between min-h-[160px] border-0">
             <div>
               {/* Category Header Row */}
               <div className="flex items-center justify-between gap-2 mb-3">
@@ -226,7 +232,7 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
                     {activeCategory.title}
                   </span>
                   {activeCategory.badge && (
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#24252e] text-amber-400 border-0">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-oled-pill text-amber-400 border-0">
                       {activeCategory.badge}
                     </span>
                   )}
@@ -280,7 +286,7 @@ export const CookiePreferencesModal: React.FC<CookiePreferencesModalProps> = ({
             <button
               type="button"
               onClick={handleSavePreferences}
-              className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-[#24252e] hover:bg-[#2e303a] active:scale-95 transition-all cursor-pointer border-0 outline-none"
+              className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-oled-pill hover:bg-oled-pillHover active:scale-95 transition-all cursor-pointer border-0 outline-none"
             >
               {cookies.savePreferences}
             </button>

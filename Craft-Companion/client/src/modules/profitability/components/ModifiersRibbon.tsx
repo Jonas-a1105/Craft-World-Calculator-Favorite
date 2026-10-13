@@ -26,7 +26,7 @@ export const ModifiersRibbon: React.FC<ModifiersRibbonProps> = ({
   const { language } = useTranslation();
 
   return (
-    <div className="bg-[#18181b] rounded-[28px] sm:rounded-[32px] p-4 sm:p-6 shadow-xl border-none space-y-4">
+    <div className="bg-oled-card rounded-[28px] sm:rounded-[32px] p-4 sm:p-6 shadow-xl border-none space-y-4">
       <div className="flex items-center gap-2 mb-1">
         <svg
           className="w-4 h-4 text-emerald-400 flex-shrink-0"
@@ -50,7 +50,7 @@ export const ModifiersRibbon: React.FC<ModifiersRibbonProps> = ({
 
       <div className="space-y-3.5">
         {/* Input Supply Mode Switcher */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 p-3 sm:p-3.5 bg-[#141416] rounded-2xl border-none">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 p-3 sm:p-3.5 bg-oled-cardInner rounded-2xl border-none">
           <span className="font-bold text-zinc-300 text-xs flex items-center gap-2 flex-shrink-0">
             <svg
               className="w-4 h-4 text-zinc-400 flex-shrink-0"
@@ -74,7 +74,7 @@ export const ModifiersRibbon: React.FC<ModifiersRibbonProps> = ({
               className={`px-3 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center ${
                 inputSupplyMode === 'market'
                   ? 'bg-cyan-500 text-slate-950 shadow-md font-bold'
-                  : 'bg-[#202024] text-zinc-400 hover:text-white hover:bg-[#28282e]'
+                  : 'bg-oled-pill text-zinc-400 hover:text-white hover:bg-[#28282e]'
               }`}
             >
               <svg
@@ -101,7 +101,7 @@ export const ModifiersRibbon: React.FC<ModifiersRibbonProps> = ({
               className={`px-3 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center ${
                 inputSupplyMode === 'self_crafted'
                   ? 'bg-emerald-500 text-slate-950 shadow-md font-bold'
-                  : 'bg-[#202024] text-zinc-400 hover:text-white hover:bg-[#28282e]'
+                  : 'bg-oled-pill text-zinc-400 hover:text-white hover:bg-[#28282e]'
               }`}
             >
               <svg
@@ -127,7 +127,7 @@ export const ModifiersRibbon: React.FC<ModifiersRibbonProps> = ({
         {/* Account Modifiers */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full sm:w-auto">
-            <label className="flex items-center gap-2 cursor-pointer bg-[#141416] hover:bg-[#202026] px-3.5 py-2 rounded-full transition-colors">
+            <label className="flex items-center gap-2 cursor-pointer bg-oled-cardInner hover:bg-oled-pillHover px-3.5 py-2 rounded-full transition-colors">
               <input
                 type="checkbox"
                 checked={useWorkshop}
@@ -152,7 +152,7 @@ export const ModifiersRibbon: React.FC<ModifiersRibbonProps> = ({
               </span>
             </label>
 
-            <label className="flex items-center gap-2 cursor-pointer bg-[#141416] hover:bg-[#202026] px-3.5 py-2 rounded-full transition-colors">
+            <label className="flex items-center gap-2 cursor-pointer bg-oled-cardInner hover:bg-oled-pillHover px-3.5 py-2 rounded-full transition-colors">
               <input
                 type="checkbox"
                 checked={useMastery}
@@ -179,7 +179,7 @@ export const ModifiersRibbon: React.FC<ModifiersRibbonProps> = ({
               </span>
             </label>
 
-            <label className="flex items-center gap-2 cursor-pointer bg-[#141416] hover:bg-[#202026] px-3.5 py-2 rounded-full transition-colors">
+            <label className="flex items-center gap-2 cursor-pointer bg-oled-cardInner hover:bg-oled-pillHover px-3.5 py-2 rounded-full transition-colors">
               <input
                 type="checkbox"
                 checked={useBoosters}

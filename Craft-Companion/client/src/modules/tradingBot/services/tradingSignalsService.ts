@@ -4,6 +4,11 @@ import type { RoninPoolsDataset } from '../../../services/roninPoolsService';
 import { calculatePriceChanges } from '../../profitability/services/pricesAndProfitabilityService';
 import { scanCraftArbitrageOpportunities } from './arbitrageEngine';
 import type { ProficiencyItem } from '../../../services/masteryModifiers';
+import {
+  percentChange,
+  roundHalfUp,
+  sumPrecise,
+} from '../../../services/financial/pricingService';
 import type {
   TradingOpportunity,
   WatchlistRule,
@@ -50,7 +55,7 @@ export function generateTradingOpportunities({
     // Check DIP_BUY condition: Price dropped >= 6% or recommendation is BUY with negative change
     if (change24h <= -6 || (rec === 'BUY' && change24h < 0)) {
       const discount = Math.abs(change24h);
-      const estReturn = Number((discount * 1.15).toFixed(1));
+      const estReturn = roundHalfUp(discount * 1.15, 1);
       const score = Math.min(98, Math.max(55, Math.round(55 + discount * 2.2)));
       const tier = score >= 85 ? 'S' : score >= 70 ? 'A' : 'B';
 
@@ -62,10 +67,10 @@ export function generateTradingOpportunities({
         score,
         tier,
         currentPrice: item.amount,
-        referencePrice: Number((item.amount / (1 + change24h / 100)).toFixed(2)),
+        referencePrice: roundHalfUp(item.amount / (1 + change24h / 100), 2),
         priceDeltaPercent: change24h,
         potentialMarginPercent: estReturn,
-        potentialProfitCoin: Number((item.amount * (estReturn / 100) * 100).toFixed(2)),
+        potentialProfitCoin: roundHalfUp(item.amount * (estReturn / 100) * 100, 2),
         reason: `Caída de ${change24h.toFixed(1)}% en 24h. Cotiza por debajo de su media histórica.`,
         actionRecommendation: `Comprar en corrección para rebote hacia su precio promedio estimado.`,
         timestamp: Date.now(),
@@ -85,10 +90,10 @@ export function generateTradingOpportunities({
         score,
         tier,
         currentPrice: item.amount,
-        referencePrice: Number((item.amount / (1 + change24h / 100)).toFixed(2)),
+        referencePrice: roundHalfUp(item.amount / (1 + change24h / 100), 2),
         priceDeltaPercent: change24h,
-        potentialMarginPercent: Number(change24h.toFixed(1)),
-        potentialProfitCoin: Number((item.amount * (change24h / 100) * 100).toFixed(2)),
+        potentialMarginPercent: roundHalfUp(change24h, 1),
+        potentialProfitCoin: roundHalfUp(item.amount * (change24h / 100) * 100, 2),
         reason: `Pico alcista de +${change24h.toFixed(1)}% en 24h. Máximo de cotización reciente.`,
         actionRecommendation: `Momento ideal para liquidar inventario excedente y asegurar liquidez COIN.`,
         timestamp: Date.now(),
@@ -109,17 +114,17 @@ export function generateTradingOpportunities({
     if (!currentPrice) continue;
 
     let triggered = false;
-    let delta = 0;
 
     if (rule.condition === 'BELOW' && currentPrice <= rule.targetValue) {
       triggered = true;
-      delta = -(((rule.targetValue - currentPrice) / rule.targetValue) * 100);
     } else if (rule.condition === 'ABOVE' && currentPrice >= rule.targetValue) {
       triggered = true;
-      delta = ((currentPrice - rule.targetValue) / rule.targetValue) * 100;
     }
 
     if (triggered) {
+      // Ambas condiciones comparten la misma fórmula: variación % vs el precio objetivo.
+      const delta = percentChange(currentPrice, rule.targetValue) ?? 0;
+
       opportunities.unshift({
         id: `watch-${rule.id}`,
         symbol: rule.symbol,
@@ -129,9 +134,9 @@ export function generateTradingOpportunities({
         tier: 'S',
         currentPrice,
         referencePrice: rule.targetValue,
-        priceDeltaPercent: Number(delta.toFixed(1)),
-        potentialMarginPercent: Math.abs(Number(delta.toFixed(1))),
-        potentialProfitCoin: Number((Math.abs(currentPrice - rule.targetValue) * 100).toFixed(2)),
+        priceDeltaPercent: roundHalfUp(delta, 1),
+        potentialMarginPercent: Math.abs(roundHalfUp(delta, 1)),
+        potentialProfitCoin: roundHalfUp(Math.abs(currentPrice - rule.targetValue) * 100, 2),
         reason: `Alerta personalizada activada: ${rule.symbol} alcanzó ${currentPrice} COIN (Objetivo: ${rule.targetValue} COIN).`,
         actionRecommendation: rule.notes || `Disparador objetivo alcanzado para ${rule.symbol}.`,
         timestamp: Date.now(),
@@ -184,12 +189,14 @@ export function filterOpportunities(
 export function computeTradingBotStats(opportunities: TradingOpportunity[]): TradingBotStats {
   const activeOpportunities = opportunities.length;
   const topProfitPercent = opportunities.length > 0 ? Math.max(...opportunities.map((o) => o.potentialMarginPercent)) : 0;
-  const estimated24hYieldCoin = opportunities.reduce((acc, curr) => acc + (curr.potentialProfitCoin || 0), 0);
 
   return {
     activeOpportunities,
-    topProfitPercent: Number(topProfitPercent.toFixed(1)),
-    estimated24hYieldCoin: Number(estimated24hYieldCoin.toFixed(2)),
+    topProfitPercent: roundHalfUp(topProfitPercent, 1),
+    estimated24hYieldCoin: roundHalfUp(
+      sumPrecise(opportunities.map((o) => o.potentialProfitCoin || 0)),
+      2,
+    ),
     signalsTriggeredToday: Math.min(activeOpportunities * 2, 48),
     botStatus: 'SCANNING',
     lastScannedAt: Date.now(),

@@ -30,7 +30,7 @@ export const InventoryCategoryFilterBar: React.FC<InventoryCategoryFilterBarProp
               className={`relative w-11 h-11 min-w-[44px] min-h-[44px] !p-0 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 outline-none select-none ${
                 isSelected
                   ? 'bg-[#292930] scale-105 ring-2 ring-emerald-400 shadow-lg shadow-emerald-500/25'
-                  : 'bg-[#1c1c20] hover:bg-[#25252b] hover:scale-105 opacity-80 hover:opacity-100'
+                  : 'bg-oled-850 hover:bg-[#25252b] hover:scale-105 opacity-80 hover:opacity-100'
               }`}
             >
               {/* Category Pixel Icon - Exactly 26px matching resource cards */}

@@ -21,7 +21,7 @@ export const SettingsUserProfileCard: React.FC<SettingsUserProfileCardProps> = (
   }, [navigate]);
 
   return (
-    <div className="bg-[#18181b] rounded-[32px] p-5 shadow-xl flex items-center justify-between gap-3 relative overflow-hidden">
+    <div className="bg-oled-card rounded-[32px] p-5 shadow-xl flex items-center justify-between gap-3 relative overflow-hidden">
       <div className="flex items-center gap-4 min-w-0">
         {/* Avatar */}
         <div className="w-14 h-14 rounded-full overflow-hidden bg-black/60 ring-2 ring-white/10 flex-shrink-0 flex items-center justify-center">
@@ -55,7 +55,7 @@ export const SettingsUserProfileCard: React.FC<SettingsUserProfileCardProps> = (
           </p>
           <div className="flex items-center gap-1.5 mt-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] text-emerald-400 font-semibold tracking-wide">
+            <span className="text-[11px] text-emerald-400 font-semibold tracking-wide">
               OAuth Conectado (5 Scopes)
             </span>
           </div>
@@ -68,7 +68,7 @@ export const SettingsUserProfileCard: React.FC<SettingsUserProfileCardProps> = (
           type="button"
           onClick={oauthAuthorize}
           title={language === 'es' ? 'Revincular Cuenta' : 'Re-link Account'}
-          className="w-10 h-10 rounded-full bg-[#24242a] hover:bg-[#2e2e36] text-zinc-200 hover:text-white flex items-center justify-center transition-all shadow-md cursor-pointer shrink-0 group border-none p-0"
+          className="w-10 h-10 rounded-full bg-oled-pill hover:bg-[#2e2e36] text-zinc-200 hover:text-white flex items-center justify-center transition-all shadow-md cursor-pointer shrink-0 group border-none p-0"
         >
           <RefreshLinear className="w-5 h-5 transition-transform duration-500 group-hover:rotate-180 text-zinc-300 group-hover:text-white shrink-0" />
         </button>
@@ -78,7 +78,7 @@ export const SettingsUserProfileCard: React.FC<SettingsUserProfileCardProps> = (
           type="button"
           onClick={handleLogout}
           title={language === 'es' ? 'Cerrar Sesión' : 'Sign Out'}
-          className="w-10 h-10 rounded-full bg-[#24242a] hover:bg-rose-500/20 text-zinc-300 hover:text-rose-400 flex items-center justify-center transition-all shadow-md cursor-pointer shrink-0 border-none p-0"
+          className="w-10 h-10 rounded-full bg-oled-pill hover:bg-rose-500/20 text-zinc-300 hover:text-rose-400 flex items-center justify-center transition-all shadow-md cursor-pointer shrink-0 border-none p-0"
         >
           <Logout3Linear className="w-5 h-5 shrink-0" />
         </button>

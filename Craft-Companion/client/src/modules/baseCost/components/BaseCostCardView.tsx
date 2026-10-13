@@ -7,7 +7,7 @@ import {
   formatCoin,
   formatQuantity,
   getMarginTextColor,
-} from '../services/baseCostCalculatorService';
+} from '../services/baseCostFormatters';
 import {
   LinkCircleLinear,
   BatteryChargeBoldDuotone,
@@ -46,7 +46,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-[32px] bg-[#18181c] p-12 text-center text-slate-500 font-mono text-xs shadow-md border-none">
+      <div className="rounded-[32px] bg-oled-card p-12 text-center text-slate-400 font-mono text-xs shadow-md border-none">
         No se encontraron recursos que coincidan con los filtros de búsqueda o estrategia.
       </div>
     );
@@ -80,7 +80,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
           return (
             <div
               key={row.token}
-              className="flex flex-col justify-between rounded-[28px] sm:rounded-[32px] bg-[#18181c] hover:bg-[#202026] p-5 shadow-md transition-all duration-200 border-none select-none relative group"
+              className="flex flex-col justify-between rounded-[28px] sm:rounded-[32px] bg-oled-card hover:bg-oled-pillHover p-5 shadow-md transition-all duration-200 border-none select-none relative group"
             >
               <div className="space-y-3.5">
                 {/* 1. Top Bar: Icon, Name, Category & Selectors */}
@@ -100,14 +100,14 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                             target="_blank"
                             rel="noopener noreferrer"
                             title={`Ver ${row.name} en Defined.fi`}
-                            className="text-zinc-500 hover:text-amber-400 transition-colors shrink-0"
+                            className="text-zinc-400 hover:text-amber-400 transition-colors shrink-0"
                           >
                             <LinkCircleLinear size={14} />
                           </a>
                         )}
                       </div>
                       <span
-                        className={`inline-block px-2 py-0.5 rounded-full text-[10px] uppercase font-semibold tracking-wider mt-0.5 ${catStyle.text} ${catStyle.bg}`}
+                        className={`inline-block px-2 py-0.5 rounded-full text-[11px] uppercase font-semibold tracking-wider mt-0.5 ${catStyle.text} ${catStyle.bg}`}
                       >
                         {row.category}
                       </span>
@@ -117,7 +117,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                   {/* Level & Mastery Selectors */}
                   <div className="flex items-center gap-2 shrink-0">
                     <div className="flex flex-col items-center">
-                      <span className="text-[9px] font-bold text-zinc-500 uppercase">Lvl</span>
+                      <span className="text-[11px] font-bold text-zinc-400 uppercase">Lvl</span>
                       <BaseCostLevelSelector
                         token={row.token}
                         curLevel={row.curLevel}
@@ -126,7 +126,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                       />
                     </div>
                     <div className="flex flex-col items-center">
-                      <span className="text-[9px] font-bold text-zinc-500 uppercase">Mast</span>
+                      <span className="text-[11px] font-bold text-zinc-400 uppercase">Mast</span>
                       <BaseCostMasterySelector
                         token={row.token}
                         mastery={row.mastery}
@@ -143,7 +143,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                       <LeafBoldDuotone className="w-4 h-4 text-emerald-400 shrink-0" />
                       <span className="font-bold">Recurso Raíz Elemental</span>
                     </div>
-                    <span className="text-[10px] font-semibold text-zinc-500 uppercase">
+                    <span className="text-[11px] font-semibold text-zinc-400 uppercase">
                       Extracción Base
                     </span>
                   </div>
@@ -162,7 +162,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                         </div>
                       </div>
                     </div>
-                    <span className="px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 font-extrabold text-[10px] shrink-0">
+                    <span className="px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 font-extrabold text-[11px] shrink-0">
                       COMPRA
                     </span>
                   </div>
@@ -179,7 +179,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                         </div>
                       </div>
                     </div>
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-extrabold text-[10px] shrink-0">
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-extrabold text-[11px] shrink-0">
                       CRAFTEA
                     </span>
                   </div>
@@ -196,7 +196,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                         </div>
                       </div>
                     </div>
-                    <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 font-extrabold text-[10px] shrink-0">
+                    <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 font-extrabold text-[11px] shrink-0">
                       HÍBRIDO
                     </span>
                   </div>
@@ -213,7 +213,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                         </div>
                       </div>
                     </div>
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-extrabold text-[10px] shrink-0">
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-extrabold text-[11px] shrink-0">
                       VERTICAL
                     </span>
                   </div>
@@ -222,18 +222,18 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                 {/* 3. Three-Way Cost Comparison Grid */}
                 <div className="bg-zinc-800/50 rounded-2xl p-3 grid grid-cols-3 gap-2 text-center">
                   <div className="flex flex-col items-center">
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-tight">
+                    <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-tight">
                       Mercado
                     </span>
                     <div className="flex items-center gap-1 font-extrabold text-xs text-white mt-0.5 tabular-nums">
                       <span>{formatCoin(row.marketBuyPrice)}</span>
                       <ResourceIcon symbol="COIN" size={12} />
                     </div>
-                    <span className="text-[9px] font-bold text-zinc-500 mt-0.5">Precio Vivo</span>
+                    <span className="text-[11px] font-bold text-zinc-400 mt-0.5">Precio Vivo</span>
                   </div>
 
                   <div className="flex flex-col items-center">
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-tight">
+                    <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-tight">
                       Insumos Directos
                     </span>
                     <div className="flex items-center gap-1 font-extrabold text-xs text-white mt-0.5 tabular-nums">
@@ -242,12 +242,12 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                     </div>
                     {!row.isRootResource && (
                       <span
-                        className={`text-[9px] font-extrabold mt-0.5 ${
+                        className={`text-[11px] font-extrabold mt-0.5 ${
                           directDiffPct < 0
                             ? 'text-emerald-400'
                             : directDiffPct > 0
                               ? 'text-rose-400'
-                              : 'text-zinc-500'
+                              : 'text-zinc-400'
                         }`}
                       >
                         {directDiffPct < 0 ? '' : '+'}
@@ -257,7 +257,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                   </div>
 
                   <div className="flex flex-col items-center">
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-tight">
+                    <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-tight">
                       Desde Base
                     </span>
                     <div className="flex items-center gap-1 font-extrabold text-xs text-white mt-0.5 tabular-nums">
@@ -266,12 +266,12 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                     </div>
                     {!row.isRootResource && (
                       <span
-                        className={`text-[9px] font-extrabold mt-0.5 ${
+                        className={`text-[11px] font-extrabold mt-0.5 ${
                           baseDiffPct < 0
                             ? 'text-emerald-400'
                             : baseDiffPct > 0
                               ? 'text-rose-400'
-                              : 'text-zinc-500'
+                              : 'text-zinc-400'
                         }`}
                       >
                         {baseDiffPct < 0 ? '' : '+'}
@@ -312,7 +312,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                                     : inp.amountPerUnit.toFixed(1)}{' '}
                                   {inp.name}
                                 </span>
-                                <span className="text-[10px] text-zinc-400 block tabular-nums">
+                                <span className="text-[11px] text-zinc-400 block tabular-nums">
                                   Mercado: {formatCoin(inp.marketPrice)} COIN
                                 </span>
                               </div>
@@ -320,12 +320,12 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
 
                             <div className="shrink-0 text-right">
                               {inp.bestAction === 'buy' ? (
-                                <span className="px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 font-bold text-[10px] flex items-center gap-1">
+                                <span className="px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 font-bold text-[11px] flex items-center gap-1">
                                   <CartLargeBoldDuotone className="w-3 h-3" />
                                   Comprar
                                 </span>
                               ) : (
-                                <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 font-bold text-[10px] flex items-center gap-1">
+                                <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 font-bold text-[11px] flex items-center gap-1">
                                   <BoltBoldDuotone className="w-3 h-3" />
                                   Craftear tú
                                 </span>
@@ -360,7 +360,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
         return (
           <div
             key={row.token}
-            className="flex flex-col justify-between rounded-[28px] sm:rounded-[32px] bg-[#18181c] hover:bg-[#202026] p-4 sm:p-5 shadow-md transition-all duration-200 group border-none select-none relative hover:z-20 focus-within:z-30"
+            className="flex flex-col justify-between rounded-[28px] sm:rounded-[32px] bg-oled-card hover:bg-oled-pillHover p-4 sm:p-5 shadow-md transition-all duration-200 group border-none select-none relative hover:z-20 focus-within:z-30"
           >
             {/* Top Bar: Icon, Name, Category & Selectors */}
             <div className="flex items-center justify-between gap-3 border-b border-white/5 pb-2.5">
@@ -377,14 +377,14 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                         target="_blank"
                         rel="noopener noreferrer"
                         title={`Ver ${row.name} en Defined.fi`}
-                        className="text-slate-500 hover:text-amber-400 transition-colors shrink-0"
+                        className="text-slate-400 hover:text-amber-400 transition-colors shrink-0"
                       >
                         <LinkCircleLinear size={14} />
                       </a>
                     )}
                   </div>
                   <span
-                    className={`inline-block px-1.5 py-0.2 rounded text-[10px] font-mono uppercase font-semibold tracking-wider ${catStyle.text} ${catStyle.bg}`}
+                    className={`inline-block px-1.5 py-0.2 rounded text-[11px] font-mono uppercase font-semibold tracking-wider ${catStyle.text} ${catStyle.bg}`}
                   >
                     {row.category}
                   </span>
@@ -394,7 +394,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
               {/* Level & Mastery Selectors */}
               <div className="flex items-center gap-2 shrink-0">
                 <div className="flex flex-col items-center">
-                  <span className="text-[9px] font-mono text-slate-500 uppercase">Lvl</span>
+                  <span className="text-[11px] font-mono text-slate-400 uppercase">Lvl</span>
                   <BaseCostLevelSelector
                     token={row.token}
                     curLevel={row.curLevel}
@@ -403,7 +403,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                   />
                 </div>
                 <div className="flex flex-col items-center">
-                  <span className="text-[9px] font-mono text-slate-500 uppercase">Mast</span>
+                  <span className="text-[11px] font-mono text-slate-400 uppercase">Mast</span>
                   <BaseCostMasterySelector
                     token={row.token}
                     mastery={row.mastery}
@@ -422,7 +422,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                 >
                   <ResourceIcon symbol="EARTH" size={15} />
                   <span className="font-bold text-white">{formatQuantity(row.earth)}</span>
-                  <span className="text-[10px] text-amber-500/80 uppercase">Earth</span>
+                  <span className="text-[11px] text-amber-500/80 uppercase">Earth</span>
                 </div>
               )}
               {row.water > 0 && (
@@ -432,7 +432,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                 >
                   <ResourceIcon symbol="WATER" size={15} />
                   <span className="font-bold text-white">{formatQuantity(row.water)}</span>
-                  <span className="text-[10px] text-blue-400/80 uppercase">Water</span>
+                  <span className="text-[11px] text-blue-400/80 uppercase">Water</span>
                 </div>
               )}
               {row.fire > 0 && (
@@ -442,7 +442,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                 >
                   <ResourceIcon symbol="FIRE" size={15} />
                   <span className="font-bold text-white">{formatQuantity(row.fire)}</span>
-                  <span className="text-[10px] text-rose-400/80 uppercase">Fire</span>
+                  <span className="text-[11px] text-rose-400/80 uppercase">Fire</span>
                 </div>
               )}
               {row.dust > 0 && (
@@ -452,7 +452,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                 >
                   <ResourceIcon symbol="DUST" size={15} />
                   <span className="font-bold text-white">{formatQuantity(row.dust)}</span>
-                  <span className="text-[10px] text-purple-400/80 uppercase">Dust</span>
+                  <span className="text-[11px] text-purple-400/80 uppercase">Dust</span>
                 </div>
               )}
               {row.lumber > 0 && (
@@ -462,7 +462,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                 >
                   <ResourceIcon symbol="LUMBER" size={15} />
                   <span className="font-bold text-white">{formatQuantity(row.lumber)}</span>
-                  <span className="text-[10px] text-lime-400/80 uppercase">Lumber</span>
+                  <span className="text-[11px] text-lime-400/80 uppercase">Lumber</span>
                 </div>
               )}
               {row.powerPerUnit > 0 && (
@@ -472,7 +472,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                 >
                   <BatteryChargeBoldDuotone size={15} className="text-cyan-400" />
                   <span className="font-bold text-white">{formatQuantity(row.powerPerUnit)}</span>
-                  <span className="text-[10px] text-cyan-400/80 uppercase">Power</span>
+                  <span className="text-[11px] text-cyan-400/80 uppercase">Power</span>
                 </div>
               )}
             </div>
@@ -480,7 +480,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
             {/* Bottom: Financial Stats & Profit Badge (3 Columns) */}
             <div className="grid grid-cols-3 items-center gap-2 pt-2.5 border-t border-white/5 text-xs font-mono">
               <div>
-                <div className="text-[10px] text-slate-400 uppercase tracking-tight">Costo Total</div>
+                <div className="text-[11px] text-slate-400 uppercase tracking-tight">Costo Total</div>
                 <div className="font-semibold text-slate-200 flex items-center gap-1 mt-0.5">
                   <span>{formatCoin(row.totalCost)}</span>
                   <ResourceIcon symbol="COIN" size={12} />
@@ -488,7 +488,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
               </div>
 
               <div className="text-center">
-                <div className="text-[10px] text-slate-400 uppercase tracking-tight">Precio Mercado</div>
+                <div className="text-[11px] text-slate-400 uppercase tracking-tight">Precio Mercado</div>
                 <div className="font-semibold text-slate-200 flex items-center justify-center gap-1 mt-0.5">
                   <span>{formatCoin(row.sellPrice)}</span>
                   <ResourceIcon symbol="COIN" size={12} />
@@ -496,7 +496,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
               </div>
 
               <div className="text-right">
-                <div className="text-[10px] text-slate-400 uppercase tracking-tight">Ganancia Neta</div>
+                <div className="text-[11px] text-slate-400 uppercase tracking-tight">Ganancia Neta</div>
                 <div
                   className="font-bold flex items-center justify-end gap-1 mt-0.5"
                   style={{ color: marginColor }}
@@ -504,7 +504,7 @@ export const BaseCostCardView: React.FC<BaseCostCardViewProps> = ({
                   <span>{row.profit >= 0 ? '+' : ''}{formatCoin(row.profit)}</span>
                   <ResourceIcon symbol="COIN" size={12} />
                   {row.marginPct !== null && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-lg bg-[#131316] ml-1 shadow-inner">
+                    <span className="text-[11px] px-1.5 py-0.5 rounded-lg bg-oled-cardInner ml-1 shadow-inner">
                       {row.marginPct >= 0 ? '+' : ''}{row.marginPct.toFixed(0)}%
                     </span>
                   )}

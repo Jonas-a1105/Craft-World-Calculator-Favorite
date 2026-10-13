@@ -126,7 +126,7 @@ export const ResourceMarketStatsCard: React.FC<Props> = ({
             className="bg-[#121316] rounded-xl p-3 flex flex-col justify-between border-none transition-colors hover:bg-[#18191e]"
           >
             <div className="flex items-center justify-between gap-1 mb-1.5">
-              <span className="text-[10px] text-zinc-400 font-sans font-medium truncate" title={item.label}>
+              <span className="text-[11px] text-zinc-400 font-sans font-medium truncate" title={item.label}>
                 {item.label}
               </span>
               {item.icon}
@@ -136,7 +136,7 @@ export const ResourceMarketStatsCard: React.FC<Props> = ({
               {item.value}
             </div>
 
-            <span className="text-[9px] text-zinc-500 font-sans mt-1">
+            <span className="text-[11px] text-zinc-400 font-sans mt-1">
               {item.sub}
             </span>
           </div>

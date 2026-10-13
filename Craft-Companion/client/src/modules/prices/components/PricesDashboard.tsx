@@ -2,6 +2,7 @@ import React from 'react';
 import Layout from '../../../components/Layout';
 import { SkeletonDashboardPage } from '../../../components/Skeleton';
 import { useMarketPrices } from '../hooks/useMarketPrices';
+import { PriceTrustBanner } from '../../../components/PriceTrustBanner';
 import { PricesHeader } from './PricesHeader';
 import { PricesSearchBar } from './PricesSearchBar';
 import { PricesGrid } from './PricesGrid';
@@ -28,6 +29,9 @@ export const PricesDashboard: React.FC = () => {
     <Layout>
       <div className="w-full max-w-[1100px] mx-auto space-y-6">
         <PricesHeader language={language} />
+
+        {/* Trust banner: same freshness signal as the rest of the app (QW2) */}
+        <PriceTrustBanner />
 
         <PricesSearchBar
           search={search}

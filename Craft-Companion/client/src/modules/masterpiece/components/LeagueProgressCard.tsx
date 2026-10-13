@@ -45,12 +45,12 @@ export const LeagueProgressCard: React.FC<LeagueProgressCardProps> = ({
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border-none ${
                   isSelected
                     ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                    : 'bg-[#22222a] text-slate-300 hover:text-white hover:bg-[#2c2c36]'
+                    : 'bg-oled-pill text-slate-300 hover:text-white hover:bg-oled-pillHover'
                 }`}
               >
                 {isEs ? league.labelEs : league.labelEn}
                 {league.isUserLeague && (
-                  <span className="ml-1 opacity-90 text-[10px]">
+                  <span className="ml-1 opacity-90 text-[11px]">
                     • {isEs ? 'tú' : 'you'}
                   </span>
                 )}
@@ -61,7 +61,7 @@ export const LeagueProgressCard: React.FC<LeagueProgressCardProps> = ({
       </div>
 
       {/* Match Overview & Progress Card - elevated distinct surface */}
-      <div className="p-5 rounded-3xl bg-[#1c1c22] shadow-xl shadow-black/30 space-y-4 border-none">
+      <div className="p-5 rounded-3xl bg-oled-850 shadow-xl shadow-black/30 space-y-4 border-none">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3.5">
             <div className="w-10 h-10 rounded-2xl bg-amber-500/15 flex items-center justify-center text-amber-400 shrink-0 shadow-inner">
@@ -82,7 +82,7 @@ export const LeagueProgressCard: React.FC<LeagueProgressCardProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-xl bg-[#131316] text-white text-xs font-mono font-bold">
+            <span className="px-3 py-1 rounded-xl bg-oled-cardInner text-white text-xs font-mono font-bold">
               {progressPercent.toFixed(1)}%
             </span>
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-500/15 text-amber-300 text-xs font-mono font-bold">
@@ -93,7 +93,7 @@ export const LeagueProgressCard: React.FC<LeagueProgressCardProps> = ({
         </div>
 
         {/* Progress Bar with deep track */}
-        <div className="w-full h-2.5 rounded-full bg-[#131316] overflow-hidden p-0.5">
+        <div className="w-full h-2.5 rounded-full bg-oled-cardInner overflow-hidden p-0.5">
           <div
             className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full transition-all duration-500 shadow-sm shadow-amber-500/50"
             style={{ width: `${progressPercent}%` }}

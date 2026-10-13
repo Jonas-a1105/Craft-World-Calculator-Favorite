@@ -60,7 +60,7 @@ export const LevelsBreakdownView: React.FC<LevelsBreakdownViewProps> = ({
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                 modalLevelFilter === tab.id
                   ? 'bg-emerald-500 text-black font-bold shadow-sm'
-                  : 'bg-[#24242a] text-zinc-300 hover:text-white hover:bg-[#2e2e36]'
+                  : 'bg-oled-pill text-zinc-300 hover:text-white hover:bg-[#2e2e36]'
               }`}
             >
               {tab.label}

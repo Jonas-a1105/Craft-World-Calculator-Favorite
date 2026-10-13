@@ -19,7 +19,7 @@ export const CraftingStepRow: React.FC<CraftingStepRowProps> = ({
   const isEs = language === 'es';
 
   return (
-    <div className="rounded-[32px] bg-[#18181b] hover:bg-[#1c1c20] p-5 shadow-xl transition-all duration-200 border-none select-none space-y-3.5">
+    <div className="rounded-[32px] bg-oled-card hover:bg-oled-850 p-5 shadow-xl transition-all duration-200 border-none select-none space-y-3.5">
       {/* 1. Header of Step: Step Number + Factory Name + Cycles + Estimated Duration */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -68,7 +68,7 @@ export const CraftingStepRow: React.FC<CraftingStepRowProps> = ({
       {/* 2. Inputs Required for this Step */}
       {step.inputs.length > 0 && (
         <div className="bg-zinc-800/50 rounded-2xl p-3 flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-zinc-500 font-bold uppercase text-[10px] tracking-wider shrink-0 mr-1">
+          <span className="text-zinc-400 font-bold uppercase text-[11px] tracking-wider shrink-0 mr-1">
             {isEs ? 'Consume:' : 'Requires:'}
           </span>
           {step.inputs.map((inp) => (

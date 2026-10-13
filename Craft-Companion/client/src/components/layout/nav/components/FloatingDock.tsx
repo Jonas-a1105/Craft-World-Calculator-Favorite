@@ -66,20 +66,22 @@ export const FloatingDock: React.FC = () => {
       <div
         ref={tooltipRef}
         id="dock-tooltip"
-        className="absolute pointer-events-none opacity-0 scale-95 transition-[opacity,transform] duration-200 ease-out z-50 px-3 py-1.5 rounded-full text-xs font-semibold text-zinc-100 tracking-wide border-0 bg-[#1c1d24]/95 backdrop-blur-md whitespace-nowrap shadow-none"
+        className="absolute pointer-events-none opacity-0 scale-95 transition-[opacity,transform] duration-200 ease-out z-50 px-3 py-1.5 rounded-full text-xs font-semibold text-zinc-100 tracking-wide border-0 bg-oled-850/95 backdrop-blur-md whitespace-nowrap shadow-none"
         style={{
           bottom: 'calc(100% + 14px)',
           transform: 'translateX(-50%)',
         }}
       >
         <span>{tooltipText}</span>
-        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-[#1c1d24]/95 border-0" />
+        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-oled-850/95 border-0" />
       </div>
 
       {/* Primary macOS Glass Shelf (Swipeable on Mobile) */}
-      <div
+      <nav
         ref={dockShelfRef}
         id="dock-shelf"
+        role="navigation"
+        aria-label={language === 'es' ? 'Navegación principal' : 'Primary navigation'}
         className="glass-dock relative flex items-center justify-start sm:justify-center px-2.5 sm:px-3 rounded-[24px] sm:rounded-[26px] overflow-x-auto sm:overflow-visible no-scrollbar pointer-events-auto scroll-smooth max-w-[calc(100vw-20px)]"
       >
         <div
@@ -89,6 +91,7 @@ export const FloatingDock: React.FC = () => {
           {NAV_ITEMS.map((item, index) => {
             const active = currentPath === item.path;
             const isSettings = index === NAV_ITEMS.length - 1;
+            const itemLabel = language === 'es' ? item.labelEs : item.labelEn;
 
             return (
               <React.Fragment key={item.path}>
@@ -99,17 +102,27 @@ export const FloatingDock: React.FC = () => {
                   />
                 )}
 
-                <div
+                {/* Accesible primary navigation: real <a> elements (keyboard,
+                    screen readers, focus ring) with SPA navigation preserved */}
+                <a
                   ref={(el) => {
                     slotRefs.current[index] = el;
                   }}
-                  data-name={language === 'es' ? item.labelEs : item.labelEn}
-                  className="dock-slot relative h-[44px] sm:h-[50px] flex items-center justify-center cursor-pointer shrink-0"
+                  href={item.path}
+                  data-name={itemLabel}
+                  aria-label={itemLabel}
+                  aria-current={active ? 'page' : undefined}
+                  className="dock-slot relative h-[44px] sm:h-[50px] flex items-center justify-center cursor-pointer shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-emerald-400/80 rounded-[14px]"
                   style={{ width: '48px' }}
                   onMouseEnter={() => showTooltip(index)}
                   onMouseLeave={hideTooltip}
-                  onClick={() => handleSlotClick(index, item.path)}
-                  title={language === 'es' ? item.labelEs : item.labelEn}
+                  onFocus={() => showTooltip(index)}
+                  onBlur={hideTooltip}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSlotClick(index, item.path);
+                  }}
+                  title={itemLabel}
                 >
                   <div
                     ref={(el) => {
@@ -129,12 +142,12 @@ export const FloatingDock: React.FC = () => {
                         : 'bg-white/40 opacity-0'
                     }`}
                   />
-                </div>
+                </a>
               </React.Fragment>
             );
           })}
         </div>
-      </div>
+      </nav>
 
       {/* Mirrored Reflection Beneath Dock */}
       <div

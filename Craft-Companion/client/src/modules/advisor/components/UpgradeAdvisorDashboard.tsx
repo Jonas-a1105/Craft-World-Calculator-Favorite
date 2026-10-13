@@ -5,6 +5,7 @@ import { useUpgradeAdvisor } from '../hooks/useUpgradeAdvisor';
 import { AdvisorHeader } from './AdvisorHeader';
 import { AdvisorFilterBar } from './AdvisorFilterBar';
 import { AdvisorList } from './AdvisorList';
+import { AnalyticsHubTabs } from '../../../components/AnalyticsHubTabs';
 
 export const UpgradeAdvisorDashboard: React.FC = () => {
   const {
@@ -30,6 +31,9 @@ export const UpgradeAdvisorDashboard: React.FC = () => {
   return (
     <Layout>
       <div className="w-full max-w-[1100px] mx-auto space-y-6 pb-12">
+        {/* Cross-module hub tabs: Profit / Advisor / Base Cost (LP7) */}
+        <AnalyticsHubTabs />
+
         <AdvisorHeader language={language} />
 
         <AdvisorFilterBar

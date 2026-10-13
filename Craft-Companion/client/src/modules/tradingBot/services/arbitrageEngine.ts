@@ -1,13 +1,15 @@
 import type { FactoryDataRow } from '../../../services/craftworldCalculations';
 import { applyMasteryInputReduction, type ProficiencyItem } from '../../../services/masteryModifiers';
 import type { ArbitrageIngredient, TradingOpportunity } from '../types';
+import { COIN_DECIMALS, markupPercentOnCost, roundHalfUp } from '../../../services/financial/pricingService';
+import { getTradeInputTaxRate } from '../../../services/gameConfig';
 
 export interface ArbitrageAnalysisResult {
   symbol: string;
   name: string;
   costToCraftCoin: number;
   marketSellPriceCoin: number;
-  netRevenueCoin: number; // after 5% marketplace commission
+  netRevenueCoin: number; // tras el trade input tax del exchange (2,5% actual)
   netProfitCoin: number;
   marginPercent: number;
   ingredients: ArbitrageIngredient[];
@@ -15,7 +17,14 @@ export interface ArbitrageAnalysisResult {
   isProfitable: boolean;
 }
 
-export const MARKETPLACE_TAX_RATE = 0.05; // 5% fee on selling
+/**
+ * Comisión oficial del exchange (gameConfiguration.tax.tradeInputTaxRate).
+ * Función (no constante) para que un cambio de config en vivo se propague
+ * sin recargar el módulo.
+ */
+export function getMarketplaceTaxRate(): number {
+  return getTradeInputTaxRate();
+}
 
 /**
  * Calculates industrial crafting arbitrage for a given factory row and price map
@@ -74,18 +83,20 @@ export function calculateCraftArbitrage(
   }
 
   const grossRevenueCoin = (factoryRow.output_amount || 1) * outputMarketPrice;
-  const netRevenueCoin = grossRevenueCoin * (1 - MARKETPLACE_TAX_RATE);
+  const netRevenueCoin = grossRevenueCoin * (1 - getMarketplaceTaxRate());
   const netProfitCoin = netRevenueCoin - totalInputCostCoin;
-  const marginPercent = totalInputCostCoin > 0 ? (netProfitCoin / totalInputCostCoin) * 100 : 0;
+  const marginPercent = markupPercentOnCost(netRevenueCoin, totalInputCostCoin) ?? 0;
 
   return {
     symbol: factoryRow.output_token,
     name: factoryRow.output_token,
-    costToCraftCoin: Number(totalInputCostCoin.toFixed(2)),
-    marketSellPriceCoin: Number(outputMarketPrice.toFixed(2)),
-    netRevenueCoin: Number(netRevenueCoin.toFixed(2)),
-    netProfitCoin: Number(netProfitCoin.toFixed(2)),
-    marginPercent: Number(marginPercent.toFixed(1)),
+    // COIN_DECIMALS (6): con 2 decimales los tokens baratos quedaban
+    // redondeados a 0.00 (MUD, EARTH...) y rompían el análisis.
+    costToCraftCoin: roundHalfUp(totalInputCostCoin, COIN_DECIMALS),
+    marketSellPriceCoin: roundHalfUp(outputMarketPrice, COIN_DECIMALS),
+    netRevenueCoin: roundHalfUp(netRevenueCoin, COIN_DECIMALS),
+    netProfitCoin: roundHalfUp(netProfitCoin, COIN_DECIMALS),
+    marginPercent: roundHalfUp(marginPercent, 1),
     ingredients,
     cycleTimeMinutes: factoryRow.duration_min || 10,
     isProfitable: netProfitCoin > 0,

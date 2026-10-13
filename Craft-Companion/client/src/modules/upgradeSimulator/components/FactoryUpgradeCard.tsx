@@ -52,7 +52,7 @@ export const FactoryUpgradeCard: React.FC<FactoryUpgradeCardProps> = ({
 
   return (
     <div
-      className={`p-3.5 sm:p-4 rounded-3xl bg-[#1c1c22] hover:bg-[#22222a] transition-all shadow-xl shadow-black/25 border-none outline-none select-none space-y-3 relative ${
+      className={`p-3.5 sm:p-4 rounded-3xl bg-oled-850 hover:bg-oled-pill transition-all shadow-xl shadow-black/25 border-none outline-none select-none space-y-3 relative ${
         row.inCart ? 'ring-1 ring-amber-500/40 bg-[#1e1e26]' : ''
       }`}
     >
@@ -60,14 +60,14 @@ export const FactoryUpgradeCard: React.FC<FactoryUpgradeCardProps> = ({
       <div className="flex items-center justify-between gap-3">
         {/* Factory Icon + Localized Name */}
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-9 h-9 rounded-2xl bg-[#131316] flex items-center justify-center shrink-0 shadow-inner">
+          <div className="w-9 h-9 rounded-2xl bg-oled-cardInner flex items-center justify-center shrink-0 shadow-inner">
             <ResourceIcon symbol={row.token} size={22} />
           </div>
           <div className="min-w-0">
             <h4 className="text-sm font-bold text-white tracking-tight leading-tight truncate">
               {name}
             </h4>
-            <span className="text-[10px] text-slate-400 font-mono font-medium block uppercase mt-0.5">
+            <span className="text-[11px] text-slate-400 font-mono font-medium block uppercase mt-0.5">
               {row.token}
             </span>
           </div>
@@ -76,12 +76,12 @@ export const FactoryUpgradeCard: React.FC<FactoryUpgradeCardProps> = ({
         {/* Controls Aligned to the Right: QTY Stepper & Cart Toggle */}
         <div className="flex items-center gap-1.5 shrink-0 ml-auto">
           {/* QTY Stepper */}
-          <div className="inline-flex items-center rounded-xl bg-[#131316] p-0.5 shadow-inner">
+          <div className="inline-flex items-center rounded-xl bg-oled-cardInner p-0.5 shadow-inner">
             <button
               type="button"
               onClick={() => onQtyChange(row.token, Math.max(1, row.qty - 1))}
               disabled={row.qty <= 1}
-              className="w-5 h-5 rounded-lg bg-[#202028] hover:bg-[#2c2c36] disabled:opacity-30 text-slate-300 font-bold text-xs flex items-center justify-center transition-colors border-none cursor-pointer"
+              className="w-5 h-5 rounded-lg bg-[#202028] hover:bg-oled-pillHover disabled:opacity-30 text-slate-300 font-bold text-xs flex items-center justify-center transition-colors border-none cursor-pointer"
               title={isEs ? 'Disminuir cantidad' : 'Decrease quantity'}
             >
               -
@@ -92,7 +92,7 @@ export const FactoryUpgradeCard: React.FC<FactoryUpgradeCardProps> = ({
             <button
               type="button"
               onClick={() => onQtyChange(row.token, row.qty + 1)}
-              className="w-5 h-5 rounded-lg bg-[#202028] hover:bg-[#2c2c36] text-slate-300 font-bold text-xs flex items-center justify-center transition-colors border-none cursor-pointer"
+              className="w-5 h-5 rounded-lg bg-[#202028] hover:bg-oled-pillHover text-slate-300 font-bold text-xs flex items-center justify-center transition-colors border-none cursor-pointer"
               title={isEs ? 'Aumentar cantidad' : 'Increase quantity'}
             >
               +
@@ -106,7 +106,7 @@ export const FactoryUpgradeCard: React.FC<FactoryUpgradeCardProps> = ({
             className={`w-7 h-7 rounded-xl flex items-center justify-center transition-all border-none cursor-pointer ${
               row.inCart
                 ? 'bg-amber-500 text-slate-950 font-black shadow-md shadow-amber-500/30 ring-1 ring-amber-400'
-                : 'bg-[#131316] text-slate-400 hover:text-white hover:bg-[#202028]'
+                : 'bg-oled-cardInner text-slate-400 hover:text-white hover:bg-[#202028]'
             }`}
             title={row.inCart ? (isEs ? 'Quitar del carrito' : 'Remove from cart') : (isEs ? 'Añadir al carrito' : 'Add to cart')}
           >
@@ -127,7 +127,7 @@ export const FactoryUpgradeCard: React.FC<FactoryUpgradeCardProps> = ({
           />
         </div>
 
-        <span className="text-slate-500 text-xs font-mono px-0.5 shrink-0">➔</span>
+        <span className="text-slate-400 text-xs font-mono px-0.5 shrink-0">➔</span>
 
         <div className="flex-1 min-w-0">
           <CustomLevelSelect
@@ -160,7 +160,7 @@ export const FactoryUpgradeCard: React.FC<FactoryUpgradeCardProps> = ({
 
       {/* 4. Bottom Row: Total Upgrade Cost in COIN on the Right */}
       <div className="flex items-center justify-end gap-2 pt-1 border-t border-white/5">
-        <span className="text-[10px] font-mono text-slate-400 uppercase font-medium">
+        <span className="text-[11px] font-mono text-slate-400 uppercase font-medium">
           {isEs ? 'Costo Total:' : 'Total Cost:'}
         </span>
         <div className="flex items-center gap-1.5 font-mono">

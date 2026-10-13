@@ -14,7 +14,7 @@ export const EmpireWorkersRoster: React.FC<EmpireWorkersRosterProps> = ({
   const isEs = language === 'es';
 
   return (
-    <div className="bg-[#18181b] rounded-[32px] p-5 sm:p-6 shadow-xl border-none space-y-4 select-none">
+    <div className="bg-oled-card rounded-[32px] p-5 sm:p-6 shadow-xl border-none space-y-4 select-none">
       {/* Section Header */}
       <div className="flex items-center justify-between pb-1 border-b border-white/[0.06]">
         <div className="flex items-center gap-2.5">
@@ -56,18 +56,18 @@ export const EmpireWorkersRoster: React.FC<EmpireWorkersRosterProps> = ({
                         {worker.name}
                       </span>
                       {worker.isAreaLead && (
-                        <span className="bg-purple-500/20 text-purple-300 text-[9px] px-1.5 py-0.2 rounded-full font-black">
+                        <span className="bg-purple-500/20 text-purple-300 text-[11px] px-1.5 py-0.2 rounded-full font-black">
                           LEAD
                         </span>
                       )}
                     </div>
-                    <span className="text-[10px] text-zinc-400 block mt-0.5">
+                    <span className="text-[11px] text-zinc-400 block mt-0.5">
                       {isAssigned ? (
                         <span className="text-emerald-400 font-semibold">
                           ● {isEs ? 'Asignado' : 'Assigned'}
                         </span>
                       ) : (
-                        <span className="text-zinc-500 font-medium">
+                        <span className="text-zinc-400 font-medium">
                           ○ {isEs ? 'En descanso' : 'Resting'}
                         </span>
                       )}

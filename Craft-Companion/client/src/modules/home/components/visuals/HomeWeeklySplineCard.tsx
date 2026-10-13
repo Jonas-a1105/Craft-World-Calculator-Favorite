@@ -98,7 +98,7 @@ export const HomeWeeklySplineCard: React.FC<HomeWeeklySplineCardProps> = ({
   }, [days]);
 
   return (
-    <div className="w-full bg-[#18181b] rounded-[32px] p-5 sm:p-7 shadow-xl border-none select-none relative overflow-hidden">
+    <div className="w-full bg-oled-card rounded-[32px] p-5 sm:p-7 shadow-xl border-none select-none relative overflow-hidden">
       {/* Ambient blue back-glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[340px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
 
@@ -244,7 +244,7 @@ export const HomeWeeklySplineCard: React.FC<HomeWeeklySplineCardProps> = ({
               <div className="mt-1 text-[13px] sm:text-[15px] font-black text-white font-mono tracking-tight">
                 {formatCompactNumber(item.amount)}
               </div>
-              <div className="text-[10px] text-zinc-500 font-medium leading-tight mt-0.5">
+              <div className="text-[11px] text-zinc-400 font-medium leading-tight mt-0.5">
                 COIN
               </div>
 
@@ -270,7 +270,7 @@ export const HomeWeeklySplineCard: React.FC<HomeWeeklySplineCardProps> = ({
             <span className="font-mono font-black text-white">
               +{formatNumber(activeDay.amount)} COIN
             </span>
-            <span className="text-zinc-500 font-normal text-xs ml-2 font-mono">
+            <span className="text-zinc-400 font-normal text-xs ml-2 font-mono">
               (~{formatCompactNumber(Math.round(activeDay.amount / 24))} COIN/h)
             </span>
           </div>

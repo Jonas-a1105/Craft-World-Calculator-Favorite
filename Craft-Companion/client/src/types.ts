@@ -47,6 +47,9 @@ export interface CraftworldCraftingState {
   isStopped?: boolean;
   currentRunLevel?: number;
   currentTimeReduction?: number;
+  /** Unidades producidas y aún no reclamadas del run en curso (/me/craft-world). */
+  unclaimedUnitsBeforeCurrentRun?: number;
+  claimedAt?: string;
 }
 
 export interface CraftworldFactoryInstance {
@@ -82,14 +85,14 @@ export interface CraftworldFactoryInstance {
 export interface CraftworldLandArea {
   id?: string;
   factories?: CraftworldFactoryInstance[];
-  booster?: { boostValue?: number };
+  booster?: CraftworldFactoryBooster;
 }
 
 export interface CraftworldLandPlot {
   id?: string;
   name?: string;
   areas?: CraftworldLandArea[];
-  booster?: { boostValue?: number };
+  booster?: CraftworldFactoryBooster;
   appliedBlueprint?: { definitionId?: string; starLevel?: number } | null;
 }
 
@@ -180,6 +183,10 @@ export interface CraftworldHomePayload {
     shopItemPurchases?: Array<{ shopItemId: string; purchasedAt: string }>;
   };
   priceList?: CraftworldPriceList;
+  /** Estado del priceList según el servidor: 'live' recién sincronizado,
+   *  'cache' servido desde caché del servidor, 'missing' sin lista de precios.
+   *  La UI lo usa para su badge de confianza (nunca presentar caché como live). */
+  priceListStatus?: 'live' | 'cache' | 'missing';
   proficiencies?: Array<{ symbol?: string; level?: number }>;
   craft?: {
     power?: number;

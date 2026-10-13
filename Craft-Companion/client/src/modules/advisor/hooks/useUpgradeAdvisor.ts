@@ -37,7 +37,6 @@ export function useUpgradeAdvisor() {
     return {
       workshop: rawHome?.craft?.workshop || rawHome?.craftWorld?.workshop || [],
       proficiencies: rawHome?.craft?.proficiencies || rawHome?.craftWorld?.proficiencies || [],
-      activeBoostMultiplier: home?.purchases?.isNoAdsActive ? 2 : 1,
     };
   }, [home]);
 

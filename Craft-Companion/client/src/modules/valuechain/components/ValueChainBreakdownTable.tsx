@@ -14,7 +14,7 @@ export const ValueChainBreakdownTable: React.FC<ValueChainBreakdownTableProps> =
   language,
 }) => {
   return (
-    <div className="bg-[#1c1c20] p-6 rounded-3xl border-none shadow-2xl">
+    <div className="bg-oled-850 p-6 rounded-3xl border-none shadow-2xl">
       <h2 className="text-base font-extrabold text-white mb-4 flex items-center gap-2">
         <ClipboardCheckBoldDuotone className="w-5 h-5 text-indigo-400" />
         <span>
@@ -26,7 +26,7 @@ export const ValueChainBreakdownTable: React.FC<ValueChainBreakdownTableProps> =
 
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs text-slate-300">
-          <thead className="bg-[#151518] text-slate-400 uppercase text-[10px] tracking-wider border-none">
+          <thead className="bg-oled-cardInner text-slate-400 uppercase text-[11px] tracking-wider border-none">
             <tr>
               <th className="py-3 px-4">{language === 'es' ? 'Paso' : 'Step'}</th>
               <th className="py-3 px-4">{language === 'es' ? 'Fábrica' : 'Factory'}</th>
@@ -40,7 +40,7 @@ export const ValueChainBreakdownTable: React.FC<ValueChainBreakdownTableProps> =
           <tbody className="divide-y divide-slate-800/60">
             {steps.map((st) => (
               <tr key={st.token} className="hover:bg-slate-800/40 transition">
-                <td className="py-3 px-4 font-bold text-slate-500">#{st.stepIndex}</td>
+                <td className="py-3 px-4 font-bold text-slate-400">#{st.stepIndex}</td>
                 <td className="py-3 px-4 font-extrabold text-white flex items-center gap-2">
                   <FactoryIcon symbol={st.token} className="w-4 h-4" />
                   <span>

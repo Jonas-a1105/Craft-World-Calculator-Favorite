@@ -33,7 +33,7 @@ export const ProgressionTableRow: React.FC<Props> = ({ row }) => {
             </span>
           </div>
         ) : (
-          <span className="text-slate-600">—</span>
+          <span className="text-slate-400">—</span>
         )}
       </td>
 
@@ -95,14 +95,14 @@ export const ProgressionTableRow: React.FC<Props> = ({ row }) => {
             <span>{formatWithCommas(row.input1Amount)}</span>
             {row.input2Token && row.input2Amount ? (
               <>
-                <span className="text-slate-600 mx-1">+</span>
+                <span className="text-slate-400 mx-1">+</span>
                 <ResourceIcon symbol={row.input2Token} size={13} />
                 <span>{formatWithCommas(row.input2Amount)}</span>
               </>
             ) : null}
           </div>
         ) : (
-          <span className="text-slate-600">—</span>
+          <span className="text-slate-400">—</span>
         )}
       </td>
 
@@ -113,13 +113,13 @@ export const ProgressionTableRow: React.FC<Props> = ({ row }) => {
             <span>{formatCompact(row.input1DailyConsumption)}</span>
             {row.input2DailyConsumption && row.input2DailyConsumption > 0 ? (
               <>
-                <span className="text-slate-600">/</span>
+                <span className="text-slate-400">/</span>
                 <span>{formatCompact(row.input2DailyConsumption)}</span>
               </>
             ) : null}
           </div>
         ) : (
-          <span className="text-slate-600">—</span>
+          <span className="text-slate-400">—</span>
         )}
       </td>
 
@@ -140,7 +140,7 @@ export const ProgressionTableRow: React.FC<Props> = ({ row }) => {
             +{row.productionChange.toFixed(1)}%
           </span>
         ) : (
-          <span className="text-slate-600">—</span>
+          <span className="text-slate-400">—</span>
         )}
       </td>
     </tr>

@@ -51,7 +51,7 @@ export const SelectedBanner: React.FC<Props> = ({ item }) => {
   };
 
   return (
-    <div className="bg-[#18181c] rounded-[22px] sm:rounded-[28px] p-3.5 sm:p-5 mb-5 shadow-xl border-none flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 select-none min-w-0 w-full overflow-hidden">
+    <div className="bg-oled-card rounded-[22px] sm:rounded-[28px] p-3.5 sm:p-5 mb-5 shadow-xl border-none flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 select-none min-w-0 w-full overflow-hidden">
       <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
         {/* Factory Visual Frame with Animation */}
         <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl bg-[#121216] border border-white/[0.06] flex items-center justify-center shrink-0 shadow-lg group">
@@ -69,7 +69,7 @@ export const SelectedBanner: React.FC<Props> = ({ item }) => {
 
           {/* Resource logo badge overlay */}
           <div
-            className="absolute -bottom-1 -right-1 p-1 sm:p-1.5 bg-[#18181c] rounded-full shadow-lg border border-white/10 flex items-center justify-center pointer-events-none"
+            className="absolute -bottom-1 -right-1 p-1 sm:p-1.5 bg-oled-card rounded-full shadow-lg border border-white/10 flex items-center justify-center pointer-events-none"
             title={`${cleanName} (${item.id})`}
           >
             <ResourceIcon symbol={item.iconSymbol} size={18} />
@@ -89,7 +89,7 @@ export const SelectedBanner: React.FC<Props> = ({ item }) => {
             >
               {cleanName}
             </h2>
-            <Badge variant="neutral" size="sm" className="bg-[#24242a] text-slate-300 rounded-full border-none shrink-0 text-[10px] font-semibold py-0.5 px-2">
+            <Badge variant="neutral" size="sm" className="bg-oled-pill text-slate-300 rounded-full border-none shrink-0 text-[11px] font-semibold py-0.5 px-2">
               {language === 'es' ? item.badgeEs : item.badge}
             </Badge>
           </div>

@@ -1,9 +1,14 @@
 import { useEffect } from 'react';
 import type { FactoryDataRow } from '../services/factoryData';
-import { applyWorkshopSpeedToDuration } from '../services/workshopModifiers';
 import { formatFactoryName } from '../utils/formatters';
 import { sendFactoryNotification } from '../utils/notifications';
 import { useCraftworldHomeQuery, useFactoryDataQuery } from '../services/queries/useCraftworldQueries';
+import {
+  resolveFactoryRunTiming,
+  collectFactoryBoosters,
+  resolveRunWindow,
+} from '../modules/timers/services/factoryTimersService';
+import { getFactoryDisplayLevel } from '../services/craftworldCalculations';
 
 import type {
   CraftworldHomePayload,
@@ -42,80 +47,51 @@ export function extractActiveRuns(
         if (startedAt) {
           const definition = fac.definition || facObj.definition || {};
           const tokenId = definition.id || fac.definitionId || fac.id || 'FACTORY';
-          const rawLevel =
-            typeof crafting?.currentRunLevel === 'number'
-              ? crafting.currentRunLevel
-              : typeof fac.level === 'number'
-                ? fac.level
-                : 0;
+          // El payload numera 0..N; la UI del juego muestra nivel+1
+          // (ej.: payload 13 → "Nivel 14" en el cliente oficial).
+          const payloadLevel =
+            typeof crafting?.currentRunLevel === 'number' && Number.isFinite(crafting.currentRunLevel)
+              ? Math.max(0, Math.floor(crafting.currentRunLevel))
+              : typeof fac.level === 'number' && Number.isFinite(fac.level)
+                ? Math.max(0, Math.floor(fac.level))
+                : 1;
+          const rawLevel = Math.max(1, payloadLevel);
 
-          const displayLevel = rawLevel + 1;
-
-          const levelData =
-            definition.levels?.[rawLevel] ||
-            definition.levels?.[rawLevel - 1] ||
-            definition.levels?.[0];
-          const baseMs = levelData?.millisecondsPerCompletion
-            ? levelData.millisecondsPerCompletion
-            : (factoryRows.find((r) => r.token === tokenId && r.level === displayLevel)
-                ?.duration_min || 60) * 60000;
-
-          // 1. Gather ONLY CURRENTLY ACTIVE Speed Boosters
-          const allBoosters: Array<{ boostValue?: number; startTime?: string; endTime?: string }> = [
-            ...(plot.booster ? [plot.booster] : []),
-            ...(area.booster ? [area.booster] : []),
-            ...(facObj.boosters || []),
-            ...(facObj.consumableBoosters || []),
-            ...(home?.purchases?.isNoAdsActive ? [{ boostValue: 0.5 }] : []),
-          ];
-
-          let boostMultiplier = 1.0;
-          allBoosters.forEach((b) => {
-            const startOk = !b.startTime || new Date(b.startTime).getTime() <= nowMs;
-            const endOk = !b.endTime || new Date(b.endTime).getTime() >= nowMs;
-            if (
-              startOk &&
-              endOk &&
-              typeof b.boostValue === 'number' &&
-              b.boostValue > 0 &&
-              b.boostValue <= 1
-            ) {
-              boostMultiplier *= b.boostValue;
-            }
+          const timing = resolveFactoryRunTiming({
+            tokenId,
+            rawLevel,
+            definition,
+            crafting,
+            workerBoostIntervals: facObj.workerBoostIntervals,
+            boosters: collectFactoryBoosters(plot, area, facObj),
+            isNoAdsActive: Boolean(home?.purchases?.isNoAdsActive),
+            workshop: home?.craft?.workshop || [],
+            proficiencies: home?.craft?.proficiencies || [],
+            factoryRows,
+            nowMs,
           });
+          const displayLevel = getFactoryDisplayLevel(payloadLevel); // convención juego: +1
+          const effectiveMin = timing.effectiveMinutes;
 
-          // 2. Extract Worker / Time Reduction Factor directly from Craft World API
-          let reductionFactor = 1.0;
-          if (
-            typeof crafting?.currentTimeReduction === 'number' &&
-            crafting.currentTimeReduction > 0 &&
-            crafting.currentTimeReduction < 1
-          ) {
-            reductionFactor = crafting.currentTimeReduction;
-          } else if (
-            Array.isArray(facObj.workerBoostIntervals) &&
-            facObj.workerBoostIntervals.length > 0
-          ) {
-            const totalWorkerBoost = facObj.workerBoostIntervals.reduce(
-              (sum: number, w: { boostValue?: number }) => sum + (w.boostValue || 0),
-              0,
-            );
-            if (totalWorkerBoost > 0 && totalWorkerBoost < 1) {
-              reductionFactor = 1.0 - totalWorkerBoost;
-            }
-          }
-
-          // 3. Workshop speed bonus from player's workshop
-          const workshopList = home?.craft?.workshop || [];
-          const effectiveMs = baseMs * boostMultiplier * reductionFactor;
-          let effectiveMin = effectiveMs / 60000;
-          if (workshopList.length > 0) {
-            effectiveMin = applyWorkshopSpeedToDuration(effectiveMin, tokenId, workshopList);
-          }
-
-          const matchedRow = factoryRows.find((r) => r.token === tokenId && r.level === displayLevel);
+          const matchedRow = factoryRows.find((r) => r.token === tokenId && r.level === timing.level);
           const outputToken = matchedRow?.output_token || tokenId;
           const outputAmount = matchedRow?.output_amount || 1;
+
+          // Misma ventana de run que la pantalla de timers: el inicio efectivo se
+          // desplaza por los ciclos apilados sin reclamar; si el ciclo en curso
+          // lleva más de 2 min pasado su fin, la fábrica está parada (no notificar).
+          const window_ = resolveRunWindow({
+            startedAt,
+            unclaimedUnits: crafting?.unclaimedUnitsBeforeCurrentRun,
+            outputPerCycle: outputAmount,
+            runtimeMinutes: effectiveMin,
+            pausedAt: crafting?.pausedAt || fac?.pausedAt || null,
+            nowMs,
+          });
+          const shiftedMs = new Date(window_.effectiveStartedAt).getTime();
+          const cycleMs = effectiveMin * 60000;
+          const isPhantom = Number.isFinite(shiftedMs) && cycleMs > 0 && nowMs - shiftedMs > cycleMs + 120000;
+          if (isPhantom) return;
 
           const uniqueKey = `plot_${plot.id || plot.name || plotIdx}_area_${areaIdx}_fac_${facIdx}_${tokenId}`;
 
@@ -125,7 +101,7 @@ export function extractActiveRuns(
             outputToken,
             outputAmount,
             level: displayLevel,
-            startedAt,
+            startedAt: window_.effectiveStartedAt,
             pausedAt: crafting?.pausedAt || fac?.pausedAt || null,
             runtimeMinutes: effectiveMin,
           });
@@ -141,11 +117,22 @@ export function useFactoryNotifications(language: string) {
   const { data: homeData } = useCraftworldHomeQuery();
   const { data: factoryRows = [] } = useFactoryDataQuery();
 
+  // Desfase del reloj local frente al servidor del juego (los timestamps del
+  // payload son del servidor). Sin este ajuste, todos los restantes se desplazan.
+  const serverOffsetMs = (() => {
+    const serverTimeMs = homeData?.serverTime
+      ? new Date(homeData.serverTime).getTime()
+      : undefined;
+    return typeof serverTimeMs === 'number' && Number.isFinite(serverTimeMs)
+      ? serverTimeMs - Date.now()
+      : 0;
+  })();
+
   useEffect(() => {
+    // El interruptor maestro (Settings) habilita la escucha. El permiso del
+    // navegador solo afecta al canal push: sonido y toast in-app no lo necesitan.
     const isEnabled = localStorage.getItem('craftworld.notificationsEnabled') === 'true';
-    if (!isEnabled || !('Notification' in window) || Notification.permission !== 'granted') {
-      return;
-    }
+    if (!isEnabled) return;
     if (!homeData || factoryRows.length === 0) return;
 
     // Track already notified runs (runKey -> startedAt) to prevent duplicate alerts
@@ -160,7 +147,8 @@ export function useFactoryNotifications(language: string) {
     const interval = setInterval(() => {
       if (!homeData || factoryRows.length === 0) return;
 
-      const activeRuns = extractActiveRuns(homeData, factoryRows, Date.now());
+      const syncedNow = Date.now() + serverOffsetMs;
+      const activeRuns = extractActiveRuns(homeData, factoryRows, syncedNow);
 
       for (const run of activeRuns) {
         const key = run.key;
@@ -191,7 +179,9 @@ export function useFactoryNotifications(language: string) {
               ? `La producción de ${resourceName} (Nv. ${run.level}) ha terminado y está lista.`
               : `Production of ${resourceName} (Lv. ${run.level}) has finished and is ready.`;
 
-          sendFactoryNotification(title, body, `/favicon.svg`);
+          sendFactoryNotification(title, body, `/favicon.svg`, {
+            factoryToken: run.token,
+          });
 
           // Mark as notified and persist to prevent repeating notification for the same run
           notifiedMap[key] = startedAt;

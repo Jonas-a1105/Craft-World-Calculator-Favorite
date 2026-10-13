@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import type { FactoryCycleResult } from '../../../services/craftworldCalculations';
 import type { ComparisonVerdict } from '../types';
 import { formatNumber, formatCompactNumber } from '../../../utils/formatters';
+import { getFactoryDisplayLevel } from '../../../services/craftworldCalculations';
+import { TermTooltip } from '../../../components/TermTooltip';
 
 export interface CompareHatchChartCardProps {
   cycle1: FactoryCycleResult;
@@ -210,7 +212,7 @@ export const CompareHatchChartCard: React.FC<CompareHatchChartCardProps> = ({
   };
 
   return (
-    <div className="w-full bg-[#18181b] rounded-[34px] p-6 sm:p-8 shadow-2xl relative overflow-hidden select-none border-none">
+    <div className="w-full bg-oled-card rounded-[34px] p-6 sm:p-8 shadow-2xl relative overflow-hidden select-none border-none">
       {/* Ambient Depth Glows */}
       <div className="absolute -top-28 -left-28 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-28 -right-28 w-80 h-80 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -253,7 +255,7 @@ export const CompareHatchChartCard: React.FC<CompareHatchChartCardProps> = ({
                 className={`px-3.5 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer border-none shadow-sm ${
                   viewFocus === 'vs'
                     ? 'bg-white text-black font-black'
-                    : 'bg-[#141416] text-zinc-400 hover:text-white hover:bg-zinc-800'
+                    : 'bg-oled-cardInner text-zinc-400 hover:text-white hover:bg-zinc-800'
                 }`}
               >
                 Frente a Frente
@@ -264,7 +266,7 @@ export const CompareHatchChartCard: React.FC<CompareHatchChartCardProps> = ({
                 className={`px-3.5 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer border-none shadow-sm ${
                   viewFocus === 'optionA'
                     ? 'bg-sky-400 text-black font-black'
-                    : 'bg-[#141416] text-zinc-400 hover:text-white hover:bg-zinc-800'
+                    : 'bg-oled-cardInner text-zinc-400 hover:text-white hover:bg-zinc-800'
                 }`}
               >
                 {cycle1.row.token} (A)
@@ -275,7 +277,7 @@ export const CompareHatchChartCard: React.FC<CompareHatchChartCardProps> = ({
                 className={`px-3.5 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer border-none shadow-sm ${
                   viewFocus === 'optionB'
                     ? 'bg-amber-400 text-black font-black'
-                    : 'bg-[#141416] text-zinc-400 hover:text-white hover:bg-zinc-800'
+                    : 'bg-oled-cardInner text-zinc-400 hover:text-white hover:bg-zinc-800'
                 }`}
               >
                 {cycle2.row.token} (B)
@@ -284,7 +286,7 @@ export const CompareHatchChartCard: React.FC<CompareHatchChartCardProps> = ({
 
             {/* Metric Selector Buttons */}
             <div className="space-y-1.5">
-              <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider block">
+              <span className="text-[11px] text-zinc-400 uppercase font-bold tracking-wider block">
                 {isEs ? 'Métrica a Inspeccionar' : 'Metric to Inspect'}
               </span>
               <div className="grid grid-cols-1 gap-1.5">
@@ -298,13 +300,13 @@ export const CompareHatchChartCard: React.FC<CompareHatchChartCardProps> = ({
                       className={`w-full px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-left flex items-center justify-between cursor-pointer border-none ${
                         isActive
                           ? 'bg-sky-500 text-zinc-950 shadow-md font-black'
-                          : 'bg-[#141416] text-zinc-400 hover:text-white hover:bg-zinc-800/60'
+                          : 'bg-oled-cardInner text-zinc-400 hover:text-white hover:bg-zinc-800/60'
                       }`}
                     >
                       <span>{isEs ? m.nameEs : m.nameEn}</span>
                       <span
-                        className={`text-[10px] font-mono ${
-                          isActive ? 'text-zinc-950 font-black' : 'text-zinc-500'
+                        className={`text-[11px] font-mono ${
+                          isActive ? 'text-zinc-950 font-black' : 'text-zinc-400'
                         }`}
                       >
                         {m.unit}
@@ -318,7 +320,7 @@ export const CompareHatchChartCard: React.FC<CompareHatchChartCardProps> = ({
 
           <div className="pt-2">
             {/* Grow Tag with animated pulse dot */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#141416] mb-2 text-xs font-semibold text-zinc-300 tracking-wide">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-oled-cardInner mb-2 text-xs font-semibold text-zinc-300 tracking-wide">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span>
                 {winnerOption === 'TIE'
@@ -362,10 +364,10 @@ export const CompareHatchChartCard: React.FC<CompareHatchChartCardProps> = ({
             </div>
             <div className="text-right">
               <div className="text-xs font-mono font-bold text-sky-400">
-                {cycle1.row.token} (Nv. {cycle1.row.level}): {formatCompactNumber(valA)}
+                {cycle1.row.token} (Nv. {getFactoryDisplayLevel(cycle1.row.level)}): {formatCompactNumber(valA)}
               </div>
               <div className="text-xs font-mono font-bold text-amber-400 mt-0.5">
-                {cycle2.row.token} (Nv. {cycle2.row.level}): {formatCompactNumber(valB)}
+                {cycle2.row.token} (Nv. {getFactoryDisplayLevel(cycle2.row.level)}): {formatCompactNumber(valB)}
               </div>
             </div>
           </div>
@@ -373,7 +375,7 @@ export const CompareHatchChartCard: React.FC<CompareHatchChartCardProps> = ({
           {/* Chart Drawing Canvas Area with Y-Axis */}
           <div className="relative w-full h-[220px] flex">
             {/* Y-Axis Labels */}
-            <div className="w-9 h-full flex flex-col justify-between text-right pr-3 text-[11px] font-mono text-zinc-500 select-none pb-6">
+            <div className="w-9 h-full flex flex-col justify-between text-right pr-3 text-[11px] font-mono text-zinc-400 select-none pb-6">
               <span>100%</span>
               <span>75%</span>
               <span>50%</span>
@@ -464,8 +466,42 @@ export const CompareHatchChartCard: React.FC<CompareHatchChartCardProps> = ({
         </div>
       </div>
 
+      {/* Legend (QW8): explica la lectura del gráfico en el sitio */}
+      <div className="mt-5 rounded-2xl bg-oled-cardInner p-3.5 sm:p-4 space-y-1.5 border-none">
+        <p className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider m-0">
+          {isEs ? 'Cómo leer este gráfico' : 'How to read this chart'}
+        </p>
+        <p className="text-[11px] leading-relaxed text-zinc-400 m-0">
+          {isEs ? (
+            <>
+              Las barras de <span className="text-sky-400 font-semibold">Opción A</span> y{' '}
+              <span className="text-amber-400 font-semibold">Opción B</span> están
+              normalizadas respecto al mejor valor de cada métrica; las líneas
+              punteadas son la rejilla de referencia cada 25%. La barra más alta
+              gana, excepto en «Costo Insumo / Ciclo» donde{' '}
+              <span className="text-emerald-400 font-semibold">gana la menor</span> (cuesta
+              menos fabricar). El {''}
+              <TermTooltip term="hatch">{isEs ? 'hatch rayado' : 'striped hatch'}</TermTooltip>{' '}
+              es puramente decorativo. Las cifras se calculan por{' '}
+              <TermTooltip term="cycle">ciclo</TermTooltip> y se proyectan a hora/día.
+            </>
+          ) : (
+            <>
+              Bars for <span className="text-sky-400 font-semibold">Option A</span> and{' '}
+              <span className="text-amber-400 font-semibold">Option B</span> are normalized
+              to the best value of each metric; dashed lines are the 25% reference grid.
+              Taller wins, except on «Input Cost / Cycle» where{' '}
+              <span className="text-emerald-400 font-semibold">lower wins</span> (cheaper to
+              craft). The <TermTooltip term="hatch">striped hatch</TermTooltip> is purely
+              decorative. Figures are computed per{' '}
+              <TermTooltip term="cycle">cycle</TermTooltip> and projected to hour/day.
+            </>
+          )}
+        </p>
+      </div>
+
       {/* Quick Action Footer with interactive simulation button */}
-      <div className="mt-6 pt-4 border-t border-white/5 flex flex-wrap items-center justify-between text-[11px] text-zinc-500 gap-2">
+      <div className="mt-6 pt-4 border-t border-white/5 flex flex-wrap items-center justify-between text-[11px] text-zinc-400 gap-2">
         <div className="flex items-center gap-2">
           <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span>

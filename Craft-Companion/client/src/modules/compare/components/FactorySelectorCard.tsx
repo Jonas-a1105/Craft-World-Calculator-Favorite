@@ -38,10 +38,10 @@ export const FactorySelectorCard: React.FC<FactorySelectorCardProps> = ({
   const maxLevel = Math.max(...availableLevels, 1);
 
   return (
-    <div className="bg-[#18181b] rounded-[28px] sm:rounded-[32px] p-5 sm:p-6 shadow-xl border-none space-y-4">
+    <div className="bg-oled-card rounded-[28px] sm:rounded-[32px] p-5 sm:p-6 shadow-xl border-none space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#141416] flex items-center justify-center shadow-inner">
+          <div className="w-10 h-10 rounded-2xl bg-oled-cardInner flex items-center justify-center shadow-inner">
             <FactoryIcon symbol={token} size={28} />
           </div>
           <div>
@@ -62,7 +62,7 @@ export const FactorySelectorCard: React.FC<FactorySelectorCardProps> = ({
           <button
             type="button"
             onClick={() => setLevel(userOwnedLevel)}
-            className="px-2.5 py-1 rounded-full bg-[#141416] hover:bg-[#202024] text-[11px] font-bold text-emerald-400 cursor-pointer border-none transition-colors"
+            className="px-2.5 py-1 rounded-full bg-oled-cardInner hover:bg-oled-pill text-[11px] font-bold text-emerald-400 cursor-pointer border-none transition-colors"
           >
             {language === 'es'
               ? `Tu Nv: ${userOwnedLevel}`
@@ -80,7 +80,7 @@ export const FactorySelectorCard: React.FC<FactorySelectorCardProps> = ({
             value={token}
             onChange={(val) => setToken(val as string)}
             options={tokenOptions}
-            className="w-full !py-2.5 !px-3.5 bg-[#141416] hover:bg-[#19191d] rounded-full text-xs font-bold text-white shadow-inner"
+            className="w-full !py-2.5 !px-3.5 bg-oled-cardInner hover:bg-[#19191d] rounded-full text-xs font-bold text-white shadow-inner"
             menuClassName="w-full max-h-60"
             align="full"
           />
@@ -95,7 +95,7 @@ export const FactorySelectorCard: React.FC<FactorySelectorCardProps> = ({
               type="button"
               onClick={() => setLevel((prev) => Math.max(1, prev - 1))}
               disabled={level <= minLevel}
-              className="w-9 h-9 flex-shrink-0 rounded-full bg-[#141416] hover:bg-[#202024] disabled:opacity-30 disabled:cursor-not-allowed text-zinc-300 hover:text-white font-bold transition-all cursor-pointer border-none flex items-center justify-center text-sm shadow-inner"
+              className="w-9 h-9 flex-shrink-0 rounded-full bg-oled-cardInner hover:bg-oled-pill disabled:opacity-30 disabled:cursor-not-allowed text-zinc-300 hover:text-white font-bold transition-all cursor-pointer border-none flex items-center justify-center text-sm shadow-inner"
               title={language === 'es' ? 'Reducir nivel' : 'Decrease level'}
             >
               -
@@ -105,7 +105,7 @@ export const FactorySelectorCard: React.FC<FactorySelectorCardProps> = ({
                 value={level}
                 onChange={(val) => setLevel(Number(val))}
                 options={levelOptions}
-                className="w-full !py-2.5 !px-3 bg-[#141416] hover:bg-[#19191d] rounded-full text-xs font-mono font-bold text-white shadow-inner justify-between"
+                className="w-full !py-2.5 !px-3 bg-oled-cardInner hover:bg-[#19191d] rounded-full text-xs font-mono font-bold text-white shadow-inner justify-between"
                 menuClassName="w-full min-w-[100px] max-h-60"
                 align="full"
                 searchPlaceholder={
@@ -117,7 +117,7 @@ export const FactorySelectorCard: React.FC<FactorySelectorCardProps> = ({
               type="button"
               onClick={() => setLevel((prev) => Math.min(maxLevel, prev + 1))}
               disabled={level >= maxLevel}
-              className="w-9 h-9 flex-shrink-0 rounded-full bg-[#141416] hover:bg-[#202024] disabled:opacity-30 disabled:cursor-not-allowed text-zinc-300 hover:text-white font-bold transition-all cursor-pointer border-none flex items-center justify-center text-sm shadow-inner"
+              className="w-9 h-9 flex-shrink-0 rounded-full bg-oled-cardInner hover:bg-oled-pill disabled:opacity-30 disabled:cursor-not-allowed text-zinc-300 hover:text-white font-bold transition-all cursor-pointer border-none flex items-center justify-center text-sm shadow-inner"
               title={language === 'es' ? 'Aumentar nivel' : 'Increase level'}
             >
               +

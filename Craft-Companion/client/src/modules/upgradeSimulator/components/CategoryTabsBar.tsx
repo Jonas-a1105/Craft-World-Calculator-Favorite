@@ -34,7 +34,7 @@ export const CategoryTabsBar: React.FC<CategoryTabsBarProps> = ({
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border-none outline-none cursor-pointer shrink-0 ${
                   isActive
                     ? 'bg-purple-600/30 text-purple-200 ring-1 ring-purple-500/50 shadow-lg shadow-purple-500/25 scale-[1.02]'
-                    : 'bg-[#1c1c22] text-slate-400 hover:text-white hover:bg-[#25252e]'
+                    : 'bg-oled-850 text-slate-400 hover:text-white hover:bg-[#25252e]'
                 }`}
               >
                 {label}
@@ -49,7 +49,7 @@ export const CategoryTabsBar: React.FC<CategoryTabsBarProps> = ({
         <button
           type="button"
           onClick={onReset}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1c1c22] hover:bg-[#25252e] text-slate-300 hover:text-white text-xs font-mono font-semibold transition-all border-none outline-none shadow-md cursor-pointer shrink-0"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-oled-850 hover:bg-[#25252e] text-slate-300 hover:text-white text-xs font-mono font-semibold transition-all border-none outline-none shadow-md cursor-pointer shrink-0"
           title={isEs ? 'Restablecer todos los niveles a valores por defecto' : 'Reset all upgrades to default'}
         >
           <span>↺</span>

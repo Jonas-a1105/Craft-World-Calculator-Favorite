@@ -74,7 +74,7 @@ export default function NotFound() {
           <div className="inline-block mt-2">
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-zinc-900/80 border border-white/10 text-xs font-mono text-zinc-300">
               <span className="w-2 h-2 rounded-full bg-rose-500" />
-              <span className="text-zinc-500">path:</span>
+              <span className="text-zinc-400">path:</span>
               <span className="text-rose-400 font-semibold">{location.pathname}</span>
             </span>
           </div>

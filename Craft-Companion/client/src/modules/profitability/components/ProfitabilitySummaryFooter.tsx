@@ -18,11 +18,11 @@ export const ProfitabilitySummaryFooter: React.FC<ProfitabilitySummaryFooterProp
 
   return (
     <div className="sticky bottom-4 z-30 w-full max-w-4xl mx-auto px-4 pointer-events-none">
-      <div className="bg-[#121215]/95 backdrop-blur-md rounded-[32px] p-4 sm:p-5 shadow-2xl pointer-events-auto flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-oled-cardInner/95 backdrop-blur-md rounded-[32px] p-4 sm:p-5 shadow-2xl pointer-events-auto flex flex-wrap items-center justify-between gap-4">
         {/* Left Stats: Active Factories & Power Consumed */}
         <div className="flex items-center gap-4 sm:gap-6">
           <div>
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500 block">
+            <span className="text-[11px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-400 block">
               {isEs ? 'Fábricas Activas' : 'Active Factories'}
             </span>
             <div className="flex items-center gap-1.5 mt-0.5">
@@ -38,7 +38,7 @@ export const ProfitabilitySummaryFooter: React.FC<ProfitabilitySummaryFooterProp
           <div className="h-8 w-px bg-zinc-800 hidden sm:block" />
 
           <div>
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500 block">
+            <span className="text-[11px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-400 block">
               {isEs ? 'Consumo de Energía' : 'Total Power'}
             </span>
             <span className="text-sm sm:text-base font-extrabold text-zinc-300 tabular-nums mt-0.5 block">
@@ -49,7 +49,7 @@ export const ProfitabilitySummaryFooter: React.FC<ProfitabilitySummaryFooterProp
 
         {/* Right Headline: TOTAL PROFIT / H (Matching Reference Screenshot) */}
         <div className="text-right">
-          <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-zinc-400 block">
+          <span className="text-[11px] sm:text-[11px] font-black uppercase tracking-wider text-zinc-400 block">
             {isEs ? 'GANANCIA TOTAL / HORA' : 'TOTAL PROFIT / H'}
           </span>
           <div className="flex items-center justify-end gap-1.5 mt-0.5">

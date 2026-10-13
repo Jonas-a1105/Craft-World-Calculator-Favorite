@@ -4,6 +4,7 @@ import Card from '../../../components/Card';
 import Select from '../../../components/ui/Select';
 import type { SimulationMode } from '../../profitability/types';
 import type { PlotFactoryInstanceDetail } from '../../profitability/services/cycleAdjuster';
+import { getFactoryDisplayLevel } from '../../../services/craftworldCalculations';
 
 interface CalculatorSelectionCardProps {
   language: string;
@@ -41,7 +42,7 @@ export const CalculatorSelectionCard: React.FC<CalculatorSelectionCardProps> = (
     >
       <div className="space-y-4">
         {/* Simulation Mode Toggle */}
-        <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#141416] rounded-xl text-xs">
+        <div className="grid grid-cols-3 gap-1.5 p-1 bg-oled-cardInner rounded-xl text-xs">
           <button
             type="button"
             onClick={() => onSelectSimulationMode('base')}
@@ -87,8 +88,8 @@ export const CalculatorSelectionCard: React.FC<CalculatorSelectionCardProps> = (
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-emerald-300 font-medium">
                 {language === 'es'
-                  ? `Tienes ${selectedToken} Nivel ${activePlotDetail.level} en tu parcela`
-                  : `You own ${selectedToken} Lv. ${activePlotDetail.level} on your plot`}
+                  ? `Tienes ${selectedToken} Nivel ${getFactoryDisplayLevel(activePlotDetail.level)} en tu parcela`
+                  : `You own ${selectedToken} Lv. ${getFactoryDisplayLevel(activePlotDetail.level)} on your plot`}
               </span>
             </div>
             {selectedLevel !== activePlotDetail.level && (
@@ -124,7 +125,7 @@ export const CalculatorSelectionCard: React.FC<CalculatorSelectionCardProps> = (
           >
             {availableLevels.map((lvl) => (
               <option key={lvl} value={lvl}>
-                Nivel {lvl} {activePlotDetail?.level === lvl ? '★ (Tu Nivel)' : ''}
+                Nivel {getFactoryDisplayLevel(lvl)} {activePlotDetail?.level === lvl ? '★ (Tu Nivel)' : ''}
               </option>
             ))}
           </Select>

@@ -28,7 +28,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             id={inputId}
             ref={ref}
-            className={`w-full bg-[#151518] border-none rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all ${
+            className={`w-full bg-oled-cardInner border-none rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all ${
               leftIcon ? 'pl-9' : ''
             } ${rightIcon ? 'pr-9' : ''} ${className}`}
             {...props}

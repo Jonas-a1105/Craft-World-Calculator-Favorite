@@ -80,6 +80,9 @@ export const getCraftworldPurchases = () => req('/api/craftworld/purchases');
 export const getCraftworldPriceList = () => req('/api/craftworld/price-list');
 export const getCraftworldDynoCycle = () => req('/api/craftworld/dyno-cycle');
 export const getCraftworldHome = () => req('/api/craftworld/home') as Promise<CraftworldHomePayload>;
+export const getCraftworldGameConfigChecksum = () =>
+  req('/api/craftworld/game-config/checksum') as Promise<{ checksum: string; source: string }>;
+export const getCraftworldMasterpieceCurrent = () => req('/api/craftworld/masterpiece-current');
 export const quickLogin = (uid?: string, displayName?: string) =>
   req('/api/auth/quick-login', {
     method: 'POST',

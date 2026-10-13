@@ -8,6 +8,7 @@ import {
 } from 'solar-icon-set';
 import { ResourceIcon } from '../../../components/GameIcon';
 import type { WatchlistRule } from '../types';
+import { useModalA11y } from '../../../hooks/useModalA11y';
 
 interface WatchlistManagerModalProps {
   watchlist: WatchlistRule[];
@@ -30,6 +31,7 @@ export const WatchlistManagerModal: React.FC<WatchlistManagerModalProps> = ({
   const [condition, setCondition] = useState<'BELOW' | 'ABOVE' | 'MARGIN_ABOVE'>('BELOW');
   const [targetValue, setTargetValue] = useState<string>('');
   const [notes, setNotes] = useState('');
+  const dialogRef = useModalA11y(isOpen);
 
   // Close on Escape & Lock body scroll
   useEffect(() => {
@@ -74,7 +76,13 @@ export const WatchlistManagerModal: React.FC<WatchlistManagerModalProps> = ({
       }}
       className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200"
     >
-      <div className="relative w-full max-w-lg bg-[#18181b] border-none rounded-[32px] p-6 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 my-auto">
+      <div
+        ref={dialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        className="relative w-full max-w-lg bg-oled-card border-none rounded-[32px] p-6 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 my-auto"
+      >
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-3 shrink-0">
           <div className="flex items-center gap-3.5">
@@ -103,7 +111,7 @@ export const WatchlistManagerModal: React.FC<WatchlistManagerModalProps> = ({
         {/* Scrollable Modal Content */}
         <div className="overflow-y-auto space-y-3.5 pr-1 py-1">
           {/* Add New Rule Form */}
-          <form onSubmit={handleSubmit} className="p-4 rounded-2xl bg-[#141416] space-y-3 shadow-inner">
+          <form onSubmit={handleSubmit} className="p-4 rounded-2xl bg-oled-cardInner space-y-3 shadow-inner">
             <div className="text-xs font-bold text-white">
               Crear nueva alerta
             </div>
@@ -119,7 +127,7 @@ export const WatchlistManagerModal: React.FC<WatchlistManagerModalProps> = ({
                   placeholder="Ej. BREAD"
                   value={symbol}
                   onChange={(e) => setSymbol(e.target.value)}
-                  className="w-full bg-[#18181b] border-none rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-amber-500 font-bold uppercase shadow-inner"
+                  className="w-full bg-oled-card border-none rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-amber-500 font-bold uppercase shadow-inner"
                 />
               </div>
 
@@ -131,7 +139,7 @@ export const WatchlistManagerModal: React.FC<WatchlistManagerModalProps> = ({
                 <select
                   value={condition}
                   onChange={(e) => setCondition(e.target.value as any)}
-                  className="w-full bg-[#18181b] border-none rounded-xl px-2.5 py-2 text-xs text-zinc-200 focus:outline-none focus:ring-1 focus:ring-amber-500 font-medium cursor-pointer shadow-inner"
+                  className="w-full bg-oled-card border-none rounded-xl px-2.5 py-2 text-xs text-zinc-200 focus:outline-none focus:ring-1 focus:ring-amber-500 font-medium cursor-pointer shadow-inner"
                 >
                   <option value="BELOW">Precio menor a</option>
                   <option value="ABOVE">Precio mayor a</option>
@@ -150,7 +158,7 @@ export const WatchlistManagerModal: React.FC<WatchlistManagerModalProps> = ({
                   placeholder="0.00"
                   value={targetValue}
                   onChange={(e) => setTargetValue(e.target.value)}
-                  className="w-full bg-[#18181b] border-none rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-amber-500 font-bold shadow-inner"
+                  className="w-full bg-oled-card border-none rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-amber-500 font-bold shadow-inner"
                 />
               </div>
             </div>
@@ -161,7 +169,7 @@ export const WatchlistManagerModal: React.FC<WatchlistManagerModalProps> = ({
                 placeholder="Nota u objetivo táctico (opcional)"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full bg-[#18181b] border-none rounded-xl px-3 py-2 text-xs text-zinc-300 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-amber-500 shadow-inner font-normal"
+                className="w-full bg-oled-card border-none rounded-xl px-3 py-2 text-xs text-zinc-300 placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-amber-500 shadow-inner font-normal"
               />
             </div>
 
@@ -181,7 +189,7 @@ export const WatchlistManagerModal: React.FC<WatchlistManagerModalProps> = ({
             </div>
 
             {watchlist.length === 0 ? (
-              <div className="p-6 text-center text-xs text-zinc-500 bg-[#141416] rounded-2xl shadow-inner">
+              <div className="p-6 text-center text-xs text-zinc-400 bg-oled-cardInner rounded-2xl shadow-inner">
                 No tienes alertas configuradas. Añade una para recibir avisos automáticos en el radar.
               </div>
             ) : (
@@ -191,8 +199,8 @@ export const WatchlistManagerModal: React.FC<WatchlistManagerModalProps> = ({
                     key={rule.id}
                     className={`p-3 rounded-2xl border-none flex items-center justify-between transition-all ${
                       rule.enabled
-                        ? 'bg-[#141416] shadow-sm'
-                        : 'bg-[#141416]/50 opacity-50'
+                        ? 'bg-oled-cardInner shadow-sm'
+                        : 'bg-oled-cardInner/50 opacity-50'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -204,12 +212,12 @@ export const WatchlistManagerModal: React.FC<WatchlistManagerModalProps> = ({
                       >
                         <CheckCircleBold
                           size={20}
-                          className={rule.enabled ? 'text-emerald-400' : 'text-zinc-600'}
+                          className={rule.enabled ? 'text-emerald-400' : 'text-zinc-400'}
                         />
                       </button>
 
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-[#18181b] flex items-center justify-center p-1 shrink-0">
+                        <div className="w-8 h-8 rounded-xl bg-oled-card flex items-center justify-center p-1 shrink-0">
                           <ResourceIcon symbol={rule.symbol} size={22} className="w-5 h-5 object-contain" />
                         </div>
                         <div>
@@ -233,7 +241,7 @@ export const WatchlistManagerModal: React.FC<WatchlistManagerModalProps> = ({
                     <button
                       type="button"
                       onClick={() => onDeleteRule(rule.id)}
-                      className="p-1.5 rounded-xl text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer border-none"
+                      className="p-1.5 rounded-xl text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer border-none"
                       title="Eliminar regla"
                     >
                       <TrashBinTrashBold size={16} />

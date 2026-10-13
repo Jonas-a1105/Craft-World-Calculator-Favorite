@@ -62,7 +62,7 @@ export const CategoryTabsBar: React.FC<CategoryTabsBarProps> = ({
               <span>{tab.label}</span>
               {typeof tab.badge === 'number' && tab.badge > 0 && (
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                  className={`text-[11px] px-1.5 py-0.2 rounded-full font-bold ${
                     isActive ? 'bg-black/20 text-black' : 'bg-zinc-700 text-zinc-300'
                   }`}
                 >
@@ -83,7 +83,7 @@ export const CategoryTabsBar: React.FC<CategoryTabsBarProps> = ({
           className="px-3 py-1.5 rounded-full bg-zinc-800/80 hover:bg-zinc-700/80 text-xs font-bold text-amber-400 transition-colors flex items-center gap-1 whitespace-nowrap"
           title={isEs ? 'Maximizar el nivel de todas las fábricas' : 'Maximize level of all factories'}
         >
-          <span className="w-4 h-4 rounded-full bg-amber-500/20 text-[10px] flex items-center justify-center font-black">
+          <span className="w-4 h-4 rounded-full bg-amber-500/20 text-[11px] flex items-center justify-center font-black">
             M
           </span>
           <span>{isEs ? 'Max Todos' : 'Max All'}</span>

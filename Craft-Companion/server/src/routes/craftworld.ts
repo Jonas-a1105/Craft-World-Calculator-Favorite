@@ -11,6 +11,9 @@ import {
   getPriceList,
   getDynoCycle,
   getHome,
+  getGameConfig,
+  getGameConfigChecksumOnly,
+  getMasterpieceCurrent,
 } from '../controllers/craftworld.controller.js';
 
 export const craftworldRouter = Router();
@@ -26,3 +29,6 @@ craftworldRouter.get('/purchases', getPurchases);
 craftworldRouter.get('/price-list', getPriceList);
 craftworldRouter.get('/dyno-cycle', getDynoCycle);
 craftworldRouter.get('/home', getHome);
+craftworldRouter.get('/game-config', getGameConfig);
+craftworldRouter.get('/game-config/checksum', getGameConfigChecksumOnly);
+craftworldRouter.get('/masterpiece-current', getMasterpieceCurrent);

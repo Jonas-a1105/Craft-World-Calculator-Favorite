@@ -5,6 +5,8 @@ import {
   getDefinedPoolUrl,
   getMaxFactoryLevel,
 } from '../data/baseCostCatalog';
+import { markupPercentOnCost } from '../../../services/financial/pricingService';
+import { getTradeInputTaxRate } from '../../../services/gameConfig';
 import type {
   BaseCostRowData,
   BaseCostSettings,
@@ -124,7 +126,11 @@ export function calculateBaseCostRow(
   const sellMult = settings.sellSlippage
     ? 1 - settings.sellSlippagePct / 100
     : 1;
-  const feeMult = settings.marketFee ? 1 - (settings.marketFeePct ?? 5) / 100 : 1;
+  // Tax oficial del exchange (tradeInputTaxRate, hoy 2,5%) — no el 5% que se
+  // asumía antes.
+  const feeMult = settings.marketFee
+    ? 1 - (settings.marketFeePct ?? getTradeInputTaxRate() * 100) / 100
+    : 1;
 
   const earthPrice = prices.EARTH ?? 0;
   const waterPrice = prices.WATER ?? 0;
@@ -147,8 +153,7 @@ export function calculateBaseCostRow(
   const sellPrice = tokenPrice * sellMult * feeMult;
   const profit = sellPrice - totalCost;
 
-  const marginPct =
-    baseCost > 0 && Number.isFinite(profit) ? (profit / baseCost) * 100 : null;
+  const marginPct = markupPercentOnCost(sellPrice, baseCost);
 
   // Make vs Buy & Smart Routing Analysis
   const isRootResource = ['EARTH', 'WATER', 'FIRE', 'DUST', 'LUMBER'].includes(norm);
@@ -312,89 +317,6 @@ export function calculateBaseCostRow(
     savingsPct,
     isCraftCheaper,
   };
-}
-
-/**
- * Interpolates smoothly between green, neutral, and red margin colors.
- */
-export function getMarginTextColor(marginPct: number | null): string {
-  if (
-    marginPct === null ||
-    Number.isNaN(marginPct) ||
-    Math.abs(marginPct) < 0.5
-  ) {
-    return '#6B67A0';
-  }
-
-  function lerp(start: number, end: number, t: number) {
-    return Math.round(start + (end - start) * t);
-  }
-
-  if (marginPct > 0) {
-    const t = Math.min(marginPct / 80, 1);
-    const r = lerp(22, 134, t);
-    const g = lerp(101, 239, t);
-    const b = lerp(52, 172, t);
-    return `rgb(${r}, ${g}, ${b})`;
-  }
-
-  const t = Math.min(Math.abs(marginPct) / 40, 1);
-  const r = lerp(120, 252, t);
-  const g = lerp(28, 120, t);
-  const b = lerp(38, 120, t);
-  return `rgb(${r}, ${g}, ${b})`;
-}
-
-/**
- * Returns background and text CSS classes for margin pills.
- */
-export function getMarginBadgeClasses(marginPct: number | null): {
-  bg: string;
-  text: string;
-} {
-  if (
-    marginPct === null ||
-    Number.isNaN(marginPct) ||
-    Math.abs(marginPct) < 0.5
-  ) {
-    return { bg: 'bg-[#2D2B52]/30', text: 'text-[#6B67A0]' };
-  }
-  if (marginPct > 0) {
-    return { bg: 'bg-emerald-500/10', text: 'text-emerald-400' };
-  }
-  return { bg: 'bg-rose-500/10', text: 'text-rose-400' };
-}
-
-/**
- * Formats resource quantity cleanly (e.g. 2.85, 8.68k, 22.4k, 1.25M).
- */
-export function formatQuantity(num: number): string {
-  if (!Number.isFinite(num) || num <= 0) return '—';
-  if (num >= 1e6) return `${(num / 1e6).toFixed(2)}M`;
-  if (num >= 1e4) return `${(num / 1e3).toFixed(1)}k`;
-  if (num >= 1e3) return `${(num / 1e3).toFixed(2)}k`;
-  if (num >= 100) return num.toFixed(0);
-  if (num >= 10) return num.toFixed(1);
-  if (num >= 1) return num.toFixed(2);
-  if (num >= 0.01) return num.toFixed(3);
-  return num.toExponential(2);
-}
-
-/**
- * Formats currency / COIN amounts.
- */
-export function formatCoin(num: number): string {
-  if (!Number.isFinite(num)) return '—';
-  const abs = Math.abs(num);
-  if (abs >= 1e6) return `${(num / 1e6).toFixed(2)}M`;
-  if (abs >= 1e4) return `${(num / 1e3).toFixed(1)}k`;
-  if (abs >= 1e3) return `${(num / 1e3).toFixed(2)}k`;
-  if (abs >= 100) return num.toFixed(1);
-  if (abs >= 10) return num.toFixed(2);
-  if (abs >= 1) return num.toFixed(2);
-  if (abs >= 0.001) return num.toFixed(4);
-  if (abs > 0) return num.toFixed(6);
-  return '0.00';
 }
 
 /**

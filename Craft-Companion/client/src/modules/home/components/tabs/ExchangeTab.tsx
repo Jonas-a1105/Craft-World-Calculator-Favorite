@@ -39,10 +39,10 @@ export const ExchangeTab: React.FC<ExchangeTabProps> = ({ exchange, onReauthoriz
               <span>{language === 'es' ? 'Estadísticas del Mercado' : 'Market Stats'}</span>
             </span>
           }
-          className="rounded-[32px] bg-[#18181b] shadow-xl border-none"
+          className="rounded-[32px] bg-oled-card shadow-xl border-none"
         >
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-[#202024] hover:bg-[#28282e] rounded-[24px] p-3.5 sm:p-4 flex flex-col justify-between transition-colors shadow-sm">
+            <div className="bg-oled-pill hover:bg-[#28282e] rounded-[24px] p-3.5 sm:p-4 flex flex-col justify-between transition-colors shadow-sm">
               <div className="flex items-center gap-1.5">
                 <RefreshBoldDuotone className="w-4 h-4 text-emerald-400" />
                 <span className="text-xs sm:text-sm text-slate-300 font-semibold truncate">
@@ -54,7 +54,7 @@ export const ExchangeTab: React.FC<ExchangeTabProps> = ({ exchange, onReauthoriz
               </div>
             </div>
 
-            <div className="bg-[#202024] hover:bg-[#28282e] rounded-[24px] p-3.5 sm:p-4 flex flex-col justify-between transition-colors shadow-sm">
+            <div className="bg-oled-pill hover:bg-[#28282e] rounded-[24px] p-3.5 sm:p-4 flex flex-col justify-between transition-colors shadow-sm">
               <div className="flex items-center gap-1.5">
                 <BoltBoldDuotone className="w-4 h-4 text-amber-400" />
                 <span className="text-xs sm:text-sm text-slate-300 font-semibold truncate">
@@ -66,7 +66,7 @@ export const ExchangeTab: React.FC<ExchangeTabProps> = ({ exchange, onReauthoriz
               </div>
             </div>
 
-            <div className="bg-[#202024] hover:bg-[#28282e] rounded-[24px] p-3.5 sm:p-4 flex flex-col justify-between transition-colors shadow-sm">
+            <div className="bg-oled-pill hover:bg-[#28282e] rounded-[24px] p-3.5 sm:p-4 flex flex-col justify-between transition-colors shadow-sm">
               <div className="flex items-center gap-1.5">
                 <ChartSquareBoldDuotone className="w-4 h-4 text-cyan-400" />
                 <span className="text-xs sm:text-sm text-slate-300 font-semibold truncate">
@@ -78,7 +78,7 @@ export const ExchangeTab: React.FC<ExchangeTabProps> = ({ exchange, onReauthoriz
               </div>
             </div>
 
-            <div className="bg-[#202024] hover:bg-[#28282e] rounded-[24px] p-3.5 sm:p-4 flex flex-col justify-between transition-colors shadow-sm">
+            <div className="bg-oled-pill hover:bg-[#28282e] rounded-[24px] p-3.5 sm:p-4 flex flex-col justify-between transition-colors shadow-sm">
               <div className="flex items-center gap-1.5">
                 <ArchiveBoldDuotone className="w-4 h-4 text-purple-400" />
                 <span className="text-xs sm:text-sm text-slate-300 font-semibold truncate">
@@ -102,12 +102,12 @@ export const ExchangeTab: React.FC<ExchangeTabProps> = ({ exchange, onReauthoriz
           }
           action={
             exchange.tradeExecutions?.length ? (
-              <span className="text-[10px] text-slate-400 font-mono bg-white/5 px-2.5 py-0.5 rounded-full">
+              <span className="text-[11px] text-slate-400 font-mono bg-white/5 px-2.5 py-0.5 rounded-full">
                 {exchange.tradeExecutions.length} {language === 'es' ? 'trades' : 'trades'}
               </span>
             ) : undefined
           }
-          className="rounded-[32px] bg-[#18181b] shadow-xl border-none"
+          className="rounded-[32px] bg-oled-card shadow-xl border-none"
         >
           {exchange.tradeExecutions?.length ? (
             <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 hover:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.1)_transparent]">
@@ -120,7 +120,7 @@ export const ExchangeTab: React.FC<ExchangeTabProps> = ({ exchange, onReauthoriz
                 return (
                   <div
                     key={t.id || i}
-                    className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2.5 px-3.5 text-xs flex justify-between items-center transition-colors shadow-sm"
+                    className="bg-oled-pill hover:bg-[#28282e] rounded-full p-2.5 px-3.5 text-xs flex justify-between items-center transition-colors shadow-sm"
                   >
                     <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 pr-2">
                       <div className="flex items-center gap-1 shrink-0">
@@ -131,7 +131,7 @@ export const ExchangeTab: React.FC<ExchangeTabProps> = ({ exchange, onReauthoriz
                         </span>
                       </div>
 
-                      <span className="text-slate-500 font-bold px-0.5">➔</span>
+                      <span className="text-slate-400 font-bold px-0.5">➔</span>
 
                       <div className="flex items-center gap-1 shrink-0">
                         <ResourceIcon symbol={t.quote?.output?.symbol || ''} size={18} />
@@ -142,7 +142,7 @@ export const ExchangeTab: React.FC<ExchangeTabProps> = ({ exchange, onReauthoriz
                       </div>
                     </div>
 
-                    <span className="font-mono text-[10px] text-slate-400 bg-white/5 px-2 py-0.5 rounded-full shrink-0">
+                    <span className="font-mono text-[11px] text-slate-400 bg-white/5 px-2 py-0.5 rounded-full shrink-0">
                       {t.id ? `${t.id.slice(0, 8)}...` : 'tx'}
                     </span>
                   </div>

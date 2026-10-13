@@ -77,7 +77,7 @@ export const ExecutiveBarChart: React.FC<Props> = ({
             {title}
           </span>
           <span
-            className="w-3.5 h-3.5 rounded-full bg-[#1e1f25] text-[9px] flex items-center justify-center text-zinc-400 cursor-help shrink-0 border-none select-none"
+            className="w-3.5 h-3.5 rounded-full bg-[#1e1f25] text-[11px] flex items-center justify-center text-zinc-400 cursor-help shrink-0 border-none select-none"
             title={infoTooltip || (language === 'es' ? 'Consumo de energía por ciclo escalonado por nivel' : 'Energy cost per cycle')}
           >
             i
@@ -104,7 +104,7 @@ export const ExecutiveBarChart: React.FC<Props> = ({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
               </svg>
               +{diffFromBase >= 1000 ? formatCompact(diffFromBase) : diffFromBase}
-              <span className="text-zinc-500 font-normal font-sans ml-1">
+              <span className="text-zinc-400 font-normal font-sans ml-1">
                 {language === 'es' ? 'vs base' : 'vs base'}
               </span>
             </span>
@@ -184,7 +184,7 @@ export const ExecutiveBarChart: React.FC<Props> = ({
         {/* Base & Max */}
         <div className="flex items-center gap-1.5 text-zinc-300 text-[12px] font-medium font-mono">
           <span className="text-zinc-400">{language === 'es' ? 'Base:' : 'Base:'} {minVal}</span>
-          <span className="text-zinc-500 font-bold">•</span>
+          <span className="text-zinc-400 font-bold">•</span>
           <span className="text-amber-400 font-semibold">{language === 'es' ? 'Máx:' : 'Max:'} {maxVal}</span>
         </div>
       </div>

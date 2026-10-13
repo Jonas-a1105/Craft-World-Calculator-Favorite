@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { AltArrowDownLinear } from 'solar-icon-set';
+import { getFactoryDisplayLevel } from '../../../services/craftworldCalculations';
 
 interface BaseCostLevelSelectorProps {
   token: string;
@@ -59,13 +60,13 @@ export const BaseCostLevelSelector: React.FC<BaseCostLevelSelectorProps> = ({
         className={`group/lvl flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-mono transition-all border-none outline-none cursor-pointer shadow-sm active:scale-95 ${
           isOpen
             ? 'bg-[#202026] text-white'
-            : 'bg-[#131316] hover:bg-[#202026] text-slate-200'
+            : 'bg-oled-cardInner hover:bg-oled-pillHover text-slate-200'
         }`}
-        title={`Nivel ${curLevel} de ${maxLevel} (Click para cambiar)`}
+                title={`Nivel ${getFactoryDisplayLevel(curLevel)} de ${getFactoryDisplayLevel(maxLevel)} (Click para cambiar)`}
         aria-expanded={isOpen}
       >
-        <span className="font-bold text-amber-300">{curLevel}</span>
-        <span className="text-[10px] text-slate-500 font-normal">/{maxLevel}</span>
+        <span className="font-bold text-amber-300">{getFactoryDisplayLevel(curLevel)}</span>
+        <span className="text-[11px] text-slate-400 font-normal">/{getFactoryDisplayLevel(maxLevel)}</span>
         <AltArrowDownLinear
           size={12}
           className={`text-slate-400 transition-transform duration-200 shrink-0 ${
@@ -76,14 +77,14 @@ export const BaseCostLevelSelector: React.FC<BaseCostLevelSelectorProps> = ({
 
       {/* Custom Designed Level Selection Window */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 z-50 w-64 p-3 rounded-2xl bg-[#18181c] shadow-md border-none animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 top-full mt-2 z-50 w-64 p-3 rounded-2xl bg-oled-card shadow-md border-none animate-in fade-in zoom-in-95 duration-150">
           {/* Header */}
           <div className="flex items-center justify-between pb-2 border-b border-white/5">
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-wider font-bold text-slate-300">
+              <div className="text-[11px] font-mono uppercase tracking-wider font-bold text-slate-300">
                 Nivel de Fábrica
               </div>
-              <div className="text-[10px] text-slate-500 font-mono">
+              <div className="text-[11px] text-slate-400 font-mono">
                 Rango: 1 al {maxLevel}
               </div>
             </div>
@@ -94,18 +95,20 @@ export const BaseCostLevelSelector: React.FC<BaseCostLevelSelectorProps> = ({
                 type="button"
                 onClick={() => handleSelect(curLevel - 1)}
                 disabled={curLevel <= 1}
-                className="w-6 h-6 rounded-lg bg-[#22222a] hover:bg-[#2c2c36] disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center transition-colors border-none cursor-pointer"
+                aria-label="Bajar un nivel"
+                className="w-8 h-8 rounded-lg bg-oled-pill hover:bg-oled-pillHover disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center transition-colors border-none cursor-pointer"
               >
                 -
               </button>
               <span className="w-6 text-center text-xs font-bold text-amber-300">
-                {curLevel}
+                {getFactoryDisplayLevel(curLevel)}
               </span>
               <button
                 type="button"
                 onClick={() => handleSelect(curLevel + 1)}
                 disabled={curLevel >= maxLevel}
-                className="w-6 h-6 rounded-lg bg-[#22222a] hover:bg-[#2c2c36] disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center transition-colors border-none cursor-pointer"
+                aria-label="Subir un nivel"
+                className="w-8 h-8 rounded-lg bg-oled-pill hover:bg-oled-pillHover disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center transition-colors border-none cursor-pointer"
               >
                 +
               </button>
@@ -123,7 +126,7 @@ export const BaseCostLevelSelector: React.FC<BaseCostLevelSelectorProps> = ({
               className={`py-1 px-2 rounded-xl text-[11px] font-mono font-semibold transition-colors border-none cursor-pointer ${
                 curLevel === 1
                   ? 'bg-amber-400 text-black font-bold'
-                  : 'bg-[#141417] text-slate-300 hover:bg-[#202026] hover:text-white'
+                  : 'bg-oled-cardInner text-slate-300 hover:bg-oled-pillHover hover:text-white'
               }`}
             >
               Nivel Min (1)
@@ -137,7 +140,7 @@ export const BaseCostLevelSelector: React.FC<BaseCostLevelSelectorProps> = ({
               className={`py-1 px-2 rounded-xl text-[11px] font-mono font-semibold transition-colors border-none cursor-pointer ${
                 curLevel === maxLevel
                   ? 'bg-amber-400 text-black font-bold'
-                  : 'bg-[#141417] text-slate-300 hover:bg-[#202026] hover:text-white'
+                  : 'bg-oled-cardInner text-slate-300 hover:bg-oled-pillHover hover:text-white'
               }`}
             >
               Nivel Max ({maxLevel})
@@ -163,7 +166,7 @@ export const BaseCostLevelSelector: React.FC<BaseCostLevelSelectorProps> = ({
                   className={`h-8 rounded-xl font-mono text-xs font-bold transition-all border-none cursor-pointer flex items-center justify-center ${
                     isActive
                       ? 'bg-amber-400 text-slate-950 font-black shadow-md shadow-amber-400/25 scale-105'
-                      : 'bg-[#131316] text-slate-300 hover:bg-[#252530] hover:text-white'
+                      : 'bg-oled-cardInner text-slate-300 hover:bg-[#252530] hover:text-white'
                   }`}
                 >
                   {lvl}

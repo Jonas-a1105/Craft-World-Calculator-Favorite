@@ -5,8 +5,6 @@ import { MoonBold, PaletteBold, GlobalBold, PlayBold } from 'solar-icon-set';
 import { playSplashAudio } from '../../splash';
 
 export interface SettingsAppearanceCardProps {
-  isDarkMode: boolean;
-  onToggleTheme: (nextDark: boolean) => void;
   solidBg: boolean;
   onToggleSolidBg: (val: boolean) => void;
   solidColor: string;
@@ -16,8 +14,6 @@ export interface SettingsAppearanceCardProps {
 }
 
 export const SettingsAppearanceCard: React.FC<SettingsAppearanceCardProps> = ({
-  isDarkMode,
-  onToggleTheme,
   solidBg,
   onToggleSolidBg,
   solidColor,
@@ -31,43 +27,10 @@ export const SettingsAppearanceCard: React.FC<SettingsAppearanceCardProps> = ({
         {language === 'es' ? 'Apariencia y Pantalla' : 'Appearance & Display'}
       </span>
 
-      <div className="bg-[#18181b] rounded-[32px] shadow-xl overflow-hidden">
-        {/* Row 0: Modo Oscuro (Dark Mode) Toggle */}
-        <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div className="w-10 h-10 rounded-2xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center flex-shrink-0">
-              <MoonBold className="w-5 h-5" />
-            </div>
-            <div className="min-w-0">
-              <span className="text-xs font-bold text-white block truncate">
-                {language === 'es' ? 'Modo Oscuro' : 'Dark Mode'}
-              </span>
-              <span className="text-[11px] text-zinc-400 block truncate mt-0.5">
-                {language === 'es'
-                  ? 'Tema visual de la interfaz'
-                  : 'Interface visual theme'}
-              </span>
-            </div>
-          </div>
-
-          {/* iOS Switch */}
-          <button
-            type="button"
-            onClick={() => onToggleTheme(!isDarkMode)}
-            className={`w-12 h-7 rounded-full transition-colors duration-200 p-0.5 flex items-center cursor-pointer flex-shrink-0 ${
-              isDarkMode ? 'bg-emerald-500' : 'bg-[#27272a]'
-            }`}
-          >
-            <div
-              className={`w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-200 ${
-                isDarkMode ? 'translate-x-5' : 'translate-x-0'
-              }`}
-            />
-          </button>
-        </div>
-
-        {/* Subtle Divider */}
-        <div className="h-px bg-white/[0.04]" />
+      <div className="bg-oled-card rounded-[32px] shadow-xl overflow-hidden">
+        {/* El toggle de modo claro se retiró (auditoría UX LP3): renderizaba
+            roto — componentes con hexes oscuros hardcodeados. La app es
+            dark-only OLED con fondo sólido opcional configurable abajo. */}
 
         {/* Row 1: Solid Background Toggle */}
         <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
@@ -94,7 +57,7 @@ export const SettingsAppearanceCard: React.FC<SettingsAppearanceCardProps> = ({
             type="button"
             onClick={() => onToggleSolidBg(!solidBg)}
             className={`w-12 h-7 rounded-full transition-colors duration-200 p-0.5 flex items-center cursor-pointer flex-shrink-0 ${
-              solidBg ? 'bg-emerald-500' : 'bg-[#27272a]'
+              solidBg ? 'bg-emerald-500' : 'bg-oled-pill'
             }`}
           >
             <div
@@ -167,7 +130,7 @@ export const SettingsAppearanceCard: React.FC<SettingsAppearanceCardProps> = ({
           </div>
 
           {/* Segmented Pill Selector */}
-          <div className="flex items-center bg-[#222228] p-1 rounded-full gap-1 flex-shrink-0">
+          <div className="flex items-center bg-oled-pill p-1 rounded-full gap-1 flex-shrink-0">
             <button
               type="button"
               onClick={() => setLanguage('es')}

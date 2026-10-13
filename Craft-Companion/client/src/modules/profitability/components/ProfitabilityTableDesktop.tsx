@@ -3,6 +3,7 @@ import { useTranslation } from '../../../utils/i18n';
 import { FactoryIcon } from '../../../components/GameIcon';
 import type { FactoryTableRow, TableSortField, SortDirection, BoostOption } from '../types';
 import { formatNumber } from '../../../utils/formatters';
+import { getFactoryDisplayLevel } from '../../../services/craftworldCalculations';
 
 interface ProfitabilityTableDesktopProps {
   rows: FactoryTableRow[];
@@ -52,7 +53,7 @@ export const ProfitabilityTableDesktop: React.FC<ProfitabilityTableDesktopProps>
   };
 
   return (
-    <div className="w-full bg-[#18181b] rounded-[32px] shadow-2xl overflow-hidden">
+    <div className="w-full bg-oled-card rounded-[32px] shadow-2xl overflow-hidden">
       <div className="overflow-x-auto no-scrollbar">
         <table className="w-full text-left border-collapse select-none">
           {/* Table Header */}
@@ -196,7 +197,7 @@ export const ProfitabilityTableDesktop: React.FC<ProfitabilityTableDesktopProps>
                         type="button"
                         onClick={() => onToggleFavorite(row.token)}
                         className={`text-sm transition-transform hover:scale-110 ${
-                          isFav ? 'text-amber-400' : 'text-zinc-600 hover:text-zinc-400'
+                          isFav ? 'text-amber-400' : 'text-zinc-400 hover:text-zinc-400'
                         }`}
                         title={isFav ? 'Quitar de favoritos' : 'Añadir a favoritos'}
                       >
@@ -222,7 +223,7 @@ export const ProfitabilityTableDesktop: React.FC<ProfitabilityTableDesktopProps>
                               />
                             )}
                           </div>
-                          <span className="text-[10px] text-zinc-500 capitalize">
+                          <span className="text-[11px] text-zinc-400 capitalize">
                             {row.category}
                           </span>
                         </div>
@@ -295,12 +296,12 @@ export const ProfitabilityTableDesktop: React.FC<ProfitabilityTableDesktopProps>
                   <td className="py-3.5 px-3 text-center">
                     <div className="inline-flex items-center gap-1.5">
                       <span className="font-bold text-white text-xs tabular-nums">
-                        {row.level}/{row.maxLevel}
+                        {getFactoryDisplayLevel(row.level)}/{getFactoryDisplayLevel(row.maxLevel)}
                       </span>
                       <button
                         type="button"
                         onClick={() => onSetMaxLevel(row.token)}
-                        className={`w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center transition-colors ${
+                        className={`w-5 h-5 rounded-full text-[11px] font-black flex items-center justify-center transition-colors ${
                           row.level >= row.maxLevel
                             ? 'bg-amber-500 text-black'
                             : 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700'
@@ -320,7 +321,7 @@ export const ProfitabilityTableDesktop: React.FC<ProfitabilityTableDesktopProps>
                           type="button"
                           onClick={() => onDecrementMastery(row.token)}
                           disabled={row.masteryLevel <= 0}
-                          className="w-4 h-4 rounded-full bg-zinc-700/60 hover:bg-zinc-600 disabled:opacity-30 disabled:pointer-events-none text-white text-[10px] font-black flex items-center justify-center"
+                          className="w-4 h-4 rounded-full bg-zinc-700/60 hover:bg-zinc-600 disabled:opacity-30 disabled:pointer-events-none text-white text-[11px] font-black flex items-center justify-center"
                         >
                           -
                         </button>
@@ -331,13 +332,13 @@ export const ProfitabilityTableDesktop: React.FC<ProfitabilityTableDesktopProps>
                           type="button"
                           onClick={() => onIncrementMastery(row.token)}
                           disabled={row.masteryLevel >= 10}
-                          className="w-4 h-4 rounded-full bg-zinc-700/60 hover:bg-zinc-600 disabled:opacity-30 disabled:pointer-events-none text-white text-[10px] font-black flex items-center justify-center"
+                          className="w-4 h-4 rounded-full bg-zinc-700/60 hover:bg-zinc-600 disabled:opacity-30 disabled:pointer-events-none text-white text-[11px] font-black flex items-center justify-center"
                         >
                           +
                         </button>
                       </div>
                       {row.masteryReductionPercent > 0 && (
-                        <span className="text-[10px] text-emerald-400 font-semibold">
+                        <span className="text-[11px] text-emerald-400 font-semibold">
                           +{row.masteryReductionPercent.toFixed(2)}%
                         </span>
                       )}
@@ -377,7 +378,7 @@ export const ProfitabilityTableDesktop: React.FC<ProfitabilityTableDesktopProps>
                         {formatNumber(row.powerKwPerHour, 1)} kW
                       </span>
                     ) : (
-                      <span className="text-zinc-600">-</span>
+                      <span className="text-zinc-400">-</span>
                     )}
                   </td>
 
@@ -400,7 +401,7 @@ export const ProfitabilityTableDesktop: React.FC<ProfitabilityTableDesktopProps>
                         <span className="text-amber-400 text-xs">🪙</span>
                       </div>
                     ) : (
-                      <span className="text-zinc-600">-</span>
+                      <span className="text-zinc-400">-</span>
                     )}
                   </td>
                 </tr>

@@ -7,7 +7,7 @@ import {
   formatCoin,
   formatQuantity,
   getMarginTextColor,
-} from '../services/baseCostCalculatorService';
+} from '../services/baseCostFormatters';
 import { LinkCircleLinear } from 'solar-icon-set';
 
 interface BaseCostTableProps {
@@ -26,13 +26,13 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
   onMaxMasteries,
 }) => {
   return (
-    <div className="w-full rounded-3xl bg-[#18181c] shadow-md overflow-hidden border-none">
+    <div className="w-full rounded-3xl bg-oled-card shadow-md overflow-hidden border-none">
       {/* Table Subheader */}
-      <div className="flex flex-wrap items-center justify-between px-4 py-3 bg-[#141417]">
+      <div className="flex flex-wrap items-center justify-between px-4 py-3 bg-oled-cardInner">
         <span className="text-xs font-mono uppercase tracking-widest text-slate-400 font-semibold">
           Costo Base & Ganancia Neta · Por 1 unidad crafteada
         </span>
-        <span className="text-[11px] font-mono text-slate-500">
+        <span className="text-[11px] font-mono text-slate-400">
           Valores calculados desde la cadena primaria
         </span>
       </div>
@@ -42,8 +42,8 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
         <table className="w-full border-collapse text-left">
           {/* Table Header */}
           <thead>
-            <tr className="bg-[#141417] text-[11px] font-mono uppercase tracking-wider text-slate-400 select-none">
-              <th className="sticky left-0 z-20 bg-[#141417] px-4 py-3 min-w-[170px] shadow-[2px_0_5px_rgba(0,0,0,0.3)]">
+            <tr className="bg-oled-cardInner text-[11px] font-mono uppercase tracking-wider text-slate-400 select-none">
+              <th className="sticky left-0 z-20 bg-oled-cardInner px-4 py-3 min-w-[170px] shadow-[2px_0_5px_rgba(0,0,0,0.3)]">
                 Recurso
               </th>
               <th className="px-2 py-3 text-center min-w-[70px]">
@@ -52,7 +52,8 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
                   <button
                     onClick={onMaxLevels}
                     title="Maximizar todos los niveles"
-                    className="w-4 h-4 rounded bg-[#222228] text-amber-400 hover:bg-amber-400 hover:text-black text-[9px] font-bold transition-all"
+                    aria-label="Maximizar todos los niveles"
+                    className="w-7 h-7 rounded-lg bg-oled-pill text-amber-400 hover:bg-amber-400 hover:text-black text-[11px] font-bold transition-all flex items-center justify-center"
                   >
                     M
                   </button>
@@ -64,7 +65,8 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
                   <button
                     onClick={onMaxMasteries}
                     title="Maximizar todas las maestrías"
-                    className="w-4 h-4 rounded bg-[#27234d] text-purple-400 hover:bg-purple-400 hover:text-white text-[9px] font-bold transition-all"
+                    aria-label="Maximizar todas las maestrías"
+                    className="w-7 h-7 rounded-lg bg-[#27234d] text-purple-400 hover:bg-purple-400 hover:text-white text-[11px] font-bold transition-all flex items-center justify-center"
                   >
                     M
                   </button>
@@ -121,16 +123,16 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
               return (
                 <React.Fragment key={cat.id}>
                   {/* Category Header Row */}
-                  <tr className="bg-[#141417]">
+                  <tr className="bg-oled-cardInner">
                     <td
                       colSpan={14}
-                      className="sticky left-0 z-10 px-4 py-2 bg-[#141417]"
+                      className="sticky left-0 z-10 px-4 py-2 bg-oled-cardInner"
                     >
                       <div className="flex items-center gap-2">
                         <span className={`text-xs font-mono font-bold tracking-wider uppercase ${cat.textColor}`}>
                           ▸ {cat.labelEs}
                         </span>
-                        <span className="text-[10px] font-mono text-slate-500">
+                        <span className="text-[11px] font-mono text-slate-400">
                           ({rows.length} recursos)
                         </span>
                       </div>
@@ -144,10 +146,10 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
                     return (
                       <tr
                         key={row.token}
-                        className="hover:bg-[#202026]/70 transition-colors group"
+                        className="hover:bg-oled-pillHover/70 transition-colors group"
                       >
                         {/* Sticky Resource Column */}
-                        <td className="sticky left-0 z-10 bg-[#18181c] group-hover:bg-[#202026] px-4 py-2.5 shadow-[2px_0_5px_rgba(0,0,0,0.3)] transition-colors">
+                        <td className="sticky left-0 z-10 bg-oled-card group-hover:bg-oled-pillHover px-4 py-2.5 shadow-[2px_0_5px_rgba(0,0,0,0.3)] transition-colors">
                           <div className="flex items-center gap-2.5">
                             <img
                               src={row.iconUrl}
@@ -165,7 +167,7 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   title={`Ver ${row.name} en Defined.fi`}
-                                  className="text-slate-500 hover:text-purple-400 transition-colors shrink-0"
+                                  className="text-slate-400 hover:text-purple-400 transition-colors shrink-0"
                                 >
                                   <LinkCircleLinear size={13} />
                                 </a>
@@ -206,7 +208,7 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
                               <img src="/assets/resources/Earth.png" alt="" className="w-3 h-3 shrink-0" />
                             </span>
                           ) : (
-                            <span className="text-slate-600">—</span>
+                            <span className="text-slate-400">—</span>
                           )}
                         </td>
 
@@ -220,7 +222,7 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
                               <img src="/assets/resources/Water.png" alt="" className="w-3 h-3 shrink-0" />
                             </span>
                           ) : (
-                            <span className="text-slate-600">—</span>
+                            <span className="text-slate-400">—</span>
                           )}
                         </td>
 
@@ -234,7 +236,7 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
                               <img src="/assets/resources/Fire.png" alt="" className="w-3 h-3 shrink-0" />
                             </span>
                           ) : (
-                            <span className="text-slate-600">—</span>
+                            <span className="text-slate-400">—</span>
                           )}
                         </td>
 
@@ -248,7 +250,7 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
                               <img src="/assets/resources/Dust.png" alt="" className="w-3 h-3 shrink-0" />
                             </span>
                           ) : (
-                            <span className="text-slate-600">—</span>
+                            <span className="text-slate-400">—</span>
                           )}
                         </td>
 
@@ -262,7 +264,7 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
                               <img src="/assets/resources/Lumber.png" alt="" className="w-3 h-3 shrink-0" />
                             </span>
                           ) : (
-                            <span className="text-slate-600">—</span>
+                            <span className="text-slate-400">—</span>
                           )}
                         </td>
 
@@ -279,7 +281,7 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
                               <img src="/assets/resources/Coin.png" alt="" className="w-3 h-3 shrink-0" />
                             </span>
                           ) : (
-                            <span className="text-slate-600">—</span>
+                            <span className="text-slate-400">—</span>
                           )}
                         </td>
 
@@ -294,7 +296,7 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
                               <img src="/assets/resources/Coin.png" alt="" className="w-3 h-3 shrink-0" />
                             </span>
                           ) : (
-                            <span className="text-slate-600">—</span>
+                            <span className="text-slate-400">—</span>
                           )}
                         </td>
 
@@ -330,7 +332,7 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
                             <span>{row.profit >= 0 ? '+' : ''}{formatCoin(row.profit)}</span>
                             <img src="/assets/resources/Coin.png" alt="" className="w-3 h-3 shrink-0" />
                             {row.marginPct !== null && (
-                              <span className="text-[10px] font-mono opacity-80 px-1 py-0.5 rounded bg-[#100e24]">
+                              <span className="text-[11px] font-mono opacity-80 px-1 py-0.5 rounded bg-[#100e24]">
                                 {row.marginPct >= 0 ? '+' : ''}{row.marginPct.toFixed(0)}%
                               </span>
                             )}
@@ -347,7 +349,7 @@ export const BaseCostTable: React.FC<BaseCostTableProps> = ({
       </div>
 
       {/* Table Footer */}
-      <div className="flex flex-wrap items-center justify-between px-4 py-2.5 bg-[#18162e] text-[11px] font-mono text-slate-500">
+      <div className="flex flex-wrap items-center justify-between px-4 py-2.5 bg-[#18162e] text-[11px] font-mono text-slate-400">
         <span>Todas las cantidades expresadas por 1 unidad de producto elaborado.</span>
         <span>Haz click en el nivel para editar o en el ícono de enlace para ver Defined.fi</span>
       </div>

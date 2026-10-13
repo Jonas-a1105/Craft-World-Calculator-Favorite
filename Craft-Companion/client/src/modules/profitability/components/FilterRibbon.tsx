@@ -46,7 +46,7 @@ export const FilterRibbon: React.FC<FilterRibbonProps> = ({
   ];
 
   return (
-    <div className="bg-[#18181b] rounded-[28px] sm:rounded-[32px] p-4 sm:p-5 shadow-xl border-none">
+    <div className="bg-oled-card rounded-[28px] sm:rounded-[32px] p-4 sm:p-5 shadow-xl border-none">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
         {/* Filter Tabs */}
         <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
@@ -58,7 +58,7 @@ export const FilterRibbon: React.FC<FilterRibbonProps> = ({
               className={`px-3.5 sm:px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center ${
                 filterMode === t.id
                   ? 'bg-emerald-500 text-slate-950 shadow-md font-bold'
-                  : 'bg-[#202024] text-zinc-400 hover:bg-[#28282e] hover:text-white border-none'
+                  : 'bg-oled-pill text-zinc-400 hover:bg-[#28282e] hover:text-white border-none'
               }`}
             >
               {t.hasWarning && (
@@ -115,7 +115,7 @@ export const FilterRibbon: React.FC<FilterRibbonProps> = ({
             }
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full lg:w-48 !rounded-full !bg-[#202024] hover:!bg-[#28282e] px-4 py-2 text-xs"
+            className="w-full lg:w-48 !rounded-full !bg-oled-pill hover:!bg-[#28282e] px-4 py-2 text-xs"
           />
         </div>
       </div>

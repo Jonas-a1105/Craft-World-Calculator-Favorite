@@ -39,10 +39,10 @@ export const PurchasesTab: React.FC<PurchasesTabProps> = ({ purchases, onReautho
               <span>{language === 'es' ? 'Beneficios & Pases' : 'Perks & Pass'}</span>
             </span>
           }
-          className="rounded-[32px] bg-[#18181b] shadow-xl border-none"
+          className="rounded-[32px] bg-oled-card shadow-xl border-none"
         >
           <div className="space-y-2.5 text-xs">
-            <div className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2.5 px-3.5 flex justify-between items-center transition-colors shadow-sm">
+            <div className="bg-oled-pill hover:bg-[#28282e] rounded-full p-2.5 px-3.5 flex justify-between items-center transition-colors shadow-sm">
               <span className="text-slate-200 font-semibold flex items-center gap-2">
                 <SlashCircleBoldDuotone className="w-4 h-4 text-rose-400" />
                 <span>{language === 'es' ? 'Sin Anuncios' : 'No-Ads Active'}</span>
@@ -61,7 +61,7 @@ export const PurchasesTab: React.FC<PurchasesTabProps> = ({ purchases, onReautho
               />
             </div>
 
-            <div className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2.5 px-3.5 flex justify-between items-center transition-colors shadow-sm">
+            <div className="bg-oled-pill hover:bg-[#28282e] rounded-full p-2.5 px-3.5 flex justify-between items-center transition-colors shadow-sm">
               <span className="text-slate-200 font-semibold flex items-center gap-2">
                 <RoundTransferHorizontalBoldDuotone className="w-4 h-4 text-emerald-400" />
                 <span>{language === 'es' ? 'Transferencias' : 'Transfer Active'}</span>
@@ -81,7 +81,7 @@ export const PurchasesTab: React.FC<PurchasesTabProps> = ({ purchases, onReautho
             </div>
 
             {purchases.crystalPass && (
-              <div className="bg-[#202024] rounded-[24px] p-3.5 space-y-2 shadow-sm border-none">
+              <div className="bg-oled-pill rounded-[24px] p-3.5 space-y-2 shadow-sm border-none">
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-amber-400 flex items-center gap-1.5 text-xs">
                     <ResourceIcon symbol="Coin" size={16} /> Crystal Pass
@@ -124,24 +124,24 @@ export const PurchasesTab: React.FC<PurchasesTabProps> = ({ purchases, onReautho
           }
           action={
             purchases.shopItemPurchases?.length ? (
-              <span className="text-[10px] text-slate-400 font-mono bg-white/5 px-2.5 py-0.5 rounded-full">
+              <span className="text-[11px] text-slate-400 font-mono bg-white/5 px-2.5 py-0.5 rounded-full">
                 {purchases.shopItemPurchases.length} {language === 'es' ? 'compras' : 'items'}
               </span>
             ) : undefined
           }
-          className="rounded-[32px] bg-[#18181b] shadow-xl border-none"
+          className="rounded-[32px] bg-oled-card shadow-xl border-none"
         >
           {purchases.shopItemPurchases?.length ? (
             <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 hover:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.1)_transparent]">
               {purchases.shopItemPurchases.map((p, i) => (
                 <div
                   key={i}
-                  className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2.5 px-3.5 flex justify-between items-center text-xs transition-colors shadow-sm"
+                  className="bg-oled-pill hover:bg-[#28282e] rounded-full p-2.5 px-3.5 flex justify-between items-center text-xs transition-colors shadow-sm"
                 >
                   <span className="text-slate-200 font-bold truncate pr-2">
                     {formatShopItem(p.shopItemId, language)}
                   </span>
-                  <span className="font-mono text-[10px] text-slate-400 bg-white/5 px-2 py-0.5 rounded-full shrink-0">
+                  <span className="font-mono text-[11px] text-slate-400 bg-white/5 px-2 py-0.5 rounded-full shrink-0">
                     {new Date(p.purchasedAt).toLocaleDateString()}
                   </span>
                 </div>
@@ -164,7 +164,7 @@ export const PurchasesTab: React.FC<PurchasesTabProps> = ({ purchases, onReautho
           }
           action={
             purchases.adWatchCounts?.length ? (
-              <span className="text-[10px] text-cyan-400 font-mono bg-cyan-500/10 px-2.5 py-0.5 rounded-full">
+              <span className="text-[11px] text-cyan-400 font-mono bg-cyan-500/10 px-2.5 py-0.5 rounded-full">
                 {purchases.adWatchCounts.reduce(
                   (acc, a) => acc + (Number(a.count) || 0),
                   0,
@@ -173,14 +173,14 @@ export const PurchasesTab: React.FC<PurchasesTabProps> = ({ purchases, onReautho
               </span>
             ) : undefined
           }
-          className="rounded-[32px] bg-[#18181b] shadow-xl border-none"
+          className="rounded-[32px] bg-oled-card shadow-xl border-none"
         >
           {purchases.adWatchCounts?.length ? (
             <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/10 hover:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.1)_transparent]">
               {purchases.adWatchCounts.map((ad, i) => (
                 <div
                   key={i}
-                  className="bg-[#202024] hover:bg-[#28282e] rounded-full p-2.5 px-3.5 flex justify-between items-center text-xs transition-colors shadow-sm"
+                  className="bg-oled-pill hover:bg-[#28282e] rounded-full p-2.5 px-3.5 flex justify-between items-center text-xs transition-colors shadow-sm"
                 >
                   <div className="flex items-center gap-2 min-w-0 pr-2">
                     <TVBoldDuotone className="w-4 h-4 text-cyan-400 shrink-0" />

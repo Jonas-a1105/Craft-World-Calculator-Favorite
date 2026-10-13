@@ -53,11 +53,11 @@ export const CustomLevelSelect: React.FC<CustomLevelSelectProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-2xl bg-[#131316] hover:bg-[#1a1a20] active:bg-[#202028] transition-all border-none outline-none cursor-pointer shadow-inner"
+        className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-2xl bg-oled-cardInner hover:bg-[#1a1a20] active:bg-[#202028] transition-all border-none outline-none cursor-pointer shadow-inner"
         aria-expanded={isOpen}
       >
         <div className="flex items-center gap-1.5 font-mono text-xs">
-          <span className="text-[10px] text-slate-400 font-semibold tracking-wider uppercase">
+          <span className="text-[11px] text-slate-400 font-semibold tracking-wider uppercase">
             {label}
           </span>
           <span className={`text-xs font-black ${valueColor}`}>
@@ -96,7 +96,7 @@ export const CustomLevelSelect: React.FC<CustomLevelSelectProps> = ({
                 }`}
               >
                 <span>{lvl}</span>
-                {isSelected && <span className="text-[10px] uppercase font-mono">✓</span>}
+                {isSelected && <span className="text-[11px] uppercase font-mono">✓</span>}
               </button>
             );
           })}

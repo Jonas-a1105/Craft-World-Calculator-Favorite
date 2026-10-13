@@ -48,7 +48,7 @@ export const NavbarNavItems = ({
               className={`w-11 h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-200 ${
                 active
                   ? 'bg-white text-[#141415] shadow-lg shadow-white/20 scale-105'
-                  : 'bg-[#202024] text-slate-300 group-hover:bg-[#29292f] group-hover:text-white group-hover:scale-105'
+                  : 'bg-oled-pill text-slate-300 group-hover:bg-[#29292f] group-hover:text-white group-hover:scale-105'
               }`}
             >
               {item.icon(active)}

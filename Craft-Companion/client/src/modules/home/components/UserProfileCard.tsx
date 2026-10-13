@@ -27,10 +27,10 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
 
   return (
     <div className="w-full flex justify-center py-2">
-      <div className="w-full max-w-[280px] sm:max-w-[310px] bg-[#18181b] rounded-[32px] overflow-hidden shadow-2xl border-none flex flex-col items-center select-none transition-all duration-200">
+      <div className="w-full max-w-[280px] sm:max-w-[310px] bg-oled-card rounded-[32px] overflow-hidden shadow-2xl border-none flex flex-col items-center select-none transition-all duration-200">
         {/* Top Scenic Banner */}
         <div className="w-full p-2.5 sm:p-3 pb-0">
-          <div className="relative w-full h-36 bg-[#202024] rounded-[22px] sm:rounded-[24px] overflow-hidden">
+          <div className="relative w-full h-36 bg-oled-pill rounded-[22px] sm:rounded-[24px] overflow-hidden">
             <img
               src="/assets/fondo.jpeg"
               alt="Banner"
@@ -46,7 +46,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
               <span>⭐</span>
               <span>{profile?.level ? `Lv. ${profile.level}` : 'Lv. 200'}</span>
               {craftWorld?.experiencePoints !== undefined && (
-                <span className="text-[10px] text-slate-300 font-normal">
+                <span className="text-[11px] text-slate-300 font-normal">
                   ({formatNumber(craftWorld.experiencePoints).slice(0, 4)}k)
                 </span>
               )}
@@ -70,10 +70,10 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
             <img
               src={profile.avatarUrl}
               alt="Avatar"
-              className="w-20 h-20 rounded-full object-cover shadow-2xl ring-4 ring-[#18181b] bg-[#151518]"
+              className="w-20 h-20 rounded-full object-cover shadow-2xl ring-4 ring-[#18181b] bg-oled-cardInner"
             />
           ) : (
-            <div className="w-20 h-20 rounded-full bg-[#151518] ring-4 ring-[#18181b] shadow-2xl flex items-center justify-center text-3xl">
+            <div className="w-20 h-20 rounded-full bg-oled-cardInner ring-4 ring-[#18181b] shadow-2xl flex items-center justify-center text-3xl">
               <ResourceIcon symbol="Coin" size={36} />
             </div>
           )}
@@ -102,7 +102,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
               </span>
             )}
             {purchases?.crystalPass?.hasActivePass && (
-              <span className="bg-amber-500/20 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full border-none">
+              <span className="bg-amber-500/20 text-amber-300 text-[11px] font-bold px-2 py-0.5 rounded-full border-none">
                 💎 Pass
               </span>
             )}

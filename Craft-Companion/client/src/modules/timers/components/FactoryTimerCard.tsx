@@ -1,8 +1,13 @@
 import React from 'react';
-import { CheckCircleBold, BoxBold } from 'solar-icon-set';
+import { CheckCircleBold, BoxBold, BellBingBold, BellOffBold } from 'solar-icon-set';
 import { FactoryIcon, ResourceIcon } from '../../../components/GameIcon';
 import type { ActiveRun } from '../types';
 import { calculateRunTimerMetrics } from '../services/factoryTimersService';
+import {
+  useNotificationPrefs,
+  toggleFactoryMute,
+  isFactoryMuted,
+} from '../../../services/notificationPrefs';
 
 interface FactoryTimerCardProps {
   run: ActiveRun;
@@ -27,13 +32,25 @@ export const FactoryTimerCard: React.FC<FactoryTimerCardProps> = ({
     strokeDashoffset,
   } = calculateRunTimerMetrics(run, nowSyncedMs, CIRCUMFERENCE);
 
+  // LP5: silencio por fábrica (persistente, por token).
+  const notifPrefs = useNotificationPrefs();
+  const muted = isFactoryMuted(run.token, notifPrefs);
+  const isEs = language === 'es';
+  const muteLabel = muted
+    ? isEs
+      ? `Avisos de ${run.outputToken} silenciados — toca para reactivar`
+      : `Alerts for ${run.outputToken} muted — tap to resume`
+    : isEs
+      ? `Silenciar avisos de ${run.outputToken}`
+      : `Mute alerts for ${run.outputToken}`;
+
   return (
-    <div className="bg-[#18181b] hover:bg-[#1c1c20] rounded-[32px] sm:rounded-[36px] p-4 sm:p-5 transition-all duration-200 shadow-lg group border-none flex flex-col justify-between gap-3">
+    <div className="bg-oled-card hover:bg-oled-850 rounded-[32px] sm:rounded-[36px] p-4 sm:p-5 transition-all duration-200 shadow-lg group border-none flex flex-col justify-between gap-3">
       {/* TOP ROW: Thumbnail + Info + Multiplier Tag */}
       <div className="flex items-center justify-between gap-2.5">
         <div className="flex items-center gap-2.5 min-w-0">
           {/* Rounded square thumbnail container */}
-          <div className="w-11 h-11 rounded-[16px] bg-[#222226] flex items-center justify-center flex-shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+          <div className="w-11 h-11 rounded-[16px] bg-oled-pill flex items-center justify-center flex-shrink-0 shadow-inner group-hover:scale-105 transition-transform">
             <FactoryIcon symbol={run.token} size={26} />
           </div>
 
@@ -43,7 +60,7 @@ export const FactoryTimerCard: React.FC<FactoryTimerCardProps> = ({
               {run.title}
             </h4>
             {/* Level & Resource */}
-            <div className="text-[10px] text-zinc-400 font-medium mt-0.5 truncate flex items-center gap-1.5">
+            <div className="text-[11px] text-zinc-400 font-medium mt-0.5 truncate flex items-center gap-1.5">
               <span>Nv. {run.level}</span>
               <span>•</span>
               <span className="text-zinc-300 flex items-center gap-1">
@@ -76,7 +93,7 @@ export const FactoryTimerCard: React.FC<FactoryTimerCardProps> = ({
             className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all flex items-center gap-1.5 select-none ${
               isFinished
                 ? 'bg-[#a3e635] text-black shadow-lg shadow-[#a3e635]/20 cursor-pointer hover:bg-[#bef264]'
-                : 'bg-[#222226] text-zinc-300'
+                : 'bg-oled-pill text-zinc-300'
             }`}
           >
             {isFinished ? (
@@ -89,9 +106,29 @@ export const FactoryTimerCard: React.FC<FactoryTimerCardProps> = ({
             )}
           </div>
 
-          {/* Circular icon button */}
+          {/* Per-factory notification mute toggle (LP5) */}
+          <button
+            type="button"
+            onClick={() => toggleFactoryMute(run.token)}
+            title={muteLabel}
+            aria-label={muteLabel}
+            aria-pressed={muted}
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer shrink-0 border-0 outline-none ${
+              muted
+                ? 'bg-rose-500/15 text-rose-400'
+                : 'bg-oled-pill hover:bg-[#28282e] text-zinc-400'
+            }`}
+          >
+            {muted ? (
+              <BellOffBold className="w-4 h-4 shrink-0" />
+            ) : (
+              <BellBingBold className="w-4 h-4 shrink-0" />
+            )}
+          </button>
+
+          {/* Output amount badge */}
           <div
-            className="w-7 h-7 rounded-full bg-[#222226] hover:bg-[#28282e] text-zinc-300 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+            className="w-8 h-8 rounded-full bg-oled-pill text-zinc-300 flex items-center justify-center shrink-0"
             title={`Produciendo ${run.outputAmount} ${run.outputToken}`}
           >
             <BoxBold className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
@@ -100,7 +137,7 @@ export const FactoryTimerCard: React.FC<FactoryTimerCardProps> = ({
 
         {/* Donut Progress Ring with percentage text inside (RIGHT) */}
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-medium text-zinc-400 hidden sm:inline">
+          <span className="text-[11px] font-medium text-zinc-400 hidden sm:inline">
             {isFinished
               ? language === 'es'
                 ? 'Completado'
@@ -136,7 +173,7 @@ export const FactoryTimerCard: React.FC<FactoryTimerCardProps> = ({
                 className="transition-all duration-700 ease-out"
               />
             </svg>
-            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-mono font-black text-white">
+            <span className="absolute inset-0 flex items-center justify-center text-[11px] font-mono font-black text-white">
               {Math.round(clampedPercent)}%
             </span>
           </div>

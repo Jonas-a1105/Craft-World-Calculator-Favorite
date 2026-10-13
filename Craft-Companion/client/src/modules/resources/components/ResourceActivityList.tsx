@@ -18,11 +18,11 @@ export const ResourceActivityList: React.FC<ResourceActivityListProps> = ({ trad
         {trades.map((t: ActivityTrade) => (
           <div
             key={t.id}
-            className="w-full bg-[#202024] hover:bg-[#28282e] p-2.5 pr-4 rounded-[28px] flex items-center justify-between transition-colors shadow-md border-none select-none"
+            className="w-full bg-oled-pill hover:bg-[#28282e] p-2.5 pr-4 rounded-[28px] flex items-center justify-between transition-colors shadow-md border-none select-none"
           >
             {/* Left: Avatar container matching resource card & Trade amounts */}
             <div className="flex items-center gap-3.5 min-w-0">
-              <div className="w-11 h-11 rounded-full bg-[#151518] flex items-center justify-center shrink-0">
+              <div className="w-11 h-11 rounded-full bg-oled-cardInner flex items-center justify-center shrink-0">
                 <ResourceIcon symbol={t.inSymbol} size={26} />
               </div>
 
@@ -32,7 +32,7 @@ export const ResourceActivityList: React.FC<ResourceActivityListProps> = ({ trad
                 </span>
 
                 {/* Directional Arrow */}
-                <AltArrowRightLinear className="w-4 h-4 text-slate-500 shrink-0" />
+                <AltArrowRightLinear className="w-4 h-4 text-slate-400 shrink-0" />
 
                 {/* Output Token Icon & Amount */}
                 <div className="flex items-center gap-1.5 shrink-0">

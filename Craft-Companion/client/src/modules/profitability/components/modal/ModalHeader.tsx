@@ -2,6 +2,7 @@ import React from 'react';
 import type { FactorySummary, SimulationMode } from '../../types';
 import { useTranslation } from '../../../../utils/i18n';
 import { FactoryIcon } from '../../../../components/GameIcon';
+import { getFactoryDisplayLevel } from '../../../../services/craftworldCalculations';
 import { CloseCircleLinear } from 'solar-icon-set';
 
 export interface ModalHeaderProps {
@@ -33,8 +34,8 @@ export const ModalHeader: React.FC<ModalHeaderProps> = ({ summary, simulationMod
             {summary.ownedLevel && (
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 flex-shrink-0">
                 {language === 'es'
-                  ? `Posees Nivel ${summary.ownedLevel}`
-                  : `Owned Level ${summary.ownedLevel}`}
+                  ? `Posees Nivel ${getFactoryDisplayLevel(summary.ownedLevel)}`
+                  : `Owned Level ${getFactoryDisplayLevel(summary.ownedLevel)}`}
               </span>
             )}
             {simulationMode && (

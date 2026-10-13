@@ -10,8 +10,9 @@ import {
 } from 'solar-icon-set';
 import { ResourceIcon } from '../../../components/GameIcon';
 import { RESOURCE_METADATA } from '../../baseCost/data/baseCostCatalog';
-import { MARKETPLACE_TAX_RATE } from '../services/arbitrageEngine';
+import { getMarketplaceTaxRate } from '../services/arbitrageEngine';
 import type { TradingOpportunity } from '../types';
+import { useModalA11y } from '../../../hooks/useModalA11y';
 
 interface ArbitrageCalculatorModalProps {
   opportunity: TradingOpportunity | null;
@@ -26,6 +27,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
 }) => {
   const [batchCount, setBatchCount] = useState<number>(100);
   const [copied, setCopied] = useState(false);
+  const dialogRef = useModalA11y(isOpen);
 
   // Close on Escape & Lock body scroll
   useEffect(() => {
@@ -89,7 +91,8 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
     totalCost = unitsToCraftOrBuy * opportunity.currentPrice;
   }
 
-  const marketplaceFee = grossSellRevenue * MARKETPLACE_TAX_RATE; // marketplace commission
+  const marketplaceTaxRate = getMarketplaceTaxRate();
+  const marketplaceFee = grossSellRevenue * marketplaceTaxRate; // marketplace commission
   const netRevenueAfterFee = grossSellRevenue - marketplaceFee;
 
   // Net Profit
@@ -103,7 +106,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
       `📦 Cantidad: ${unitsToCraftOrBuy} unidades`,
       `💰 Costo Total Inversión: ${totalCost.toLocaleString(undefined, { maximumFractionDigits: 2 })} COIN`,
       `🏦 Ingreso Venta Bruta: ${grossSellRevenue.toLocaleString(undefined, { maximumFractionDigits: 2 })} COIN`,
-      `📉 Tarifa Mercado (5%): -${marketplaceFee.toLocaleString(undefined, { maximumFractionDigits: 2 })} COIN`,
+      `📉 Tarifa Mercado (${(marketplaceTaxRate * 100).toFixed(1)}%): -${marketplaceFee.toLocaleString(undefined, { maximumFractionDigits: 2 })} COIN`,
       `🚀 Ganancia Neta Estimada: ${netProfit >= 0 ? '+' : ''}${netProfit.toLocaleString(undefined, { maximumFractionDigits: 2 })} COIN (${roiPercent.toFixed(1)}% ROI)`,
       `⚡ Calculado en Craft Companion Trading Bot`,
     ].join('\n');
@@ -120,7 +123,13 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
       }}
       className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200"
     >
-      <div className="relative w-full max-w-xl bg-[#18181b] border-none rounded-[32px] p-6 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 my-auto">
+      <div
+        ref={dialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        className="relative w-full max-w-xl bg-oled-card border-none rounded-[32px] p-6 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 my-auto"
+      >
         {/* Modal Header */}
         {(() => {
           const displayName =
@@ -130,7 +139,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
           return (
             <div className="flex items-center justify-between pb-3 shrink-0">
               <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-[#141417] flex items-center justify-center shrink-0 p-2 shadow-inner">
+                <div className="w-12 h-12 rounded-2xl bg-oled-cardInner flex items-center justify-center shrink-0 p-2 shadow-inner">
                   <ResourceIcon symbol={opportunity.symbol} size={32} />
                 </div>
                 <div>
@@ -138,7 +147,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
                     <h2 className="font-mono text-base sm:text-lg font-bold text-slate-100 truncate">
                       {displayName}
                     </h2>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-amber-500/20 text-amber-300">
+                    <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold uppercase bg-amber-500/20 text-amber-300">
                       Tier {opportunity.tier}
                     </span>
                   </div>
@@ -162,7 +171,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
         {/* Scrollable Modal Content */}
         <div className="overflow-y-auto space-y-3.5 pr-1 py-1">
           {/* Batch Size Selector */}
-          <div className="space-y-2.5 bg-[#141416] p-4 rounded-2xl shadow-inner">
+          <div className="space-y-2.5 bg-oled-cardInner p-4 rounded-2xl shadow-inner">
             <div className="flex items-center justify-between text-xs font-semibold text-zinc-300">
               <span>Cantidad de unidades:</span>
               <span className="text-amber-400 text-sm font-bold">{unitsToCraftOrBuy} unidades</span>
@@ -175,7 +184,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
               step={10}
               value={batchCount}
               onChange={(e) => setBatchCount(Number(e.target.value))}
-              className="w-full h-2 bg-[#18181b] rounded-lg appearance-none cursor-pointer accent-amber-400"
+              className="w-full h-2 bg-oled-card rounded-lg appearance-none cursor-pointer accent-amber-400"
             />
 
             {/* Quick presets */}
@@ -188,7 +197,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
                   className={`flex-1 py-1 px-2.5 rounded-xl text-xs font-bold transition-all border-none cursor-pointer ${
                     batchCount === preset
                       ? 'bg-amber-500 text-black shadow-sm'
-                      : 'bg-[#18181b] text-zinc-400 hover:text-white hover:bg-zinc-800'
+                      : 'bg-oled-card text-zinc-400 hover:text-white hover:bg-zinc-800'
                   }`}
                 >
                   {preset}
@@ -199,7 +208,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
 
           {/* Insumos breakdown if Craft Arbitrage */}
           {isCraft && opportunity.ingredients && opportunity.ingredients.length > 0 && (
-            <div className="space-y-2 bg-[#141416] p-4 rounded-2xl shadow-inner">
+            <div className="space-y-2 bg-oled-cardInner p-4 rounded-2xl shadow-inner">
               <div className="flex items-center justify-between text-xs font-semibold text-zinc-300 mb-1">
                 <span className="flex items-center gap-2">
                   <BoxBold size={15} className="text-amber-400" />
@@ -214,19 +223,19 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
                   return (
                     <div
                       key={ing.symbol}
-                      className="flex items-center justify-between text-xs p-2 rounded-xl bg-[#18181b] border-none"
+                      className="flex items-center justify-between text-xs p-2 rounded-xl bg-oled-card border-none"
                     >
                       <div className="flex items-center gap-2">
                         <ResourceIcon symbol={ing.symbol} size={18} className="w-4 h-4 object-contain" />
                         <span className="font-bold text-amber-400">{totalIngQty}x</span>
                         <span className="font-medium text-white">{ing.symbol}</span>
-                        <span className="text-[10px] text-zinc-500">
+                        <span className="text-[11px] text-zinc-400">
                           (@{ing.marketPriceCoin.toFixed(2)}c)
                         </span>
                       </div>
                       <span className="font-semibold text-zinc-200">
                         {totalIngCost.toLocaleString(undefined, { maximumFractionDigits: 1 })}{' '}
-                        <span className="text-amber-400 text-[10px]">COIN</span>
+                        <span className="text-amber-400 text-[11px]">COIN</span>
                       </span>
                     </div>
                   );
@@ -236,7 +245,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
           )}
 
           {/* Financial Summary Breakdown: Natural labels, no uppercase */}
-          <div className="grid grid-cols-2 gap-2.5 p-4 rounded-2xl bg-[#141416] shadow-inner">
+          <div className="grid grid-cols-2 gap-2.5 p-4 rounded-2xl bg-oled-cardInner shadow-inner">
             <div>
               <div className="text-[11px] text-zinc-400 font-medium">Costo de inversión</div>
               <div className="text-sm sm:text-base font-bold text-white mt-0.5">
@@ -270,7 +279,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
           </div>
 
           {/* Net Profit Banner Highlight */}
-          <div className="p-4 rounded-2xl bg-[#141416] flex items-center justify-between shadow-inner">
+          <div className="p-4 rounded-2xl bg-oled-cardInner flex items-center justify-between shadow-inner">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-2xl bg-amber-500 text-black shadow-sm">
                 <DollarBoldDuotone size={24} />
@@ -300,7 +309,7 @@ export const ArbitrageCalculatorModal: React.FC<ArbitrageCalculatorModalProps> =
           <button
             type="button"
             onClick={handleCopySummary}
-            className="w-full sm:flex-1 py-2.5 px-4 rounded-2xl bg-[#141416] hover:bg-zinc-800 text-white font-bold text-xs transition-all flex items-center justify-center gap-2 border-none cursor-pointer shadow-md active:scale-98"
+            className="w-full sm:flex-1 py-2.5 px-4 rounded-2xl bg-oled-cardInner hover:bg-zinc-800 text-white font-bold text-xs transition-all flex items-center justify-center gap-2 border-none cursor-pointer shadow-md active:scale-98"
           >
             {copied ? (
               <>

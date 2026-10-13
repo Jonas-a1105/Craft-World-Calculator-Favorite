@@ -149,7 +149,7 @@ export const ResourceInteractiveChart: React.FC<ResourceInteractiveChartProps> =
               className={`px-3.5 py-1 text-xs font-bold font-mono rounded-full transition-all duration-200 !p-0 select-none border-none ${
                 isSelected
                   ? 'bg-[#292930] text-[rgb(34,197,94)] ring-2 ring-[rgb(34,197,94)] shadow-md'
-                  : 'bg-[#1c1c20] hover:bg-[#25252b] text-slate-400 hover:text-slate-200'
+                  : 'bg-oled-850 hover:bg-[#25252b] text-slate-400 hover:text-slate-200'
               }`}
             >
               {tf}

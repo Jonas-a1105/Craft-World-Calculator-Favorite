@@ -75,9 +75,9 @@ export const MiniMetricChart: React.FC<Props> = ({
   const tickIndices = [0, Math.floor(data.length * 0.25), Math.floor(data.length * 0.5), Math.floor(data.length * 0.75), data.length - 1];
 
   return (
-    <div className="bg-[#18181c] rounded-[24px] sm:rounded-[28px] p-3.5 sm:p-5 flex flex-col justify-between shadow-xl border-none relative overflow-hidden select-none w-full min-w-0 max-w-full">
+    <div className="bg-oled-card rounded-[24px] sm:rounded-[28px] p-3.5 sm:p-5 flex flex-col justify-between shadow-xl border-none relative overflow-hidden select-none w-full min-w-0 max-w-full">
       <div className="flex items-center justify-between mb-2 min-w-0 gap-2">
-        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 truncate">
+        <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 truncate">
           {title}
         </span>
         <span className="text-xs font-mono font-bold shrink-0" style={{ color }}>
@@ -166,7 +166,7 @@ export const MiniMetricChart: React.FC<Props> = ({
 
         {/* Hover Tooltip */}
         {hoveredPoint && (
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-[#121215] text-white px-2.5 py-1 rounded-full text-[11px] font-mono shadow-xl border-none pointer-events-none flex items-center gap-1.5 z-10">
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-oled-cardInner text-white px-2.5 py-1 rounded-full text-[11px] font-mono shadow-xl border-none pointer-events-none flex items-center gap-1.5 z-10">
             <span className="text-slate-400">Lv {hoveredPoint.level}:</span>
             <span style={{ color }} className="font-bold">
               {valueFormatter(hoveredPoint.value)}

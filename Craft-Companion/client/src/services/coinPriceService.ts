@@ -1,81 +1,63 @@
+// Aplicación: orquestación del precio de mercado de COIN.
+// Coordina las capas sin mezclar responsabilidades:
+//  - Infra (HTTP):          coin/geckoTerminalClient (fetch + JSON)
+//  - Infra (persistencia):  coin/coinCache (localStorage)
+//  - Presentación:          coin/coinFormatters (mapeo a puntos de gráfico)
+//  - Dominio:               coin/coinChartGenerator (грáfico sintético — solo
+//    uso offline/demo explícito; NUNCA se usa como sustituto silencioso de
+//    datos de mercado reales en la UI).
+// Política de confianza: la app nunca presenta datos fabricados como "en vivo".
+// Si el fetch falla se devuelve caché etiquetada (source: 'cache') o null.
 import { useQuery } from '@tanstack/react-query';
 import {
-  DEFAULT_COIN_DATA,
-  GECKOTERMINAL_API_URL,
   GECKOTERMINAL_RONIN_COIN_POOL,
-  LOCAL_STORAGE_KEY,
+  type ChartTimeframe,
   type CoinChartPoint,
   type CoinMarketData,
-  type ChartTimeframe,
 } from './coin/coinTypes';
-import { formatCoinPrice } from './coin/coinFormatters';
-import { generateSyntheticChart } from './coin/coinChartGenerator';
+import { fetchCoinPoolAttributes, fetchOhlcvRows } from './coin/geckoTerminalClient';
+import { getCachedCoinData, setCachedCoinData } from './coin/coinCache';
+import { mapOhlcvToChartPoints } from './coin/coinFormatters';
 
 // Re-export everything from dedicated sub-modules for clean public API
 export * from './coin/coinTypes';
 export * from './coin/coinFormatters';
 export * from './coin/coinConversion';
 export * from './coin/coinChartGenerator';
+export { getCachedCoinData } from './coin/coinCache';
 
-export function getCachedCoinData(): CoinMarketData {
-  if (typeof window === 'undefined') return DEFAULT_COIN_DATA;
+export async function fetchCoinMarketData(): Promise<CoinMarketData | null> {
   try {
-    const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (typeof parsed.priceUsd === 'number') {
-        return {
-          ...DEFAULT_COIN_DATA,
-          ...parsed,
-          source: 'cache',
-        };
-      }
+    const attrs = await fetchCoinPoolAttributes();
+
+    // Los campos centrales son obligatorios: si faltan, la respuesta no es
+    // confiable → tratamos la respuesta como fallo y caemos a caché/null.
+    const priceUsd = parseFloat(attrs.base_token_price_usd);
+    const quotePriceUsd = parseFloat(attrs.quote_token_price_usd);
+    if (!Number.isFinite(priceUsd) || priceUsd <= 0) {
+      throw new Error('Invalid COIN pool payload (priceUsd)');
     }
-  } catch {
-    // ignore parse error
-  }
-  return DEFAULT_COIN_DATA;
-}
+    const safeQuoteUsd = Number.isFinite(quotePriceUsd) && quotePriceUsd > 0 ? quotePriceUsd : 0;
 
-export async function fetchCoinMarketData(): Promise<CoinMarketData> {
-  try {
-    const res = await fetch(GECKOTERMINAL_API_URL, {
-      headers: {
-        Accept: 'application/json',
-      },
-    });
-
-    if (!res.ok) {
-      throw new Error(`GeckoTerminal API returned HTTP ${res.status}`);
-    }
-
-    const json = await res.json();
-    const attrs = json?.data?.attributes;
-
-    if (!attrs) {
-      throw new Error('Malformed GeckoTerminal payload');
-    }
-
-    const priceUsd = parseFloat(attrs.base_token_price_usd) || DEFAULT_COIN_DATA.priceUsd;
-    const quotePriceUsd = parseFloat(attrs.quote_token_price_usd) || DEFAULT_COIN_DATA.quotePriceUsd;
     const priceInRon =
       parseFloat(attrs.base_token_price_quote_token) ||
-      (quotePriceUsd > 0 ? priceUsd / quotePriceUsd : 0.0033895);
+      (safeQuoteUsd > 0 ? priceUsd / safeQuoteUsd : 0);
     const ronInCoin =
       parseFloat(attrs.quote_token_price_base_token) ||
-      (priceInRon > 0 ? 1 / priceInRon : 295.027);
+      (priceInRon > 0 ? 1 / priceInRon : 0);
 
+    // Campos secundarios ausentes se reportan como 0 (desconocido), no como benchmark.
     const h1Change = parseFloat(attrs.price_change_percentage?.h1 ?? '0');
     const h24Change = parseFloat(attrs.price_change_percentage?.h24 ?? '0');
-    const volume24h = parseFloat(attrs.volume_usd?.h24 ?? '0') || DEFAULT_COIN_DATA.volume24h;
-    const reserveUsd = parseFloat(attrs.reserve_in_usd ?? '0') || DEFAULT_COIN_DATA.reserveUsd;
-    const fdvUsd = parseFloat(attrs.fdv_usd ?? '0') || DEFAULT_COIN_DATA.fdvUsd;
-    const buys24h = parseInt(attrs.transactions?.h24?.buys ?? '0', 10) || DEFAULT_COIN_DATA.buys24h;
-    const sells24h = parseInt(attrs.transactions?.h24?.sells ?? '0', 10) || DEFAULT_COIN_DATA.sells24h;
+    const volume24h = parseFloat(attrs.volume_usd?.h24 ?? '0') || 0;
+    const reserveUsd = parseFloat(attrs.reserve_in_usd ?? '0') || 0;
+    const fdvUsd = parseFloat(attrs.fdv_usd ?? '0') || 0;
+    const buys24h = parseInt(attrs.transactions?.h24?.buys ?? '0', 10) || 0;
+    const sells24h = parseInt(attrs.transactions?.h24?.sells ?? '0', 10) || 0;
 
     const data: CoinMarketData = {
       priceUsd,
-      quotePriceUsd,
+      quotePriceUsd: safeQuoteUsd,
       priceInRon,
       ronInCoin,
       h1Change: isNaN(h1Change) ? 0 : h1Change,
@@ -91,18 +73,11 @@ export async function fetchCoinMarketData(): Promise<CoinMarketData> {
       source: 'live',
     };
 
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
-      } catch {
-        // storage quota
-      }
-    }
-
+    setCachedCoinData(data);
     return data;
   } catch {
-    const cached = getCachedCoinData();
-    return cached;
+    // Sin datos en vivo: caché etiquetada o null. Nunca datos fabricados.
+    return getCachedCoinData();
   }
 }
 
@@ -111,65 +86,16 @@ export async function fetchCoinChartPoints(
   basePrice: number,
 ): Promise<CoinChartPoint[]> {
   try {
-    let endpoint = '';
-    switch (timeframe) {
-      case '1H':
-        endpoint = `${GECKOTERMINAL_API_URL}/ohlcv/minute?aggregate=5&limit=12`;
-        break;
-      case '24H':
-        endpoint = `${GECKOTERMINAL_API_URL}/ohlcv/hour?limit=24`;
-        break;
-      case '7D':
-        endpoint = `${GECKOTERMINAL_API_URL}/ohlcv/hour?aggregate=4&limit=42`;
-        break;
-      case '30D':
-        endpoint = `${GECKOTERMINAL_API_URL}/ohlcv/day?limit=30`;
-        break;
-      case 'ALL':
-        endpoint = `${GECKOTERMINAL_API_URL}/ohlcv/day?limit=90`;
-        break;
-    }
-
-    const res = await fetch(endpoint, {
-      headers: { Accept: 'application/json' },
-    });
-
-    if (!res.ok) {
-      throw new Error(`OHLCV API error ${res.status}`);
-    }
-
-    const json = await res.json();
-    const ohlcvList: number[][] = json?.data?.attributes?.ohlcv_list;
-
-    if (!Array.isArray(ohlcvList) || ohlcvList.length === 0) {
-      throw new Error('Empty OHLCV data');
-    }
-
-    // GeckoTerminal returns newest first [timestamp, open, high, low, close, volume], so reverse to chronological
-    const sorted = [...ohlcvList].reverse();
-
-    return sorted.map(([sec, _open, _high, _low, close]) => {
-      const timeMs = sec * 1000;
-      const date = new Date(timeMs);
-      const timeLabel =
-        timeframe === '1H' || timeframe === '24H'
-          ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
-          : date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-
-      return {
-        timestamp: timeMs,
-        timeLabel,
-        price: close,
-        formattedPrice: formatCoinPrice(close),
-      };
-    });
+    const ohlcvRows = await fetchOhlcvRows(timeframe);
+    return mapOhlcvToChartPoints(ohlcvRows, timeframe);
   } catch {
-    return generateSyntheticChart(timeframe, basePrice);
+    // Sin historial real → lista vacía; la UI muestra "gráfica no disponible".
+    return [];
   }
 }
 
 export function useCoinLivePrice() {
-  return useQuery({
+  return useQuery<CoinMarketData | null>({
     queryKey: ['coin-live-market-price'],
     queryFn: fetchCoinMarketData,
     initialData: getCachedCoinData,

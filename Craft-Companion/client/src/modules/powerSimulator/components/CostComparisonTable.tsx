@@ -23,7 +23,7 @@ export const CostComparisonTable: React.FC<CostComparisonTableProps> = ({
         <h2 className="text-sm font-mono font-bold text-slate-300 tracking-wider uppercase">
           {isEs ? 'COMPARATIVA DE COSTOS' : 'COST COMPARISON'}
         </h2>
-        <p className="text-xs font-mono text-slate-500 mt-0.5">
+        <p className="text-xs font-mono text-slate-400 mt-0.5">
           {isEs
             ? 'Todos los métodos normalizados a COIN / 100k Power — ordenados de más barato a más caro.'
             : 'All methods normalized to COIN / 100k Power — sorted cheapest first.'}
@@ -31,7 +31,7 @@ export const CostComparisonTable: React.FC<CostComparisonTableProps> = ({
       </div>
 
       {/* Desktop Column Header (subtle guides) */}
-      <div className="hidden lg:grid grid-cols-12 px-6 py-1 text-[11px] font-mono text-slate-500 uppercase tracking-wider font-semibold">
+      <div className="hidden lg:grid grid-cols-12 px-6 py-1 text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">
         <div className="col-span-4">{isEs ? 'MÉTODO' : 'METHOD'}</div>
         <div className="col-span-2 text-right">{isEs ? 'PERIODO' : 'PERIOD'}</div>
         <div className="col-span-2 text-right">{isEs ? 'ENERGÍA' : 'POWER'}</div>
@@ -49,7 +49,7 @@ export const CostComparisonTable: React.FC<CostComparisonTableProps> = ({
               className={`p-4 sm:px-6 sm:py-4 rounded-3xl transition-all border-none outline-none ${
                 isCheapest
                   ? 'bg-[#15231c] ring-1 ring-emerald-500/40 shadow-lg shadow-emerald-950/30'
-                  : 'bg-[#1c1c22] hover:bg-[#22222a] shadow-md shadow-black/25'
+                  : 'bg-oled-850 hover:bg-oled-pill shadow-md shadow-black/25'
               }`}
             >
               {/* Desktop layout (>= lg) */}
@@ -101,7 +101,7 @@ export const CostComparisonTable: React.FC<CostComparisonTableProps> = ({
                       {formatCoin(row.coinPer100k)}
                     </span>
                     {row.crystalEquivalentCoin !== null && (
-                      <span className="text-[10px] text-slate-500 font-medium">
+                      <span className="text-[11px] text-slate-400 font-medium">
                         {formatCoin(row.crystalEquivalentCoin)} total
                       </span>
                     )}
@@ -133,7 +133,7 @@ export const CostComparisonTable: React.FC<CostComparisonTableProps> = ({
                     >
                       {formatCoin(row.coinPer100k)}
                     </span>
-                    <span className="text-[9px] text-slate-400 block -mt-0.5">
+                    <span className="text-[11px] text-slate-400 block -mt-0.5">
                       COIN / 100k
                     </span>
                   </div>
@@ -141,14 +141,14 @@ export const CostComparisonTable: React.FC<CostComparisonTableProps> = ({
 
                 {/* Bottom row pills: Power, Period, Crystals */}
                 <div className="flex flex-wrap items-center gap-1.5 pt-1.5 border-t border-white/5 text-[11px]">
-                  <div className="px-2.5 py-1 rounded-xl bg-[#131316] text-[#38BDF8] font-bold shadow-inner">
+                  <div className="px-2.5 py-1 rounded-xl bg-oled-cardInner text-[#38BDF8] font-bold shadow-inner">
                     ⚡ {row.powerText}
                   </div>
-                  <div className="px-2.5 py-1 rounded-xl bg-[#131316] text-slate-300 shadow-inner">
+                  <div className="px-2.5 py-1 rounded-xl bg-oled-cardInner text-slate-300 shadow-inner">
                     {row.periodText}
                   </div>
                   {row.crystalEquivalentCoin !== null && (
-                    <div className="px-2.5 py-1 rounded-xl bg-[#131316] text-slate-300 shadow-inner flex items-center gap-1">
+                    <div className="px-2.5 py-1 rounded-xl bg-oled-cardInner text-slate-300 shadow-inner flex items-center gap-1">
                       <span>≈ {formatCoin(row.crystalEquivalentCoin)}</span>
                       <ResourceIcon symbol="COIN" size={11} />
                     </div>
@@ -161,7 +161,7 @@ export const CostComparisonTable: React.FC<CostComparisonTableProps> = ({
       </div>
 
       {coinUsdPrice === null && (
-        <div className="p-4 rounded-2xl bg-[#17171d] text-center text-xs font-mono text-slate-500 shadow-inner">
+        <div className="p-4 rounded-2xl bg-[#17171d] text-center text-xs font-mono text-slate-400 shadow-inner">
           {isEs
             ? 'Cargando cotización de mercado de COIN para calcular comparativas exactas...'
             : 'Loading live COIN market price to calculate exact comparisons...'}

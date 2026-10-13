@@ -37,7 +37,7 @@ export const PlannerTabsNav: React.FC<PlannerTabsNavProps> = ({
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5 border-b border-white/[0.06] pb-4 select-none">
       {/* 1. View Switcher Tabs (Plano de Recursos vs Secuencia de Fábricas) */}
-      <div className="flex items-center gap-1.5 bg-[#18181b] p-1.5 rounded-2xl w-full md:w-auto">
+      <div className="flex items-center gap-1.5 bg-oled-card p-1.5 rounded-2xl w-full md:w-auto">
         <button
           type="button"
           onClick={() => setViewTab('materials')}
@@ -73,7 +73,7 @@ export const PlannerTabsNav: React.FC<PlannerTabsNavProps> = ({
       {viewTab === 'materials' && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full md:w-auto">
           {/* Filter Pills */}
-          <div className="flex items-center gap-1 bg-[#18181b] p-1.5 rounded-2xl text-xs w-full sm:w-auto overflow-x-auto">
+          <div className="flex items-center gap-1 bg-oled-card p-1.5 rounded-2xl text-xs w-full sm:w-auto overflow-x-auto">
             <button
               type="button"
               onClick={() => setMaterialFilter('all')}

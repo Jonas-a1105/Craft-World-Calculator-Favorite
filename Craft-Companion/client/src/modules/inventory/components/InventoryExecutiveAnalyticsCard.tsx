@@ -154,7 +154,7 @@ export const InventoryExecutiveAnalyticsCard: React.FC<InventoryExecutiveAnalyti
   };
 
   return (
-    <div className="w-full bg-[#18181b] rounded-[32px] p-5 sm:p-7 shadow-xl border-none select-none relative overflow-hidden">
+    <div className="w-full bg-oled-card rounded-[32px] p-5 sm:p-7 shadow-xl border-none select-none relative overflow-hidden">
       {/* Ambient Radial Carbon Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] bg-orange-600/[0.04] rounded-full blur-[140px] pointer-events-none" />
 
@@ -173,7 +173,7 @@ export const InventoryExecutiveAnalyticsCard: React.FC<InventoryExecutiveAnalyti
                   <h4 className="text-xs sm:text-sm font-bold text-white tracking-wide">
                     {isEs ? 'Categorías de Inventario' : 'Inventory Categories'}
                   </h4>
-                  <span className="text-[10px] text-zinc-400">
+                  <span className="text-[11px] text-zinc-400">
                     {isEs ? 'Composición de volumen y patrimonio' : 'Volume & equity breakdown'}
                   </span>
                 </div>
@@ -246,7 +246,7 @@ export const InventoryExecutiveAnalyticsCard: React.FC<InventoryExecutiveAnalyti
             {/* Product Count & Total in COIN */}
             <div className="flex items-center gap-2 text-zinc-300 text-xs font-mono font-bold">
               <span>{categoryItems.length} {isEs ? 'ítems' : 'items'}</span>
-              <span className="text-zinc-600">•</span>
+              <span className="text-zinc-400">•</span>
               <span className="text-amber-400">{formatCompactNumber(categoryValue)} COIN</span>
             </div>
           </div>
@@ -264,7 +264,7 @@ export const InventoryExecutiveAnalyticsCard: React.FC<InventoryExecutiveAnalyti
                   <h4 className="text-xs sm:text-sm font-bold text-white tracking-wide">
                     {isEs ? 'Distribución por Niveles de Riqueza' : 'Wealth Tier Distribution'}
                   </h4>
-                  <span className="text-[10px] text-zinc-400">
+                  <span className="text-[11px] text-zinc-400">
                     {isEs ? 'Concentración de capital en almacén' : 'Inventory capital density'}
                   </span>
                 </div>
@@ -321,7 +321,7 @@ export const InventoryExecutiveAnalyticsCard: React.FC<InventoryExecutiveAnalyti
 
                 {/* Center Cutout */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">
+                  <span className="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">
                     {highlightedSegment === 'all'
                       ? 'Total'
                       : highlightedSegment === 'tier1'
@@ -428,15 +428,15 @@ export const InventoryExecutiveAnalyticsCard: React.FC<InventoryExecutiveAnalyti
             <div className="flex items-center justify-between text-[11px] text-zinc-400 font-medium pt-0.5 px-0.5">
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-[#ff6200] shrink-0" />
-                <span className="text-zinc-300">{isEs ? 'Almacén' : 'Storage'} <span className="text-zinc-500 ml-0.5 font-mono">58%</span></span>
+                <span className="text-zinc-300">{isEs ? 'Almacén' : 'Storage'} <span className="text-zinc-400 ml-0.5 font-mono">58%</span></span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-[#f59e0b] shrink-0" />
-                <span className="text-zinc-300">{isEs ? 'Fábricas' : 'Factories'} <span className="text-zinc-500 ml-0.5 font-mono">28%</span></span>
+                <span className="text-zinc-300">{isEs ? 'Fábricas' : 'Factories'} <span className="text-zinc-400 ml-0.5 font-mono">28%</span></span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-[#14b8a6] shrink-0" />
-                <span className="text-zinc-300">{isEs ? 'Minas' : 'Mines'} <span className="text-zinc-500 ml-0.5 font-mono">14%</span></span>
+                <span className="text-zinc-300">{isEs ? 'Minas' : 'Mines'} <span className="text-zinc-400 ml-0.5 font-mono">14%</span></span>
               </div>
             </div>
           </div>

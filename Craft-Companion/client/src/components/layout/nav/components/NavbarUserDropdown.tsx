@@ -53,7 +53,7 @@ export const NavbarUserDropdown = ({
         type="button"
         onClick={handleRelink}
         title={language === 'es' ? 'Revincular Cuenta' : 'Re-link Account'}
-        className="w-7 h-7 rounded-full bg-[#24252e] hover:bg-[#2d2f3a] text-slate-200 hover:text-white flex items-center justify-center transition-all border-0 outline-none cursor-pointer"
+        className="w-7 h-7 rounded-full bg-oled-pill hover:bg-oled-pillHover text-slate-200 hover:text-white flex items-center justify-center transition-all border-0 outline-none cursor-pointer"
         style={{ border: 'none', outline: 'none' }}
       >
         <RefreshLinear size={15} />
@@ -64,7 +64,7 @@ export const NavbarUserDropdown = ({
         <button
           type="button"
           onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-[#24252e] hover:ring-2 hover:ring-white/20 transition-all duration-150 cursor-pointer flex items-center justify-center flex-shrink-0 focus:outline-none border-0 outline-none"
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-oled-pill hover:ring-2 hover:ring-white/20 transition-all duration-150 cursor-pointer flex items-center justify-center flex-shrink-0 focus:outline-none border-0 outline-none"
           style={{ border: 'none', outline: 'none' }}
           title={user?.displayName || 'Player'}
         >
@@ -88,14 +88,14 @@ export const NavbarUserDropdown = ({
 
         {/* User Options Dropdown Menu */}
         {userDropdownOpen && (
-          <div className="absolute right-0 mt-3 w-80 bg-[#161618] rounded-[28px] p-3 shadow-2xl space-y-3 z-50 animate-in fade-in zoom-in-95 duration-100">
+          <div className="absolute right-0 mt-3 w-80 bg-oled-cardInner rounded-[28px] p-3 shadow-2xl space-y-3 z-50 animate-in fade-in zoom-in-95 duration-100">
             {/* Top Row: User Card + Settings Button + Sign Out Button */}
             <div className="flex items-center gap-2">
               {/* User capsule */}
               <Link
                 to="/home"
                 onClick={closeDropdown}
-                className="flex-1 min-w-0 flex items-center bg-[#222226] hover:bg-[#28282e] p-2 rounded-[20px] transition-colors"
+                className="flex-1 min-w-0 flex items-center bg-oled-pill hover:bg-[#28282e] p-2 rounded-[20px] transition-colors"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-black/60 flex items-center justify-center flex-shrink-0">
@@ -124,7 +124,7 @@ export const NavbarUserDropdown = ({
                       {/* Blue verified checkmark */}
                       <CheckCircleBold className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
                     </div>
-                    <p className="text-[10px] text-zinc-400 truncate">
+                    <p className="text-[11px] text-zinc-400 truncate">
                       {user?.level !== undefined
                         ? `Lv. ${user.level} • @craftworld`
                         : '@craftworld'}
@@ -137,7 +137,7 @@ export const NavbarUserDropdown = ({
               <Link
                 to="/settings"
                 onClick={closeDropdown}
-                className="w-11 h-11 rounded-[18px] bg-[#222226] hover:bg-[#28282e] flex items-center justify-center text-zinc-300 hover:text-white transition-colors flex-shrink-0"
+                className="w-11 h-11 rounded-[18px] bg-oled-pill hover:bg-[#28282e] flex items-center justify-center text-zinc-300 hover:text-white transition-colors flex-shrink-0"
                 title={language === 'es' ? 'Configuración' : 'Settings'}
               >
                 <SettingsLinear size={20} />
@@ -147,7 +147,7 @@ export const NavbarUserDropdown = ({
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="w-11 h-11 rounded-[18px] bg-[#222226] hover:bg-rose-500/20 text-zinc-300 hover:text-rose-400 transition-colors flex items-center justify-center flex-shrink-0 cursor-pointer p-0"
+                className="w-11 h-11 rounded-[18px] bg-oled-pill hover:bg-rose-500/20 text-zinc-300 hover:text-rose-400 transition-colors flex items-center justify-center flex-shrink-0 cursor-pointer p-0"
                 title={language === 'es' ? 'Cerrar Sesión' : 'Sign Out'}
               >
                 <Logout3Linear size={20} />
@@ -155,7 +155,7 @@ export const NavbarUserDropdown = ({
             </div>
 
             {/* Linked Wallets / Cuentas Vinculadas Section */}
-            <div className="bg-[#222226] rounded-[22px] p-3 space-y-2.5">
+            <div className="bg-oled-pill rounded-[22px] p-3 space-y-2.5">
               <div className="flex items-center justify-between px-1">
                 <span className="text-[11px] font-semibold text-zinc-300">
                   {language === 'es' ? 'Wallets vinculadas' : 'Linked wallets'}
@@ -207,12 +207,12 @@ export const NavbarUserDropdown = ({
                           </div>
                           <div className="min-w-0">
                             <p className="text-xs font-semibold text-white truncate">{label}</p>
-                            <p className="text-[10px] text-zinc-400 font-mono truncate">
+                            <p className="text-[11px] text-zinc-400 font-mono truncate">
                               {formattedAddress}
                             </p>
                           </div>
                         </div>
-                        <span className="text-[10px] text-zinc-400 group-hover:text-emerald-400 font-mono shrink-0 pl-1 flex items-center">
+                        <span className="text-[11px] text-zinc-400 group-hover:text-emerald-400 font-mono shrink-0 pl-1 flex items-center">
                           {isCopied ? <CheckCircleBold className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> : null}
                         </span>
                       </div>
@@ -227,7 +227,7 @@ export const NavbarUserDropdown = ({
                         </div>
                         <div className="min-w-0">
                           <p className="text-xs font-semibold text-white truncate">Smart Account</p>
-                          <p className="text-[10px] text-zinc-400 font-mono truncate">0x71C...a89f</p>
+                          <p className="text-[11px] text-zinc-400 font-mono truncate">0x71C...a89f</p>
                         </div>
                       </div>
                     </div>
@@ -238,7 +238,7 @@ export const NavbarUserDropdown = ({
                         </div>
                         <div className="min-w-0">
                           <p className="text-xs font-semibold text-white truncate">EOA Wallet</p>
-                          <p className="text-[10px] text-zinc-400 font-mono truncate">0x93B...e421</p>
+                          <p className="text-[11px] text-zinc-400 font-mono truncate">0x93B...e421</p>
                         </div>
                       </div>
                     </div>
@@ -248,7 +248,7 @@ export const NavbarUserDropdown = ({
             </div>
 
             {/* Bottom Actions: Dark Mode + Add Account */}
-            <div className="bg-[#222226] rounded-[22px] p-2 space-y-1">
+            <div className="bg-oled-pill rounded-[22px] p-2 space-y-1">
               {/* Dark Mode Row */}
               <div className="flex items-center justify-between px-3 py-2 rounded-xl select-none">
                 <div className="flex items-center gap-2.5">
@@ -275,7 +275,7 @@ export const NavbarUserDropdown = ({
                     isDarkMode ? 'bg-[#a3e635] justify-end' : 'bg-zinc-600 justify-start'
                   }`}
                 >
-                  <div className="w-4 h-4 rounded-full bg-[#161618] shadow-md transform transition-transform" />
+                  <div className="w-4 h-4 rounded-full bg-oled-cardInner shadow-md transform transition-transform" />
                 </button>
               </div>
 

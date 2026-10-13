@@ -88,20 +88,24 @@ test('same factory with 2x boost applied', () => {
 });
 
 test('same factory with workers applied', () => {
-  assert.equal(calculateFactoryRuntime(baseRow, { workersPercent: 100 }), 5);
+  // Física oficial: workers REDUCEN la duración (×(1−p)), no ÷(1+p).
+  assert.equal(calculateFactoryRuntime(baseRow, { workersPercent: 50 }), 5);
 });
 
 test('same factory with workshop applied', () => {
+  // Tabla oficial MUD: speedBonusPercentage[2] = 0.26 (fracción de tiempo
+  // eliminado). 10 × (1−0.26) = 7.4. (El juego lo muestra como +35% velocidad,
+  // porque 1/(1−0.26) ≈ 1.35.)
   const runtime = calculateFactoryRuntime(baseRow, { workshop: [{ symbol: 'MUD', level: 2 }] });
-  assert.equal(Number(runtime.toFixed(4)), Number((10 / 1.35).toFixed(4)));
+  assert.equal(Number(runtime.toFixed(4)), Number((10 * (1 - 0.26)).toFixed(4)));
 });
 
 test('same factory with mastery applied', () => {
   const cycle = calculateFactoryCycle(baseRow, prices, {
     proficiencies: [{ symbol: 'MUD', claimedLevel: 10 }],
   });
-  // Yield-bonus model: inputs = amount / (yield/100); mastery 10 => 105.25 => 5 / 1.0525 = 4.751
-  assert.equal(Number(cycle.input1PerCycle.toFixed(3)), Number((5 / 1.0525).toFixed(3)));
+  // Modelo oficial: insumos × inputDiscountFactor; nivel 10 ⇒ 0.95 ⇒ 5 × 0.95 = 4.75
+  assert.equal(Number(cycle.input1PerCycle.toFixed(3)), 4.75);
 });
 
 test('multiple factories multiply cycle output and profit', () => {

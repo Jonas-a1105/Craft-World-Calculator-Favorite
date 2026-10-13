@@ -35,12 +35,12 @@ export const PowerBracketSteppedBar: React.FC<PowerBracketSteppedBarProps> = ({
   return (
     <div className="w-full pt-1 pb-0.5 space-y-1.5 select-none">
       {/* Label and current tier info */}
-      <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
+      <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
         <span className="flex items-center gap-1 font-semibold text-slate-400">
           <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block animate-pulse" />
           {isEs ? 'Escalado de Energía' : 'Power Escalation'}
         </span>
-        <span className="text-[10px] text-amber-300/90 font-bold">
+        <span className="text-[11px] text-amber-300/90 font-bold">
           {isEs ? 'Tramo' : 'Tier'} {selectedIndex + 1}/{brackets.length}
         </span>
       </div>
@@ -94,7 +94,7 @@ export const PowerBracketSteppedBar: React.FC<PowerBracketSteppedBarProps> = ({
 
               {/* Bottom: Power Value */}
               <span
-                className={`text-[9px] font-mono leading-none mt-1 transition-colors ${
+                className={`text-[11px] font-mono leading-none mt-1 transition-colors ${
                   isSelected
                     ? 'text-white font-bold'
                     : 'text-slate-400 group-hover:text-slate-300 font-medium'

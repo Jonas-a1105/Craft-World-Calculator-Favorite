@@ -5,6 +5,7 @@ import {
   BatteryChargeBoldDuotone,
 } from 'solar-icon-set';
 import { useTranslation } from '../../../utils/i18n';
+import { TermTooltip } from '../../../components/TermTooltip';
 import type { GlobalProfitabilitySettings } from '../types';
 
 interface PricesAndProfitabilityHeaderProps {
@@ -41,7 +42,7 @@ export const PricesAndProfitabilityHeader: React.FC<PricesAndProfitabilityHeader
       </div>
 
       {/* Global Settings Card (Rounded 32px, Borderless, Clean Icons) */}
-      <div className="bg-[#18181b] rounded-[32px] p-5 sm:p-6 shadow-xl space-y-4">
+      <div className="bg-oled-card rounded-[32px] p-5 sm:p-6 shadow-xl space-y-4">
         {/* Top Header of Settings: Title + Account Sync & Reset */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/40 pb-3">
           <div className="flex items-center gap-2">
@@ -92,6 +93,7 @@ export const PricesAndProfitabilityHeader: React.FC<PricesAndProfitabilityHeader
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
               </svg>
               <span>{isEs ? 'Slippage Compra (1%)' : 'Buy Slippage (1%)'}</span>
+              <TermTooltip term="slippage">{isEs ? '¿qué es?' : 'what is this?'}</TermTooltip>
             </span>
             <input
               type="checkbox"
@@ -108,6 +110,7 @@ export const PricesAndProfitabilityHeader: React.FC<PricesAndProfitabilityHeader
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
               <span>{isEs ? 'Slippage Venta (1%)' : 'Sell Slippage (1%)'}</span>
+              <TermTooltip term="slippage">{isEs ? '¿qué es?' : 'what is this?'}</TermTooltip>
             </span>
             <input
               type="checkbox"
@@ -171,7 +174,7 @@ export const PricesAndProfitabilityHeader: React.FC<PricesAndProfitabilityHeader
               </span>
             </div>
             {settings.powerPriceCoin === 0 && (
-              <span className="text-[10px] text-zinc-500 hidden sm:inline">
+              <span className="text-[11px] text-zinc-400 hidden sm:inline">
                 {isEs ? '(Costo 0 kW activado)' : '(Zero cost enabled)'}
               </span>
             )}

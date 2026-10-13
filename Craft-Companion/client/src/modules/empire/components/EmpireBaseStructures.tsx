@@ -19,6 +19,7 @@ import {
 } from '@hugeicons/core-free-icons';
 import type { BuildingSummaryItem } from '../types';
 import { formatBuildingType } from '../services/empireService';
+import { getFactoryDisplayLevel } from '../../../services/craftworldCalculations';
 
 interface EmpireBaseStructuresProps {
   buildingSummary: Record<string, BuildingSummaryItem>;
@@ -93,7 +94,7 @@ export const EmpireBaseStructures: React.FC<EmpireBaseStructuresProps> = ({
         {Object.entries(buildingSummary).map(([type, summary]) => (
           <div
             key={type}
-            className="bg-[#18181b] hover:bg-zinc-800/70 p-3 rounded-2xl shadow-md flex items-center justify-between text-xs transition-colors border-none"
+            className="bg-oled-card hover:bg-zinc-800/70 p-3 rounded-2xl shadow-md flex items-center justify-between text-xs transition-colors border-none"
           >
             <div className="min-w-0 pr-2 flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-zinc-800/80 flex items-center justify-center shrink-0">
@@ -103,13 +104,13 @@ export const EmpireBaseStructures: React.FC<EmpireBaseStructuresProps> = ({
                 <span className="font-bold text-zinc-200 block truncate text-xs">
                   {formatBuildingType(type, language)}
                 </span>
-                <span className="text-[10px] text-zinc-400 font-mono mt-0.5 block">
+                <span className="text-[11px] text-zinc-400 font-mono mt-0.5 block">
                   {summary.count} {summary.count === 1 ? (isEs ? 'unidad' : 'unit') : (isEs ? 'unidades' : 'units')}
                 </span>
               </div>
             </div>
             <span className="text-amber-400 font-mono font-bold text-[11px] bg-amber-500/10 px-2.5 py-0.5 rounded-full shrink-0">
-              Nv. {summary.maxLevel}
+              Nv. {getFactoryDisplayLevel(summary.maxLevel)}
             </span>
           </div>
         ))}

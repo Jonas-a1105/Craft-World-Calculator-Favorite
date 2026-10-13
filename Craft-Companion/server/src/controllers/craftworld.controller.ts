@@ -17,6 +17,11 @@ import {
   getExternalPriceList,
   getExternalDynoProductionCycle,
 } from '../services/craftworldExternalApi.js';
+import {
+  getGameConfigSnapshot,
+  getGameConfigChecksum,
+  getCurrentMasterpiece,
+} from '../services/craftworldGameConfigService.js';
 
 async function getUserAndToken(req: AuthenticatedRequest): Promise<{ user: UserAccount; accessToken: string }> {
   const userId = req.sessionUser?.id || req.user?.id || '';
@@ -185,5 +190,37 @@ export async function getHome(req: AuthenticatedRequest, res: Response, _next: N
       message: error.message || getErrorMessage(err) || 'Unable to load home data.',
       code: error.code,
     });
+  }
+}
+
+/** Configuración estática oficial del juego (definiciones, tablas, taxes).
+ *  Caché por checksum; no depende del token de jugador. */
+export async function getGameConfig(_req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const snapshot = await getGameConfigSnapshot();
+    res.json(snapshot);
+  } catch (err: unknown) {
+    next(err);
+  }
+}
+
+export async function getGameConfigChecksumOnly(_req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const data = await getGameConfigChecksum();
+    res.json(data);
+  } catch (err: unknown) {
+    next(err);
+  }
+}
+
+/** Estado de la masterpiece en curso para el jugador autenticado. */
+export async function getMasterpieceCurrent(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { user } = await getUserAndToken(req);
+    const uid = user.craftWorldUid || user.id;
+    const data = await getCurrentMasterpiece(uid);
+    res.json({ data, lastSyncedAt: new Date().toISOString() });
+  } catch (err: unknown) {
+    next(err);
   }
 }

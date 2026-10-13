@@ -5,8 +5,12 @@ import { BaseCostHeader } from './BaseCostHeader';
 import { BaseCostInfiniteMarquee } from './BaseCostInfiniteMarquee';
 import { BaseCostSettingsBar } from './BaseCostSettingsBar';
 import { BaseCostCardView } from './BaseCostCardView';
+import { AnalyticsHubTabs } from '../../../components/AnalyticsHubTabs';
+import { useTranslation } from '../../../utils/i18n';
 
 export const BaseCostDashboard: React.FC = () => {
+  const { language } = useTranslation();
+  const isEs = language === 'es';
   const {
     settings,
     filteredRows,
@@ -15,8 +19,6 @@ export const BaseCostDashboard: React.FC = () => {
     isPricesLoading,
     secondsAgo,
     freshnessColor,
-    priceListInfo,
-    isPricesError,
     justImported,
     search,
     setSearch,
@@ -54,12 +56,13 @@ export const BaseCostDashboard: React.FC = () => {
   return (
     <Layout>
       <div className="flex flex-col gap-5 max-w-7xl mx-auto w-full pb-16 px-2 sm:px-4">
+        {/* Cross-module hub tabs: Profit / Advisor / Base Cost (LP7) */}
+        <AnalyticsHubTabs />
+
         {/* Module Header */}
         <BaseCostHeader
           secondsAgo={secondsAgo}
           freshnessColor={freshnessColor}
-          priceListInfo={priceListInfo}
-          isPricesError={isPricesError}
           justImported={justImported}
           onImport={importFromPriceTable}
           onMaxLevels={setMaxAllLevels}
@@ -84,9 +87,9 @@ export const BaseCostDashboard: React.FC = () => {
 
         {/* Resource Cards View */}
         {isPricesLoading && filteredRows.length === 0 ? (
-          <div className="rounded-[32px] bg-[#18181c] p-12 text-center text-slate-400 font-mono text-xs flex flex-col items-center justify-center gap-3 shadow-md border-none">
+          <div className="rounded-[32px] bg-oled-card p-12 text-center text-slate-400 font-mono text-xs flex flex-col items-center justify-center gap-3 shadow-md border-none">
             <div className="w-8 h-8 rounded-full border-2 border-amber-500/20 border-t-amber-500 animate-spin" />
-            <span>Sincronizando cotizaciones en vivo de la red Ronin...</span>
+            <span>{isEs ? 'Sincronizando cotizaciones en vivo de la red Ronin...' : 'Syncing live quotes from the Ronin network...'}</span>
           </div>
         ) : (
           <BaseCostCardView

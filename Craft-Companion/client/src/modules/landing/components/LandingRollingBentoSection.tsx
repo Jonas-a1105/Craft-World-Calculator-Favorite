@@ -142,7 +142,7 @@ export const LandingRollingBentoSection: React.FC<LandingRollingBentoSectionProp
   return (
     <section id="bento-showcase" className="w-full max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-20 text-center relative z-20">
       {/* Top Pill Badge */}
-      <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#1c1c20] text-xs font-medium text-zinc-300 mb-6 backdrop-blur-sm shadow-inner transition-transform hover:scale-105 border-0">
+      <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-oled-850 text-xs font-medium text-zinc-300 mb-6 backdrop-blur-sm shadow-inner transition-transform hover:scale-105 border-0">
         <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
         <span>{bento?.badge || (isEs ? 'Arquitectura Modular • Rolling Bento' : 'Modular Architecture • Rolling Bento')}</span>
       </div>
@@ -208,14 +208,14 @@ export const LandingRollingBentoSection: React.FC<LandingRollingBentoSectionProp
 
                 {/* Bottom Card Title Overlay */}
                 <div className="absolute bottom-2.5 sm:bottom-3.5 left-2.5 sm:left-3.5 right-2.5 sm:right-3.5 flex flex-col items-start gap-1 pointer-events-none">
-                  <span className="px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-semibold text-amber-400 border border-amber-400/20 shadow-sm">
+                  <span className="px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-semibold text-amber-400 border border-amber-400/20 shadow-sm">
                     {cardData.tag}
                   </span>
                   <div className="text-left">
                     <h4 className="text-white text-xs sm:text-sm font-bold tracking-tight drop-shadow leading-snug line-clamp-1">
                       {cardData.title}
                     </h4>
-                    <p className="text-zinc-300 text-[10px] sm:text-[11px] font-medium drop-shadow line-clamp-1 hidden sm:block">
+                    <p className="text-zinc-300 text-[11px] sm:text-[11px] font-medium drop-shadow line-clamp-1 hidden sm:block">
                       {cardData.subtitle}
                     </p>
                   </div>

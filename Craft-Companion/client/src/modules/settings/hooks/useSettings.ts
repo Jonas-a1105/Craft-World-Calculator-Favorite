@@ -13,7 +13,16 @@ import {
 } from '../../../utils/notifications';
 import { notifySuccess, notifyError, notifyInfo } from '../../../utils/sileoNotifications';
 import { useCraftworldHomeQuery, useMeQuery } from '../../../services/queries/useCraftworldQueries';
+import { NOTIF_PREFS_EVENT } from '../../../services/notificationPrefs';
 import type { UserProfile, UseSettingsReturn } from '../types';
+
+// El toggle maestro de Settings escribe la misma clave que notificationPrefs;
+// emitimos el evento para que campana de navbar y canales se repinten ya.
+function emitNotifPrefsChanged() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(NOTIF_PREFS_EVENT));
+  }
+}
 
 export function useSettings(): UseSettingsReturn {
   const { t, language, setLanguage } = useTranslation();
@@ -143,6 +152,7 @@ export function useSettings(): UseSettingsReturn {
       if (res === 'granted') {
         localStorage.setItem('craftworld.notificationsEnabled', 'true');
         setNotificationsEnabled(true);
+        emitNotifPrefsChanged();
         setStatus(language === 'es' ? 'Permiso concedido' : 'Permission granted');
         sendFactoryNotification(
           'Craft World Companion',
@@ -153,6 +163,7 @@ export function useSettings(): UseSettingsReturn {
       } else {
         localStorage.setItem('craftworld.notificationsEnabled', 'false');
         setNotificationsEnabled(false);
+        emitNotifPrefsChanged();
       }
     } catch (e) {
       console.error(e);
@@ -163,6 +174,7 @@ export function useSettings(): UseSettingsReturn {
     (val: boolean) => {
       setNotificationsEnabled(val);
       localStorage.setItem('craftworld.notificationsEnabled', String(val));
+      emitNotifPrefsChanged();
       if (val && 'Notification' in window && Notification.permission === 'default') {
         requestNotificationPermission();
       }

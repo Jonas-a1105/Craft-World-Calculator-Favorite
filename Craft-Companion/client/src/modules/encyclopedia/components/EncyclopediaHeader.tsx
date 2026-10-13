@@ -39,7 +39,7 @@ export const EncyclopediaHeader: React.FC<Props> = ({ search, onSearchChange }) 
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={language === 'es' ? 'Buscar fábrica o recurso...' : 'Search building or resource...'}
-          className="w-full bg-[#1c1c20] text-slate-200 placeholder-slate-500 text-xs px-4 py-2.5 rounded-full border-none focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all shadow-inner text-center"
+          className="w-full bg-oled-850 text-slate-200 placeholder-slate-500 text-xs px-4 py-2.5 rounded-full border-none focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all shadow-inner text-center"
         />
         {search && (
           <button

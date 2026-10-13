@@ -5,6 +5,7 @@ import { oauthAuthorize } from '../../../services/api';
 import { useHomeData } from '../hooks/useHomeData';
 import { UserProfileCard } from './UserProfileCard';
 import { HomeTabsNav } from './HomeTabsNav';
+import { FirstRunChecklist } from '../../../components/FirstRunChecklist';
 import { OverviewTab } from './tabs/OverviewTab';
 import { CraftTab } from './tabs/CraftTab';
 import { InventoryTab } from './tabs/InventoryTab';
@@ -45,6 +46,9 @@ export const HomeDashboard: React.FC = () => {
           <Card>{error}</Card>
         </div>
       )}
+
+      {/* First-run onboarding checklist (LP2) */}
+      <FirstRunChecklist />
 
       {/* User Profile Card */}
       <UserProfileCard

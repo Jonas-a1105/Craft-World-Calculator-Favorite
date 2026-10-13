@@ -7,6 +7,7 @@ import {
 } from './factoryBoostModifiers';
 import {
   applyMasteryInputReduction,
+  getMasteryInputFactor,
   getMasteryInputReductionPercent,
   getMasteryLevel,
   type ProficiencyItem,
@@ -16,6 +17,7 @@ import {
   getWorkshopSpeedBoostPercent,
   type WorkshopItem,
 } from './workshopModifiers';
+import { marginPercentOnRevenue } from './financial/pricingService';
 
 export {
   getWorkshopSpeedBoostPercent,
@@ -164,9 +166,17 @@ function normalizeSymbol(symbol?: string) {
     .toUpperCase();
 }
 
-export function getFactoryDisplayLevel(rawLevel: number): number {
-  const lvl = Math.max(1, Math.floor(Number(rawLevel || 1)));
-  return lvl;
+/**
+ * Nivel que se MUESTRA al usuario, siguiendo la convención del cliente oficial
+ * del juego: el payload /me/craft-world numera las fábricas desde 0..N, pero la
+ * UI del juego las muestra como payload+1 (verificado 2026-10-13 con la partida
+ * real: payload STEEL 13/11 → juego "nivel 14"/"nivel 12"; payload BEAM 9 →
+ * juego "nivel 10"; fábricas recién colocadas (payload 0) → juego "nivel 1").
+ * Los índices de datos/cálculo NO cambian: `definition.levels[level − 1]`.
+ */
+export function getFactoryDisplayLevel(rawLevel: number | null | undefined): number {
+  const lvl = Math.max(0, Math.floor(Number(rawLevel ?? 0)));
+  return lvl + 1;
 }
 
 function clampPositive(value: number, fallback = 0) {
@@ -183,9 +193,15 @@ function getManualBoostMultiplier(context: RuntimeContext = {}) {
   return multiplier > 0 ? multiplier : 1;
 }
 
-function getWorkerMultiplier(context: RuntimeContext = {}) {
+/**
+ * Factor de duración por trabajadores. El juego trata el boost de workers como
+ * REDUCCIÓN de tiempo (duración × (1 − p)), no como divisor de velocidad
+ * (÷(1+p)) — mismo patrón probado para workshop en /me/craft-world.
+ */
+function getWorkerDurationFactor(context: RuntimeContext = {}) {
   const percent = finiteNumber(context.workersPercent, 0);
-  return percent > 0 ? 1 + percent / 100 : 1;
+  if (percent <= 0) return 1;
+  return Math.max(0, 1 - percent / 100);
 }
 
 export function calculateFactoryRuntime(row: FactoryDataRow, context: RuntimeContext = {}) {
@@ -199,7 +215,11 @@ export function calculateFactoryRuntime(row: FactoryDataRow, context: RuntimeCon
     context.activeBoosts || [],
   );
   const manualDuration = boostedDuration / getManualBoostMultiplier(context);
-  const workerDuration = manualDuration / getWorkerMultiplier(context);
+  // La maestría del producto también acelera el ciclo (×inputDiscountFactor):
+  // verified en vivo 2026-10-13 — STEEL L11: 292,6 × 0,5 boost × 0,95 maestría
+  // = 138,99 min; el juego marcaba 2h11m restantes a los ~9 min de run.
+  const masteryFactor = getMasteryInputFactor(row.token, context.proficiencies || []);
+  const workerDuration = manualDuration * masteryFactor * getWorkerDurationFactor(context);
   return clampPositive(workerDuration, 0);
 }
 
@@ -382,7 +402,7 @@ export function calculateFactoryCycle(
     profitPerCycle,
     profitPerHour: profitPerCycle * runsPerHour,
     profitPerDay: profitPerCycle * runsPerDay,
-    marginPercent: revenuePerCycle > 0 ? (profitPerCycle / revenuePerCycle) * 100 : null,
+    marginPercent: marginPercentOnRevenue(revenuePerCycle, inputCostPerCycle),
     xpPerCycle,
     xpPerHour: xpPerCycle * runsPerHour,
     xpPerDay: xpPerCycle * runsPerDay,
@@ -394,7 +414,7 @@ export function calculateFactoryCycle(
     activeBoostMultiplier:
       getTotalFactoryBoostMultiplier(context.activeBoosts || []) *
       getManualBoostMultiplier(context) *
-      getWorkerMultiplier(context),
+      (1 / (getWorkerDurationFactor(context) || 1)),
     masteryLevel: getMasteryLevel(row.token, context.proficiencies || []),
     masteryReductionPercent: getMasteryInputReductionPercent(
       row.token,
@@ -606,13 +626,33 @@ export function buildRecipeTree(
   return { token: normalized, amount, row, children };
 }
 
-export function flattenRecipeToBaseResources(node: RecipeNode, out: Record<string, number> = {}) {
+/**
+ * Aplana el árbol de recetas a materiales base (hojas). Si se pasa
+ * `masteryFactorOf`, a cada paso intermedio se le aplica el factor de maestría
+ * del producto que se está fabricando en ese nodo — la física oficial del
+ * juego: la maestría de STEEL descuenta los insumos del crafteo de STEEL, la
+ * maestría de COPPER los del crafteo de COPPER, etc. El descuento se propaga
+ * multiplicativamente por rama (una sola vez por nodo).
+ */
+export function flattenRecipeToBaseResources(
+  node: RecipeNode,
+  out: Record<string, number> = {},
+  masteryFactorOf?: (token: string) => number,
+  pathFactor = 1,
+) {
   if (!node.children.length || node.circular || node.missingRecipe) {
-    out[node.token] = (out[node.token] || 0) + node.amount;
+    out[node.token] = (out[node.token] || 0) + node.amount * pathFactor;
     return out;
   }
 
-  node.children.forEach((child) => flattenRecipeToBaseResources(child, out));
+  const nodeFactor = masteryFactorOf ? masteryFactorOf(node.token) : 1;
+  const safeFactor =
+    Number.isFinite(nodeFactor) && nodeFactor > 0 ? nodeFactor : 1;
+  const childPathFactor = pathFactor * safeFactor;
+
+  node.children.forEach((child) =>
+    flattenRecipeToBaseResources(child, out, masteryFactorOf, childPathFactor),
+  );
   return out;
 }
 

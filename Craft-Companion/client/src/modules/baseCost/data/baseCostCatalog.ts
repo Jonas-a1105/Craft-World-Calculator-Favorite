@@ -1,4 +1,5 @@
 import { FACTORIES_BASE_COST_DATA } from './factoriesBaseCostData';
+import { MASTERY_INPUT_FACTORS } from '../../../services/gameConfig/generated/staticFallbacks';
 import type {
   BaseCostCategory,
   CategoryKey,
@@ -9,10 +10,13 @@ import type {
 export const FACTORIES_DATA: Record<string, FactoryLevelConfig[]> =
   FACTORIES_BASE_COST_DATA;
 
-export const MASTERY_MULTIPLIERS: readonly number[] = [
-  1, 1.0204, 1.0286, 1.0329, 1.0372, 1.0415, 1.0437, 1.0459, 1.0481, 1.0503,
-  1.0525,
-];
+// Derivado de la tabla oficial de maestría (proficiencyConfiguration.
+// inputDiscountFactor). La maestría multiplica los insumos por el factor;
+// estos multipliers son su inversa (1/factor) para las operaciones legacy que
+// dividen. Fuente única: services/gameConfig/generated/staticFallbacks.ts.
+export const MASTERY_MULTIPLIERS: readonly number[] = MASTERY_INPUT_FACTORS.map(
+  (factor) => 1 / factor,
+);
 
 export const TOKEN_CONTRACTS: Record<string, string> = {
   EARTH: '0xc356cd52364541379ad4d31a889b7031e758220a',

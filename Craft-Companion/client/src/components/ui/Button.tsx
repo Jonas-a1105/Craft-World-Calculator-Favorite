@@ -18,7 +18,7 @@ const variantStyles: Record<ButtonVariant, string> = {
   flat:
     'bg-white hover:bg-slate-100 text-slate-950 font-bold active:scale-[0.98]',
   secondary:
-    'bg-[#202024] hover:bg-[#29292f] text-slate-200 active:scale-[0.98]',
+    'bg-oled-pill hover:bg-[#29292f] text-slate-200 active:scale-[0.98]',
   danger:
     'bg-red-600 hover:bg-red-500 text-white font-bold shadow-lg shadow-red-600/20 active:scale-[0.98]',
   outline:

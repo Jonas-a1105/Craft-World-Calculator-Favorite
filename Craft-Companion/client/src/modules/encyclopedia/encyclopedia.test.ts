@@ -43,9 +43,13 @@ test('earth mine progression has exactly 50 levels matching game dataset', () =>
   assert.equal(levels[0].prodPerDay, 28800);
   assert.equal(levels[0].upgradeCostToken, '');
 
-  // Level 6 switches to Mud
+  // Level 2 paga con Mud (dato oficial; no se marca switch porque L1 no tiene coste)
+  assert.equal(levels[1].level, 2);
+  assert.equal(levels[1].upgradeCostToken, 'Mud');
+
+  // Level 6 switches to Clay
   assert.equal(levels[5].level, 6);
-  assert.equal(levels[5].upgradeCostToken, 'Mud');
+  assert.equal(levels[5].upgradeCostToken, 'Clay');
   assert.equal(levels[5].isMaterialSwitch, true);
 
   // Level 7 switches to Sand
@@ -58,10 +62,10 @@ test('earth mine progression has exactly 50 levels matching game dataset', () =>
   assert.equal(levels[13].upgradeCostToken, 'Copper');
   assert.equal(levels[13].isMaterialSwitch, true);
 
-  // Level 25 switches to Steel
-  assert.equal(levels[24].level, 25);
-  assert.equal(levels[24].upgradeCostToken, 'Steel');
-  assert.equal(levels[24].isMaterialSwitch, true);
+  // Level 24 switches to Steel (la tabla sintética anterior decía 25)
+  assert.equal(levels[23].level, 24);
+  assert.equal(levels[23].upgradeCostToken, 'Steel');
+  assert.equal(levels[23].isMaterialSwitch, true);
 
   // Level 34 switches to Screws
   assert.equal(levels[33].level, 34);
@@ -135,8 +139,11 @@ test('fetchProgressionForItem correctly loads Paperwrap and Water', async () => 
   const waterItem = RESOURCE_ITEMS.find((i) => i.id === 'WATER');
   assert.ok(waterItem, 'Water item must exist in catalog');
 
+  // El config oficial NO incluye tabla de producción para WATER/FIRE (las suyas
+  // eran 40 niveles sintetizados a mano por el antiguo sync:gamedata). Mejor
+  // sin datos que con datos inventados.
   const waterLevels = await fetchProgressionForItem(waterItem);
-  assert.equal(waterLevels.length, 40, 'Water must have 40 extracted levels');
+  assert.equal(waterLevels.length, 0, 'Water no tiene progresión en el config oficial');
 });
 
 test('buildings correctly load real spreadsheet progression data', async () => {

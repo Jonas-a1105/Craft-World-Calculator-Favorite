@@ -6,6 +6,8 @@ import {
 } from '../../../../services/coinPriceService';
 import { CoinMarketTab } from './coin-modal/CoinMarketTab';
 import { CoinConverterTab } from './coin-modal/CoinConverterTab';
+import { useModalA11y } from '../../../../hooks/useModalA11y';
+import { useTranslation } from '../../../../utils/i18n';
 
 interface CoinPriceModalProps {
   isOpen: boolean;
@@ -15,7 +17,14 @@ interface CoinPriceModalProps {
 export const CoinPriceModal: React.FC<CoinPriceModalProps> = ({ isOpen, onClose }) => {
   const { data: marketData, isFetching: isRefreshingPrice } = useCoinLivePrice();
   const [activeTab, setActiveTab] = useState<'chart' | 'converter'>('chart');
-  const basePrice = marketData?.priceUsd ?? 0.0002105;
+  const dialogRef = useModalA11y(isOpen);
+  const { language } = useTranslation();
+  const isEs = language === 'es';
+  // Sin fabricación: si no hay dato real, basePrice es null y la UI muestra "—".
+  const basePrice =
+    marketData && typeof marketData.priceUsd === 'number' && marketData.priceUsd > 0
+      ? marketData.priceUsd
+      : null;
 
   // Close on ESC key
   useEffect(() => {
@@ -52,32 +61,57 @@ export const CoinPriceModal: React.FC<CoinPriceModalProps> = ({ isOpen, onClose 
 
       {/* Modal Dialog Card (Centered in viewport, matte dark, no borders) */}
       <div
-        className="relative w-full max-w-xl sm:max-w-2xl bg-[#141416] rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col gap-4 z-10 max-h-[92vh] overflow-y-auto overflow-x-hidden border-0 outline-none route-view"
+        ref={dialogRef}
+        tabIndex={-1}
+        className="relative w-full max-w-xl sm:max-w-2xl bg-oled-cardInner rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col gap-4 z-10 max-h-[92vh] overflow-y-auto overflow-x-hidden border-0 outline-none route-view"
         style={{ border: 'none', outline: 'none' }}
         role="dialog"
         aria-modal="true"
+        aria-labelledby="coin-price-modal-title"
       >
         {/* Top Header */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-2xl bg-[#24252e] flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-oled-pill flex items-center justify-center shrink-0">
               <img
                 src="/assets/resources/Coin.png"
-                alt="COIN"
+                alt=""
                 className="w-6 h-6 object-contain"
               />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-lg font-bold text-white tracking-tight truncate">
+                <h2
+                  id="coin-price-modal-title"
+                  className="text-base sm:text-lg font-bold text-white tracking-tight truncate"
+                >
                   Dyno Coin
                 </h2>
-                <span className="text-[11px] font-mono font-bold bg-[#24252e] text-amber-400 px-2 py-0.5 rounded-md shrink-0">
+                <span className="text-[11px] font-mono font-bold bg-oled-pill text-amber-400 px-2 py-0.5 rounded-md shrink-0">
                   COIN
+                </span>
+                {/* Data source trust badge — never pass cache/offline as live */}
+                <span
+                  className={`text-[11px] font-mono font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md shrink-0 ${
+                    marketData && marketData.source === 'live'
+                      ? 'bg-emerald-500/15 text-emerald-300'
+                      : marketData && marketData.source === 'cache'
+                        ? 'bg-amber-500/15 text-amber-300'
+                        : 'bg-zinc-700/50 text-zinc-400'
+                  }`}
+                >
+                  {marketData && marketData.source === 'live'
+                    ? isEs ? 'En vivo' : 'Live'
+                    : marketData && marketData.source === 'cache'
+                      ? isEs ? 'Caché' : 'Cache'
+                      : isEs ? 'Sin datos' : 'No data'}
                 </span>
               </div>
               <p className="text-xs text-zinc-400 truncate">
-                Red Ronin • Katana V3 DEX • Oficial de Craft World
+                {isEs ? 'Red Ronin • Katana V3 DEX • Oficial de Craft World' : 'Ronin Network • Katana V3 DEX • Official Craft World token'}
+                {marketData
+                  ? ` • ${marketData.source === 'live' ? (isEs ? 'Actualizado' : 'Updated') : (isEs ? 'Guardado' : 'Saved')} ${new Date(marketData.updatedAt).toLocaleTimeString()}`
+                  : isEs ? ' • reintentando…' : ' • retrying…'}
               </p>
             </div>
           </div>
@@ -89,7 +123,7 @@ export const CoinPriceModal: React.FC<CoinPriceModalProps> = ({ isOpen, onClose 
               target="_blank"
               rel="noopener noreferrer"
               title="Abrir en GeckoTerminal"
-              className="w-8 h-8 rounded-full bg-[#24252e] hover:bg-[#2e303a] text-zinc-300 hover:text-white flex items-center justify-center transition-colors border-0 outline-none cursor-pointer"
+              className="w-8 h-8 rounded-full bg-oled-pill hover:bg-oled-pillHover text-zinc-300 hover:text-white flex items-center justify-center transition-colors border-0 outline-none cursor-pointer"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -105,7 +139,7 @@ export const CoinPriceModal: React.FC<CoinPriceModalProps> = ({ isOpen, onClose 
               type="button"
               onClick={onClose}
               title="Cerrar ventana"
-              className="w-8 h-8 rounded-full bg-[#24252e] hover:bg-[#2e303a] text-zinc-300 hover:text-white flex items-center justify-center transition-colors border-0 outline-none cursor-pointer"
+              className="w-8 h-8 rounded-full bg-oled-pill hover:bg-oled-pillHover text-zinc-300 hover:text-white flex items-center justify-center transition-colors border-0 outline-none cursor-pointer"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -120,13 +154,13 @@ export const CoinPriceModal: React.FC<CoinPriceModalProps> = ({ isOpen, onClose 
         </div>
 
         {/* Segmented Tab Switcher (Gráfica / Conversor) */}
-        <div className="grid grid-cols-2 p-1 bg-[#1c1c20] rounded-2xl gap-1">
+        <div className="grid grid-cols-2 p-1 bg-oled-850 rounded-2xl gap-1">
           <button
             type="button"
             onClick={() => setActiveTab('chart')}
             className={`py-2 px-3 rounded-xl text-xs font-bold transition-all border-0 outline-none cursor-pointer flex items-center justify-center gap-2 ${
               activeTab === 'chart'
-                ? 'bg-[#282932] text-amber-400 shadow-sm'
+                ? 'bg-oled-pill text-amber-400 shadow-sm'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
@@ -138,7 +172,7 @@ export const CoinPriceModal: React.FC<CoinPriceModalProps> = ({ isOpen, onClose 
                 d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"
               />
             </svg>
-            <span>Gráfica & Mercado</span>
+            <span>{isEs ? 'Gráfica & Mercado' : 'Chart & Market'}</span>
           </button>
 
           <button
@@ -146,7 +180,7 @@ export const CoinPriceModal: React.FC<CoinPriceModalProps> = ({ isOpen, onClose 
             onClick={() => setActiveTab('converter')}
             className={`py-2 px-3 rounded-xl text-xs font-bold transition-all border-0 outline-none cursor-pointer flex items-center justify-center gap-2 ${
               activeTab === 'converter'
-                ? 'bg-[#282932] text-amber-400 shadow-sm'
+                ? 'bg-oled-pill text-amber-400 shadow-sm'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
@@ -158,7 +192,7 @@ export const CoinPriceModal: React.FC<CoinPriceModalProps> = ({ isOpen, onClose 
                 d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
               />
             </svg>
-            <span>Conversor COIN</span>
+            <span>{isEs ? 'Conversor COIN' : 'COIN Converter'}</span>
           </button>
         </div>
 

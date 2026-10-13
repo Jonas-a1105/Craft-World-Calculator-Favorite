@@ -3,11 +3,13 @@ import { test } from 'node:test';
 import {
   calcBaseResources,
   calculateBaseCostRow,
+  calculateSummaryStats,
+} from './services/baseCostCalculatorService';
+import {
   getMarginTextColor,
   formatQuantity,
   formatCoin,
-  calculateSummaryStats,
-} from './services/baseCostCalculatorService';
+} from './services/baseCostFormatters';
 import {
   ALL_BASE_COST_TOKENS,
   BASE_COST_CATEGORIES,

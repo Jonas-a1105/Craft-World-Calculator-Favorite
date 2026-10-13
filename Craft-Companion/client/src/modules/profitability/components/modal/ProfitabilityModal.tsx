@@ -46,7 +46,7 @@ export const ProfitabilityModal: React.FC<ProfitabilityModalProps> = ({
 
   return createPortal(
     <div className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200">
-      <div className="w-full max-w-5xl bg-[#18181b] rounded-[32px] p-6 sm:p-7 space-y-5 max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border-none animate-in zoom-in-95 duration-200">
+      <div className="w-full max-w-5xl bg-oled-card rounded-[32px] p-6 sm:p-7 space-y-5 max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border-none animate-in zoom-in-95 duration-200">
         {/* Modal Header */}
         <ModalHeader summary={summary} simulationMode={simulationMode} onClose={onClose} />
 

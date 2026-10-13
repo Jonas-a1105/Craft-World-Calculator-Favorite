@@ -7,10 +7,12 @@ import {
   type CoinChartPoint,
   type CoinMarketData,
 } from '../../../../../services/coinPriceService';
+import { MetricCard } from '../../../../ui/primitives';
+import { useTranslation } from '../../../../../utils/i18n';
 
 interface CoinMarketTabProps {
   marketData?: CoinMarketData | null;
-  basePrice: number;
+  basePrice: number | null;
   isRefreshingPrice: boolean;
 }
 
@@ -21,12 +23,14 @@ export const CoinMarketTab: React.FC<CoinMarketTabProps> = ({
   basePrice,
   isRefreshingPrice,
 }) => {
+  const { language } = useTranslation();
+  const isEs = language === 'es';
   const [activeTimeframe, setActiveTimeframe] = useState<ChartTimeframe>('24H');
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const { data: chartPoints = [], isLoading: isLoadingChart } = useCoinChart(
     activeTimeframe,
-    basePrice,
+    basePrice ?? 0,
   );
 
   // Chart SVG geometry & scaling
@@ -75,7 +79,9 @@ export const CoinMarketTab: React.FC<CoinMarketTabProps> = ({
 
   const currentDisplayPrice = activePoint
     ? formatCoinPrice(activePoint.price)
-    : formatCoinPrice(basePrice);
+    : basePrice != null
+      ? formatCoinPrice(basePrice)
+      : '—';
 
   const priceDiffPercent = useMemo(() => {
     if (chartPoints.length < 2) return marketData?.h24Change ?? 0;
@@ -86,54 +92,74 @@ export const CoinMarketTab: React.FC<CoinMarketTabProps> = ({
   }, [chartPoints, activePoint, marketData]);
 
   const isTrendPositive = priceDiffPercent >= 0;
-  const h24 = formatPriceChange(marketData?.h24Change ?? -3.38);
+  const hasMarket = Boolean(marketData && marketData.priceUsd > 0);
+  const h24 = formatPriceChange(hasMarket ? marketData!.h24Change : 0);
+  const volumeLabel =
+    hasMarket && marketData!.volume24h > 0
+      ? `$${marketData!.volume24h.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+      : '—';
+  const reserveLabel =
+    hasMarket && marketData!.reserveUsd > 0
+      ? `$${marketData!.reserveUsd.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+      : '—';
+  const sourceState: 'live' | 'cache' | 'none' = !hasMarket
+    ? 'none'
+    : marketData!.source === 'live'
+      ? 'live'
+      : 'cache';
 
   return (
     <div className="space-y-3.5 animate-in fade-in duration-150">
-      {/* Top Stat Pills Row */}
+      {/* Top Stat Pills Row — primitivas compartidas MetricCard (LP1) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        {/* Card 1: Precio Actual */}
-        <div className="bg-[#1c1c21] p-3 rounded-2xl flex flex-col justify-between">
-          <div className="flex items-center gap-1.5 text-zinc-400 text-[11px] font-medium">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
-            <span>En Vivo</span>
-          </div>
-          <p className="text-base sm:text-lg font-mono font-bold text-amber-400 mt-1">
-            {formatCoinPrice(basePrice)}
-          </p>
-        </div>
+        {/* Card 1: Precio Actual con badge de fuente */}
+        <MetricCard
+          tone={basePrice != null ? 'amber' : 'zinc'}
+          icon={
+            <span
+              className={`w-2 h-2 rounded-full shrink-0 ${
+                sourceState === 'live'
+                  ? 'bg-emerald-400'
+                  : sourceState === 'cache'
+                    ? 'bg-amber-400'
+                    : 'bg-zinc-600'
+              }`}
+            />
+          }
+          label={
+            sourceState === 'live'
+              ? isEs ? 'En Vivo' : 'Live'
+              : sourceState === 'cache'
+                ? isEs ? 'En Caché' : 'Cached'
+                : isEs ? 'Sin Datos' : 'No Data'
+          }
+          value={basePrice != null ? formatCoinPrice(basePrice) : '—'}
+        />
 
         {/* Card 2: Variación 24H */}
-        <div className="bg-[#1c1c21] p-3 rounded-2xl flex flex-col justify-between">
-          <span className="text-zinc-400 text-[11px] font-medium">Variación 24h</span>
-          <p
-            className={`text-base sm:text-lg font-mono font-bold mt-1 ${
-              h24.isPositive ? 'text-emerald-400' : 'text-rose-400'
-            }`}
-          >
-            {h24.text}
-          </p>
-        </div>
+        <MetricCard
+          tone={hasMarket ? (h24.isPositive ? 'emerald' : 'rose') : 'zinc'}
+          label={isEs ? 'Variación 24h' : '24h Change'}
+          value={hasMarket ? h24.text : '—'}
+        />
 
         {/* Card 3: Volumen 24H */}
-        <div className="bg-[#1c1c21] p-3 rounded-2xl flex flex-col justify-between">
-          <span className="text-zinc-400 text-[11px] font-medium">Volumen 24h</span>
-          <p className="text-base sm:text-lg font-mono font-bold text-zinc-100 mt-1">
-            ${(marketData?.volume24h ?? 467.52).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-          </p>
-        </div>
+        <MetricCard
+          tone="zinc"
+          label={isEs ? 'Volumen 24h' : '24h Volume'}
+          value={volumeLabel}
+        />
 
         {/* Card 4: Liquidez en Pool */}
-        <div className="bg-[#1c1c21] p-3 rounded-2xl flex flex-col justify-between">
-          <span className="text-zinc-400 text-[11px] font-medium">Liquidez en Pool</span>
-          <p className="text-base sm:text-lg font-mono font-bold text-zinc-100 mt-1">
-            ${(marketData?.reserveUsd ?? 6094).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-          </p>
-        </div>
+        <MetricCard
+          tone="zinc"
+          label={isEs ? 'Liquidez en Pool' : 'Pool Liquidity'}
+          value={reserveLabel}
+        />
       </div>
 
       {/* Interactive Chart Section */}
-      <div className="bg-[#1c1c21] rounded-2xl p-3.5 sm:p-4 space-y-3">
+      <div className="bg-oled-850 rounded-2xl p-3.5 sm:p-4 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div>
             <div className="flex items-center gap-2">
@@ -163,7 +189,7 @@ export const CoinMarketTab: React.FC<CoinMarketTabProps> = ({
           </div>
 
           {/* Timeframe Filter Pills */}
-          <div className="flex items-center gap-1 bg-[#141416] p-1 rounded-xl self-start sm:self-auto">
+          <div className="flex items-center gap-1 bg-oled-cardInner p-1 rounded-xl self-start sm:self-auto">
             {TIMEFRAMES.map((tf) => {
               const isSelected = activeTimeframe === tf;
               return (
@@ -190,8 +216,20 @@ export const CoinMarketTab: React.FC<CoinMarketTabProps> = ({
         {/* Chart SVG Canvas */}
         <div className="relative w-full overflow-hidden pt-2">
           {isLoadingChart ? (
-            <div className="h-44 sm:h-48 flex items-center justify-center text-xs text-zinc-500">
+            <div className="h-44 sm:h-48 flex items-center justify-center text-xs text-zinc-400">
               Cargando datos de mercado...
+            </div>
+          ) : chartPoints.length === 0 ? (
+            /* Estado honesto: sin historial real, nunca una gráfica sintética */
+            <div className="h-44 sm:h-48 flex flex-col items-center justify-center gap-2 text-center text-xs text-zinc-400">
+              <span className="text-lg">📉</span>
+              <span className="font-semibold text-zinc-400">
+                Gráfica no disponible temporalmente
+              </span>
+              <span className="max-w-[280px] leading-relaxed">
+                No se pudo obtener el historial de Katana V3. Reintentando en
+                segundo plano…
+              </span>
             </div>
           ) : (
             <div className="relative w-full">
@@ -293,7 +331,7 @@ export const CoinMarketTab: React.FC<CoinMarketTabProps> = ({
               </svg>
 
               {/* Time labels */}
-              <div className="flex justify-between items-center text-[10px] font-mono text-zinc-500 pt-1 px-1">
+              <div className="flex justify-between items-center text-[11px] font-mono text-zinc-400 pt-1 px-1">
                 <span>{chartPoints[0]?.timeLabel || 'Inicio'}</span>
                 <span>{chartPoints[Math.floor(chartPoints.length / 2)]?.timeLabel || ''}</span>
                 <span>{chartPoints[chartPoints.length - 1]?.timeLabel || 'Actual'}</span>

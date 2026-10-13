@@ -17,7 +17,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ content }) => {
   return (
     <section className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-24 text-center relative z-20">
       {/* Top Pill Badge */}
-      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1c1c20] text-xs sm:text-sm font-medium text-zinc-300 mb-8 backdrop-blur-sm shadow-inner transition-transform hover:scale-105 border-0">
+      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-oled-850 text-xs sm:text-sm font-medium text-zinc-300 mb-8 backdrop-blur-sm shadow-inner transition-transform hover:scale-105 border-0">
         <img src="/assets/resources/Coin.png" alt="Coin" className="w-4 h-4 object-contain" />
         <span>{content.hero.badge}</span>
       </div>
@@ -64,7 +64,7 @@ export const LandingHero: React.FC<LandingHeroProps> = ({ content }) => {
         {/* Secondary Dark Button */}
         <Link
           to="/signin"
-          className="w-full sm:w-auto bg-[#1c1c20] hover:bg-[#25252c] text-zinc-200 font-semibold px-6 py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center active:scale-95 text-sm sm:text-base border-0 outline-none"
+          className="w-full sm:w-auto bg-oled-850 hover:bg-[#25252c] text-zinc-200 font-semibold px-6 py-3.5 rounded-xl transition-all duration-200 flex items-center justify-center active:scale-95 text-sm sm:text-base border-0 outline-none"
         >
           {content.hero.secondaryCta}
         </Link>

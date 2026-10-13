@@ -23,15 +23,15 @@ export const InventoryResourceCard: React.FC<InventoryResourceCardProps> = ({
   return (
     <div
       onClick={onToggleExpand}
-      className={`group bg-[#202024] hover:bg-[#28282e] p-2.5 pr-4 rounded-[28px] transition-[background-color,transform,box-shadow] duration-200 cursor-pointer select-none shadow-md overflow-hidden ${
-        isExpanded ? 'bg-[#24242a]' : 'hover:scale-[1.015]'
+      className={`group bg-oled-pill hover:bg-[#28282e] p-2.5 pr-4 rounded-[28px] transition-[background-color,transform,box-shadow] duration-200 cursor-pointer select-none shadow-md overflow-hidden ${
+        isExpanded ? 'bg-oled-pill' : 'hover:scale-[1.015]'
       }`}
     >
       {/* Top Row: Avatar, Info, Total, and Arrow */}
       <div className="flex items-center justify-between">
         {/* Left: Circular Avatar & Name + Amount */}
         <div className="flex items-center gap-3.5 min-w-0">
-          <div className="w-11 h-11 rounded-full bg-[#151518] flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105">
+          <div className="w-11 h-11 rounded-full bg-oled-cardInner flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105">
             <ResourceIcon symbol={item.symbol} size={26} />
           </div>
 
@@ -51,7 +51,7 @@ export const InventoryResourceCard: React.FC<InventoryResourceCardProps> = ({
             <span className="text-xs sm:text-sm font-bold text-amber-400 font-mono block">
               {formatNumber(item.totalValue)}
             </span>
-            <span className="text-[10px] text-amber-500/80 font-bold uppercase tracking-wider block">
+            <span className="text-[11px] text-amber-500/80 font-bold uppercase tracking-wider block">
               COIN
             </span>
           </div>
@@ -83,7 +83,7 @@ export const InventoryResourceCard: React.FC<InventoryResourceCardProps> = ({
         }`}
       >
         <div className="overflow-hidden">
-          <div className="flex items-center justify-between px-2.5 py-1.5 text-xs bg-[#151518]/70 rounded-2xl">
+          <div className="flex items-center justify-between px-2.5 py-1.5 text-xs bg-oled-cardInner/70 rounded-2xl">
             {/* Clean Formatted Price */}
             <div className="flex items-center gap-1.5">
               <span className="text-slate-400 font-medium text-[11px]">Price:</span>
@@ -102,7 +102,7 @@ export const InventoryResourceCard: React.FC<InventoryResourceCardProps> = ({
                 }}
                 role="button"
                 title={language === 'es' ? 'Ver detalles de mercado' : 'View market details'}
-                className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono border-none cursor-pointer hover:scale-105 active:scale-95 transition-transform select-none ${
+                className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold font-mono border-none cursor-pointer hover:scale-105 active:scale-95 transition-transform select-none ${
                   item.delta?.isUp
                     ? 'bg-[rgba(34,197,94,0.18)] text-[rgb(34,197,94)]'
                     : 'bg-rose-500/20 text-rose-400'
@@ -115,7 +115,7 @@ export const InventoryResourceCard: React.FC<InventoryResourceCardProps> = ({
               {/* Recommendation Badge */}
               {rec && (
                 <span
-                  className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border-none select-none ${
+                  className={`text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full border-none select-none ${
                     rec === 'BUY'
                       ? 'bg-[rgba(34,197,94,0.2)] text-[rgb(34,197,94)]'
                       : rec === 'SELL'

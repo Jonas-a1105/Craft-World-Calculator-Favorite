@@ -3,6 +3,12 @@ import {
   type CoinMarketData,
   type EcosystemCurrency,
 } from './coinTypes';
+import {
+  coinToUsd,
+  resolveCoinUsdPrice,
+  toFiniteNumber,
+  usdToCoin,
+} from '../financial/pricingService';
 
 export function convertEcosystemCurrency(
   amount: number,
@@ -10,32 +16,34 @@ export function convertEcosystemCurrency(
   to: EcosystemCurrency,
   marketData?: CoinMarketData | null,
 ): number {
-  if (amount <= 0 || isNaN(amount)) return 0;
-  if (from === to) return amount;
+  const value = toFiniteNumber(amount, 0);
+  if (value <= 0) return 0;
+  if (from === to) return value;
 
   const data = marketData || DEFAULT_COIN_DATA;
-  const coinUsd = data.priceUsd > 0 ? data.priceUsd : DEFAULT_COIN_DATA.priceUsd;
-  const ronUsd = data.quotePriceUsd > 0 ? data.quotePriceUsd : DEFAULT_COIN_DATA.quotePriceUsd;
+  // Tasas efectivas con fallback canónico resuelto por el servicio financiero.
+  const coinUsd = resolveCoinUsdPrice(data.priceUsd, DEFAULT_COIN_DATA.priceUsd);
+  const ronUsd = resolveCoinUsdPrice(data.quotePriceUsd, DEFAULT_COIN_DATA.quotePriceUsd);
 
   // 1. Convert "from" to standard USD value
   let valueInUsd = 0;
   switch (from) {
     case 'COIN':
-      valueInUsd = amount * coinUsd;
+      valueInUsd = coinToUsd(value, coinUsd);
       break;
     case 'USD':
     case 'USDC':
-      valueInUsd = amount;
+      valueInUsd = value;
       break;
     case 'RON':
-      valueInUsd = amount * ronUsd;
+      valueInUsd = value * ronUsd;
       break;
   }
 
   // 2. Convert USD value into "to" currency
   switch (to) {
     case 'COIN':
-      return coinUsd > 0 ? valueInUsd / coinUsd : 0;
+      return usdToCoin(valueInUsd, coinUsd);
     case 'USD':
     case 'USDC':
       return valueInUsd;

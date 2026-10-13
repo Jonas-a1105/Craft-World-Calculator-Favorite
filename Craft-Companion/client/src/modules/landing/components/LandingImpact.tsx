@@ -119,7 +119,7 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, speed = 28, direction = 
         {repeatedItems.map((item, idx) => (
           <div
             key={`${item.id}-${idx}`}
-            className="w-[320px] sm:w-[350px] bg-[#1c1c20] hover:bg-[#222227] rounded-3xl p-6 flex flex-col justify-between shadow-xl flex-shrink-0 transition-colors pointer-events-none border-0"
+            className="w-[320px] sm:w-[350px] bg-oled-850 hover:bg-[#222227] rounded-3xl p-6 flex flex-col justify-between shadow-xl flex-shrink-0 transition-colors pointer-events-none border-0"
           >
             <div>
               {/* Card Header: Avatar & Info */}
@@ -164,7 +164,7 @@ export const LandingImpact: React.FC<LandingImpactProps> = ({ impact }) => {
     <section id="impact" className="w-full pt-10 pb-32 text-center relative z-20 overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Top Pill Badge */}
-        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#1c1c20] text-xs font-medium text-zinc-300 mb-5 backdrop-blur-sm shadow-inner transition-transform hover:scale-105 border-0">
+        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-oled-850 text-xs font-medium text-zinc-300 mb-5 backdrop-blur-sm shadow-inner transition-transform hover:scale-105 border-0">
           <span>{impact.badge}</span>
         </div>
 
@@ -179,8 +179,8 @@ export const LandingImpact: React.FC<LandingImpactProps> = ({ impact }) => {
         </p>
 
         {/* Review Badge Rating Widget */}
-        <div className="inline-flex items-center gap-3 bg-[#1c1c20] rounded-2xl px-4 py-2.5 mb-10 shadow-lg border-0">
-          <div className="w-8 h-8 rounded-xl bg-[#151518] flex items-center justify-center text-amber-400 flex-shrink-0 border-0">
+        <div className="inline-flex items-center gap-3 bg-oled-850 rounded-2xl px-4 py-2.5 mb-10 shadow-lg border-0">
+          <div className="w-8 h-8 rounded-xl bg-oled-cardInner flex items-center justify-center text-amber-400 flex-shrink-0 border-0">
             <svg
               className="w-4 h-4 text-amber-400"
               viewBox="0 0 24 24"
@@ -211,7 +211,7 @@ export const LandingImpact: React.FC<LandingImpactProps> = ({ impact }) => {
         </div>
 
         {/* Top Metrics Card (4 KPIs Grid) */}
-        <div className="bg-[#1c1c20] rounded-3xl p-6 sm:p-8 mb-14 shadow-2xl border-0">
+        <div className="bg-oled-850 rounded-3xl p-6 sm:p-8 mb-14 shadow-2xl border-0">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
             {impact.metrics.map((metric, idx) => (
               <div

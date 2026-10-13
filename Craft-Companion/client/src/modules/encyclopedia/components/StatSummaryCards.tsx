@@ -50,9 +50,9 @@ export const StatSummaryCards: React.FC<Props> = ({ stats }) => {
       {cards.map((card, idx) => (
         <div
           key={idx}
-          className="bg-[#18181c] rounded-[22px] sm:rounded-[28px] p-3 sm:p-4.5 flex flex-col justify-between shadow-xl border-none transition-transform hover:-translate-y-0.5 duration-150 min-w-0 overflow-hidden"
+          className="bg-oled-card rounded-[22px] sm:rounded-[28px] p-3 sm:p-4.5 flex flex-col justify-between shadow-xl border-none transition-transform hover:-translate-y-0.5 duration-150 min-w-0 overflow-hidden"
         >
-          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 select-none truncate">
+          <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 select-none truncate">
             {card.label}
           </span>
           <span className={`text-lg sm:text-2xl font-bold font-main mt-1.5 sm:mt-2 truncate ${card.color}`}>

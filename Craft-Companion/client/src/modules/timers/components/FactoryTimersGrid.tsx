@@ -16,7 +16,7 @@ export const FactoryTimersGrid: React.FC<FactoryTimersGridProps> = ({
 }) => {
   if (runs.length === 0) {
     return (
-      <div className="text-center py-12 bg-[#18181b] rounded-[28px] border-none">
+      <div className="text-center py-12 bg-oled-card rounded-[28px] border-none">
         <ResourceIcon symbol="Hammer" size={48} className="mx-auto mb-3 opacity-60" />
         <p className="text-sm font-bold text-slate-300 font-main">
           {language === 'es'

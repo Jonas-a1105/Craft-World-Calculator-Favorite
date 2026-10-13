@@ -17,7 +17,7 @@ export const DisabledPowerPlantsSection: React.FC<DisabledPowerPlantsSectionProp
         <h2 className="text-sm font-mono font-bold text-slate-300 tracking-wider uppercase">
           {isEs ? 'PLANTAS DE ENERGÍA' : 'POWER PLANTS'}
         </h2>
-        <p className="text-xs font-mono text-slate-500 mt-0.5">
+        <p className="text-xs font-mono text-slate-400 mt-0.5">
           {isEs
             ? 'Steamforge y Reactor están actualmente desactivadas en el juego oficial, por lo que quedan excluidas de todos los cálculos.'
             : 'Steamforge and Reactor are disabled in-game, so they are left out of every total on this page.'}
@@ -27,10 +27,10 @@ export const DisabledPowerPlantsSection: React.FC<DisabledPowerPlantsSectionProp
       {/* Grid of 2 Disabled Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* STEAMFORGE */}
-        <div className="relative p-4 rounded-3xl bg-[#1c1c22] shadow-xl shadow-black/25 overflow-hidden border-none outline-none">
+        <div className="relative p-4 rounded-3xl bg-oled-850 shadow-xl shadow-black/25 overflow-hidden border-none outline-none">
           <div className="flex flex-col gap-3 opacity-30 grayscale pointer-events-none">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-[#131316] flex items-center justify-center p-1.5 shadow-inner shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-oled-cardInner flex items-center justify-center p-1.5 shadow-inner shrink-0">
                 <ResourceIcon symbol="Lava" size={26} />
               </div>
               <div className="min-w-0">
@@ -47,7 +47,7 @@ export const DisabledPowerPlantsSection: React.FC<DisabledPowerPlantsSectionProp
               <span className="text-xs font-mono text-slate-400 w-12 shrink-0">
                 {isEs ? 'Nivel' : 'Level'}
               </span>
-              <div className="flex-1 bg-[#131316] text-slate-500 text-xs font-mono px-3 py-2 rounded-xl shadow-inner">
+              <div className="flex-1 bg-oled-cardInner text-slate-400 text-xs font-mono px-3 py-2 rounded-xl shadow-inner">
                 — {isEs ? 'No adquirida' : 'Not owned'} —
               </div>
             </div>
@@ -64,10 +64,10 @@ export const DisabledPowerPlantsSection: React.FC<DisabledPowerPlantsSectionProp
         </div>
 
         {/* REACTOR */}
-        <div className="relative p-4 rounded-3xl bg-[#1c1c22] shadow-xl shadow-black/25 overflow-hidden border-none outline-none">
+        <div className="relative p-4 rounded-3xl bg-oled-850 shadow-xl shadow-black/25 overflow-hidden border-none outline-none">
           <div className="flex flex-col gap-3 opacity-30 grayscale pointer-events-none">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-[#131316] flex items-center justify-center p-1.5 shadow-inner shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-oled-cardInner flex items-center justify-center p-1.5 shadow-inner shrink-0">
                 <ResourceIcon symbol="Hydrogen" size={26} />
               </div>
               <div className="min-w-0">
@@ -84,7 +84,7 @@ export const DisabledPowerPlantsSection: React.FC<DisabledPowerPlantsSectionProp
               <span className="text-xs font-mono text-slate-400 w-12 shrink-0">
                 {isEs ? 'Nivel' : 'Level'}
               </span>
-              <div className="flex-1 bg-[#131316] text-slate-500 text-xs font-mono px-3 py-2 rounded-xl shadow-inner">
+              <div className="flex-1 bg-oled-cardInner text-slate-400 text-xs font-mono px-3 py-2 rounded-xl shadow-inner">
                 — {isEs ? 'No adquirida' : 'Not owned'} —
               </div>
             </div>

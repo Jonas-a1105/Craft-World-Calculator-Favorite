@@ -3,6 +3,7 @@ import { OfficialEvent, CatalogItem } from '../types';
 import { OFFICIAL_EVENTS } from '../data/eventsCatalog';
 import { useTranslation } from '../../../utils/i18n';
 import { ResourceIcon } from '../../../components/GameIcon';
+import { MP1_RANKS, MP2_RANKS, MP3_RANKS } from '../data/mpRanks';
 
 interface Props {
   event: OfficialEvent;
@@ -11,58 +12,6 @@ interface Props {
 
 type TabKey = 'overview' | 'ranks' | 'prizepool' | 'karma' | 'mechanics' | 'onboarding' | 'faq';
 type MpRankKey = 'mp1' | 'mp2' | 'mp3';
-
-interface RankRow {
-  rank: string;
-  rankEs: string;
-  coinReward?: string;
-  fishReward?: string;
-  tickets?: string;
-  nft?: string;
-  note?: string;
-  noteEs?: string;
-}
-
-const MP1_RANKS: RankRow[] = [
-  { rank: 'Rank 1', rankEs: 'Puesto 1', coinReward: 'Top $COIN Share', fishReward: 'Top $FISH Share', nft: '1x Water Dyno Genesis NFT', tickets: '100 FP Tickets' },
-  { rank: 'Rank 2', rankEs: 'Puesto 2', coinReward: 'Top $COIN Share', fishReward: 'Top $FISH Share', nft: '1x Founders Pass NFT', tickets: '80 FP Tickets' },
-  { rank: 'Rank 3', rankEs: 'Puesto 3', coinReward: '50,000 $COIN', fishReward: '18,275 $FISH', tickets: '50 FP Raffle Tickets' },
-  { rank: 'Rank 4', rankEs: 'Puesto 4', coinReward: '40,000 $COIN', fishReward: '14,620 $FISH', tickets: '40 FP Raffle Tickets' },
-  { rank: 'Rank 5', rankEs: 'Puesto 5', coinReward: '35,000 $COIN', fishReward: '12,793 $FISH', tickets: '35 FP Raffle Tickets' },
-  { rank: 'Rank 6 - 10', rankEs: 'Puestos 6 - 10', coinReward: '25,000 $COIN c/u', fishReward: '9,138 $FISH c/u', tickets: '25 FP Tickets c/u' },
-  { rank: 'Rank 11 - 25', rankEs: 'Puestos 11 - 25', coinReward: '15,000 $COIN c/u', fishReward: '5,483 $FISH c/u', tickets: '15 FP Tickets c/u' },
-  { rank: 'Rank 26 - 50', rankEs: 'Puestos 26 - 50', coinReward: '10,000 $COIN c/u', fishReward: '3,655 $FISH c/u', tickets: '10 FP Tickets c/u' },
-  { rank: 'Rank 51 - 100', rankEs: 'Puestos 51 - 100', coinReward: '5,000 $COIN c/u', fishReward: '1,828 $FISH c/u', tickets: '5 FP Tickets c/u' },
-  { rank: 'Rank 101 - 150', rankEs: 'Puestos 101 - 150', coinReward: '-', fishReward: '-', tickets: '5 FP Tickets c/u', note: 'Eligible for 4 Founders Pass Draws', noteEs: 'Elegible para los 4 sorteos de Founders Pass' },
-];
-
-const MP2_RANKS: RankRow[] = [
-  { rank: 'Rank 1', rankEs: 'Puesto 1', coinReward: 'Top $COIN Share', fishReward: 'Top $FISH Share', nft: '1x Water Dyno Genesis NFT', tickets: '100 FP Tickets' },
-  { rank: 'Rank 2', rankEs: 'Puesto 2', coinReward: 'Top $COIN Share', fishReward: 'Top $FISH Share', nft: '1x Founders Pass NFT', tickets: '80 FP Tickets' },
-  { rank: 'Rank 3', rankEs: 'Puesto 3', coinReward: '50,000 $COIN', fishReward: '18,275 $FISH', tickets: '60 FP Raffle Tickets' },
-  { rank: 'Rank 4', rankEs: 'Puesto 4', coinReward: '40,000 $COIN', fishReward: '14,620 $FISH', tickets: '50 FP Raffle Tickets' },
-  { rank: 'Rank 5', rankEs: 'Puesto 5', coinReward: '35,000 $COIN', fishReward: '12,793 $FISH', tickets: '40 FP Raffle Tickets' },
-  { rank: 'Rank 6 - 10', rankEs: 'Puestos 6 - 10', coinReward: '25,000 $COIN c/u', fishReward: '9,138 $FISH c/u', tickets: '30 FP Tickets c/u' },
-  { rank: 'Rank 11 - 25', rankEs: 'Puestos 11 - 25', coinReward: '15,000 $COIN c/u', fishReward: '5,483 $FISH c/u', tickets: '20 FP Tickets c/u' },
-  { rank: 'Rank 26 - 50', rankEs: 'Puestos 26 - 50', coinReward: '10,000 $COIN c/u', fishReward: '3,655 $FISH c/u', tickets: '15 FP Tickets c/u' },
-  { rank: 'Rank 51 - 100', rankEs: 'Puestos 51 - 100', coinReward: '5,000 $COIN c/u', fishReward: '1,828 $FISH c/u', tickets: '10 FP Tickets c/u' },
-  { rank: 'Rank 101 - 150', rankEs: 'Puestos 101 - 150', coinReward: '-', fishReward: '-', tickets: '6 FP Tickets c/u', note: 'Eligible for 4 Founders Pass Draws', noteEs: 'Elegible para los 4 sorteos de Founders Pass' },
-];
-
-const MP3_RANKS: RankRow[] = [
-  { rank: 'Rank 1', rankEs: 'Puesto 1', fishReward: '15.0% of Dynamic $FISH Pool', nft: '1x Water Dyno Genesis NFT', tickets: '100 FP Tickets', note: 'Apex Champion', noteEs: 'Campeón Supremo' },
-  { rank: 'Rank 2', rankEs: 'Puesto 2', fishReward: '10.0% of Dynamic $FISH Pool', nft: '1x Founders Pass NFT', tickets: '80 FP Tickets' },
-  { rank: 'Rank 3', rankEs: 'Puesto 3', fishReward: '7.5% of Dynamic $FISH Pool', tickets: '60 FP Tickets' },
-  { rank: 'Rank 4', rankEs: 'Puesto 4', fishReward: '5.0% of Dynamic $FISH Pool', tickets: '50 FP Tickets' },
-  { rank: 'Rank 5', rankEs: 'Puesto 5', fishReward: '4.0% of Dynamic $FISH Pool', tickets: '40 FP Tickets' },
-  { rank: 'Rank 6 - 10', rankEs: 'Puestos 6 - 10', fishReward: '3.0% of Dynamic $FISH Pool c/u', tickets: '30 FP Tickets c/u' },
-  { rank: 'Rank 11 - 25', rankEs: 'Puestos 11 - 25', fishReward: '1.5% of Dynamic $FISH Pool c/u', tickets: '20 FP Tickets c/u' },
-  { rank: 'Rank 26 - 50', rankEs: 'Puestos 26 - 50', fishReward: '0.96% of Dynamic $FISH Pool c/u', tickets: '15 FP Tickets c/u', note: 'Top 50 shares 99% of pool', noteEs: 'Top 50 se reparte el 99% del pozo' },
-  { rank: 'Rank 51 - 100', rankEs: 'Puestos 51 - 100', tickets: '10 FP Tickets + 15 $FISH Draw Tickets', note: 'Eligible for 2x 0.5% $FISH Draws', noteEs: 'Elegible para 2 sorteos de 0.5% de $FISH' },
-  { rank: 'Rank 101 - 150', rankEs: 'Puestos 101 - 150', tickets: '5 FP Tickets + 10 $FISH Draw Tickets', note: 'Eligible for both draws', noteEs: 'Elegible para ambos sorteos' },
-  { rank: 'Rank 151 - 200', rankEs: 'Puestos 151 - 200', tickets: '10 $FISH Draw Tickets' },
-  { rank: 'Rank 201 - 250', rankEs: 'Puestos 201 - 250', tickets: '5 $FISH Draw Tickets' },
-];
 
 export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
   const { language } = useTranslation();
@@ -99,7 +48,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
       {/* 1. Chronology Archive Event Switcher (Pill Nav) */}
       <div className="flex items-center justify-between gap-3 overflow-x-auto pb-1 pt-1 scrollbar-none">
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[10px] font-mono tracking-widest text-slate-500 uppercase px-1 shrink-0 font-bold">
+          <span className="text-[11px] font-mono tracking-widest text-slate-400 uppercase px-1 shrink-0 font-bold">
             {isEs ? 'HISTÓRICO ON-CHAIN' : 'ON-CHAIN ARCHIVE'}
           </span>
           {OFFICIAL_EVENTS.map((ev) => {
@@ -122,14 +71,14 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
                 className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold border-none transition-all duration-200 shrink-0 ${
                   isSelected
                     ? 'bg-amber-400 text-slate-950 font-bold shadow-lg shadow-amber-400/20'
-                    : 'bg-[#18181b] text-slate-400 hover:text-white hover:bg-[#222228]'
+                    : 'bg-oled-card text-slate-400 hover:text-white hover:bg-oled-pill'
                 }`}
               >
-                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${isSelected ? 'bg-slate-950/20 text-slate-950 font-bold' : 'bg-black/40 text-amber-400'}`}>
+                <span className={`text-[11px] font-mono px-1.5 py-0.2 rounded ${isSelected ? 'bg-slate-950/20 text-slate-950 font-bold' : 'bg-black/40 text-amber-400'}`}>
                   #{ev.number}
                 </span>
                 <span>{isEs ? ev.titleEs.split(' x ')[0] : ev.title.split(' x ')[0]}</span>
-                <span className={`text-[10px] font-mono ${isSelected ? 'text-slate-900 font-extrabold' : 'text-purple-400 font-bold'}`}>
+                <span className={`text-[11px] font-mono ${isSelected ? 'text-slate-900 font-extrabold' : 'text-purple-400 font-bold'}`}>
                   {ev.poolFactor}
                 </span>
               </button>
@@ -137,7 +86,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
           })}
         </div>
 
-        <div className="hidden sm:flex items-center gap-2 text-[11px] text-zinc-500 font-mono shrink-0">
+        <div className="hidden sm:flex items-center gap-2 text-[11px] text-zinc-400 font-mono shrink-0">
           <span>RONIN NETWORK VERIFIED</span>
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
         </div>
@@ -182,10 +131,10 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
           <span className="px-3 py-1 rounded-full text-[11px] font-mono font-semibold bg-[#1a1a20] text-slate-300">
             {event.partner}
           </span>
-          <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300">
+          <span className="px-2.5 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300">
             1 $FISH = 270 WORMS
           </span>
-          <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-zinc-800/80 text-zinc-400">
+          <span className="px-2.5 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-zinc-800/80 text-zinc-400">
             {isEs ? 'EDICIÓN CONCLUIDA' : 'CONCLUDED EVENT'}
           </span>
         </div>
@@ -227,7 +176,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
                       ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/20 hover:opacity-95'
                       : isGame
                       ? 'bg-[#1e1e24] text-amber-300 hover:bg-[#282832] hover:text-amber-200'
-                      : 'bg-[#18181c] text-slate-400 hover:bg-[#222228] hover:text-white'
+                      : 'bg-oled-card text-slate-400 hover:bg-oled-pill hover:text-white'
                   }`}
                 >
                   <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -246,7 +195,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
       {/* 4. Open Canvas KPI Metrics Strip */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-y border-white/[0.05]">
         <div className="space-y-1">
-          <span className="text-[10px] font-mono font-bold tracking-wider text-slate-400 uppercase">
+          <span className="text-[11px] font-mono font-bold tracking-wider text-slate-400 uppercase">
             {isEs ? 'TOKEN DE RECOMPENSA' : 'PRIZE REWARD TOKEN'}
           </span>
           <div className="flex items-baseline gap-2">
@@ -261,7 +210,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
         </div>
 
         <div className="space-y-1">
-          <span className="text-[10px] font-mono font-bold tracking-wider text-slate-400 uppercase">
+          <span className="text-[11px] font-mono font-bold tracking-wider text-slate-400 uppercase">
             {isEs ? 'FACTOR DE RETORNO' : 'DYNAMIC POOL FACTOR'}
           </span>
           <div className="flex items-baseline gap-1.5">
@@ -275,7 +224,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
         </div>
 
         <div className="space-y-1">
-          <span className="text-[10px] font-mono font-bold tracking-wider text-slate-400 uppercase">
+          <span className="text-[11px] font-mono font-bold tracking-wider text-slate-400 uppercase">
             {isEs ? 'REQUISITO DE ACCESO' : 'ACCESS REQUIREMENT'}
           </span>
           <div className="flex items-baseline gap-1.5">
@@ -289,7 +238,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
         </div>
 
         <div className="space-y-1">
-          <span className="text-[10px] font-mono font-bold tracking-wider text-slate-400 uppercase">
+          <span className="text-[11px] font-mono font-bold tracking-wider text-slate-400 uppercase">
             {isEs ? 'FECHA DE LANZAMIENTO' : 'LAUNCH SCHEDULE'}
           </span>
           <div className="text-base sm:text-lg font-black text-white font-mono pt-1">
@@ -317,7 +266,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
             >
               <span>{isEs ? tab.labelEs : tab.label}</span>
               {tab.count !== undefined && (
-                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-zinc-800 text-slate-400'}`}>
+                <span className={`text-[11px] font-mono px-1.5 py-0.2 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-zinc-800 text-slate-400'}`}>
                   {tab.count}
                 </span>
               )}
@@ -336,7 +285,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] font-mono font-bold tracking-wider text-purple-400 uppercase">
+                    <span className="text-[11px] font-mono font-bold tracking-wider text-purple-400 uppercase">
                       {isEs ? 'DIAGRAMA OFICIAL DE FLUJO' : 'OFFICIAL EVENT FLOW ARCHITECTURE'}
                     </span>
                     <h2 className="text-lg sm:text-xl font-bold text-white">
@@ -374,7 +323,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] font-mono font-bold tracking-wider text-amber-400 uppercase">
+                    <span className="text-[11px] font-mono font-bold tracking-wider text-amber-400 uppercase">
                       {isEs ? 'LÍNEA TEMPORAL VISUAL' : 'EVENT TIMELINE VISUALIZATION'}
                     </span>
                     <h3 className="text-base sm:text-lg font-bold text-white">
@@ -639,7 +588,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
                   </div>
                 )}
                 <div className="space-y-1.5 text-center sm:text-left">
-                  <span className="text-[10px] font-mono font-bold uppercase text-emerald-400">
+                  <span className="text-[11px] font-mono font-bold uppercase text-emerald-400">
                     {isEs ? 'DECORACIÓN EXCLUSIVA DE EDIFICIO' : 'EXCLUSIVE BUILDING DECORATION'}
                   </span>
                   <h3 className="text-base font-bold text-white">Fishing Statue (Tier 1)</h3>
@@ -653,7 +602,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
 
               {/* 19 Avatars & RAWRpass Info */}
               <div className="p-5 rounded-2xl bg-[#16161a] border-none space-y-2">
-                <span className="text-[10px] font-mono font-bold uppercase text-purple-400">
+                <span className="text-[11px] font-mono font-bold uppercase text-purple-400">
                   {isEs ? 'AVATARES Y RAWR PASS' : 'AVATARS & RAWR PASS'}
                 </span>
                 <h3 className="text-base font-bold text-white">
@@ -704,7 +653,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
             {event.mediaImages?.karmaModelImage && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase">
+                  <span className="text-[11px] font-mono font-bold text-cyan-400 uppercase">
                     {isEs ? 'DIAGRAMA DEL MODELO DE KARMA' : 'KARMA SCORE MODEL DIAGRAM'}
                   </span>
                   <button
@@ -737,7 +686,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
             {event.mediaImages?.workersImage && (
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono font-bold text-purple-400 uppercase">
+                  <span className="text-[11px] font-mono font-bold text-purple-400 uppercase">
                     {isEs ? 'AFICHE OFICIAL DE WORKERS (FISHING FRENZY)' : 'OFFICIAL WORKERS INFOGRAPHIC'}
                   </span>
                   <button
@@ -790,7 +739,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
                             {k.workerNumber.toString().padStart(2, '0')}
                           </td>
                           <td className="py-3 px-4">
-                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${k.category === 'Legendary' ? 'bg-amber-500/20 text-amber-300 font-bold' : k.category === 'Rare' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-zinc-800 text-slate-300'}`}>
+                            <span className={`px-2 py-0.5 rounded-full text-[11px] font-mono ${k.category === 'Legendary' ? 'bg-amber-500/20 text-amber-300 font-bold' : k.category === 'Rare' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-zinc-800 text-slate-300'}`}>
                               {isEs ? k.categoryEs : k.category}
                             </span>
                           </td>
@@ -882,7 +831,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
                           <div className="font-extrabold text-white text-sm truncate">
                             {isEs ? rec.nameEs : rec.name}
                           </div>
-                          <div className="text-[10px] text-purple-400 font-mono font-bold">{rec.symbol}</div>
+                          <div className="text-[11px] text-purple-400 font-mono font-bold">{rec.symbol}</div>
                         </div>
                       </div>
                       <span className="text-[11px] font-mono font-bold bg-black/40 text-amber-300 px-2 py-0.5 rounded-md shrink-0">
@@ -922,7 +871,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
             {event.mediaImages?.onboardingImage && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase">
+                  <span className="text-[11px] font-mono font-bold text-emerald-400 uppercase">
                     {isEs ? 'DIAGRAMA OFICIAL DE ONBOARDING' : 'OFFICIAL ONBOARDING FLOWCHART'}
                   </span>
                   <button
@@ -972,7 +921,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
                     </p>
                     {step.tip && (
                       <div className="flex items-center gap-2 pt-1 text-xs text-amber-300/90 font-mono">
-                        <span className="text-[10px] uppercase font-bold bg-amber-400/10 px-2 py-0.5 rounded text-amber-300">
+                        <span className="text-[11px] uppercase font-bold bg-amber-400/10 px-2 py-0.5 rounded text-amber-300">
                           PRO TIP
                         </span>
                         <span>{isEs ? step.tipEs : step.tip}</span>
@@ -1019,7 +968,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
             {/* VOYA ID Info Banner */}
             <div className="p-5 rounded-2xl bg-[#18181e] border-none flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
-                <span className="text-[10px] font-mono font-bold text-purple-400 uppercase">
+                <span className="text-[11px] font-mono font-bold text-purple-400 uppercase">
                   {isEs ? 'RECLAMACIÓN ON-CHAIN' : 'ON-CHAIN CLAIMS'}
                 </span>
                 <h4 className="text-sm font-bold text-white">
@@ -1063,7 +1012,7 @@ export const EventLandingView: React.FC<Props> = ({ event, onSelectEvent }) => {
             </button>
           </div>
           <div
-            className="max-w-5xl w-full max-h-[85vh] flex items-center justify-center overflow-auto rounded-2xl bg-[#141415] p-2"
+            className="max-w-5xl w-full max-h-[85vh] flex items-center justify-center overflow-auto rounded-2xl bg-oled-canvas p-2"
             onClick={(e) => e.stopPropagation()}
           >
             <img
